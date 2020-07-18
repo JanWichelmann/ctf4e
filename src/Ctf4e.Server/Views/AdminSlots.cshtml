@@ -1,0 +1,150 @@
+﻿@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
+@model Ctf4e.Server.Models.Slot
+@{
+    ViewData["Title"] = "Terminslots verwalten";
+
+    var viewType = (AdminSlotsController.ViewType)ViewData["ViewType"];
+}
+
+@if(viewType == AdminSlotsController.ViewType.ListSlots)
+{
+    var slots = (List<Slot>)ViewData["Slots"];
+
+    <h3 class="text-primary">
+        Slots verwalten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+
+    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.ShowCreateSlotFormAsync)))">
+        <span class="oi oi-plus"></span>
+        Slot erstellen
+    </a>
+    <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Gruppen</th>
+                <th scope="col">Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var s in slots)
+            {
+                <tr>
+                    <td>@s.Id</td>
+                    <td>@s.Name</td>
+                    <td>@s.Groups.Count</td>
+                    <td>
+                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.ShowEditSlotFormAsync), new { id = s.Id }))">
+                            <span class="oi oi-pencil"></span>
+                            Bearbeiten
+                        </a>
+                        @if(!s.Groups.Any())
+                        {
+                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-slot" data-slot-id="@s.Id" data-slot-name="@s.Name">
+                                <span class="oi oi-trash"></span>
+                                Löschen
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="modal-delete-slot" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Slot löschen</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Wollen Sie den Slot &quot;<span data-replace="slot-name"></span>&quot; wirklich löschen?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <form action="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.DeleteSlotAsync)))" method="post">
+                        <input type="hidden" data-replace="slot-id" name="id" value="">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger">Slot löschen</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#modal-delete-slot').on('show.bs.modal', function (e) {
+            var slotId = $(e.relatedTarget).data('slot-id');
+            var slotName = $(e.relatedTarget).data('slot-name');
+            $(e.currentTarget).find('span[data-replace="slot-name"]').text(slotName);
+            $(e.currentTarget).find('input[data-replace="slot-id"]').val(slotId);
+        });
+    </script>
+}
+else if(viewType == AdminSlotsController.ViewType.EditSlot)
+{
+    var slots = (List<Slot>)ViewData["Slots"];
+
+    <h3 class="text-primary">
+        Slot bearbeiten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <form action="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.EditSlotAsync), new { id = Model.Id }))" method="post">
+        <div class="form-group">
+            <label asp-for="Name">Name</label>
+            <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        @if(Model.Groups?.Any() == true)
+        {
+            <div class="form-group">
+                <label>Gruppen</label>
+                <table class="table table-sm table-bordered table-hover text-nowrap">
+                    <tbody>
+                    @foreach(var g in Model.Groups)
+                    {
+                        <tr>
+                            <td>@g.DisplayName (#@g.Id)</td>
+                            <td>
+                                <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.ShowEditGroupFormAsync), new {id = g.Id}))">
+                                    <span class="oi oi-pencil"></span>
+                                    Bearbeiten
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+    </form>
+}
+else if(viewType == AdminSlotsController.ViewType.CreateSlot)
+{
+    var slots = (List<Slot>)ViewData["Slots"];
+
+    <h3 class="text-primary">
+        Slot erstellen
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <form action="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.CreateSlotAsync)))" method="post">
+        <div class="form-group">
+            <label asp-for="Name">Name</label>
+            <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Slot erstellen</button>
+    </form>
+}

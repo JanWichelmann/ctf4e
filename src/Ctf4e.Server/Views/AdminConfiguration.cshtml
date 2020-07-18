@@ -1,0 +1,160 @@
+﻿@using System.Globalization
+@using Ctf4e.Server.Controllers
+@model Ctf4e.Server.ViewModels.AdminConfigurationData
+@{
+    ViewData["Title"] = "Konfiguration";
+
+    int groupCount = (int)ViewData["GroupCount"];
+}
+
+<h3 class="text-primary">
+    Konfiguration bearbeiten
+</h3>
+<hr class="bg-primary mb-2" style="height: 2px">
+
+<p>Eingestellte Kultur: @CultureInfo.CurrentCulture.ToString()</p>
+<p>Eingestellte Zeitzone: @TimeZoneInfo.Local.ToString()</p>
+<p>Aktuelle Uhrzeit: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+<p>Aktuelle Uhrzeit (UTC): @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+
+<hr class="bg-primary mb-2 mt-1" style="height: 2px;">
+<form action="@(Url.Action<AdminConfigurationController>(nameof(AdminConfigurationController.UpdateConfigAsync)))" method="post">
+    <div class="form-group">
+        <label asp-for="PageTitle">Seitentitel</label>
+        <input asp-for="PageTitle" class="form-control">
+        <span asp-validation-for="PageTitle" class="text-danger"></span>
+        <small>
+            Dieser Titel wird im HTML-<span class="text-monospace">&lt;title&gt;</span>-Element eingesetzt.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="NavbarTitle">Titel in Menüleiste</label>
+        <input asp-for="NavbarTitle" class="form-control">
+        <span asp-validation-for="NavbarTitle" class="text-danger"></span>
+        <small>
+            Dieser Titel wird oben links in der Menüleiste angezeigt.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="FlagMinimumPointsDivisor">Teiler für Flag-Minimalpunktzahl</label>
+        <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
+        <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
+        <small>
+            Die Flag-Basispunktzahl dividiert durch diese Zahl ergibt die Minimalpunktzahl, die für jede Flag garantiert gewährt wird.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="FlagHalfPointsSubmissionCount">Anzahl der Flageinreichungen bis 50% der möglichen Punkte</label>
+        <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
+        <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
+        <small>
+            Diese Zahl legt fest, bei wie vielen Flageinreichungen noch ca. 50% der Basispunktzahl gewährt werden.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="ScoreboardEntryCount">Anzahl der angezeigten Einträge im offenen Scoreboard</label>
+        <input asp-for="ScoreboardEntryCount" class="form-control">
+        <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
+        <small>
+            Diese Zahl legt fest, wie viele Einträge im für alle Gruppen einsehbaren Scoreboard gezeigt werden.
+            Diese Zahl kann unter bestimmten Umständen überschritten werden, wenn mehrere Gruppen auf demselben Platz sind,
+            und diese sonst nicht alle gleichberechtigt angezeigt werden könnten.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="ScoreboardCachedSeconds">Scoreboard-Gültigkeitsdauer in Sekunden</label>
+        <input asp-for="ScoreboardCachedSeconds" class="form-control">
+        <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
+        <small>
+            Diese Zahl legt fest, wie viele Sekunden ein gecachtes Scoreboard gültig ist, bevor ein neues erzeugt wird.
+            Ziel dieser Einstellung ist, die Datenbank zu entlasten, da hierfür mehrere große Queries ausgeführt werden müssen.
+            Der Wert sollte anfangs möglichst niedrig angesetzt sein, und erst bei Bedarf erhöht werden.
+        </small>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input asp-for="CreateSplitGroups" class="form-check-input">
+            <label asp-for="CreateSplitGroups" class="form-check-label">Gruppen bei Erstellung aufteilen</label>
+            <br>
+            <small>
+                Wenn diese Einstellung aktiv ist, wird bei der Gruppengründung für jeden Teilnehmer eine eigene Gruppe angelegt.
+                Die Teilnehmer müssen sich dann nach wie vor zu zweit zusammenfinden, werden dann aber zwei getrennten Gruppen mit Namenspräfixen (1) bzw. (2) zugewiesen.
+                Die Gruppen werden im Scoreboard per Durchschnittswert wieder zusammengeführt. Dieses Feature funktioniert nur für Einzel- und Zweiergruppen.
+            </small>
+        </div>
+    </div>
+
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+</form>
+
+<h3 class="text-primary mt-5">
+    Visualisierung der Flagpunkte
+</h3>
+<hr class="bg-primary mb-2" style="height: 2px">
+
+<p>
+    Dies zeigt die Entwicklung der Flagpunktzahl abhängig von der Anzahl der Flag-Funde. Als Flag-Basispunktzahl wird <strong>100</strong> angenommen, aktuell gibt es insgesamt <strong>@groupCount</strong> Gruppen.
+</p>
+<canvas id="canvas-flag-points"></canvas>
+
+<script>
+    var flagBasePoints = 100;
+    var groupCount = @groupCount;
+    var chartConfig = {
+        type: 'line',
+        data: {
+            labels: Array.from(Array(groupCount + 1).keys()),
+            datasets: [
+                {
+                    label: "Flag-Punkte",
+                    data: Array.from(Array(groupCount + 1).keys()), // dummy values
+                    borderColor: "rgb(0, 97, 122)",
+                    fill: false,
+                    lineTension: 0
+                }
+            ]
+        },
+        options: {
+        }
+    };
+
+    function updateChart() {
+        var minPointsDivisor = $("#input-flag-minimum-points-divisor").val();
+        var minPointsMultiplier = 1.0 / minPointsDivisor;
+        var halfPointsSubmissionCount = $("#input-flag-half-points-submission-count").val();
+
+        for (var i = 0; i < groupCount + 1; i++) {
+
+            // For details see FlagPointService
+            var amb = flagBasePoints - minPointsMultiplier * flagBasePoints;
+            var points = (amb * Math.pow(2, (-i + 1) / (halfPointsSubmissionCount - 1.0))) + (minPointsMultiplier * flagBasePoints);
+            chartConfig.data.datasets[0].data[i] = Math.round(points);
+        }
+
+        window.flagPointsChart.update();
+    }
+
+    window.onload = function() {
+        var ctx = $("#canvas-flag-points")[0].getContext('2d');
+        window.flagPointsChart = new Chart(ctx, chartConfig);
+        updateChart();
+    }
+
+    $("#input-flag-minimum-points-divisor").change(function () {
+        updateChart();
+    });
+    $("#input-flag-half-points-submission-count").change(function () {
+        updateChart();
+    });
+    $("#input-create-split-groups").change(function () {
+        updateChart();
+    });
+</script>
+
+
+<!-- Necessary includes -->
+@section ScriptsHead
+{
+    <script src="~/lib/chartjs/js/chart.min.js"></script>
+}

@@ -1,0 +1,108 @@
+﻿@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
+@{
+    ViewData["Title"] = "Login";
+
+    var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+}
+
+@if(viewType == AuthenticationController.ViewType.Blank)
+{
+    <!-- Status messages only -->
+}
+else if(viewType == AuthenticationController.ViewType.Redirect)
+{
+    if(currentUser.IsAdmin)
+    {
+        <a href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Weiterleiten...</a>
+        @section ScriptsHead
+        {
+            <meta http-equiv="refresh" content="1;url=@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">
+        }
+    }
+    else
+    {
+        <a href="@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">Weiterleiten...</a>
+        @section ScriptsHead
+        {
+            <meta http-equiv="refresh" content="1;url=@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">
+        }
+    }
+}
+else if(viewType == AuthenticationController.ViewType.GroupSelection)
+{
+    var slots = (List<Slot>)ViewData["Slots"];
+    bool createSplitGroups = (bool)ViewData["CreateSplitGroups"];
+
+    <h3 class="text-primary">
+        Gruppe gründen
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <p>
+        An diesem Praktikum kann nur in Zweiergruppen teilgenommen werden. Bitte bearbeiten Sie hierzu nacheinander folgende Schritte:
+        <ul>
+            <li>Suchen Sie sich einen Gruppenpartner/eine Gruppenpartnerin, der/die am selben Praktikumstermin teilnimmt.</li>
+            <li>Überlegen Sie sich einen Gruppennamen, und ob Sie am Capture-The-Flag-Wettbewerb (CTF) teilnehmen möchten.</li>
+            <li>Tauschen Sie mit Ihrem Partner/Ihrer Partnerin die beim Login angezeigten Codes aus.</li>
+            <li>Füllen Sie das untenstehende Formular aus, um die Gruppe zu erstellen. Es genügt, wenn eine(r) von Ihnen diesen Schritt bearbeitet.</li>
+        </ul>
+        Ihr Code lautet: <span class="font-weight-bold">@currentUser.GroupFindingCode</span>
+    </p>
+    @model Ctf4e.Server.ViewModels.GroupSelection
+    <form action="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.HandleGroupSelectionAsync)))" method="post">
+        <div class="form-group">
+            <label asp-for="OtherUserCode">Code Ihres Partners/Ihrer Partnerin</label>
+            <input asp-for="OtherUserCode" class="form-control" placeholder="Code eingeben">
+            <small class="form-text text-muted">
+                Der Code wird bei erstmaligem Login angezeigt.
+            </small>
+            <span asp-validation-for="OtherUserCode" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SlotId">Praktikumstermin</label>
+            <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control"></select>
+            <small class="form-text text-muted">
+                Der Wert dieses Felds <span class="font-italic">muss</span> mit dem Ihnen während der Terminwahl zugewiesenen Termin übereinstimmen.
+            </small>
+        </div>
+        <div class="form-group">
+            <label asp-for="DisplayName">Name Ihrer Gruppe</label>
+            <input asp-for="DisplayName" class="form-control" placeholder="Gruppennamen eingeben">
+            <small class="form-text text-muted">
+                Dieses Feld hat volle Unicode-Unterstützung, Ihrer Kreativität sind abgesehen von der Längenbeschränkung
+                also keine Grenzen gesetzt. Der Gruppenname kann anschließend nicht mehr geändert werden.
+            </small>
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="ShowInScoreboard" class="form-check-input">
+                <label asp-for="ShowInScoreboard" class="form-check-label">Am CTF teilnehmen und Gruppe im Scoreboard anzeigen</label>
+                <small class="form-text text-muted">
+                    Mit Setzen dieses Feldes nehmen Sie am Praktikums-internen Capture-The-Flag teil, und Ihr Gruppenname wird im Scoreboard angezeigt.
+                    Die Teilnahme am CTF ist komplett freiwillig und hat keinerlei Nachteile. Das Scoreboard zeigt stets nur die zehn besten Gruppen an.
+                </small>
+            </div>
+        </div>
+        <p>
+            Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben.
+            Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut über das Moodle einloggen.
+            Im Anschluss sollten Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe haben.
+        </p>
+        @if(createSplitGroups)
+        {
+            <p>
+                <strong>Hinweis:</strong>
+                Das Praktikum ist in diesem Semester voraussichtlich ausschließlich online zu bearbeiten, was Gruppenarbeit etwas erschwert; aus diesem Grund
+                werden Sie und Ihr Partner/Ihre Partnerin vom System dennoch getrennten Gruppen zugewiesen, die das Suffix &quot;(1)&quot; (Ihr Partner/Ihre
+                Partnerin) bzw. &quot;(2)&quot; (Sie) im Namen haben. Sie können so weiterhin zusammenarbeiten, müssen jedoch Aufgaben und Flags jeweils selbst
+                einreichen. Falls doch noch Präsenztermine stattfinden sollten, werden diese Gruppen wieder zusammengeführt.
+            </p>
+        }
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Gruppe erstellen</button>
+    </form>
+}

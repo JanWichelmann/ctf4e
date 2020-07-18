@@ -1,0 +1,330 @@
+﻿@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
+@model Ctf4e.Server.ViewModels.AdminLabExecution
+@{
+    ViewData["Title"] = "Ausführungen verwalten";
+
+    var viewType = (AdminLabExecutionsController.ViewType)ViewData["ViewType"];
+}
+
+@if(viewType == AdminLabExecutionsController.ViewType.ListLabExecutions)
+{
+    var labExecutions = (List<LabExecution>)ViewData["LabExecutions"];
+    var slots = (List<Slot>)ViewData["Slots"];
+    var labs = (List<Lab>)ViewData["Labs"];
+
+    <h3 class="text-primary">
+        Ausführungen verwalten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+
+    <p>
+        Praktikumsausführungen steuern, wann ein Praktikumstermin startet und endet. Hierfür gibt es folgende Regeln:
+        <ul>
+            <li><strong>Vor-Beginn:</strong> Ab diesem Zeitpunkt können bestimmte Aufgaben bearbeitet und sämtliche Flags eingelöst werden.</li>
+            <li><strong>Beginn:</strong> Ab diesem Zeitpunkt sind sämtliche Aufgaben freigeschaltet. Die Gruppen können in diesem Zeitraum das Praktikum bestehen.</li>
+            <li><strong>Ende:</strong> Nach diesem Zeitpunkt können zwar noch Aufgaben bearbeitet werden, diese werden jedoch nicht mehr im Scoreboard gewertet. Flags können nicht mehr eingelöst werden.</li>
+        </ul>
+        Die einzelnen Zeitpunkte müssen immer die gegebene Reihenfolge (Vor-Beginn, Beginn, Ende) haben und dürfen nicht exakt gleich sein!
+    </p>
+    <p>
+        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.ShowCreateLabExecutionForGroupFormAsync)))">
+            <span class="oi oi-plus"></span>
+            Praktikum für eine Gruppe starten
+        </a>
+    </p>
+    <p>
+        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.ShowCreateLabExecutionForSlotFormAsync)))">
+            <span class="oi oi-plus"></span>
+            Praktikum für alle Gruppen eines Termins starten / anpassen
+        </a>
+        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab-execution-slot">
+            <span class="oi oi-trash"></span>
+            Praktikum für alle Gruppen eines Termins abbrechen
+        </a>
+    </p>
+    <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
+        <thead>
+            <tr>
+                <th scope="col">Gruppe</th>
+                <th scope="col">Praktikum</th>
+                <th scope="col">Vor-Beginn</th>
+                <th scope="col">Beginn</th>
+                <th scope="col">Ende</th>
+                <th scope="col">Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var l in labExecutions)
+            {
+                <tr>
+                    <td>#@l.GroupId: @l.Group.DisplayName</td>
+                    <td>@l.Lab.Name</td>
+                    <td>@l.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+                    <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+                    <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+                    <td>
+                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.ShowEditLabExecutionFormAsync), new { groupId = l.GroupId, labId = l.LabId }))">
+                            <span class="oi oi-pencil"></span>
+                            Bearbeiten
+                        </a>
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab-execution-group" data-group-id="@l.GroupId" data-lab-id="@l.LabId" data-group-name="@l.Group.DisplayName" data-lab-name="@l.Lab.Name">
+                            <span class="oi oi-trash"></span>
+                            Löschen
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="modal-delete-lab-execution-group" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ausführung für Gruppe löschen</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Wollen Sie die Ausführung des Praktikums &quot;<span data-replace="lab-name"></span>&quot; für Gruppe &quot;<span data-replace="group-name"></span>&quot; wirklich löschen?
+                    </p>
+                    <p>
+                        Die Gruppe kann dann keine Aufgaben mehr bearbeiten, und der &quot;Bestanden&quot;-Status wird zurückgesetzt.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <form action="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.DeleteLabExecutionForGroupAsync)))" method="post">
+                        <input type="hidden" data-replace="group-id" name="groupId" value="">
+                        <input type="hidden" data-replace="lab-id" name="labId" value="">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger">Ausführung löschen</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-delete-lab-execution-slot" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.DeleteLabExecutionForSlotAsync)))" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Alle Ausführungen für Terminslot löschen</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Hinweis: Die betroffenen Gruppen können dann keine Aufgaben mehr bearbeiten, und der &quot;Bestanden&quot;-Status wird zurückgesetzt.
+                        </p>
+                        <div class="form-group">
+                            <label>Praktikum</label>
+                            <select name="labId" asp-items="@new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name))" class="form-control">
+                                <option value="" disabled selected>Praktikum auswählen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Terminslot</label>
+                            <select name="slotId" asp-items="@new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name))" class="form-control">
+                                <option value="" disabled selected>Slot auswählen</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger">Ausführungen löschen</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#modal-delete-lab-execution-group').on('show.bs.modal', function (e) {
+            var groupId = $(e.relatedTarget).data('group-id');
+            var labId = $(e.relatedTarget).data('lab-id');
+            var groupName = $(e.relatedTarget).data('group-name');
+            var labName = $(e.relatedTarget).data('lab-name');
+            $(e.currentTarget).find('span[data-replace="group-name"]').text(groupName);
+            $(e.currentTarget).find('input[data-replace="group-id"]').val(groupId);
+            $(e.currentTarget).find('span[data-replace="lab-name"]').text(labName);
+            $(e.currentTarget).find('input[data-replace="lab-id"]').val(labId);
+        });
+    </script>
+}
+else if(viewType == AdminLabExecutionsController.ViewType.EditLabExecution)
+{
+    <h3 class="text-primary">
+        Ausführung von Praktikum &quot;@Model.LabExecution.Lab.Name&quot; für Gruppe &quot;@Model.LabExecution.Group.DisplayName&quot; bearbeiten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <form action="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.EditLabExecutionAsync)))" method="post">
+        <input asp-for="LabExecution.GroupId" type="hidden">
+        <input asp-for="LabExecution.LabId" type="hidden">
+        @{
+            await LabExecutionTimeFormFields();
+        }
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+    </form>
+}
+else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForSlot)
+{
+    var slots = (List<Slot>)ViewData["Slots"];
+    var labs = (List<Lab>)ViewData["Labs"];
+
+    <h3 class="text-primary">
+        Praktikum für alle Gruppen eines Termins starten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <form action="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.CreateLabExecutionForSlotAsync)))" method="post">
+        <div class="form-group">
+            <label asp-for="LabExecution.LabId">Praktikum</label>
+            <select asp-for="LabExecution.LabId" asp-items="@new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name))" class="form-control">
+                <option value="" disabled selected>Praktikum auswählen</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="SlotId">Terminslot</label>
+            <select asp-for="SlotId" asp-items="@new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name))" class="form-control">
+                <option value="" disabled selected>Slot auswählen</option>
+            </select>
+        </div>
+        @{
+            await LabExecutionTimeFormFields();
+        }
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="OverrideExisting" class="form-check-input">
+                <label asp-for="OverrideExisting" class="form-check-label">Für alle Gruppen erzwingen</label>
+                <small>
+                    Dies überschreibt sämtliche manuellen Anpassungen, die eventuell bei einigen Gruppen in diesem Slot vorgenommen worden sind.
+                </small>
+            </div>
+        </div>
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Praktikum starten</button>
+    </form>
+}
+else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForGroup)
+{
+    var groups = (List<Group>)ViewData["Groups"];
+    var labs = (List<Lab>)ViewData["Labs"];
+
+    <h3 class="text-primary">
+        Praktikum für eine Gruppe starten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <form action="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.CreateLabExecutionForGroupAsync)))" method="post">
+        <div class="form-group">
+            <label asp-for="LabExecution.LabId">Praktikum</label>
+            <select asp-for="LabExecution.LabId" asp-items="@new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name))" class="form-control">
+                <option value="" disabled selected>Praktikum auswählen</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="LabExecution.GroupId">Gruppe</label>
+            <select asp-for="LabExecution.GroupId" asp-items="@new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName))" class="form-control">
+                <option value="" disabled selected>Gruppe auswählen</option>
+            </select>
+        </div>
+        @{
+            await LabExecutionTimeFormFields();
+        }
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="OverrideExisting" class="form-check-input" checked>
+                <label asp-for="OverrideExisting" class="form-check-label">Existierende Konfiguration überschreiben</label>
+                <small>
+                    Dies überschreibt eine eventuell bereits existierende Praktikumsausführung der Gruppe.
+                </small>
+            </div>
+        </div>
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Praktikum starten</button>
+    </form>
+}
+
+@section ScriptsHead
+{
+    <script src="~/lib/moment/js/moment.min.js"></script>
+    <script src="~/lib/moment/js/locale/de.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css">
+    <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+        $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
+            icons: {
+                time: 'oi oi-clock',
+                date: 'oi oi-calendar',
+                up: 'oi oi-arrow-thick-top',
+                down: 'oi oi-arrow-thick-bottom',
+                previous: 'oi oi-chevron-left',
+                next: 'oi oi-chevron-right',
+                today: 'oi oi-home',
+                clear: 'oi oi-trask',
+                close: 'oi oi-x'
+            }
+        });
+    </script>
+}
+
+@functions
+{
+    async Task LabExecutionTimeFormFields()
+    {
+        <div class="form-group">
+            <label asp-for="LabExecution.PreStart">Vor-Beginn</label>
+            <div class="input-group" id="datetimepicker-prestart" data-target-input="nearest">
+                <input asp-for="LabExecution.PreStart" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-prestart" />
+                <div class="input-group-append" data-target="#datetimepicker-prestart" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <span class="oi oi-calendar"></span>
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="LabExecution.PreStart" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LabExecution.Start">Beginn</label>
+            <div class="input-group" id="datetimepicker-start" data-target-input="nearest">
+                <input asp-for="LabExecution.Start" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-start" />
+                <div class="input-group-append" data-target="#datetimepicker-start" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <span class="oi oi-calendar"></span>
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="LabExecution.Start" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LabExecution.End">Ende</label>
+            <div class="input-group" id="datetimepicker-end" data-target-input="nearest">
+                <input asp-for="LabExecution.End" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-end" />
+                <div class="input-group-append" data-target="#datetimepicker-end" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <span class="oi oi-calendar"></span>
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="LabExecution.End" class="text-danger"></span>
+        </div>
+
+        <script type="text/javascript">
+            $(function () {
+                var dateTimePickerSettings = {
+                    locale: 'de'
+                };
+                $('#datetime-prestart').datetimepicker(dateTimePickerSettings);
+                $('#datetime-start').datetimepicker(dateTimePickerSettings);
+                $('#datetime-end').datetimepicker(dateTimePickerSettings);
+            });
+        </script>
+    }
+}

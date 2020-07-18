@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "ctf4e": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CTF4E_CONFIG_FILE": "config-debug.json",
+        "CTF4E_CERT_FILE": "debug.pfx",
+        "CTF4E_CERT_PASSWORD": "itsctf"
+      },
+      "applicationUrl": "https://localhost:5000"
+    }
+  }
+}

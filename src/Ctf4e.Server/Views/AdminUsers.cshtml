@@ -1,0 +1,118 @@
+﻿@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
+@model Ctf4e.Server.Models.User
+@{
+    ViewData["Title"] = "Benutzerverwaltung";
+
+    var viewType = (AdminUsersController.ViewType)ViewData["ViewType"];
+}
+
+@if(viewType == AdminUsersController.ViewType.ListUsers)
+{
+    var users = (List<User>)ViewData["Users"];
+
+    <h3 class="text-primary">
+        Benutzer verwalten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+
+    <table class="table table-sm table-bordered table-hover text-nowrap">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Moodle-Account</th>
+                <th scope="col">Gruppencode</th>
+                <th scope="col">Gruppen-ID</th>
+                <th scope="col">Status</th>
+                <th scope="col">Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var u in users)
+            {
+                <tr>
+                    <td>@u.Id</td>
+                    <td>@u.DisplayName</td>
+                    <td>@u.MoodleName (#@u.MoodleUserId)</td>
+                    <td>@u.GroupFindingCode</td>
+                    <td>
+                        @if(u.GroupId != null)
+                        {
+                            <a href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.EditGroupAsync), new {id = u.GroupId}))" title="Gruppe bearbeiten">
+                                <span class="oi oi-people"></span>
+                                #@u.GroupId
+                            </a>
+                        }
+                    </td>
+                    <td>
+                        @if(u.IsAdmin)
+                        {
+                            <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Hat Administratorrechte"></span>
+                        }
+                        else if(u.IsTutor)
+                        {
+                            <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Hat Tutorrechte"></span>
+                        }
+                    </td>
+                    <td>
+                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.ShowEditUserFormAsync), new { id = u.Id }))">
+                            <span class="oi oi-pencil"></span>
+                            Bearbeiten
+                        </a>
+                        <a role="button" class="btn btn-sm btn-secondary" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.AdminLoginAsUserAsync), new { id = u.Id }))" title="Als diesen Benutzer einloggen">
+                            <span class="oi oi-account-login"></span>
+                            Einloggen
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if(viewType == AdminUsersController.ViewType.EditUser)
+{
+    var groups = (List<Group>)ViewData["Groups"];
+
+    <h3 class="text-primary">
+        Benutzer bearbeiten
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+    <form action="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.EditUserAsync), new { id = Model.Id }))" method="post">
+        <div class="form-group">
+            <label asp-for="DisplayName">Name</label>
+            <input asp-for="DisplayName" class="form-control" placeholder="Namen eingeben">
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Moodle-Account</label>
+            <input asp-for="MoodleName" class="form-control" readonly="readonly">
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="IsAdmin" class="form-check-input">
+                <label asp-for="IsAdmin" class="form-check-label">Administratorrechte</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="IsTutor" class="form-check-input">
+                <label asp-for="IsTutor" class="form-check-label">Tutorrechte</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="GroupFindingCode">Gruppencode</label>
+            <input asp-for="GroupFindingCode" class="form-control" placeholder="Code zur Gruppengründung eingeben">
+            <span asp-validation-for="GroupFindingCode" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="GroupId">Gruppe</label>
+            <select asp-for="GroupId" asp-items="@new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName))" class="form-control">
+                <option value="" selected>(keine)</option>
+            </select>
+        </div>
+
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+    </form>
+}

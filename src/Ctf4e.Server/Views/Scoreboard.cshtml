@@ -1,0 +1,218 @@
+﻿@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.ViewModels
+@{
+    ViewData["Title"] = "Scoreboard";
+
+    var viewType = (ScoreboardController.ViewType)ViewData["ViewType"];
+
+    var labs = (List<Lab>)ViewData["Labs"];
+
+    var scoreboard = ViewData.ContainsKey("Scoreboard") ? (Scoreboard)ViewData["Scoreboard"] : null;
+    bool showAllEntries = ViewData.ContainsKey("ShowAllEntries") && (bool)ViewData["ShowAllEntries"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+}
+
+@if(viewType == ScoreboardController.ViewType.Blank)
+{
+    <!-- Status messages only -->
+}
+else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
+{
+    <h3 class="text-primary">
+        @if(scoreboard.AllLabs)
+        {
+            @: Scoreboard: Gesamtwertung über alle Praktika
+        }
+        else
+        {
+            @: Praktikums-Scoreboard: @scoreboard.CurrentLabName
+        }
+    </h3>
+    <hr class="bg-primary" style="height: 2px">
+
+    <table class="table table-sm" id="flags-table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Punkte</th>
+                <th scope="col">Flags</th>
+                <th scope="col">Gruppe</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int lastRank = 0;
+                int entryCount = 0;
+                bool currentGroupShown = false;
+            }
+            @foreach(var entry in scoreboard.Entries)
+            {
+                if(entryCount >= scoreboard.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
+                {
+                    break;
+                }
+                bool isCurrentGroup = entry.GroupId == currentUser.GroupId || (currentUser.GroupId != null && entry.MergedSplitGroupPartnerGroupId == currentUser.GroupId);
+                currentGroupShown |= isCurrentGroup;
+                <tr class="@(isCurrentGroup ? "table-active" : "")">
+                    <th scope="row">
+                        @if(entry.Rank != lastRank)
+                        {
+                            @entry.Rank
+                            @if(entry.Rank == 1)
+                            {
+                                <span class="oi oi-badge" style="color: rgb(255, 204, 1);"></span>
+                            }
+                            else if(entry.Rank == 2)
+                            {
+                                <span class="oi oi-badge" style="color: rgb(180, 184, 188);"></span>
+                            }
+                            else if(entry.Rank == 3)
+                            {
+                                <span class="oi oi-badge" style="color: rgb(209, 166, 132);"></span>
+                            }
+                        }
+                    </th>
+                    <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
+                        @entry.TotalPoints
+                        @if(isCurrentGroup || currentUser.IsAdmin || currentUser.IsTutor)
+                        {
+                            <span class="text-muted">
+                                @if(entry.BugBountyPoints == 0)
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
+                                }
+                                else
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
+                                }
+                                @if(entry.MergedSplitGroupPartnerGroupId != null)
+                                {
+                                    @: * 0.5
+                                }
+                            </span>
+                        }
+                        @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                        {
+                            <span class="oi oi-bug text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></span>
+                        }
+                    </td>
+                    <td>
+                        @if(entry.MergedSplitGroupPartnerGroupId != null)
+                        {
+                            // Round up
+                            @((entry.FlagCount + 1) / 2)
+                        }
+                        else
+                        {
+                            @entry.FlagCount
+                        }
+                    </td>
+                    <td>
+                        @entry.GroupName
+                    </td>
+                </tr>
+                ++entryCount;
+                lastRank = entry.Rank;
+            }
+            @if(!currentGroupShown && currentUser.GroupId != null)
+            {
+                var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId || e.MergedSplitGroupPartnerGroupId == currentUser.GroupId);
+                if(entry != null)
+                {
+                    <tr class="table-active">
+                        <th scope="row">
+                            @entry.Rank
+                        </th>
+                        <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
+                            @entry.TotalPoints
+                            <span class="text-muted">
+                                @if(entry.BugBountyPoints == 0)
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
+                                }
+                                else
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
+                                }
+                                @if(entry.MergedSplitGroupPartnerGroupId != null)
+                                {
+                                    @: * 0.5
+                                }
+                            </span>
+                            @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                            {
+                                <span class="oi oi-bug text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></span>
+                            }
+                        </td>
+                        <td>
+                            @if(entry.MergedSplitGroupPartnerGroupId != null)
+                            {
+                                // Round up
+                                @((entry.FlagCount + 1) / 2)
+                            }
+                            else
+                            {
+                                @entry.FlagCount
+                            }
+                        </td>
+                        <td>
+                            @entry.GroupName
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+<hr class="bg-primary mb-2 mt-1" style="height: 2px;">
+
+<form action="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync)))" method="get">
+    <div class="form-group">
+        <label for="input-lab-id">Scoreboard auswählen</label>
+        <select id="input-lab-id" name="labId" asp-items="@new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId)" class="form-control">
+            <option value="" selected>Gesamtwertung über alle Praktika</option>
+        </select>
+    </div>
+    @if(currentUser.IsAdmin || currentUser.IsTutor)
+    {
+        <div class="form-group">
+            <div class="form-check">
+                <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
+                <label for="input-showAllEntries" class="form-check-label">
+                    Alle Einträge anzeigen
+                    <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Nur für Tutoren und Administratoren"></span>
+                </label>
+            </div>
+        </div>
+    }
+    @if(currentUser.IsAdmin)
+    {
+        <div class="form-group">
+            <label for="input-reload">
+                Automatisch neu laden nach (Sekunden)
+                <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></span>
+            </label>
+            <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
+        </div>
+    }
+    <button type="submit" class="btn btn-primary">
+        <span class="oi oi-reload"></span>
+        Gewähltes Scoreboard anzeigen
+    </button>
+</form>
+
+@if(currentUser.IsAdmin)
+{
+    <hr class="bg-primary mb-2 mt-2" style="height: 2px;">
+
+    <form action="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.InvalidateScoreboardCacheAsync)))" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary">
+            <span class="oi oi-star" title="Nur für Administratoren"></span>
+            Scoreboard-Cache leeren
+        </button>
+    </form>
+}

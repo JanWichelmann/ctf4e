@@ -1,0 +1,207 @@
+﻿@using Ctf4e.Utilities.Extensions
+@using Ctf4e.Utilities
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Constants
+@using Ctf4e.Server.Controllers
+@{
+    // Retrieve status messages
+    var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
+
+    string StatusMessageTypeToColor(StatusMessageTypes messageType)
+    {
+        switch(messageType)
+        {
+            case StatusMessageTypes.Info:
+                return "alert-primary";
+            case StatusMessageTypes.Success:
+                return "alert-success";
+            case StatusMessageTypes.Warning:
+                return "alert-warning";
+            case StatusMessageTypes.Error:
+                return "alert-danger";
+        }
+        return "alert-secondary";
+    }
+
+    // User logged in?
+    var currentUser = (User)ViewData["CurrentUser"];
+
+    // Current menu item
+    var activeMenuItem = (MenuItems)ViewData["ActiveMenuItem"];
+
+    // Build ID
+    var buildId = (string)ViewData["BuildId"];
+}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - @ViewData["PageTitle"]</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/lib/iconic/font/css/open-iconic-bootstrap.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/popper/popper.min.js"></script>
+    @await RenderSectionAsync("ScriptsHead", required: false)
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <a class="navbar-brand" href="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync)))">
+            <!--<img alt="logo" class="img-fluid" src="/img/logo.png" style="max-height: 50px;">-->
+            @ViewData["NavbarTitle"]
+        </a>
+        <ul class="navbar-nav px-3 mr-auto">
+            @if(currentUser != null)
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "text-primary" : "")" href="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync)))">Scoreboard</a>
+                </li>
+                @if(currentUser.Group != null)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(activeMenuItem == MenuItems.Group ? "text-primary" : "")" href="@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">Gruppenstatus</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.ShowGroupFormAsync)))">Gruppe gründen</a>
+                    </li>
+                }
+            }
+        </ul>
+        <ul class="navbar-nav px-3 ml-auto mr-auto">
+            @if(currentUser?.Group != null)
+            {
+                <li class="nav-item">
+                    @currentUser.Group.DisplayName
+                </li>
+            }
+        </ul>
+
+        @if(currentUser != null && (currentUser.IsAdmin || currentUser.IsTutor))
+        {
+            bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration
+                                   || activeMenuItem == MenuItems.AdminExercises
+                                   || activeMenuItem == MenuItems.AdminFlags
+                                   || activeMenuItem == MenuItems.AdminGroups
+                                   || activeMenuItem == MenuItems.AdminLabExecutions
+                                   || activeMenuItem == MenuItems.AdminLabs
+                                   || activeMenuItem == MenuItems.AdminScoreboard
+                                   || activeMenuItem == MenuItems.AdminSlots
+                                   || activeMenuItem == MenuItems.AdminUsers;
+            <ul class="navbar-nav px-3 ml-auto">
+                <li class="nav-item dropdown @(visitsAdminPage ? "active" : "")">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                        <span>Admin</span>
+                    </a>
+                    @if(currentUser.IsAdmin)
+                    {
+                        <div class="dropdown-menu mt-0">
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.RenderUserListAsync)))">Benutzer</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.RenderGroupListAsync)))">Gruppen</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" href="@(Url.Action<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync)))">Praktika</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" href="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.RenderSlotListAsync)))">Terminslots</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.RenderLabExecutionListAsync)))">Aktive Praktika</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" href="@(Url.Action<AdminConfigurationController>(nameof(AdminConfigurationController.RenderAsync)))">Konfiguration</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Admin-Scoreboard</a>
+                        </div>
+                    }
+                    else if(currentUser.IsTutor)
+                    {
+                        <div class="dropdown-menu mt-0">
+                            <a class="nav-link @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Admin-Scoreboard</a>
+                        </div>
+                    }
+                </li>
+            </ul>
+        }
+
+        @if(currentUser != null)
+        {
+            <span class="mr-2">
+                Angemeldet als
+                <strong>
+                    @currentUser.DisplayName
+                </strong>
+                @if(currentUser.IsAdmin)
+                {
+                    <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Adminstratorrechte"></span>
+                }
+                else if(currentUser.IsTutor)
+                {
+                    <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Tutorrechte"></span>
+                }
+            </span>
+            <a class="btn btn-sm btn-outline-primary mr-1" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.LogoutAsync)))">
+                <span class="oi oi-account-logout"></span>
+                Abmelden
+            </a>
+        }
+    </nav>
+</header>
+<div class="container pb-2 pt-4">
+    <main>
+        @foreach(var statusMessage in statusMessages)
+        {
+            <div class="row mt-2">
+                <div class="col-sm">
+                    <div class="alert @StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
+                        @switch(statusMessage.Type)
+                        {
+                            case StatusMessageTypes.Info:
+                                <span class="oi oi-info mr-3"></span>
+                                break;
+                            case StatusMessageTypes.Success:
+                                <span class="oi oi-check mr-3"></span>
+                                break;
+                            case StatusMessageTypes.Warning:
+                                <span class="oi oi-warning mr-3"></span>
+                                break;
+                            case StatusMessageTypes.Error:
+                                <span class="oi oi-x mr-3"></span>
+                                break;
+                        }
+
+                        @statusMessage.Message
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                Powered by <a href="https://github.com/JanWichelmann/ctf4e">CTF4E</a>
+            </div>
+            <div class="col text-right">
+                @if(currentUser != null && currentUser.IsAdmin)
+                {
+                    <a href="~/dev/profiler/results-index">Profiler</a>
+                    @:&middot;
+                    <span>
+                        Build #<a href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+</footer>
+@await RenderSectionAsync("ScriptsBody", required: false)
+</body>
+</html>
