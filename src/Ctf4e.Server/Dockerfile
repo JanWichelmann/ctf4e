@@ -3,16 +3,16 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["ctf4e/ctf4e.csproj", "ctf4e/"]
-RUN dotnet restore "ctf4e/ctf4e.csproj"
+COPY ["src/Ctf4e.Server/Ctf4e.Server.csproj", "Ctf4e.Server/"]
+RUN dotnet restore "Ctf4e.Server/Ctf4e.Server.csproj"
 COPY . .
-WORKDIR "/src/ctf4e"
-RUN dotnet build "ctf4e.csproj" -c Release -o /app/build
+WORKDIR "/src/Ctf4e.Server"
+RUN dotnet build "Ctf4e.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ctf4e.csproj" -c Release -o /app/publish
+RUN dotnet publish "Ctf4e.Server.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ctf4e.dll"]
+ENTRYPOINT ["dotnet", "Ctf4e.Server.dll"]
