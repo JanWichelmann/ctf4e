@@ -1,0 +1,29 @@
+version: "3.2"
+
+services:
+  ctf4e-server:
+    image: ctf4e/ctf4e-server:latest
+    volumes:
+      - type: bind
+        source: ${CONFIG_DIRECTORY}
+        target: /config
+    environment:
+      - CTF4E_CONFIG_FILE=/config/${CONFIG_FILE_NAME}
+      - CTF4E_CERT_FILE=/config/${CERT_FILE_NAME}
+      - CTF4E_CERT_PASSWORD=${CERT_PASSWORD}
+    ports:
+      - "${HOST_PORT}:5000"
+    depends_on:
+      - ctf4e-database
+  
+  ctf4e-database:
+    image: library/mariadb:latest
+    volumes:
+      - type: volume
+        source: ctf4e-state
+        target: /var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+
+volumes:
+  ctf4e-state:

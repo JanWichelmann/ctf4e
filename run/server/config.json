@@ -1,0 +1,19 @@
+{
+  "MainOptions": {
+    "DevelopmentMode": false
+  },
+  "CtfDbOptions": {
+    "Server": "ctf4e-database",
+    "Database": "ctf4e",
+    "User": "root",
+    "Password": "ctf4e"
+  },
+  "MoodleLtiOptions": {
+    "BaseUrl": "https://moodle.url/",
+    "CourseId": "42",
+    "ToolTypeId": "21",
+    "ResourceLinkId": "1",
+    "OAuthConsumerKey": "ctf4e",
+    "OAuthSharedSecret": "ctf4e-secret"
+  }
+}
