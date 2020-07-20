@@ -1,0 +1,31 @@
+name: Build & Push Libraries
+
+on:
+  push:
+    tags:
+      - libs-*
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    # From https://github.community/t/how-to-get-just-the-tag-name/16241/7
+    - name: Extract verson from tag
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/libs-/}
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Pack & Push to NuGet
+      run: |
+        dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release -p:Version=${{ steps.get_version.outputs.VERSION }} src/Ctf4e.Utilities/Ctf4e.Utilities.csproj -o .
+        dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release -p:Version=${{ steps.get_version.outputs.VERSION }} src/Ctf4e.Api/Ctf4e.Api.csproj -o .
+        dotnet nuget push Ctf4e.Utilities.${{ steps.get_version.outputs.VERSION }}.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
+        dotnet nuget push Ctf4e.Api.${{ steps.get_version.outputs.VERSION }}.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
