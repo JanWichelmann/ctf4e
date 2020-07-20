@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ctf4e.Server.Attributes;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Options;
@@ -36,9 +37,9 @@ namespace Ctf4e.Server.Controllers
 
             if(mainOptions.Value.DevelopmentMode && _buildId == null)
             {
-                _buildId = typeof(ControllerBase).Assembly
-                    .GetCustomAttributes<AssemblyMetadataAttribute>()
-                    .FirstOrDefault(a => a.Key == "GitHash")?.Value;
+                _buildId = Assembly.GetExecutingAssembly()
+                    .GetCustomAttributes<AssemblyBuildVersionAttribute>()
+                    .FirstOrDefault()?.Version ?? "<empty>";
             }
         }
 

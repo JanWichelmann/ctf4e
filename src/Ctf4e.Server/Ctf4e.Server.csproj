@@ -1,5 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>283ba80f-8978-49d8-89d5-e6315818c641</UserSecretsId>
@@ -27,7 +27,6 @@
     <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.1" />
     <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.2.1" />
     <PackageReference Include="MoodleLti.DependencyInjection" Version="0.2.2" />
-    <PackageReference Include="MSBuildGitHash" Version="2.0.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
   </ItemGroup>
@@ -41,6 +40,18 @@
     <ProjectReference Include="..\Ctf4e.Utilities\Ctf4e.Utilities.csproj" />
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
 
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <AssemblyAttributes Include="Ctf4e.Server.Attributes.AssemblyBuildVersionAttribute">
+        <_Parameter1>$(BuildVersion)</_Parameter1>
+      </AssemblyAttributes>
+    </ItemGroup>
+    <WriteCodeFragment AssemblyAttributes="@(AssemblyAttributes)" Language="C#" OutputDirectory="$(IntermediateOutputPath)" OutputFile="BuildVersionInfo.cs">
+      <Output TaskParameter="OutputFile" ItemName="Compile" />
+      <Output TaskParameter="OutputFile" ItemName="FileWrites" />
+    </WriteCodeFragment>
+  </Target>
 
 </Project>

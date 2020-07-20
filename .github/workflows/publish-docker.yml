@@ -12,9 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     # From https://github.community/t/how-to-get-just-the-tag-name/16241/7
-    - name: Extract verson from tag
+    - name: Extract version from tag
       id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/server\//}
+      run: |
+        echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/server\//}
+        echo ::set-output name=SHORT_HASH::$(git rev-parse --short "$GITHUB_SHA")
     - name: Build and push docker image
       uses: docker/build-push-action@v1
       with:
@@ -23,4 +25,5 @@ jobs:
         password: ${{secrets.DOCKER_ACCESS_TOKEN}}
         tags: latest,${{ steps.get_version.outputs.VERSION }}
         dockerfile: src/Ctf4e.Server/Dockerfile
+        build_args: BUILD_VERSION=${{ steps.get_version.outputs.SHORT_HASH }}
         

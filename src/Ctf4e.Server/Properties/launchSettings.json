@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CTF4E_CONFIG_FILE": "config-debug.json",
         "CTF4E_CERT_FILE": "debug.pfx",
-        "CTF4E_CERT_PASSWORD": "itsctf"
+        "CTF4E_CERT_PASSWORD": "ctf4e"
       },
       "applicationUrl": "https://localhost:5000"
     }
