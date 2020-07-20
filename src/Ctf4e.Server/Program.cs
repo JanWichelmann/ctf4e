@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Ctf4e.Server.Data;
@@ -49,7 +50,7 @@ namespace Ctf4e.Server
                             // Use HTTPS if there is a certificate specified in environment variables
                             string certName = Environment.GetEnvironmentVariable("CTF4E_CERT_FILE");
                             string certPassword = Environment.GetEnvironmentVariable("CTF4E_CERT_PASSWORD");
-                            if(certName != null)
+                            if(certName != null && File.Exists(certName))
                                 listenOptions.UseHttps(certName, certPassword ?? "");
                         });
                     });
