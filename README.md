@@ -1,3 +1,5 @@
+![Build](https://github.com/JanWichelmann/ctf4e/workflows/Build/badge.svg)
+
 **NOTE: This is still a work in progress and needs a few more adjustments before being ready for use in production.**
 
 # CTF4E: Capture the Flag competitions for education
@@ -28,10 +30,10 @@ Finally, open a browser and navigate to the specified host/port.
 
 WIP
 
-### Contributing
+## Contributing
 
 Contributions are appreciated! Feel free to submit issues and pull requests.
 
-### License
+## License
 
 The entire system is licensed under the MIT license. For further information refer to the LICENSE file.
