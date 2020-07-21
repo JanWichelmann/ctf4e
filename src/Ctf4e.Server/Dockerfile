@@ -8,7 +8,7 @@ RUN dotnet publish "Ctf4e.Server.csproj" -c Release -o /app/publish -p:BuildVers
 
 # Setup static files
 FROM node:latest AS build-static
-WORKDIR . /src
+COPY . /src
 WORKDIR "/src/src/Ctf4e.Server"
 RUN npm install
 RUN npx grunt
