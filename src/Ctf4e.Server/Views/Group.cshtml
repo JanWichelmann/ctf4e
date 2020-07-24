@@ -114,6 +114,7 @@
                             <tr>
                                 <th scope="col">Zeitpunkt des Lösungsversuchs</th>
                                 <th scope="col">Korrekte Lösung?</th>
+                                <th scope="col">Gruppenmitglied</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,6 +137,9 @@
                                         {
                                             <span class="oi oi-circle-x text-danger align-middle"></span>
                                         }
+                                    </td>
+                                    <td>
+                                        @groupScoreboard.GroupMembers[submission.UserId]
                                     </td>
                                 </tr>
                             }

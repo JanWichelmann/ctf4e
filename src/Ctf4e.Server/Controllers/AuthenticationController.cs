@@ -202,9 +202,6 @@ namespace Ctf4e.Server.Controllers
             if(currentUser.Group != null)
                 return this.RedirectToAction<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync));
 
-            // Do group splits?
-            ViewData["CreateSplitGroups"] = await _configurationService.GetCreateSplitGroupsAsync(HttpContext.RequestAborted);
-
             // Pass slots
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
 
@@ -240,8 +237,7 @@ namespace Ctf4e.Server.Controllers
                     SlotId = groupSelection.SlotId,
                     ShowInScoreboard = groupSelection.ShowInScoreboard
                 };
-                bool createSplitGroups = await _configurationService.GetCreateSplitGroupsAsync(HttpContext.RequestAborted);
-                await _userService.CreateGroupAsync(group, createSplitGroups, currentUser.GroupFindingCode, groupSelection.OtherUserCode, HttpContext.RequestAborted);
+                await _userService.CreateGroupAsync(group, currentUser.GroupFindingCode, groupSelection.OtherUserCode, HttpContext.RequestAborted);
             }
             catch(ArgumentException)
             {

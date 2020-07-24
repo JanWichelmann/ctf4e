@@ -73,13 +73,13 @@
     </div>
     <div class="form-group">
         <div class="form-check">
-            <input asp-for="CreateSplitGroups" class="form-check-input">
-            <label asp-for="CreateSplitGroups" class="form-check-label">Gruppen bei Erstellung aufteilen</label>
+            <input asp-for="PassAsGroup" class="form-check-input">
+            <label asp-for="PassAsGroup" class="form-check-label">Als Gruppe bestehen</label>
             <br>
             <small>
-                Wenn diese Einstellung aktiv ist, wird bei der Gruppengründung für jeden Teilnehmer eine eigene Gruppe angelegt.
-                Die Teilnehmer müssen sich dann nach wie vor zu zweit zusammenfinden, werden dann aber zwei getrennten Gruppen mit Namenspräfixen (1) bzw. (2) zugewiesen.
-                Die Gruppen werden im Scoreboard per Durchschnittswert wieder zusammengeführt. Dieses Feature funktioniert nur für Einzel- und Zweiergruppen.
+                Wenn diese Einstellung aktiv ist, werden alle Einreichungen auf Gruppenebene gewertet.
+                Somit ist es unerheblich, welcher Teilnehmer eine Aufgabe eingereicht hat.
+                Diese Einstellung hat keinen Einfluss auf die Wertung im Scoreboard.
             </small>
         </div>
     </div>

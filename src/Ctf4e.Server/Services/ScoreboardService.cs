@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +12,10 @@ using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Extensions;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.ViewModels;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Profiling;
+using StackExchange.Profiling.Data;
 
 namespace Ctf4e.Server.Services
 {
@@ -19,7 +24,7 @@ namespace Ctf4e.Server.Services
         Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default);
         Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default);
         Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default);
-        Task<GroupScoreboard> GetGroupScoreboardAsync(int groupId, int labId, CancellationToken cancellationToken = default);
+        Task<GroupScoreboard> GetGroupScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default);
     }
 
     public class ScoreboardService : IScoreboardService
@@ -30,6 +35,11 @@ namespace Ctf4e.Server.Services
         private readonly IConfigurationService _configurationService;
         private readonly IScoreboardCacheService _scoreboardCacheService;
 
+        /// <summary>
+        /// Database connection for Dapper queries.
+        /// </summary>
+        private readonly IDbConnection _dbConn;
+
         public ScoreboardService(CtfDbContext dbContext, IMapper mapper, IFlagPointService flagPointService, IConfigurationService configurationService, IScoreboardCacheService scoreboardCacheService)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -38,7 +48,8 @@ namespace Ctf4e.Server.Services
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _scoreboardCacheService = scoreboardCacheService ?? throw new ArgumentNullException(nameof(scoreboardCacheService));
 
-            _flagPointService = flagPointService;
+            // Profile Dapper queries
+            _dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
         }
 
         public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default)
@@ -60,9 +71,9 @@ namespace Ctf4e.Server.Services
                 .Where(l => l.LabId == labId && l.Group.SlotId == slotId)
                 .ToDictionaryAsync(l => l.GroupId, cancellationToken); // Each group ID can only appear once, since it is part of the primary key
 
-            var groups = await _dbContext.Groups.AsNoTracking()
-                .Where(g => g.SlotId == slotId)
-                .OrderBy(g => g.DisplayName)
+            var users = await _dbContext.Users.AsNoTracking()
+                .Where(u => u.Group.SlotId == slotId)
+                .OrderBy(u => u.DisplayName)
                 .ToListAsync(cancellationToken);
 
             var exercises = await _dbContext.Exercises.AsNoTracking()
@@ -72,13 +83,13 @@ namespace Ctf4e.Server.Services
                 .ToListAsync(cancellationToken);
 
             var exerciseSubmissionsUngrouped = await _dbContext.ExerciseSubmissions.AsNoTracking()
-                .Where(e => e.Exercise.LabId == labId && e.Group.SlotId == slotId)
+                .Where(e => e.Exercise.LabId == labId && e.User.Group.SlotId == slotId)
                 .OrderBy(e => e.ExerciseId)
                 .ThenBy(e => e.SubmissionTime)
                 .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
             var exerciseSubmissions = exerciseSubmissionsUngrouped
-                .GroupBy(e => e.GroupId) // This needs to be done in memory (no aggregation)
+                .GroupBy(e => e.UserId) // This needs to be done in memory (no aggregation)
                 .ToDictionary(
                     e => e.Key,
                     e => e.GroupBy(es => es.ExerciseId)
@@ -92,25 +103,42 @@ namespace Ctf4e.Server.Services
                 .ToListAsync(cancellationToken);
 
             var flagSubmissionsUngrouped = await _dbContext.FlagSubmissions.AsNoTracking()
-                .Where(f => f.Flag.LabId == labId && f.Group.SlotId == slotId)
+                .Where(f => f.Flag.LabId == labId && f.User.Group.SlotId == slotId)
                 .ProjectTo<FlagSubmission>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
             var flagSubmissions = flagSubmissionsUngrouped
-                .GroupBy(f => f.GroupId) // This needs to be done in memory (no aggregation)
+                .GroupBy(f => f.UserId) // This needs to be done in memory (no aggregation)
                 .ToDictionary(
                     f => f.Key,
                     f => f.GroupBy(fs => fs.FlagId)
-                        .ToDictionary(fs => fs.Key, fs => fs.First())); // There can only be one submission per flag and group
+                        .ToDictionary(fs => fs.Key, fs => fs.Single())); // There can only be one submission per flag and user
 
             // Compute submission counts and current points of all flags over all slots
-            var scoreboardFlagStatus = await _dbContext.Flags.AsNoTracking()
-                .Where(f => f.LabId == labId)
-                .Select(f => new AdminScoreboardFlagEntry
-                {
-                    Flag = _mapper.Map<Flag>(f),
-                    SubmissionCount = f.Submissions
-                        .Count(fs => fs.Group.ShowInScoreboard && fs.Group.LabExecutions.Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End))
-                }).ToDictionaryAsync(f => f.Flag.Id, cancellationToken);
+            var scoreboardFlagStatus = (await _dbConn.QueryAsync<FlagEntity, long, AdminScoreboardFlagEntry>(@"
+                    SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
+                    FROM `flags` f
+                    LEFT JOIN `flagsubmissions` s ON s.`FlagId` = f.`Id`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE f.`LabId` = @labId
+                      AND g.`ShowInScoreboard` = 1
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = @labId
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY s.`FlagId`",
+                    (flag, submissionCount) => new AdminScoreboardFlagEntry
+                    {
+                        Flag = _mapper.Map<Flag>(flag),
+                        SubmissionCount = (int)submissionCount
+                    },
+                    new {labId},
+                    splitOn: "SubmissionCount"))
+                .ToDictionary(f => f.Flag.Id);
             foreach(var f in scoreboardFlagStatus)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
 
@@ -125,36 +153,37 @@ namespace Ctf4e.Server.Services
                 OptionalExercisesCount = exercises.Count - mandatoryExercisesCount,
                 FlagCount = flags.Count,
                 Flags = scoreboardFlagStatus.Select(f => f.Value).ToList(),
-                GroupEntries = new List<AdminScoreboardGroupEntry>()
+                UserEntries = new List<AdminScoreboardUserEntry>()
             };
 
-            // For each group, collect exercise and flag data
-            foreach(var group in groups)
+            // For each user, collect exercise and flag data
+            // TODO show correct "passed" status in admin scoreboard, if passAsGroup is turned on
+            foreach(var user in users)
             {
-                labExecutions.TryGetValue(group.Id, out var groupLabExecution);
+                labExecutions.TryGetValue(user.GroupId ?? -1, out var groupLabExecution);
 
-                var groupEntry = new AdminScoreboardGroupEntry
+                var userEntry = new AdminScoreboardUserEntry
                 {
-                    GroupId = group.Id,
-                    GroupName = group.DisplayName,
+                    UserId = user.Id,
+                    UserName = user.DisplayName,
                     Status = LabExecutionToStatus(now, groupLabExecution),
-                    Exercises = new List<ScoreboardGroupExerciseEntry>(),
-                    Flags = new List<AdminScoreboardGroupFlagEntry>()
+                    Exercises = new List<ScoreboardUserExerciseEntry>(),
+                    Flags = new List<AdminScoreboardUserFlagEntry>()
                 };
 
                 // Exercises
-                exerciseSubmissions.TryGetValue(group.Id, out var groupExerciseSubmissions);
+                exerciseSubmissions.TryGetValue(user.Id, out var userExerciseSubmissions);
                 int passedMandatoryExercisesCount = 0;
                 int passedOptionalExercisesCount = 0;
                 foreach(var exercise in exercises)
                 {
-                    if(groupExerciseSubmissions != null && groupExerciseSubmissions.ContainsKey(exercise.Id))
+                    if(userExerciseSubmissions != null && userExerciseSubmissions.ContainsKey(exercise.Id))
                     {
-                        var submissions = groupExerciseSubmissions[exercise.Id];
+                        var submissions = userExerciseSubmissions[exercise.Id];
 
                         var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
 
-                        groupEntry.Exercises.Add(new ScoreboardGroupExerciseEntry
+                        userEntry.Exercises.Add(new ScoreboardUserExerciseEntry()
                         {
                             Exercise = exercise,
                             Tries = submissions.Count,
@@ -174,7 +203,7 @@ namespace Ctf4e.Server.Services
                     }
                     else
                     {
-                        groupEntry.Exercises.Add(new ScoreboardGroupExerciseEntry
+                        userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
                         {
                             Exercise = exercise,
                             Tries = 0,
@@ -187,17 +216,17 @@ namespace Ctf4e.Server.Services
                 }
 
                 // Flags
-                flagSubmissions.TryGetValue(group.Id, out var groupFlagSubmissions);
+                flagSubmissions.TryGetValue(user.Id, out var userFlagSubmissions);
                 int foundFlagsCount = 0;
                 foreach(var flag in flags)
                 {
-                    if(groupFlagSubmissions != null && groupFlagSubmissions.ContainsKey(flag.Id))
+                    if(userFlagSubmissions != null && userFlagSubmissions.ContainsKey(flag.Id))
                     {
-                        var submission = groupFlagSubmissions[flag.Id];
+                        var submission = userFlagSubmissions[flag.Id];
 
                         var valid = CalculateFlagStatus(submission, groupLabExecution);
 
-                        groupEntry.Flags.Add(new AdminScoreboardGroupFlagEntry
+                        userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
                         {
                             Flag = flag,
                             Submitted = true,
@@ -210,7 +239,7 @@ namespace Ctf4e.Server.Services
                     }
                     else
                     {
-                        groupEntry.Flags.Add(new AdminScoreboardGroupFlagEntry
+                        userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
                         {
                             Flag = flag,
                             Submitted = false,
@@ -220,12 +249,12 @@ namespace Ctf4e.Server.Services
                     }
                 }
 
-                // General group statistics
-                groupEntry.PassedMandatoryExercisesCount = passedMandatoryExercisesCount;
-                groupEntry.HasPassed = passedMandatoryExercisesCount == mandatoryExercisesCount;
-                groupEntry.PassedOptionalExercisesCount = passedOptionalExercisesCount;
-                groupEntry.FoundFlagsCount = foundFlagsCount;
-                adminScoreboard.GroupEntries.Add(groupEntry);
+                // General statistics
+                userEntry.PassedMandatoryExercisesCount = passedMandatoryExercisesCount;
+                userEntry.HasPassed = passedMandatoryExercisesCount == mandatoryExercisesCount;
+                userEntry.PassedOptionalExercisesCount = passedOptionalExercisesCount;
+                userEntry.FoundFlagsCount = foundFlagsCount;
+                adminScoreboard.UserEntries.Add(userEntry);
             }
 
             return adminScoreboard;
@@ -334,12 +363,9 @@ namespace Ctf4e.Server.Services
             // Is there a valid, cached scoreboard?
             if(_scoreboardCacheService.TryGetValidFullScoreboard(out var cachedScoreboard))
                 return cachedScoreboard;
-            
+
             // Get current time to avoid overestimating scoreboard validity time
             DateTime now = DateTime.Now;
-
-            // Split groups enabled?
-            bool splitGroups = await _configurationService.GetCreateSplitGroupsAsync(cancellationToken);
 
             // Get flag point limits
             var flagPointLimits = await _dbContext.Labs.AsNoTracking()
@@ -352,55 +378,127 @@ namespace Ctf4e.Server.Services
                 .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
                 .ToDictionaryAsync(e => e.Id, cancellationToken);
 
-            // Initialize scoreboard entries with basic group information
-            var scoreboardEntries = await _dbContext.Groups.AsNoTracking()
-                .Where(g => g.ShowInScoreboard)
-                .Select(g => new ScoreboardEntry
-                {
-                    GroupId = g.Id,
-                    GroupName = g.DisplayName,
-                    SlotId = g.SlotId,
-                    LastExerciseSubmissionTime = g.ExerciseSubmissions
-                        .Where(s => s.ExercisePassed && g.LabExecutions
-                            .Any(le => le.LabId == s.Exercise.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
-                        .Max(s => s.SubmissionTime),
-                    LastFlagSubmissionTime = g.FlagSubmissions
-                        .Where(s => g.LabExecutions
-                            .Any(le => le.LabId == s.Flag.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
-                        .Max(s => s.SubmissionTime),
-                }).ToListAsync(cancellationToken);
+            // Initialize scoreboard entries with group data and latest submission timestamps
+            var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
+                    SELECT
+                      g.`Id` AS 'GroupId',
+                      g.`DisplayName` AS 'GroupName',
+                      g.`SlotId`, (
+                        SELECT MAX((
+                          SELECT MAX(es.`SubmissionTime`)
+                          FROM `ExerciseSubmissions` es
+                          INNER JOIN `Exercises` e ON es.`ExerciseId` = e.`Id`
+                          WHERE u1.`Id` = es.`UserId`
+                            AND es.`ExercisePassed`
+                            AND EXISTS(
+                              SELECT 1
+                              FROM `LabExecutions` le1
+                              WHERE g.`Id` = le1.`GroupId`
+                                AND le1.`LabId` = e.`LabId`
+                                AND le1.`PreStart` <= es.`SubmissionTime`
+                                AND es.`SubmissionTime` < le1.`End`
+                            )
+	                    ))
+                        FROM `Users` u1
+                        WHERE g.`Id` = u1.`GroupId`
+                      ) AS 'LastExerciseSubmissionTime', (
+                        SELECT MAX((
+                          SELECT MAX(fs.`SubmissionTime`)
+                          FROM `FlagSubmissions` fs
+                          INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
+                          WHERE u2.`Id` = fs.`UserId`
+                            AND EXISTS(
+                              SELECT 1
+                              FROM `LabExecutions` le2
+                              WHERE g.`Id` = le2.`GroupId`
+                                AND le2.`LabId` = f.`LabId`
+                                AND le2.`PreStart` <= fs.`SubmissionTime`
+                                AND fs.`SubmissionTime` < le2.`End`
+                            )
+                        ))
+                        FROM `Users` u2
+                        WHERE g.`Id` = u2.`GroupId`
+                      ) AS 'LastFlagSubmissionTime'
+                    FROM `Groups` g
+                    WHERE g.`ShowInScoreboard`"))
+                .ToList();
 
             // Get valid submission counts for passed exercises
-            var validExerciseSubmissionsUngrouped = await _dbContext.ExerciseSubmissions.AsNoTracking()
-                .Where(s => s.Group.LabExecutions
-                                .Any(le => le.LabId == s.Exercise.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End)
-                            && s.SubmissionTime <= s.Group.ExerciseSubmissions
-                                .FirstOrDefault(s2 => s2.ExerciseId == s.ExerciseId && s2.ExercisePassed).SubmissionTime)
-                .GroupBy(s => new {s.GroupId, s.ExerciseId})
-                .Select(s => new {s.Key.GroupId, s.Key.ExerciseId, WeightSum = s.Sum(ss => ss.Weight)}) // The passed submission always has weight 1
-                .ToListAsync(cancellationToken);
+            // A passed exercise always has Weight = 1
+            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum)>(@"
+                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`
+                    FROM `exercisesubmissions` s
+                    INNER JOIN `exercises` e ON e.`Id` = s.`ExerciseId`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE g.`ShowInScoreboard` = 1
+                      AND s.`SubmissionTime` <= (
+                        SELECT MIN(s2.`SubmissionTime`)
+                        FROM `exercisesubmissions` s2
+                        INNER JOIN `users` u2 ON u2.`Id` = s2.`UserId`
+                        WHERE s2.`ExerciseId` = s.ExerciseId
+                          AND u2.`GroupId` = u.`GroupId`
+                          AND s2.`ExercisePassed` = 1
+                      )
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = e.`LabId`
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY g.`Id`, e.`Id`"))
+                .ToList();
             var validExerciseSubmissions = validExerciseSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
                 .ToDictionary(s => s.Key);
 
-            // Compute submission counts and current points for all flags
-            var flags = await _dbContext.Flags.AsNoTracking()
-                .Select(f => new ScoreboardFlagEntry
-                {
-                    Flag = _mapper.Map<Flag>(f),
-                    SubmissionCount = f.Submissions
-                        .Count(fs => fs.Group.LabExecutions.Any(le => le.LabId == f.LabId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End))
-                }).ToDictionaryAsync(f => f.Flag.Id, cancellationToken);
+            // Compute submission counts and current points of all flags over all slots
+            var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
+                    SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
+                    FROM `flags` f
+                    LEFT JOIN `flagsubmissions` s ON s.`FlagId` = f.`Id`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE g.`ShowInScoreboard` = 1
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = f.`LabId`
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY f.`Id`",
+                    (flag, submissionCount) => new ScoreboardFlagEntry
+                    {
+                        Flag = _mapper.Map<Flag>(flag),
+                        SubmissionCount = (int)submissionCount
+                    },
+                    splitOn: "SubmissionCount"))
+                .ToDictionary(f => f.Flag.Id);
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
 
             // Get valid submissions for flags
-            var validFlagSubmissionsUngrouped = await _dbContext.FlagSubmissions.AsNoTracking()
-                .Where(s => s.Group.ShowInScoreboard
-                            && s.Group.LabExecutions
-                                .Any(le => le.LabId == s.Flag.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
-                .Select(s => new {s.GroupId, s.FlagId, s.Flag.LabId})
-                .ToListAsync(cancellationToken);
+            var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId)>(@"
+                    SELECT g.`Id` AS 'GroupId', f.Id AS 'FlagId', f.LabId
+                    FROM `flagsubmissions` s
+                    INNER JOIN `flags` f ON f.`Id` = s.`FlagId`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE g.`ShowInScoreboard` = 1
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = f.`LabId`
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY g.`Id`, f.`Id`"))
+                .ToList();
             var validFlagSubmissions = validFlagSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
                 .ToDictionary(s => s.Key);
@@ -445,10 +543,6 @@ namespace Ctf4e.Server.Services
                 entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
             }
 
-            // Merge entries with same group names
-            if(splitGroups)
-                scoreboardEntries = MergeSplitGroups(scoreboardEntries);
-
             // Sort list to get ranking
             scoreboardEntries.Sort((g1, g2) =>
             {
@@ -488,7 +582,6 @@ namespace Ctf4e.Server.Services
 
             var scoreboard = new Scoreboard
             {
-                ContainsSplitGroups = splitGroups,
                 AllLabs = true,
                 MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
                 Entries = scoreboardEntries,
@@ -515,9 +608,6 @@ namespace Ctf4e.Server.Services
             if(lab == null)
                 return null;
 
-            // Split groups enabled?
-            bool splitGroups = await _configurationService.GetCreateSplitGroupsAsync(cancellationToken);
-
             // Get list of exercises
             var exercises = await _dbContext.Exercises.AsNoTracking()
                 .Where(e => e.LabId == labId)
@@ -527,60 +617,140 @@ namespace Ctf4e.Server.Services
             if(!exercises.Any())
                 return null; // No scoreboard for empty labs
 
-            // Initialize scoreboard entries with basic group information
-            var scoreboardEntries = await _dbContext.Groups.AsNoTracking()
-                .Where(g => g.ShowInScoreboard)
-                .OrderBy(g => g.DisplayName)
-                .Select(g => new ScoreboardEntry
-                {
-                    GroupId = g.Id,
-                    GroupName = g.DisplayName,
-                    SlotId = g.SlotId,
-                    LastExerciseSubmissionTime = g.ExerciseSubmissions
-                        .Where(s => s.ExercisePassed && g.LabExecutions
-                            .Any(le => le.LabId == labId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
-                        .Max(s => s.SubmissionTime),
-                    LastFlagSubmissionTime = g.FlagSubmissions
-                        .Where(s => g.LabExecutions
-                            .Any(le => le.LabId == labId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
-                        .Max(s => s.SubmissionTime),
-                }).ToListAsync(cancellationToken);
+            // Initialize scoreboard entries with group data and latest submission timestamps
+            // Initialize scoreboard entries with group data and latest submission timestamps
+            var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
+                    SELECT
+                      g.`Id` AS 'GroupId',
+                      g.`DisplayName` AS 'GroupName',
+                      g.`SlotId`,
+                      (
+                        SELECT MAX((
+                          SELECT MAX(es.`SubmissionTime`)
+                          FROM `ExerciseSubmissions` es
+                          INNER JOIN `Exercises` e ON es.`ExerciseId` = e.`Id`
+                          WHERE e.`LabId` = @labId
+                            AND u1.`Id` = es.`UserId`
+                            AND es.`ExercisePassed`
+                            AND EXISTS(
+                              SELECT 1
+                              FROM `LabExecutions` le1
+                              WHERE g.`Id` = le1.`GroupId`
+                                AND le1.`LabId` = @labId
+                                AND le1.`PreStart` <= es.`SubmissionTime`
+                                AND es.`SubmissionTime` < le1.`End`
+                            )
+	                    ))
+                        FROM `Users` u1
+                        WHERE g.`Id` = u1.`GroupId`
+                      ) AS 'LastExerciseSubmissionTime',
+                      (
+                        SELECT MAX((
+                          SELECT MAX(fs.`SubmissionTime`)
+                          FROM `FlagSubmissions` fs
+                          INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
+                          WHERE f.`LabId` = @labId
+                            AND u2.`Id` = fs.`UserId`
+                            AND EXISTS(
+                              SELECT 1
+                              FROM `LabExecutions` le2
+                              WHERE g.`Id` = le2.`GroupId`
+                                AND le2.`LabId` = @labId
+                                AND le2.`PreStart` <= fs.`SubmissionTime`
+                                AND fs.`SubmissionTime` < le2.`End`
+                            )
+                        ))
+                        FROM `Users` u2
+                        WHERE g.`Id` = u2.`GroupId`
+                      ) AS 'LastFlagSubmissionTime'
+                    FROM `Groups` g
+                    WHERE g.`ShowInScoreboard`",
+                    new {labId}))
+                .ToList();
 
             // Get valid submission counts for passed exercises
-            var validExerciseSubmissionsUngrouped = await _dbContext.ExerciseSubmissions.AsNoTracking()
-                .Where(s => s.Exercise.LabId == labId
-                            && s.Group.LabExecutions
-                                .Any(le => le.LabId == labId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End)
-                            && s.SubmissionTime <= s.Group.ExerciseSubmissions
-                                .FirstOrDefault(s2 => s2.ExerciseId == s.ExerciseId && s2.ExercisePassed).SubmissionTime)
-                .GroupBy(s => new {s.GroupId, s.ExerciseId})
-                .Select(s => new {s.Key.GroupId, s.Key.ExerciseId, WeightSum = s.Sum(ss => ss.Weight)}) // The passed submission always has weight 1
-                .ToListAsync(cancellationToken);
+            // A passed exercise always has Weight = 1
+            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum)>(@"
+                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`
+                    FROM `exercisesubmissions` s
+                    INNER JOIN `exercises` e ON e.`Id` = s.`ExerciseId`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE g.`ShowInScoreboard` = 1
+                      AND e.`LabId` = @labId
+                      AND s.`SubmissionTime` <= (
+                        SELECT MIN(s2.`SubmissionTime`)
+                        FROM `exercisesubmissions` s2
+                        INNER JOIN `users` u2 ON u2.`Id` = s2.`UserId`
+                        WHERE s2.`ExerciseId` = s.ExerciseId
+                          AND u2.`GroupId` = u.`GroupId`
+                          AND s2.`ExercisePassed` = 1
+                      )
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = @labId
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY g.`Id`, e.`Id`",
+                    new {labId}))
+                .ToList();
             var validExerciseSubmissions = validExerciseSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
                 .ToDictionary(s => s.Key);
 
             // Get valid submissions for flags
-            var validFlagSubmissionsUngrouped = await _dbContext.FlagSubmissions.AsNoTracking()
-                .Where(s => s.Group.ShowInScoreboard
-                            && s.Flag.LabId == labId
-                            && s.Group.LabExecutions
-                                .Any(le => le.LabId == labId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
-                .Select(s => new {s.GroupId, s.FlagId})
-                .ToListAsync(cancellationToken);
+            var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId)>(@"
+                    SELECT g.`Id` AS 'GroupId', f.Id AS 'FlagId', f.LabId
+                    FROM `flagsubmissions` s
+                    INNER JOIN `flags` f ON f.`Id` = s.`FlagId`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE g.`ShowInScoreboard` = 1
+                      AND f.`LabId` = @labId
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = @labId
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY g.`Id`, f.`Id`",
+                    new {labId}))
+                .ToList();
             var validFlagSubmissions = validFlagSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
                 .ToDictionary(s => s.Key);
 
-            // Compute submission counts and current points for all flags
-            var flags = await _dbContext.Flags.AsNoTracking()
-                .Where(f => f.LabId == labId)
-                .Select(f => new ScoreboardFlagEntry
-                {
-                    Flag = _mapper.Map<Flag>(f),
-                    SubmissionCount = f.Submissions
-                        .Count(fs => fs.Group.LabExecutions.Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End))
-                }).ToDictionaryAsync(f => f.Flag.Id, cancellationToken);
+            // Compute submission counts and current points of all flags
+            var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
+                    SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
+                    FROM `flags` f
+                    LEFT JOIN `flagsubmissions` s ON s.`FlagId` = f.`Id`
+                    INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                    INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
+                    WHERE f.`LabId` = @labId
+                      AND g.`ShowInScoreboard` = 1
+                      AND EXISTS(
+                        SELECT 1
+                        FROM `labexecutions` le
+                        WHERE le.`GroupId` = g.`Id`
+                          AND le.`LabId` = @labId
+                          AND le.`PreStart` <= s.`SubmissionTime`
+                          AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY f.`Id`",
+                    (flag, submissionCount) => new ScoreboardFlagEntry
+                    {
+                        Flag = _mapper.Map<Flag>(flag),
+                        SubmissionCount = (int)submissionCount
+                    },
+                    new {labId},
+                    splitOn: "SubmissionCount"))
+                .ToDictionary(f => f.Flag.Id);
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
 
@@ -617,10 +787,6 @@ namespace Ctf4e.Server.Services
                 entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
                 entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
             }
-
-            // Merge entries with same group names
-            if(splitGroups)
-                scoreboardEntries = MergeSplitGroups(scoreboardEntries);
 
             // Sort list to get ranking
             scoreboardEntries.Sort((g1, g2) =>
@@ -668,7 +834,6 @@ namespace Ctf4e.Server.Services
                 LabId = labId,
                 CurrentLabName = labName,
                 AllLabs = false,
-                ContainsSplitGroups = splitGroups,
                 MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
                 Entries = scoreboardEntries,
                 Flags = flags,
@@ -678,57 +843,12 @@ namespace Ctf4e.Server.Services
             return scoreboard;
         }
 
-        /// <summary>
-        /// Merges scoreboard entries of split groups into single entries.
-        /// </summary>
-        /// <param name="scoreboardEntries">The list of group scoreboard entries. This list is assumed to be sorted by group names.</param>
-        /// <returns></returns>
-        private List<ScoreboardEntry> MergeSplitGroups(List<ScoreboardEntry> scoreboardEntries)
-        {
-            var scoreboardEntriesMerged = new List<ScoreboardEntry>();
-
-            // The list is sorted by group names, so a linear approach is safe here
-            string lastGroupName = "";
-            ScoreboardEntry lastGroupEntry = null; // This variable is guaranteed to be initialized when used
-            foreach(var entry in scoreboardEntries)
-            {
-                // Parse group name
-                if(entry.GroupName.Length <= 4 || entry.GroupName[^3] != '(' || !char.IsDigit(entry.GroupName[^2]) || entry.GroupName[^1] != ')')
-                {
-                    scoreboardEntriesMerged.Add(entry);
-                    continue;
-                }
-
-                string groupName = entry.GroupName[..^4];
-                if(groupName == lastGroupName)
-                {
-                    // Merge entries
-                    lastGroupEntry.ExercisePoints += entry.ExercisePoints;
-                    lastGroupEntry.FlagPoints += entry.FlagPoints;
-                    lastGroupEntry.BugBountyPoints += entry.BugBountyPoints;
-                    lastGroupEntry.FlagCount += entry.FlagCount;
-                    lastGroupEntry.TotalPoints = (lastGroupEntry.TotalPoints + entry.TotalPoints) / 2;
-                    lastGroupEntry.LastExerciseSubmissionTime = DateTimeExtensions.Max(lastGroupEntry.LastExerciseSubmissionTime, entry.LastExerciseSubmissionTime);
-                    lastGroupEntry.LastFlagSubmissionTime = DateTimeExtensions.Max(lastGroupEntry.LastFlagSubmissionTime, entry.LastFlagSubmissionTime);
-                    lastGroupEntry.LastSubmissionTime = DateTimeExtensions.Max(lastGroupEntry.LastSubmissionTime, entry.LastSubmissionTime);
-                    lastGroupEntry.MergedSplitGroupPartnerGroupId = entry.GroupId;
-                }
-                else
-                {
-                    lastGroupName = groupName;
-                    lastGroupEntry = entry;
-                    entry.GroupName = groupName;
-                    scoreboardEntriesMerged.Add(entry);
-                }
-            }
-
-            return scoreboardEntriesMerged;
-        }
-
-        public async Task<GroupScoreboard> GetGroupScoreboardAsync(int groupId, int labId, CancellationToken cancellationToken = default)
+        public async Task<GroupScoreboard> GetGroupScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default)
         {
             // Consistent time
             var now = DateTime.Now;
+
+            bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
 
             var currentLab = await _dbContext.Labs.AsNoTracking()
                 .FirstOrDefaultAsync(l => l.Id == labId, cancellationToken);
@@ -745,20 +865,14 @@ namespace Ctf4e.Server.Services
                     Active = l.Executions.Any(le => le.GroupId == groupId && le.PreStart <= now && now < le.End)
                 })
                 .ToListAsync(cancellationToken);
-
-            // TODO merge this into one query when https://stackoverflow.com/questions/60854920/ef-core-3-0-generates-window-function-instead-of-join-leading-to-mysql-syntax-e is solved
-            var foundFlagsCounts = await _dbContext.FlagSubmissions.AsNoTracking()
-                .Where(fs => fs.GroupId == groupId && fs.Flag.LabId == labId)
-                .Select(fs => new
-                {
-                    Valid = fs.Group.LabExecutions
-                        .Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End)
-                })
-                .GroupBy(fs => fs.Valid)
-                .Select(fs => new {Valid = fs.Key, Count = fs.Count()})
-                .ToDictionaryAsync(fs => fs.Valid, fs => fs.Count, cancellationToken);
             var labExecution = await _dbContext.LabExecutions.AsNoTracking()
                 .FirstOrDefaultAsync(le => le.GroupId == groupId && le.LabId == labId, cancellationToken);
+
+            var groupMembers = await _dbContext.Users.AsNoTracking()
+                .Where(u => u.GroupId == groupId)
+                .OrderBy(u => u.DisplayName)
+                .Select(u => new {u.Id, u.DisplayName})
+                .ToDictionaryAsync(u => u.Id, u => u.DisplayName, cancellationToken);
 
             var exercises = await _dbContext.Exercises.AsNoTracking()
                 .Where(e => e.LabId == labId)
@@ -766,15 +880,30 @@ namespace Ctf4e.Server.Services
                 .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
-            var exerciseSubmissionsUngrouped = await _dbContext.ExerciseSubmissions.AsNoTracking()
-                .Where(es => es.Exercise.LabId == labId && es.GroupId == groupId)
-                .OrderBy(es => es.ExerciseId)
-                .ThenBy(es => es.SubmissionTime)
-                .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
-            var exerciseSubmissions = exerciseSubmissionsUngrouped
+            var exerciseSubmissions = (await _dbConn.QueryAsync<ExerciseSubmissionEntity>($@"
+                    SELECT es.*
+                    FROM `ExerciseSubmissions` es
+                    INNER JOIN `Exercises` e ON e.`Id` = es.`ExerciseId`
+                    INNER JOIN `Users` u ON u.`Id` = es.`UserId`
+                    WHERE u.`GroupId` = @groupId
+                    {(passAsGroup ? "AND u.`Id` = @userId" : "")}
+                    AND e.`LabId` = @labId
+                    ORDER BY e.`Id`, es.`SubmissionTime`",
+                    new {groupId, userId, labId}))
+                .Select(es => _mapper.Map<ExerciseSubmission>(es))
                 .GroupBy(es => es.ExerciseId)
                 .ToDictionary(es => es.Key, es => es.ToList());
+
+            var foundFlagsCounts = await _dbContext.FlagSubmissions.AsNoTracking()
+                .Where(fs => fs.User.GroupId == groupId && fs.Flag.LabId == labId)
+                .Select(fs => new
+                {
+                    Valid = fs.User.Group.LabExecutions
+                        .Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End)
+                })
+                .GroupBy(fs => fs.Valid)
+                .Select(fs => new {Valid = fs.Key, Count = fs.Count()})
+                .ToDictionaryAsync(fs => fs.Valid, fs => fs.Count, cancellationToken);
 
             var scoreboard = new GroupScoreboard
             {
@@ -785,7 +914,8 @@ namespace Ctf4e.Server.Services
                 LabExecution = _mapper.Map<LabExecution>(labExecution),
                 FoundFlagsCount = foundFlagsCounts.Sum(f => f.Value),
                 ValidFoundFlagsCount = foundFlagsCounts.FirstOrDefault(f => f.Key).Value,
-                Exercises = new List<ScoreboardGroupExerciseEntry>()
+                Exercises = new List<ScoreboardUserExerciseEntry>(),
+                GroupMembers = groupMembers
             };
 
             // Check exercise submissions
@@ -803,7 +933,7 @@ namespace Ctf4e.Server.Services
 
                     var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, labExecution);
 
-                    scoreboard.Exercises.Add(new ScoreboardGroupExerciseEntry
+                    scoreboard.Exercises.Add(new ScoreboardUserExerciseEntry
                     {
                         Exercise = exercise,
                         Tries = submissions.Count,
@@ -823,7 +953,7 @@ namespace Ctf4e.Server.Services
                 }
                 else
                 {
-                    scoreboard.Exercises.Add(new ScoreboardGroupExerciseEntry
+                    scoreboard.Exercises.Add(new ScoreboardUserExerciseEntry
                     {
                         Exercise = exercise,
                         Tries = 0,

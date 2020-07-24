@@ -22,7 +22,7 @@ namespace Ctf4e.Server.Services
         Task DeleteExerciseAsync(int id, CancellationToken cancellationToken = default);
         Task<ExerciseSubmission> CreateExerciseSubmissionAsync(ExerciseSubmission submission, CancellationToken cancellationToken = default);
         Task DeleteExerciseSubmissionAsync(int id, CancellationToken cancellationToken = default);
-        Task ClearExerciseSubmissionsAsync(int exerciseId, int groupId, CancellationToken cancellationToken = default);
+        Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken = default);
     }
 
     public class ExerciseService : IExerciseService
@@ -121,7 +121,7 @@ namespace Ctf4e.Server.Services
             {
                 ExerciseId = submission.ExerciseId,
                 ExercisePassed = submission.ExercisePassed,
-                GroupId = submission.GroupId,
+                UserId = submission.UserId,
                 SubmissionTime = submission.SubmissionTime,
                 Weight = submission.Weight
             }).Entity;
@@ -146,10 +146,10 @@ namespace Ctf4e.Server.Services
             }
         }
 
-        public Task ClearExerciseSubmissionsAsync(int exerciseId, int groupId, CancellationToken cancellationToken = default)
+        public Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken = default)
         {
             // Delete all matching submissions
-            _dbContext.ExerciseSubmissions.RemoveRange(_dbContext.ExerciseSubmissions.AsQueryable().Where(es => es.ExerciseId == exerciseId && es.GroupId == groupId));
+            _dbContext.ExerciseSubmissions.RemoveRange(_dbContext.ExerciseSubmissions.AsQueryable().Where(es => es.ExerciseId == exerciseId && es.UserId == userId));
             return _dbContext.SaveChangesAsync(cancellationToken);
         }
     }

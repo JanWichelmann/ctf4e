@@ -6,8 +6,8 @@ namespace Ctf4e.Server.Data.Entities
     public class FlagSubmissionEntity
     {
         [Required]
-        public GroupEntity Group { get; set; }
-        public int GroupId { get; set; }
+        public UserEntity User { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         public FlagEntity Flag { get; set; }

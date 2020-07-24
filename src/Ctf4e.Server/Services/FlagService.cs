@@ -20,8 +20,8 @@ namespace Ctf4e.Server.Services
         Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken = default);
         Task DeleteFlagAsync(int id, CancellationToken cancellationToken = default);
         Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken = default);
-        Task DeleteFlagSubmissionAsync(int groupId, int flagId, CancellationToken cancellationToken = default);
-        Task<bool> SubmitFlagAsync(int groupId, int labId, string flagCode, CancellationToken cancellationToken = default);
+        Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken = default);
+        Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken = default);
     }
 
     public class FlagService : IFlagService
@@ -109,7 +109,7 @@ namespace Ctf4e.Server.Services
             var submissionEntity = _dbContext.FlagSubmissions.Add(new FlagSubmissionEntity
             {
                 FlagId = submission.FlagId,
-                GroupId = submission.GroupId,
+                UserId = submission.UserId,
                 SubmissionTime = submission.SubmissionTime
             }).Entity;
 
@@ -118,12 +118,12 @@ namespace Ctf4e.Server.Services
             return _mapper.Map<FlagSubmission>(submissionEntity);
         }
 
-        public async Task DeleteFlagSubmissionAsync(int groupId, int flagId, CancellationToken cancellationToken = default)
+        public async Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken = default)
         {
             try
             {
                 // Delete entry
-                _dbContext.FlagSubmissions.Remove(new FlagSubmissionEntity { GroupId = groupId, FlagId = flagId });
+                _dbContext.FlagSubmissions.Remove(new FlagSubmissionEntity { UserId = userId, FlagId = flagId });
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
             catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
@@ -133,7 +133,7 @@ namespace Ctf4e.Server.Services
             }
         }
 
-        public async Task<bool> SubmitFlagAsync(int groupId, int labId, string flagCode, CancellationToken cancellationToken = default)
+        public async Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken = default)
         {
             // Try to find matching flag
             var flag = await _dbContext.Flags.AsNoTracking()
@@ -147,7 +147,7 @@ namespace Ctf4e.Server.Services
                 _dbContext.FlagSubmissions.Add(new FlagSubmissionEntity
                 {
                     FlagId = flag.Id,
-                    GroupId = groupId,
+                    UserId = userId,
                     SubmissionTime = DateTime.Now
                 });
 

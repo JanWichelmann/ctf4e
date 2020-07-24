@@ -4,10 +4,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Ctf4e.Server.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialRelease : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ConfigurationItems",
+                columns: table => new
+                {
+                    Key = table.Column<string>(maxLength: 255, nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfigurationItems", x => x.Key);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Labs",
                 columns: table => new
@@ -106,59 +118,6 @@ namespace Ctf4e.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExerciseSubmissions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ExerciseId = table.Column<int>(nullable: false),
-                    GroupId = table.Column<int>(nullable: false),
-                    SubmissionTime = table.Column<DateTime>(nullable: false),
-                    ExercisePassed = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExerciseSubmissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExerciseSubmissions_Exercises_ExerciseId",
-                        column: x => x.ExerciseId,
-                        principalTable: "Exercises",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExerciseSubmissions_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FlagSubmissions",
-                columns: table => new
-                {
-                    GroupId = table.Column<int>(nullable: false),
-                    FlagId = table.Column<int>(nullable: false),
-                    SubmissionTime = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FlagSubmissions", x => new { x.FlagId, x.GroupId });
-                    table.ForeignKey(
-                        name: "FK_FlagSubmissions_Flags_FlagId",
-                        column: x => x.FlagId,
-                        principalTable: "Flags",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FlagSubmissions_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "LabExecutions",
                 columns: table => new
                 {
@@ -166,8 +125,7 @@ namespace Ctf4e.Server.Migrations
                     LabId = table.Column<int>(nullable: false),
                     PreStart = table.Column<DateTime>(nullable: false),
                     Start = table.Column<DateTime>(nullable: false),
-                    End = table.Column<DateTime>(nullable: false),
-                    SlotEntityId = table.Column<int>(nullable: true)
+                    End = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -184,12 +142,6 @@ namespace Ctf4e.Server.Migrations
                         principalTable: "Labs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LabExecutions_Slots_SlotEntityId",
-                        column: x => x.SlotEntityId,
-                        principalTable: "Slots",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,6 +154,7 @@ namespace Ctf4e.Server.Migrations
                     MoodleUserId = table.Column<int>(nullable: false),
                     MoodleName = table.Column<string>(maxLength: 100, nullable: false),
                     IsAdmin = table.Column<bool>(nullable: false),
+                    IsTutor = table.Column<bool>(nullable: false),
                     GroupFindingCode = table.Column<string>(nullable: true),
                     GroupId = table.Column<int>(nullable: true)
                 },
@@ -216,6 +169,60 @@ namespace Ctf4e.Server.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ExerciseSubmissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ExerciseId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false),
+                    SubmissionTime = table.Column<DateTime>(nullable: false),
+                    ExercisePassed = table.Column<bool>(nullable: false),
+                    Weight = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExerciseSubmissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExerciseSubmissions_Exercises_ExerciseId",
+                        column: x => x.ExerciseId,
+                        principalTable: "Exercises",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExerciseSubmissions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FlagSubmissions",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(nullable: false),
+                    FlagId = table.Column<int>(nullable: false),
+                    SubmissionTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlagSubmissions", x => new { x.FlagId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_FlagSubmissions_Flags_FlagId",
+                        column: x => x.FlagId,
+                        principalTable: "Flags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FlagSubmissions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Exercises_LabId",
                 table: "Exercises",
@@ -227,9 +234,9 @@ namespace Ctf4e.Server.Migrations
                 column: "ExerciseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExerciseSubmissions_GroupId",
+                name: "IX_ExerciseSubmissions_UserId",
                 table: "ExerciseSubmissions",
-                column: "GroupId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Flags_LabId",
@@ -237,9 +244,9 @@ namespace Ctf4e.Server.Migrations
                 column: "LabId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FlagSubmissions_GroupId",
+                name: "IX_FlagSubmissions_UserId",
                 table: "FlagSubmissions",
-                column: "GroupId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_SlotId",
@@ -250,11 +257,6 @@ namespace Ctf4e.Server.Migrations
                 name: "IX_LabExecutions_LabId",
                 table: "LabExecutions",
                 column: "LabId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LabExecutions_SlotEntityId",
-                table: "LabExecutions",
-                column: "SlotEntityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GroupId",
@@ -271,6 +273,9 @@ namespace Ctf4e.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ConfigurationItems");
+
+            migrationBuilder.DropTable(
                 name: "ExerciseSubmissions");
 
             migrationBuilder.DropTable(
@@ -280,19 +285,19 @@ namespace Ctf4e.Server.Migrations
                 name: "LabExecutions");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "Exercises");
 
             migrationBuilder.DropTable(
                 name: "Flags");
 
             migrationBuilder.DropTable(
-                name: "Groups");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Labs");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "Slots");

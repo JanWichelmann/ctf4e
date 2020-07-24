@@ -10,7 +10,7 @@ namespace Ctf4e.Api.Models
     {
         public int ExerciseNumber { get; set; }
 
-        public int GroupId { get; set; }
+        public int UserId { get; set; }
 
         public DateTime? SubmissionTime { get; set; }
 

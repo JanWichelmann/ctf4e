@@ -12,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 
 /*
  * TODO Make Favicon/CSS configurable
- * TODO (breaking change, needs to be done before first release) Store submissions by user ID, not group ID
  */
 
 namespace Ctf4e.Server
@@ -20,7 +19,7 @@ namespace Ctf4e.Server
     public static class Program
     {
         public static async Task Main(string[] args)
-        { 
+        {
             var host = CreateHostBuilder(args).Build();
 
             using(var scope = host.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())

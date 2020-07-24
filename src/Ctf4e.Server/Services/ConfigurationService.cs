@@ -18,8 +18,8 @@ namespace Ctf4e.Server.Services
         Task SetScoreboardEntryCountAsync(int value, CancellationToken cancellationToken = default);
         Task<int> GetScoreboardCachedSecondsAsync(CancellationToken cancellationToken = default);
         Task SetScoreboardCachedSecondsAsync(int value, CancellationToken cancellationToken = default);
-        Task<bool> GetCreateSplitGroupsAsync(CancellationToken cancellationToken = default);
-        Task SetCreateSplitGroupsAsync(bool value, CancellationToken cancellationToken = default);
+        Task<bool> GetPassAsGroupAsync(CancellationToken cancellationToken = default);
+        Task SetPassAsGroupAsync(bool value, CancellationToken cancellationToken = default);
         Task<string> GetNavbarTitleAsync(CancellationToken cancellationToken = default);
         Task SetNavbarTitleAsync(string value, CancellationToken cancellationToken = default);
         Task<string> GetPageTitleAsync(CancellationToken cancellationToken = default);
@@ -34,7 +34,7 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyFlagHalfPointsSubmissionCount = "FlagHalfPointsSubmissionCount";
         private const string ConfigKeyScoreboardEntryCount = "ScoreboardEntryCount";
         private const string ConfigKeyScoreboardCachedSeconds = "ScoreboardCachedSeconds";
-        private const string ConfigKeyCreateSplitGroups = "CreateSplitGroups";
+        private const string ConfigKeyPassAsGroup = "PassAsGroup";
         private const string ConfigKeyNavbarTitle = "NavbarTitle";
         private const string ConfigKeyPageTitle = "PageTitle";
 
@@ -64,11 +64,11 @@ namespace Ctf4e.Server.Services
         public Task<int> GetScoreboardCachedSecondsAsync(CancellationToken cancellationToken = default)
             => GetConfigItemAsync(ConfigKeyScoreboardCachedSeconds, s => s == null ? 10 : int.Parse(s), cancellationToken);
 
-        public Task<bool> GetCreateSplitGroupsAsync(CancellationToken cancellationToken = default)
-            => GetConfigItemAsync(ConfigKeyCreateSplitGroups, s => s != null && bool.Parse(s), cancellationToken);
+        public Task<bool> GetPassAsGroupAsync(CancellationToken cancellationToken = default)
+            => GetConfigItemAsync(ConfigKeyPassAsGroup, s => s != null && bool.Parse(s), cancellationToken);
 
-        public Task SetCreateSplitGroupsAsync(bool value, CancellationToken cancellationToken = default)
-            => AddOrUpdateConfigItem(ConfigKeyCreateSplitGroups, value, cancellationToken);
+        public Task SetPassAsGroupAsync(bool value, CancellationToken cancellationToken = default)
+            => AddOrUpdateConfigItem(ConfigKeyPassAsGroup, value, cancellationToken);
 
         public Task SetScoreboardCachedSecondsAsync(int value, CancellationToken cancellationToken = default)
             => AddOrUpdateConfigItem(ConfigKeyScoreboardCachedSeconds, value, cancellationToken);

@@ -39,7 +39,7 @@ namespace Ctf4e.Server.Data
             builder.Entity<LabExecutionEntity>()
                 .HasKey(lse => new {lse.GroupId, lse.LabId});
             builder.Entity<FlagSubmissionEntity>()
-                .HasKey(fs => new {fs.FlagId, fs.GroupId});
+                .HasKey(fs => new {fs.FlagId, fs.UserId});
 
             // Add unique index to user table
             builder.Entity<UserEntity>()

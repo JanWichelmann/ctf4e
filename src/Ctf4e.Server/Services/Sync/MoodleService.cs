@@ -40,6 +40,8 @@ namespace Ctf4e.Server.Services.Sync
         /// <returns></returns>
         public async Task UploadStateToMoodleAsync(CancellationToken cancellationToken)
         {
+            // TODO
+            /*
             // Get current gradebook columns
             var oldCols = (await _moodleGradebook.GetColumnsAsync()).ToDictionary(c => c.Tag);
 
@@ -129,6 +131,8 @@ namespace Ctf4e.Server.Services.Sync
             // Delete unneeded old columns
             //foreach(var c in oldCols)
             //    await _moodleGradebook.DeleteColumnAsync(c.Value.Id);
+            }
+            */
         }
     }
 }

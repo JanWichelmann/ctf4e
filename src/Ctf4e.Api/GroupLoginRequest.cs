@@ -7,11 +7,15 @@ namespace Ctf4e.Api
     /// <summary>
     /// Defines a login request to a lab server.
     /// </summary>
-    public class GroupLoginRequest
+    public class UserLoginRequest
     {
-        public int GroupId { get; set; }
+        public int UserId { get; set; }
 
         public string UserDisplayName { get; set; }
+        
+        public int? GroupId { get; set; }
+        
+        public string GroupDisplayName { get; set; }
 
         public bool AdminMode { get; set; }
 
@@ -20,9 +24,9 @@ namespace Ctf4e.Api
             return JsonConvert.SerializeObject(this, Formatting.None);
         }
 
-        public static GroupLoginRequest Deserialize(string serialized)
+        public static UserLoginRequest Deserialize(string serialized)
         {
-            return JsonConvert.DeserializeObject<GroupLoginRequest>(serialized);
+            return JsonConvert.DeserializeObject<UserLoginRequest>(serialized);
         }
     }
 }

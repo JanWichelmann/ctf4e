@@ -42,34 +42,34 @@
 
 <hr class="bg-primary mt-2 mb-2" style="height: 2px">
 
-@foreach(var group in adminScoreboard.GroupEntries)
+@foreach(var user in adminScoreboard.UserEntries)
 {
     <div class="card">
-        <div class="card-header" id="group@(group.GroupId)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#group@(group.GroupId)-card">
+        <div class="card-header" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-card">
             <div class="row">
                 <div class="col-sm text-left">
-                    #@group.GroupId: @group.GroupName
-                    @if(group.Status == ScoreboardGroupStatus.BeforePreStart)
+                    #@user.UserId: @user.UserName
+                    @if(user.Status == ScoreboardGroupStatus.BeforePreStart)
                     {
                         <span class="badge badge-info" title="Warten auf Vor-Beginn-Phase">Vor Praktikum-Vor-Beginn</span>
                     }
-                    else if(group.Status == ScoreboardGroupStatus.PreStart)
+                    else if(user.Status == ScoreboardGroupStatus.PreStart)
                     {
                         <span class="badge badge-warning" title="Vor-Beginn-Phase aktiv">Vor-Beginn-Phase</span>
                     }
-                    else if(group.Status == ScoreboardGroupStatus.Start)
+                    else if(user.Status == ScoreboardGroupStatus.Start)
                     {
                         <span class="badge badge-warning" title="Praktikum aktiv">Praktikum aktiv</span>
                     }
-                    else if(group.Status == ScoreboardGroupStatus.End)
+                    else if(user.Status == ScoreboardGroupStatus.End)
                     {
                         <span class="badge badge-success" title="Praktikum beendet">Praktikum beendet</span>
                     }
-                    else if(group.Status == ScoreboardGroupStatus.Undefined)
+                    else if(user.Status == ScoreboardGroupStatus.Undefined)
                     {
                         <span class="badge badge-danger" title="Keine Praktikumsausführung konfiguriert">Nicht konfiguriert</span>
                     }
-                    @if(group.HasPassed)
+                    @if(user.HasPassed)
                     {
                         <span class="oi oi-circle-check text-success" title="Bestanden"></span>
                     }
@@ -79,23 +79,23 @@
                     }
                 </div>
                 <div class="col-sm text-right">
-                    <span class="badge badge-primary" title="Pflichtaufgaben">@group.PassedMandatoryExercisesCount / @adminScoreboard.MandatoryExercisesCount</span>
-                    <span class="badge badge-secondary" title="Freiwillige Aufgaben">@group.PassedOptionalExercisesCount / @adminScoreboard.OptionalExercisesCount</span>
-                    <span class="badge badge-info" title="Gefundene Flags">@group.FoundFlagsCount / @adminScoreboard.FlagCount</span>
+                    <span class="badge badge-primary" title="Pflichtaufgaben">@user.PassedMandatoryExercisesCount / @adminScoreboard.MandatoryExercisesCount</span>
+                    <span class="badge badge-secondary" title="Freiwillige Aufgaben">@user.PassedOptionalExercisesCount / @adminScoreboard.OptionalExercisesCount</span>
+                    <span class="badge badge-info" title="Gefundene Flags">@user.FoundFlagsCount / @adminScoreboard.FlagCount</span>
                 </div>
             </div>
         </div>
-        <div id="group@(group.GroupId)-card" class="collapse">
+        <div id="user@(user.UserId)-card" class="collapse">
             <div class="card-body">
-                <a class="btn btn-primary mb-3" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CallLabServerAsync), new {labId = adminScoreboard.LabId, groupId = group.GroupId}))" target="_blank">
+                <a class="btn btn-primary mb-3" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CallLabServerAsync), new {labId = adminScoreboard.LabId, userId = user.UserId}))" target="_blank">
                     <span class="oi oi-external-link"></span>
                     Zum Praktikumsserver (Admin-Modus)
                 </a>
 
-                @foreach(var exercise in group.Exercises)
+                @foreach(var exercise in user.Exercises)
                 {
                     <div class="card">
-                        <div class="card-header" id="group@(group.GroupId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#group@(group.GroupId)-exercise@(exercise.Exercise.Id)-card">
+                        <div class="card-header" id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-exercise@(exercise.Exercise.Id)-card">
                             <div class="row">
                                 <div class="col-sm text-left">
                                     @exercise.Exercise.Name
@@ -118,7 +118,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="group@(group.GroupId)-exercise@(exercise.Exercise.Id)-card" class="collapse">
+                        <div id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card" class="collapse">
                             <div class="card-body">
                                 <table class="table table-sm">
                                     <thead>
@@ -130,7 +130,7 @@
                                             @if(currentUser.IsAdmin)
                                             {
                                                 <th>
-                                                    <a role="button" class="btn btn-sm btn-primary" href="#" data-toggle="modal" data-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Exercise.Id" data-group-id="@group.GroupId">
+                                                    <a role="button" class="btn btn-sm btn-primary" href="#" data-toggle="modal" data-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Exercise.Id" data-user-id="@user.UserId">
                                                         <span class="oi oi-plus"></span>
                                                         Hinzufügen
                                                     </a>
@@ -162,7 +162,7 @@
                                                 @if(currentUser.IsAdmin)
                                                 {
                                                     <td>
-                                                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-exercise-submission" data-submission-id="@submission.Id" data-exercise-name="@exercise.Exercise.Name" data-group-name="@group.GroupName">
+                                                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-exercise-submission" data-submission-id="@submission.Id" data-exercise-name="@exercise.Exercise.Name" data-user-name="@user.UserName">
                                                             <span class="oi oi-trash"></span>
                                                             Löschen
                                                         </a>
@@ -191,7 +191,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var flag in group.Flags)
+                        @foreach(var flag in user.Flags)
                         {
                             <tr>
                                 <th scope="row">#@flag.Flag.Id</th>
@@ -227,14 +227,14 @@
                                     <td>
                                         @if(flag.Submitted)
                                         {
-                                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag-submission" data-flag-id="@flag.Flag.Id" data-group-id="@group.GroupId" data-group-name="@group.GroupName">
+                                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId" data-user-name="@user.UserName">
                                                 <span class="oi oi-trash"></span>
                                                 Zurücksetzen
                                             </a>
                                         }
                                         else
                                         {
-                                            <a role="button" class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#modal-add-flag-submission" data-flag-id="@flag.Flag.Id" data-group-id="@group.GroupId">
+                                            <a role="button" class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#modal-add-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId">
                                                 <span class="oi oi-flag"></span>
                                                 Einreichen
                                             </a>
@@ -323,7 +323,7 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Wollen Sie die Einreichung von Gruppe &quot;<span data-replace="group-name"></span>&quot; zur Aufgabe &quot;<span data-replace="exercise-name"></span>&quot; wirklich löschen?
+                    Wollen Sie die Einreichung von quot;<span data-replace="user-name"></span>&quot zur Aufgabe &quot;<span data-replace="exercise-name"></span>&quot; wirklich löschen?
                 </p>
             </div>
             <div class="modal-footer">
@@ -373,7 +373,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" data-replace="exercise-id" name="exerciseId" value="">
-                    <input type="hidden" data-replace="group-id" name="groupId" value="">
+                    <input type="hidden" data-replace="user-id" name="userId" value="">
 
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-outline-primary">Einreichung erstellen</button>
@@ -394,12 +394,12 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Wollen Sie die Flag-Einreichung von Gruppe &quot;<span data-replace="group-name"></span>&quot; wirklich löschen?
+                    Wollen Sie die Flag-Einreichung von <span data-replace="user-name"></span>&quot wirklich löschen?
                 </p>
             </div>
             <div class="modal-footer">
                 <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteFlagSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
-                    <input type="hidden" data-replace="group-id" name="groupId" value="">
+                    <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
                     @Html.AntiForgeryToken()
@@ -434,7 +434,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="hidden" data-replace="group-id" name="groupId" value="">
+                    <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
                     @Html.AntiForgeryToken()
@@ -448,31 +448,31 @@
 <script>
     $('#modal-delete-exercise-submission').on('show.bs.modal', function (e) {
         var submissionId = $(e.relatedTarget).data('submission-id');
-        var groupName = $(e.relatedTarget).data('group-name');
+        var userName = $(e.relatedTarget).data('user-name');
         var exerciseName = $(e.relatedTarget).data('exercise-name');
-        $(e.currentTarget).find('span[data-replace="group-name"]').text(groupName);
+        $(e.currentTarget).find('span[data-replace="user-name"]').text(userName);
         $(e.currentTarget).find('span[data-replace="exercise-name"]').text(exerciseName);
         $(e.currentTarget).find('input[data-replace="submission-id"]').val(submissionId);
     });
     $('#modal-add-exercise-submission').on('show.bs.modal', function (e) {
         var exerciseId = $(e.relatedTarget).data('exercise-id');
-        var groupId = $(e.relatedTarget).data('group-id');
+        var userId = $(e.relatedTarget).data('user-id');
         $(e.currentTarget).find('input[data-replace="exercise-id"]').val(exerciseId);
-        $(e.currentTarget).find('input[data-replace="group-id"]').val(groupId);
+        $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
     });
     $('#modal-delete-flag-submission').on('show.bs.modal', function (e) {
         var flagId = $(e.relatedTarget).data('flag-id');
-        var groupId = $(e.relatedTarget).data('group-id');
-        var groupName = $(e.relatedTarget).data('group-name');
+        var userId = $(e.relatedTarget).data('user-id');
+        var userName = $(e.relatedTarget).data('user-name');
         $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
-        $(e.currentTarget).find('input[data-replace="group-id"]').val(groupId);
-        $(e.currentTarget).find('span[data-replace="group-name"]').text(groupName);
+        $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
+        $(e.currentTarget).find('span[data-replace="user-name"]').text(userName);
     });
     $('#modal-add-flag-submission').on('show.bs.modal', function (e) {
         var flagId = $(e.relatedTarget).data('flag-id');
-        var groupId = $(e.relatedTarget).data('group-id');
+        var userId = $(e.relatedTarget).data('user-id');
         $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
-        $(e.currentTarget).find('input[data-replace="group-id"]').val(groupId);
+        $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
     });
     $(function () {
         var dateTimePickerSettings = {

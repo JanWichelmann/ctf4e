@@ -13,7 +13,7 @@ namespace Ctf4e.Server.ViewModels
 
         [Required] public int ScoreboardCachedSeconds { get; set; }
 
-        [Required] public bool CreateSplitGroups { get; set; }
+        [Required] public bool PassAsGroup { get; set; }
 
         [Required(AllowEmptyStrings = false)]
         public string PageTitle { get; set; }

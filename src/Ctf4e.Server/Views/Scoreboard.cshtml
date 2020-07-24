@@ -53,7 +53,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                 {
                     break;
                 }
-                bool isCurrentGroup = entry.GroupId == currentUser.GroupId || (currentUser.GroupId != null && entry.MergedSplitGroupPartnerGroupId == currentUser.GroupId);
+                bool isCurrentGroup = entry.GroupId == currentUser.GroupId;
                 currentGroupShown |= isCurrentGroup;
                 <tr class="@(isCurrentGroup ? "table-active" : "")">
                     <th scope="row">
@@ -87,10 +87,6 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                                 {
                                     @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
                                 }
-                                @if(entry.MergedSplitGroupPartnerGroupId != null)
-                                {
-                                    @: * 0.5
-                                }
                             </span>
                         }
                         @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
@@ -99,15 +95,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                         }
                     </td>
                     <td>
-                        @if(entry.MergedSplitGroupPartnerGroupId != null)
-                        {
-                            // Round up
-                            @((entry.FlagCount + 1) / 2)
-                        }
-                        else
-                        {
-                            @entry.FlagCount
-                        }
+                        @entry.FlagCount
                     </td>
                     <td>
                         @entry.GroupName
@@ -118,7 +106,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
             }
             @if(!currentGroupShown && currentUser.GroupId != null)
             {
-                var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId || e.MergedSplitGroupPartnerGroupId == currentUser.GroupId);
+                var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
                 if(entry != null)
                 {
                     <tr class="table-active">
@@ -136,10 +124,6 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                                 {
                                     @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
                                 }
-                                @if(entry.MergedSplitGroupPartnerGroupId != null)
-                                {
-                                    @: * 0.5
-                                }
                             </span>
                             @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                             {
@@ -147,15 +131,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                             }
                         </td>
                         <td>
-                            @if(entry.MergedSplitGroupPartnerGroupId != null)
-                            {
-                                // Round up
-                                @((entry.FlagCount + 1) / 2)
-                            }
-                            else
-                            {
-                                @entry.FlagCount
-                            }
+                            @entry.FlagCount
                         </td>
                         <td>
                             @entry.GroupName

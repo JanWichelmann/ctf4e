@@ -16,8 +16,6 @@ namespace Ctf4e.Server.ViewModels
 
         public int MaximumEntryCount { get; set; }
 
-        public bool ContainsSplitGroups { get; set; }
-
         public List<ScoreboardEntry> Entries { get; set; }
 
         public Dictionary<int, ScoreboardFlagEntry> Flags { get; set; }
@@ -42,8 +40,6 @@ namespace Ctf4e.Server.ViewModels
         public int TotalPoints { get; set; }
 
         public int FlagCount { get; set; }
-
-        public int? MergedSplitGroupPartnerGroupId { get; set; }
 
         public DateTime LastExerciseSubmissionTime { get; set; }
 

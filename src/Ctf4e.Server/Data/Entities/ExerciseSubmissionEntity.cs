@@ -15,8 +15,8 @@ namespace Ctf4e.Server.Data.Entities
         public int ExerciseId { get; set; }
 
         [Required]
-        public GroupEntity Group { get; set; }
-        public int GroupId { get; set; }
+        public UserEntity User { get; set; }
+        public int UserId { get; set; }
 
         public DateTime SubmissionTime { get; set; }
 

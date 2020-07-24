@@ -45,15 +45,15 @@ namespace Ctf4e.Server.Controllers
                 if(exercise == null)
                     return NotFound(new { error = "Exercise not found" });
 
-                // Check group
-                if(!await _userService.GroupExistsAsync(apiExerciseSubmission.GroupId, HttpContext.RequestAborted))
-                    return NotFound(new { error = "Group not found" });
+                // Check user
+                if(!await _userService.UserExistsAsync(apiExerciseSubmission.UserId, HttpContext.RequestAborted))
+                    return NotFound(new { error = "User not found" });
 
                 // Create submission
                 var submission = new ExerciseSubmission
                 {
                     ExerciseId = exercise.Id,
-                    GroupId = apiExerciseSubmission.GroupId,
+                    UserId = apiExerciseSubmission.UserId,
                     ExercisePassed = apiExerciseSubmission.ExercisePassed,
                     SubmissionTime = apiExerciseSubmission.SubmissionTime ?? DateTime.Now,
                     Weight = apiExerciseSubmission.ExercisePassed ? 1 : (apiExerciseSubmission.Weight >= 0 ? apiExerciseSubmission.Weight : 1)
@@ -90,12 +90,12 @@ namespace Ctf4e.Server.Controllers
                 if(exercise == null)
                     return NotFound(new { error = "Exercise not found" });
 
-                // Check group
-                if(!await _userService.GroupExistsAsync(apiExerciseSubmission.GroupId, HttpContext.RequestAborted))
-                    return NotFound(new { error = "Group not found" });
+                // Check user
+                if(!await _userService.UserExistsAsync(apiExerciseSubmission.UserId, HttpContext.RequestAborted))
+                    return NotFound(new { error = "User not found" });
 
                 // Clear exercise submissions
-                await _exerciseService.ClearExerciseSubmissionsAsync(exercise.Id, apiExerciseSubmission.GroupId, HttpContext.RequestAborted);
+                await _exerciseService.ClearExerciseSubmissionsAsync(exercise.Id, apiExerciseSubmission.UserId, HttpContext.RequestAborted);
 
                 return Ok();
             }

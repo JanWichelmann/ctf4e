@@ -21,13 +21,14 @@ namespace Ctf4e.Server.Services
         Task<bool> AnyUsers(CancellationToken cancellationToken = default);
         Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken = default);
         Task<User> GetUserAsync(int id, CancellationToken cancellationToken = default);
+        Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken = default);
         Task<User> CreateUserAsync(User user, CancellationToken cancellationToken = default);
         Task UpdateUserAsync(User user, CancellationToken cancellationToken = default);
         IAsyncEnumerable<Group> GetGroupsAsync();
         IAsyncEnumerable<Group> GetGroupsInSlotAsync(int slotId);
         Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken = default);
-        Task CreateGroupAsync(Group group, bool createSplitGroups, string groupFindingCode1, string groupFindingCode2, CancellationToken cancellationToken = default);
+        Task CreateGroupAsync(Group group, string groupFindingCode1, string groupFindingCode2, CancellationToken cancellationToken = default);
         Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken = default);
         Task UpdateGroupAsync(Group group, CancellationToken cancellationToken = default);
         Task DeleteGroupAsync(int id, CancellationToken cancellationToken = default);
@@ -76,6 +77,13 @@ namespace Ctf4e.Server.Services
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
+        public Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return _dbContext.Users.AsNoTracking()
+                .Where(s => s.Id == id)
+                .AnyAsync(cancellationToken);
+        }
+
         public async Task<User> CreateUserAsync(User user, CancellationToken cancellationToken = default)
         {
             // Create new user
@@ -86,7 +94,9 @@ namespace Ctf4e.Server.Services
                 MoodleName = user.MoodleName,
                 IsAdmin = user.IsAdmin,
                 IsTutor = user.IsTutor,
-                GroupFindingCode = user.GroupFindingCode
+                GroupFindingCode = user.GroupFindingCode,
+                ExerciseSubmissions = new List<ExerciseSubmissionEntity>(),
+                FlagSubmissions = new List<FlagSubmissionEntity>()
             }).Entity;
 
             // Apply changes
@@ -151,7 +161,7 @@ namespace Ctf4e.Server.Services
                 .AnyAsync(cancellationToken);
         }
 
-        public async Task CreateGroupAsync(Group group, bool createSplitGroups, string groupFindingCode1, string groupFindingCode2, CancellationToken cancellationToken = default)
+        public async Task CreateGroupAsync(Group group, string groupFindingCode1, string groupFindingCode2, CancellationToken cancellationToken = default)
         {
             // Retrieve affected users
             var userEntities = await _dbContext.Users.AsQueryable()
@@ -164,35 +174,19 @@ namespace Ctf4e.Server.Services
                 throw new InvalidOperationException("Mindestens ein Benutzer ist bereits einer Gruppe zugewiesen.");
 
             // Create new group(s)
-            var groupEntity1 = _dbContext.Groups.Add(new GroupEntity
+            var groupEntity = _dbContext.Groups.Add(new GroupEntity
             {
                 SlotId = group.SlotId,
                 DisplayName = group.DisplayName,
                 ShowInScoreboard = group.ShowInScoreboard,
-                Members = new List<UserEntity>(),
-                ExerciseSubmissions = new List<ExerciseSubmissionEntity>(),
-                FlagSubmissions = new List<FlagSubmissionEntity>()
+                Members = new List<UserEntity>()
             }).Entity;
-            var groupEntity2 = groupEntity1;
-            if(createSplitGroups)
-            {
-                groupEntity1.DisplayName = groupEntity1.DisplayName + " (1)";
-                groupEntity2 = _dbContext.Groups.Add(new GroupEntity
-                {
-                    SlotId = group.SlotId,
-                    DisplayName = group.DisplayName + " (2)",
-                    ShowInScoreboard = group.ShowInScoreboard,
-                    Members = new List<UserEntity>(),
-                    ExerciseSubmissions = new List<ExerciseSubmissionEntity>(),
-                    FlagSubmissions = new List<FlagSubmissionEntity>()
-                }).Entity;
-            }
 
             // Update users
-            userEntities[0].GroupId = groupEntity1.Id;
-            groupEntity1.Members.Add(userEntities[0]);
-            userEntities[1].GroupId = groupEntity2.Id;
-            groupEntity2.Members.Add(userEntities[1]);
+            userEntities[0].GroupId = groupEntity.Id;
+            groupEntity.Members.Add(userEntities[0]);
+            userEntities[1].GroupId = groupEntity.Id;
+            groupEntity.Members.Add(userEntities[1]);
 
             // Apply changes
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -206,9 +200,7 @@ namespace Ctf4e.Server.Services
                 SlotId = group.SlotId,
                 DisplayName = group.DisplayName,
                 ShowInScoreboard = group.ShowInScoreboard,
-                Members = new List<UserEntity>(),
-                ExerciseSubmissions = new List<ExerciseSubmissionEntity>(),
-                FlagSubmissions = new List<FlagSubmissionEntity>()
+                Members = new List<UserEntity>()
             }).Entity;
 
             // Apply changes

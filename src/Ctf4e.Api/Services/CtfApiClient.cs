@@ -13,7 +13,7 @@ namespace Ctf4e.Api.Services
     public interface ICtfApiClient
     {
         Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken = default);
-        Task ClearExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken = default);
+        Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken = default);
     }
 
     public class CtfApiClient : ICtfApiClient
@@ -30,8 +30,8 @@ namespace Ctf4e.Api.Services
         public Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken = default)
             => RunApiPostRequestAsync("exercisesubmission/create", submission, cancellationToken);
 
-        public Task ClearExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken = default)
-            => RunApiPostRequestAsync("exercisesubmission/clear", new ApiExerciseSubmission { ExerciseNumber = exerciseNumber, GroupId = groupId }, cancellationToken);
+        public Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken = default)
+            => RunApiPostRequestAsync("exercisesubmission/clear", new ApiExerciseSubmission { ExerciseNumber = exerciseNumber, UserId = userId }, cancellationToken);
 
         private Task RunApiPostRequestAsync(string resource, object payload, CancellationToken cancellationToken = default)
         {

@@ -17,7 +17,7 @@ namespace Ctf4e.Server.ViewModels
 
         public bool HasPassed { get; set; }
 
-        public List<ScoreboardGroupExerciseEntry> Exercises { get; set; }
+        public List<ScoreboardUserExerciseEntry> Exercises { get; set; }
 
         public int PassedMandatoryExercisesCount { get; set; }
 
@@ -27,7 +27,7 @@ namespace Ctf4e.Server.ViewModels
 
         public int ValidFoundFlagsCount { get; set; }
 
-        public int TotalFlagPoints { get; set; }
+        public Dictionary<int, string> GroupMembers { get; set; }
     }
 
     public class GroupScoreboardLabEntry

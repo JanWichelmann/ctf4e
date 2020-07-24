@@ -41,6 +41,9 @@ namespace Ctf4e.Server.Services.Sync
         /// <returns></returns>
         public async Task<string> GetLabStatesAsync(CancellationToken cancellationToken)
         {
+            //TODO
+            return "";
+            /*
             // Query existing labs
             var labs = await _dbContext.Labs.AsNoTracking()
                 .OrderBy(l => l.Id)
@@ -112,6 +115,7 @@ namespace Ctf4e.Server.Services.Sync
             }
 
             return csv.ToString();
+            */
         }
 
         /// <summary>

@@ -34,7 +34,6 @@ else if(viewType == AuthenticationController.ViewType.Redirect)
 else if(viewType == AuthenticationController.ViewType.GroupSelection)
 {
     var slots = (List<Slot>)ViewData["Slots"];
-    bool createSplitGroups = (bool)ViewData["CreateSplitGroups"];
 
     <h3 class="text-primary">
         Gruppe gründen
@@ -91,16 +90,6 @@ else if(viewType == AuthenticationController.ViewType.GroupSelection)
             Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut über das Moodle einloggen.
             Im Anschluss sollten Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe haben.
         </p>
-        @if(createSplitGroups)
-        {
-            <p>
-                <strong>Hinweis:</strong>
-                Das Praktikum ist in diesem Semester voraussichtlich ausschließlich online zu bearbeiten, was Gruppenarbeit etwas erschwert; aus diesem Grund
-                werden Sie und Ihr Partner/Ihre Partnerin vom System dennoch getrennten Gruppen zugewiesen, die das Suffix &quot;(1)&quot; (Ihr Partner/Ihre
-                Partnerin) bzw. &quot;(2)&quot; (Sie) im Namen haben. Sie können so weiterhin zusammenarbeiten, müssen jedoch Aufgaben und Flags jeweils selbst
-                einreichen. Falls doch noch Präsenztermine stattfinden sollten, werden diese Gruppen wieder zusammengeführt.
-            </p>
-        }
 
         @Html.AntiForgeryToken()
         <button type="submit" class="btn btn-primary">Gruppe erstellen</button>

@@ -21,10 +21,6 @@ namespace Ctf4e.Server.Models
 
         public ICollection<User> Members { get; set; }
 
-        public ICollection<FlagSubmission> FlagSubmissions { get; set; }
-
-        public ICollection<ExerciseSubmission> ExerciseSubmissions { get; set; }
-
         public ICollection<LabExecution> LabExecutions { get; set; }
     }
 }

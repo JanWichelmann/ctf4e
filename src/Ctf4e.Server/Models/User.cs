@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Ctf4e.Server.Constants;
 
 namespace Ctf4e.Server.Models
@@ -24,6 +25,10 @@ namespace Ctf4e.Server.Models
         public bool IsTutor { get; set; }
 
         public string GroupFindingCode { get; set; }
+
+        public ICollection<FlagSubmission> FlagSubmissions { get; set; }
+
+        public ICollection<ExerciseSubmission> ExerciseSubmissions { get; set; }
 
         public int? GroupId { get; set; }
         public Group Group { get; set; }

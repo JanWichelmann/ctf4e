@@ -38,7 +38,7 @@ namespace Ctf4e.Server.Controllers
                 FlagMinimumPointsDivisor = await _configurationService.GetFlagMinimumPointsDivisorAsync(HttpContext.RequestAborted),
                 ScoreboardEntryCount = await _configurationService.GetScoreboardEntryCountAsync(HttpContext.RequestAborted),
                 ScoreboardCachedSeconds = await _configurationService.GetScoreboardCachedSecondsAsync(HttpContext.RequestAborted),
-                CreateSplitGroups = await _configurationService.GetCreateSplitGroupsAsync(HttpContext.RequestAborted),
+                PassAsGroup = await _configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
                 PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
                 NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted)
             };
@@ -72,7 +72,7 @@ namespace Ctf4e.Server.Controllers
                 await _configurationService.SetFlagMinimumPointsDivisorAsync(configurationData.FlagMinimumPointsDivisor, HttpContext.RequestAborted);
                 await _configurationService.SetScoreboardEntryCountAsync(configurationData.ScoreboardEntryCount, HttpContext.RequestAborted);
                 await _configurationService.SetScoreboardCachedSecondsAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
-                await _configurationService.SetCreateSplitGroupsAsync(configurationData.CreateSplitGroups, HttpContext.RequestAborted);
+                await _configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
                 await _configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
                 await _configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
 

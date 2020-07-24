@@ -12,15 +12,15 @@ namespace Ctf4e.Server.Models
         public Exercise Exercise { get; set; }
 
         [Required]
-        public int GroupId { get; set; }
-        public Group Group { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         public DateTime SubmissionTime { get; set; }
 
         public bool ExercisePassed { get; set; }
 
         /// <summary>
-        /// Factor for penalty points. Always 1 for succesful tries.
+        /// Factor for penalty points. Always 1 for successful tries.
         /// </summary>
         public int Weight { get; set; }
     }

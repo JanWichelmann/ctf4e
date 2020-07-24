@@ -55,7 +55,7 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Retrieve scoreboard
-            var scoreboard = await _scoreboardService.GetGroupScoreboardAsync(currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
+            var scoreboard = await _scoreboardService.GetGroupScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
             if(scoreboard == null)
             {
                 AddStatusMessage($"Fehler: Das Gruppen-Scoreboard für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
@@ -83,8 +83,9 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Try to submit flag
+            // TODO Do not hardcode CTF{}
             flagCode ??= "";
-            bool success = await _flagService.SubmitFlagAsync(currentUser.GroupId.Value, labId, $"CTF{{{ flagCode.Trim() }}}", HttpContext.RequestAborted);
+            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, $"CTF{{{ flagCode.Trim() }}}", HttpContext.RequestAborted);
             return Ok(new { success });
         }
 
@@ -117,10 +118,12 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Build authentication string
-            var authData = new GroupLoginRequest
+            var authData = new UserLoginRequest()
             {
-                GroupId = currentUser.GroupId.Value,
+                UserId = currentUser.Id,
                 UserDisplayName = currentUser.DisplayName,
+                GroupId = currentUser.GroupId,
+                GroupDisplayName = currentUser.Group?.DisplayName,
                 AdminMode = false
             };
             string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());

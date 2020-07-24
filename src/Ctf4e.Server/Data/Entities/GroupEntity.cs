@@ -22,10 +22,6 @@ namespace Ctf4e.Server.Data.Entities
 
         public ICollection<UserEntity> Members { get; set; }
 
-        public ICollection<FlagSubmissionEntity> FlagSubmissions { get; set; }
-
-        public ICollection<ExerciseSubmissionEntity> ExerciseSubmissions { get; set; }
-
         public ICollection<LabExecutionEntity> LabExecutions { get; set; }
     }
 }

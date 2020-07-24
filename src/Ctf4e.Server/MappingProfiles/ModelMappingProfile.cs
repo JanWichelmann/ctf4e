@@ -9,13 +9,13 @@ namespace Ctf4e.Server.MappingProfiles
         public ModelMappingProfile()
         {
             CreateMap<UserEntity, User>()
-                .ForMember(u => u.Group, opt => opt.ExplicitExpansion());
+                .ForMember(u => u.Group, opt => opt.ExplicitExpansion())
+                .ForMember(u => u.FlagSubmissions, opt => opt.ExplicitExpansion())
+                .ForMember(u => u.ExerciseSubmissions, opt => opt.ExplicitExpansion());
 
             CreateMap<GroupEntity, Group>()
                 .ForMember(g => g.Slot, opt => opt.ExplicitExpansion())
                 .ForMember(g => g.Members, opt => opt.ExplicitExpansion())
-                .ForMember(g => g.FlagSubmissions, opt => opt.ExplicitExpansion())
-                .ForMember(g => g.ExerciseSubmissions, opt => opt.ExplicitExpansion())
                 .ForMember(g => g.LabExecutions, opt => opt.ExplicitExpansion());
 
             CreateMap<LabEntity, Lab>()
@@ -35,7 +35,7 @@ namespace Ctf4e.Server.MappingProfiles
                 .ForMember(f => f.Submissions, opt => opt.ExplicitExpansion());
 
             CreateMap<FlagSubmissionEntity, FlagSubmission>()
-                .ForMember(f => f.Group, opt => opt.ExplicitExpansion())
+                .ForMember(f => f.User, opt => opt.ExplicitExpansion())
                 .ForMember(f => f.Flag, opt => opt.ExplicitExpansion());
 
             CreateMap<ExerciseEntity, Exercise>()
@@ -43,7 +43,7 @@ namespace Ctf4e.Server.MappingProfiles
                 .ForMember(e => e.Submissions, opt => opt.ExplicitExpansion());
 
             CreateMap<ExerciseSubmissionEntity, ExerciseSubmission>()
-                .ForMember(e => e.Group, opt => opt.ExplicitExpansion())
+                .ForMember(e => e.User, opt => opt.ExplicitExpansion())
                 .ForMember(e => e.Exercise, opt => opt.ExplicitExpansion());
         }
     }

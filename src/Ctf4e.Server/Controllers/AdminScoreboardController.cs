@@ -20,6 +20,7 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsPrivileged)]
     public class AdminScoreboardController : ControllerBase
     {
+        private readonly IUserService _userService;
         private readonly IScoreboardService _scoreboardService;
         private readonly IExerciseService _exerciseService;
         private readonly IFlagService _flagService;
@@ -30,6 +31,7 @@ namespace Ctf4e.Server.Controllers
         public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, IExerciseService exerciseService, IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService)
             : base(userService, mainOptions, "~/Views/AdminScoreboard.cshtml")
         {
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
@@ -74,7 +76,7 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("exercisesubmission/create/")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateExerciseSubmissionAsync(int labId, int slotId, int exerciseId, int groupId, DateTime submissionTime, bool passed, int weight)
+        public async Task<IActionResult> CreateExerciseSubmissionAsync(int labId, int slotId, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
         {
             try
             {
@@ -82,7 +84,7 @@ namespace Ctf4e.Server.Controllers
                 var submission = new ExerciseSubmission
                 {
                     ExerciseId = exerciseId,
-                    GroupId = groupId,
+                    UserId = userId,
                     ExercisePassed = passed,
                     SubmissionTime = submissionTime,
                     Weight = passed ? 1 : weight
@@ -102,12 +104,12 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("flagsubmission/delete/")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFlagSubmissionAsync(int labId, int slotId, int groupId, int flagId)
+        public async Task<IActionResult> DeleteFlagSubmissionAsync(int labId, int slotId, int userId, int flagId)
         {
             try
             {
                 // Delete submission
-                await _flagService.DeleteFlagSubmissionAsync(groupId, flagId, HttpContext.RequestAborted);
+                await _flagService.DeleteFlagSubmissionAsync(userId, flagId, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Flageinreichung wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
             }
@@ -122,14 +124,14 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("flagsubmission/create/")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFlagSubmissionAsync(int labId, int slotId, int groupId, int flagId, DateTime submissionTime)
+        public async Task<IActionResult> CreateFlagSubmissionAsync(int labId, int slotId, int userId, int flagId, DateTime submissionTime)
         {
             try
             {
                 // Create submission
                 var submission = new FlagSubmission
                 {
-                    GroupId = groupId,
+                    UserId = userId,
                     FlagId = flagId,
                     SubmissionTime = submissionTime
                 };
@@ -146,7 +148,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet("labserver")]
-        public async Task<IActionResult> CallLabServerAsync(int labId, int groupId)
+        public async Task<IActionResult> CallLabServerAsync(int labId, int userId)
         {
             // Retrieve lab data
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
@@ -157,10 +159,14 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Build authentication string
-            var authData = new GroupLoginRequest
+            var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
+            var group = user.GroupId != null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1);
+            var authData = new UserLoginRequest
             {
-                GroupId = groupId,
-                UserDisplayName = $"Gruppe #{groupId} [Admin-Modus]",
+                UserId = userId,
+                UserDisplayName = user.DisplayName,
+                GroupId = group?.Id,
+                GroupDisplayName = group?.DisplayName,
                 AdminMode = true
             };
             string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());
