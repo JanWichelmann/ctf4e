@@ -57,6 +57,8 @@ namespace Ctf4e.Server.Services
             // Consistent time
             var now = DateTime.Now;
 
+            bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
+
             var labs = await _dbContext.Labs.AsNoTracking()
                 .OrderBy(l => l.Name)
                 .ProjectTo<Lab>(_mapper.ConfigurationProvider)
@@ -75,6 +77,8 @@ namespace Ctf4e.Server.Services
                 .Where(u => u.Group.SlotId == slotId)
                 .OrderBy(u => u.DisplayName)
                 .ToListAsync(cancellationToken);
+            var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId);
+            var userNameLookup = users.ToDictionary(u => u.Id, u => u.DisplayName);
 
             var exercises = await _dbContext.Exercises.AsNoTracking()
                 .Where(e => e.LabId == labId)
@@ -89,7 +93,7 @@ namespace Ctf4e.Server.Services
                 .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
             var exerciseSubmissions = exerciseSubmissionsUngrouped
-                .GroupBy(e => e.UserId) // This needs to be done in memory (no aggregation)
+                .GroupBy(e => passAsGroup ? groupIdLookup[e.UserId] : e.UserId) // This needs to be done in memory (no aggregation)
                 .ToDictionary(
                     e => e.Key,
                     e => e.GroupBy(es => es.ExerciseId)
@@ -153,11 +157,12 @@ namespace Ctf4e.Server.Services
                 OptionalExercisesCount = exercises.Count - mandatoryExercisesCount,
                 FlagCount = flags.Count,
                 Flags = scoreboardFlagStatus.Select(f => f.Value).ToList(),
-                UserEntries = new List<AdminScoreboardUserEntry>()
+                UserEntries = new List<AdminScoreboardUserEntry>(),
+                PassAsGroup = passAsGroup,
+                UserNames = userNameLookup
             };
 
             // For each user, collect exercise and flag data
-            // TODO show correct "passed" status in admin scoreboard, if passAsGroup is turned on
             foreach(var user in users)
             {
                 labExecutions.TryGetValue(user.GroupId ?? -1, out var groupLabExecution);
@@ -172,7 +177,7 @@ namespace Ctf4e.Server.Services
                 };
 
                 // Exercises
-                exerciseSubmissions.TryGetValue(user.Id, out var userExerciseSubmissions);
+                exerciseSubmissions.TryGetValue(passAsGroup ? user.GroupId : user.Id, out var userExerciseSubmissions);
                 int passedMandatoryExercisesCount = 0;
                 int passedOptionalExercisesCount = 0;
                 foreach(var exercise in exercises)
@@ -183,7 +188,7 @@ namespace Ctf4e.Server.Services
 
                         var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
 
-                        userEntry.Exercises.Add(new ScoreboardUserExerciseEntry()
+                        userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
                         {
                             Exercise = exercise,
                             Tries = submissions.Count,
@@ -886,7 +891,7 @@ namespace Ctf4e.Server.Services
                     INNER JOIN `Exercises` e ON e.`Id` = es.`ExerciseId`
                     INNER JOIN `Users` u ON u.`Id` = es.`UserId`
                     WHERE u.`GroupId` = @groupId
-                    {(passAsGroup ? "AND u.`Id` = @userId" : "")}
+                    {(passAsGroup ? "" : "AND u.`Id` = @userId")}
                     AND e.`LabId` = @labId
                     ORDER BY e.`Id`, es.`SubmissionTime`",
                     new {groupId, userId, labId}))

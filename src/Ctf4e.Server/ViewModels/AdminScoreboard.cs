@@ -19,10 +19,14 @@ namespace Ctf4e.Server.ViewModels
         public int OptionalExercisesCount { get; set; }
 
         public int FlagCount { get; set; }
+        
+        public bool PassAsGroup { get; set; }
 
         public List<AdminScoreboardFlagEntry> Flags { get; set; }
 
         public List<AdminScoreboardUserEntry> UserEntries { get; set; }
+        
+        public Dictionary<int, string> UserNames { get; set; }
     }
 
     public class AdminScoreboardFlagEntry

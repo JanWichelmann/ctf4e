@@ -45,208 +45,226 @@
 @foreach(var user in adminScoreboard.UserEntries)
 {
     <div class="card">
-        <div class="card-header" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-card">
-            <div class="row">
-                <div class="col-sm text-left">
-                    #@user.UserId: @user.UserName
-                    @if(user.Status == ScoreboardGroupStatus.BeforePreStart)
-                    {
-                        <span class="badge badge-info" title="Warten auf Vor-Beginn-Phase">Vor Praktikum-Vor-Beginn</span>
-                    }
-                    else if(user.Status == ScoreboardGroupStatus.PreStart)
-                    {
-                        <span class="badge badge-warning" title="Vor-Beginn-Phase aktiv">Vor-Beginn-Phase</span>
-                    }
-                    else if(user.Status == ScoreboardGroupStatus.Start)
-                    {
-                        <span class="badge badge-warning" title="Praktikum aktiv">Praktikum aktiv</span>
-                    }
-                    else if(user.Status == ScoreboardGroupStatus.End)
-                    {
-                        <span class="badge badge-success" title="Praktikum beendet">Praktikum beendet</span>
-                    }
-                    else if(user.Status == ScoreboardGroupStatus.Undefined)
-                    {
-                        <span class="badge badge-danger" title="Keine Praktikumsausführung konfiguriert">Nicht konfiguriert</span>
-                    }
-                    @if(user.HasPassed)
-                    {
-                        <span class="oi oi-circle-check text-success" title="Bestanden"></span>
-                    }
-                    else
-                    {
-                        <span class="oi oi-circle-x text-danger" title="Nicht bestanden"></span>
-                    }
-                </div>
-                <div class="col-sm text-right">
-                    <span class="badge badge-primary" title="Pflichtaufgaben">@user.PassedMandatoryExercisesCount / @adminScoreboard.MandatoryExercisesCount</span>
-                    <span class="badge badge-secondary" title="Freiwillige Aufgaben">@user.PassedOptionalExercisesCount / @adminScoreboard.OptionalExercisesCount</span>
-                    <span class="badge badge-info" title="Gefundene Flags">@user.FoundFlagsCount / @adminScoreboard.FlagCount</span>
-                </div>
+    <div class="card-header" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-card">
+        <div class="row">
+            <div class="col-sm text-left">
+                @if(adminScoreboard.PassAsGroup)
+                {
+                    <span class="oi oi-people text-dark" title="Bestehen als Gruppe"></span>
+                }
+                else
+                {
+                    <span class="oi oi-person text-dark" title="Bestehen als Einzelperson"></span>
+                }
+                @if(user.HasPassed)
+                {
+                    <span class="oi oi-circle-check text-success" title="Bestanden"></span>
+                }
+                else
+                {
+                    <span class="oi oi-circle-x text-danger" title="Nicht bestanden"></span>
+                }
+                <span class="ml-2">@user.UserName</span>
+            </div>
+            <div class="col-sm text-right">
+                @if(user.Status == ScoreboardGroupStatus.BeforePreStart)
+                {
+                    <span class="badge badge-info" title="Warten auf Vor-Beginn-Phase">Vor Praktikum-Vor-Beginn</span>
+                }
+                else if(user.Status == ScoreboardGroupStatus.PreStart)
+                {
+                    <span class="badge badge-warning" title="Vor-Beginn-Phase aktiv">Vor-Beginn-Phase</span>
+                }
+                else if(user.Status == ScoreboardGroupStatus.Start)
+                {
+                    <span class="badge badge-warning" title="Praktikum aktiv">Praktikum aktiv</span>
+                }
+                else if(user.Status == ScoreboardGroupStatus.End)
+                {
+                    <span class="badge badge-success" title="Praktikum beendet">Praktikum beendet</span>
+                }
+                else if(user.Status == ScoreboardGroupStatus.Undefined)
+                {
+                    <span class="badge badge-danger" title="Keine Praktikumsausführung konfiguriert">Nicht konfiguriert</span>
+                }
+                <span class="badge badge-primary" title="Pflichtaufgaben">@user.PassedMandatoryExercisesCount / @adminScoreboard.MandatoryExercisesCount</span>
+                <span class="badge badge-secondary" title="Freiwillige Aufgaben">@user.PassedOptionalExercisesCount / @adminScoreboard.OptionalExercisesCount</span>
+                <span class="badge badge-info" title="Gefundene Flags">@user.FoundFlagsCount / @adminScoreboard.FlagCount</span>
             </div>
         </div>
-        <div id="user@(user.UserId)-card" class="collapse">
-            <div class="card-body">
-                <a class="btn btn-primary mb-3" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CallLabServerAsync), new {labId = adminScoreboard.LabId, userId = user.UserId}))" target="_blank">
-                    <span class="oi oi-external-link"></span>
-                    Zum Praktikumsserver (Admin-Modus)
-                </a>
+    </div>
+    <div id="user@(user.UserId)-card" class="collapse">
+        <div class="card-body">
+            <a class="btn btn-primary mb-3" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CallLabServerAsync), new {labId = adminScoreboard.LabId, userId = user.UserId}))" target="_blank">
+                <span class="oi oi-external-link"></span>
+                Zum Praktikumsserver (Admin-Modus)
+            </a>
 
-                @foreach(var exercise in user.Exercises)
-                {
-                    <div class="card">
-                        <div class="card-header" id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-exercise@(exercise.Exercise.Id)-card">
-                            <div class="row">
-                                <div class="col-sm text-left">
-                                    @exercise.Exercise.Name
-                                    @if(exercise.Exercise.IsMandatory)
-                                    {
-                                        <span class="badge badge-info">Pflicht</span>
-                                    }
-                                </div>
-                                <div class="col-sm text-right">
-                                    <span class="badge badge-light" title="Gültige Versuche (Versuche insgesamt)">@exercise.ValidTries (@exercise.Tries) Versuche</span>
-                                    @if(exercise.Passed)
-                                    {
-                                        <span class="badge badge-primary">@exercise.Points Punkte</span>
-                                        <span class="oi oi-circle-check text-success" title="Gelöst"></span>
-                                    }
-                                    else
-                                    {
-                                        <span class="oi oi-circle-x text-danger" title="Nicht gelöst"></span>
-                                    }
-                                </div>
+            @foreach(var exercise in user.Exercises)
+            {
+                <div class="card">
+                    <div class="card-header" id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-exercise@(exercise.Exercise.Id)-card">
+                        <div class="row">
+                            <div class="col-sm text-left">
+                                @exercise.Exercise.Name
+                                @if(exercise.Exercise.IsMandatory)
+                                {
+                                    <span class="badge badge-info">Pflicht</span>
+                                }
                             </div>
-                        </div>
-                        <div id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card" class="collapse">
-                            <div class="card-body">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th scope="col">Gelöst</th>
-                                            <th scope="col">Zeit</th>
-                                            <th scope="col">Gewichtung</th>
-                                            @if(currentUser.IsAdmin)
-                                            {
-                                                <th>
-                                                    <a role="button" class="btn btn-sm btn-primary" href="#" data-toggle="modal" data-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Exercise.Id" data-user-id="@user.UserId">
-                                                        <span class="oi oi-plus"></span>
-                                                        Hinzufügen
-                                                    </a>
-                                                </th>
-                                            }
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach(var submission in exercise.Submissions)
-                                        {
-                                            <tr>
-                                                <th scope="row">#@submission.Id</th>
-                                                <td>
-                                                    @if(submission.ExercisePassed)
-                                                    {
-                                                        <span class="oi oi-circle-check text-success align-middle"></span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="oi oi-circle-x text-danger align-middle"></span>
-                                                    }
-                                                </td>
-                                                <td>
-                                                    @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
-                                                </td>
-                                                <td>
-                                                    @submission.Weight
-                                                </td>
-                                                @if(currentUser.IsAdmin)
-                                                {
-                                                    <td>
-                                                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-exercise-submission" data-submission-id="@submission.Id" data-exercise-name="@exercise.Exercise.Name" data-user-name="@user.UserName">
-                                                            <span class="oi oi-trash"></span>
-                                                            Löschen
-                                                        </a>
-                                                    </td>
-                                                }
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                            <div class="col-sm text-right">
+                                <span class="badge badge-light" title="Gültige Versuche (Versuche insgesamt)">@exercise.ValidTries (@exercise.Tries) Versuche</span>
+                                @if(exercise.Passed)
+                                {
+                                    <span class="badge badge-primary">@exercise.Points Punkte</span>
+                                    <span class="oi oi-circle-check text-success" title="Gelöst"></span>
+                                }
+                                else
+                                {
+                                    <span class="oi oi-circle-x text-danger" title="Nicht gelöst"></span>
+                                }
                             </div>
                         </div>
                     </div>
-                }
-
-                <table class="table table-sm mt-3">
-                    <thead>
-                        <tr>
-                            <th>Flag</th>
-                            <th scope="col">Beschreibung</th>
-                            <th scope="col">Abgesendet</th>
-                            <th scope="col">Gültig</th>
-                            @if(currentUser.IsAdmin)
-                            {
-                                <th scope="col">Aktionen</th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var flag in user.Flags)
-                        {
-                            <tr>
-                                <th scope="row">#@flag.Flag.Id</th>
-                                <td>
-                                    @flag.Flag.Description
-                                    @if(flag.Flag.IsBounty)
+                    <div id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card" class="collapse">
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th scope="col">Gelöst</th>
+                                    <th scope="col">Zeit</th>
+                                    <th scope="col">Gewichtung</th>
+                                    @if(adminScoreboard.PassAsGroup)
                                     {
-                                        <span class="oi oi-bug text-primary" title="Bug-Bounty"></span>
+                                        <th scope="col">Eingereicht von</th>
                                     }
-                                </td>
-                                <td>
-                                    @if(flag.Submitted)
+                                    @if(currentUser.IsAdmin)
                                     {
-                                        <span class="oi oi-check text-success" title="@flag.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)"></span>
+                                        <th>
+                                            <a role="button" class="btn btn-sm btn-primary" href="#" data-toggle="modal" data-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Exercise.Id" data-user-id="@user.UserId">
+                                                <span class="oi oi-plus"></span>
+                                                Hinzufügen
+                                            </a>
+                                        </th>
                                     }
-                                </td>
-                                <td>
-                                    @if(flag.Submitted)
-                                    {
-                                        if(flag.Valid)
-                                        {
-                                            <span class="oi oi-check text-success"></span>
-                                            <span class="badge badge-primary">@flag.CurrentPoints Punkte</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="oi oi-x text-danger"></span>
-                                        }
-                                    }
-                                </td>
-                                @if(currentUser.IsAdmin)
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach(var submission in exercise.Submissions)
                                 {
-                                    <td>
-                                        @if(flag.Submitted)
+                                    <tr>
+                                        <th scope="row">#@submission.Id</th>
+                                        <td>
+                                            @if(submission.ExercisePassed)
+                                            {
+                                                <span class="oi oi-circle-check text-success align-middle"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="oi oi-circle-x text-danger align-middle"></span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
+                                        </td>
+                                        <td>
+                                            @submission.Weight
+                                        </td>
+                                        @if(adminScoreboard.PassAsGroup)
                                         {
-                                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId" data-user-name="@user.UserName">
-                                                <span class="oi oi-trash"></span>
-                                                Zurücksetzen
-                                            </a>
+                                            <td>
+                                                @adminScoreboard.UserNames[submission.UserId]
+                                            </td>
                                         }
-                                        else
+                                        @if(currentUser.IsAdmin)
                                         {
-                                            <a role="button" class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#modal-add-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId">
-                                                <span class="oi oi-flag"></span>
-                                                Einreichen
-                                            </a>
+                                            <td>
+                                                <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-exercise-submission" data-submission-id="@submission.Id" data-exercise-name="@exercise.Exercise.Name" data-user-name="@user.UserName">
+                                                    <span class="oi oi-trash"></span>
+                                                    Löschen
+                                                </a>
+                                            </td>
                                         }
-                                    </td>
+                                    </tr>
                                 }
-                            </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <table class="table table-sm mt-3">
+                <thead>
+                <tr>
+                    <th>Flag</th>
+                    <th scope="col">Beschreibung</th>
+                    <th scope="col">Abgesendet</th>
+                    <th scope="col">Gültig</th>
+                    @if(currentUser.IsAdmin)
+                    {
+                        <th scope="col">Aktionen</th>
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                @foreach(var flag in user.Flags)
+                {
+                    <tr>
+                        <th scope="row">#@flag.Flag.Id</th>
+                        <td>
+                            @flag.Flag.Description
+                            @if(flag.Flag.IsBounty)
+                            {
+                                <span class="oi oi-bug text-primary" title="Bug-Bounty"></span>
+                            }
+                        </td>
+                        <td>
+                            @if(flag.Submitted)
+                            {
+                                <span class="oi oi-check text-success" title="@flag.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)"></span>
+                            }
+                        </td>
+                        <td>
+                            @if(flag.Submitted)
+                            {
+                                if(flag.Valid)
+                                {
+                                    <span class="oi oi-check text-success"></span>
+                                    <span class="badge badge-primary">@flag.CurrentPoints Punkte</span>
+                                }
+                                else
+                                {
+                                    <span class="oi oi-x text-danger"></span>
+                                }
+                            }
+                        </td>
+                        @if(currentUser.IsAdmin)
+                        {
+                            <td>
+                                @if(flag.Submitted)
+                                {
+                                    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId" data-user-name="@user.UserName">
+                                        <span class="oi oi-trash"></span>
+                                        Zurücksetzen
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a role="button" class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#modal-add-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId">
+                                        <span class="oi oi-flag"></span>
+                                        Einreichen
+                                    </a>
+                                }
+                            </td>
                         }
-                    </tbody>
-                </table>
-            </div>
+                    </tr>
+                }
+                </tbody>
+            </table>
         </div>
+    </div>
     </div>
 }
 
@@ -257,37 +275,38 @@
 
 <table class="table table-sm" id="flags-table">
     <thead>
-        <tr>
-            <th></th>
-            <th scope="col">Beschreibung</th>
-            <th scope="col">Funde</th>
-            <th scope="col">Punkte</th>
-        </tr>
+    <tr>
+        <th></th>
+        <th scope="col">Beschreibung</th>
+        <th scope="col">Funde</th>
+        <th scope="col">Punkte</th>
+    </tr>
     </thead>
     <tbody>
-        @foreach(var flag in adminScoreboard.Flags)
-        {
-            <tr>
-                <th scope="row">#@flag.Flag.Id</th>
-                <td>
-                    @flag.Flag.Description
-                    @if(flag.Flag.IsBounty)
-                    {
-                        <span class="oi oi-bug text-primary" title="Bug-Bounty"></span>
-                    }
-                </td>
-                <td>
-                    @flag.SubmissionCount
-                </td>
-                <td>
-                    @flag.CurrentPoints / @flag.Flag.BasePoints
-                </td>
-            </tr>
-        }
+    @foreach(var flag in adminScoreboard.Flags)
+    {
+        <tr>
+            <th scope="row">#@flag.Flag.Id</th>
+            <td>
+                @flag.Flag.Description
+                @if(flag.Flag.IsBounty)
+                {
+                    <span class="oi oi-bug text-primary" title="Bug-Bounty"></span>
+                }
+            </td>
+            <td>
+                @flag.SubmissionCount
+            </td>
+            <td>
+                @flag.CurrentPoints / @flag.Flag.BasePoints
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
 
 <!-- Necessary includes -->
+
 @section ScriptsHead
 {
     <script src="~/lib/moment/js/moment.min.js"></script>
@@ -327,7 +346,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteExerciseSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
+                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteExerciseSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
                     @Html.AntiForgeryToken()
@@ -341,7 +360,7 @@
 <div class="modal fade" id="modal-add-exercise-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateExerciseSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
+            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateExerciseSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Aufgabeneinreichung erstellen</h5>
                     <button type="button" class="close" data-dismiss="modal">
@@ -352,7 +371,7 @@
                     <div class="form-group">
                         <label for="input-add-exercise-submission-time">Einreichungszeitpunkt</label>
                         <div class="input-group" id="datetimepicker-add-exercise-submission-time" data-target-input="nearest">
-                            <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control datetimepicker-input" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" data-target="#datetimepicker-add-exercise-submission-time" />
+                            <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control datetimepicker-input" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" data-target="#datetimepicker-add-exercise-submission-time"/>
                             <div class="input-group-append" data-target="#datetimepicker-add-exercise-submission-time" data-toggle="datetimepicker">
                                 <div class="input-group-text">
                                     <span class="oi oi-calendar"></span>
@@ -362,7 +381,7 @@
                     </div>
                     <div class="form-group">
                         <label for="input-add-exercise-submission-weight">Gewichtung (nur für Fehlversuche)</label>
-                        <input id="input-add-exercise-submission-weight" name="weight" type="number" min="0" value="1" class="form-control" />
+                        <input id="input-add-exercise-submission-weight" name="weight" type="number" min="0" value="1" class="form-control"/>
                     </div>
                     <div class="form-group">
                         <div class="form-check">
@@ -398,7 +417,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteFlagSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
+                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteFlagSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
@@ -413,7 +432,7 @@
 <div class="modal fade" id="modal-add-flag-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateFlagSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
+            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateFlagSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Flageinreichung erstellen</h5>
                     <button type="button" class="close" data-dismiss="modal">
@@ -424,7 +443,7 @@
                     <div class="form-group">
                         <label for="input-add-flag-submission-time">Einreichungszeitpunkt</label>
                         <div class="input-group" id="datetimepicker-add-flag-submission-time" data-target-input="nearest">
-                            <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control datetimepicker-input" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" data-target="#datetimepicker-add-flag-submission-time" />
+                            <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control datetimepicker-input" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" data-target="#datetimepicker-add-flag-submission-time"/>
                             <div class="input-group-append" data-target="#datetimepicker-add-flag-submission-time" data-toggle="datetimepicker">
                                 <div class="input-group-text">
                                     <span class="oi oi-calendar"></span>
