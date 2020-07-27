@@ -74,14 +74,6 @@
                 }
             }
         </ul>
-        <ul class="navbar-nav px-3 ml-auto mr-auto">
-            @if(currentUser?.Group != null)
-            {
-                <li class="nav-item">
-                    @currentUser.Group.DisplayName
-                </li>
-            }
-        </ul>
 
         @if(currentUser != null && (currentUser.IsAdmin || currentUser.IsTutor))
         {
@@ -192,7 +184,7 @@
             <div class="col text-right">
                 @if(currentUser != null && currentUser.IsAdmin)
                 {
-                    <a href="~/dev/profiler/results-index">Profiler</a>
+                    <a href="~/dev/profiler/results-index" target="_blank">Profiler</a>
                     @:&middot;
                     <span>
                         Build #<a href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
