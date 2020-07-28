@@ -62,6 +62,9 @@ namespace Ctf4e.Server
 
             // Entity/Model mapping
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            
+            // Memory cache
+            services.AddMemoryCache();
 
             // Model/database services
             services.AddScoped<IUserService, UserService>();
@@ -72,10 +75,10 @@ namespace Ctf4e.Server
             services.AddScoped<ILabExecutionService, LabExecutionService>();
             services.AddScoped<IScoreboardService, ScoreboardService>();
 
-            // Services for configuration and utility functions
+            // Configuration service
             services.AddScoped<IConfigurationService, ConfigurationService>();
-            services.AddSingleton<IFlagPointService, FlagPointService>();
-            services.AddSingleton<IScoreboardCacheService, ScoreboardCacheService>();
+            
+            // Export/sync services
             services.AddScoped<IMoodleService, MoodleService>();
             services.AddScoped<ICsvService, CsvService>();
 

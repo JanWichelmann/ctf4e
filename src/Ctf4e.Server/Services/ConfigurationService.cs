@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Ctf4e.Server.Services
 {
@@ -29,6 +30,7 @@ namespace Ctf4e.Server.Services
     public class ConfigurationService : IConfigurationService
     {
         private readonly CtfDbContext _dbContext;
+        private readonly IMemoryCache _cache;
 
         private const string ConfigKeyFlagMinimumPointsDivisor = "FlagMinimumPointsDivisor";
         private const string ConfigKeyFlagHalfPointsSubmissionCount = "FlagHalfPointsSubmissionCount";
@@ -38,9 +40,10 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyNavbarTitle = "NavbarTitle";
         private const string ConfigKeyPageTitle = "PageTitle";
 
-        public ConfigurationService(CtfDbContext dbContext)
+        public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         public Task<int> GetFlagMinimumPointsDivisorAsync(CancellationToken cancellationToken = default)
@@ -87,19 +90,33 @@ namespace Ctf4e.Server.Services
 
         private async Task<TValue> GetConfigItemAsync<TValue>(string key, Func<string, TValue> valueConverter, CancellationToken cancellationToken)
         {
-            var config = await _dbContext.ConfigurationItems.AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Key == key, cancellationToken);
-            return valueConverter(config?.Value);
+            // Try to retrieve from config cache
+            if(!_cache.TryGetValue(key, out string value))
+            {
+                // Retrieve from database
+                var config = await _dbContext.ConfigurationItems.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Key == key, cancellationToken);
+                value = config?.Value;
+
+                // Update cache
+                _cache.Set(key, value);
+            }
+
+            return valueConverter(value);
         }
 
         private async Task AddOrUpdateConfigItem<TValue>(string key, TValue value, CancellationToken cancellationToken)
         {
+            // Write updated config to database
             var config = await _dbContext.ConfigurationItems.FindAsync(new object[] {key}, cancellationToken);
             if(config == null)
                 await _dbContext.ConfigurationItems.AddAsync(new ConfigurationItemEntity {Key = key, Value = value.ToString()}, cancellationToken);
             else
                 config.Value = value.ToString();
             await _dbContext.SaveChangesAsync(cancellationToken);
+            
+            // Update cache
+            _cache.Set(key, value.ToString());
         }
     }
 }

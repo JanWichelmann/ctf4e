@@ -21,16 +21,14 @@ namespace Ctf4e.Server.Controllers
         private readonly IUserService _userService;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabService _labService;
-        private readonly IScoreboardCacheService _scoreboardCacheService;
         private readonly ILabExecutionService _labExecutionService;
 
-        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabService labService, IScoreboardCacheService scoreboardCacheService, ILabExecutionService labExecutionService)
+        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabService labService, ILabExecutionService labExecutionService)
             : base(userService, mainOptions, "~/Views/Scoreboard.cshtml")
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-            _scoreboardCacheService = scoreboardCacheService ?? throw new ArgumentNullException(nameof(scoreboardCacheService));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
         }
 
@@ -43,7 +41,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> RenderScoreboardAsync(int? labId, int reload = 0, bool showAllEntries = false)
+        public async Task<IActionResult> RenderScoreboardAsync(int? labId, int reload = 0, bool showAllEntries = false, bool resetCache = false)
         {
             // TODO allow filtering by slots (variable is already present in scoreboard entries)
 
@@ -52,11 +50,11 @@ namespace Ctf4e.Server.Controllers
                 Scoreboard scoreboard;
                 if(labId == null)
                 {
-                    scoreboard = await _scoreboardService.GetFullScoreboardAsync(HttpContext.RequestAborted);
+                    scoreboard = await _scoreboardService.GetFullScoreboardAsync(HttpContext.RequestAborted, resetCache);
                 }
                 else
                 {
-                    scoreboard = await _scoreboardService.GetLabScoreboardAsync(labId ?? 0, HttpContext.RequestAborted);
+                    scoreboard = await _scoreboardService.GetLabScoreboardAsync(labId ?? 0, HttpContext.RequestAborted, resetCache);
                     if(scoreboard == null)
                     {
                         AddStatusMessage("Dieses Praktikum existiert nicht oder enthält keine Aufgaben.", StatusMessageTypes.Warning);
@@ -69,22 +67,12 @@ namespace Ctf4e.Server.Controllers
             
             var currentUser = await GetCurrentUserAsync();
             ViewData["ShowAllEntries"] = showAllEntries && (currentUser.IsAdmin || currentUser.IsTutor);
+            ViewData["ResetCache"] = resetCache && currentUser.IsAdmin;
 
             if(reload > 0)
                 Response.Headers.Add("Refresh", reload.ToString());
 
             return await RenderAsync(ViewType.Scoreboard);
-        }
-
-        [HttpPost("reset")]
-        [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
-        [ValidateAntiForgeryToken]
-        public Task<IActionResult> InvalidateScoreboardCacheAsync()
-        {
-            _scoreboardCacheService.InvalidateAll();
-
-            AddStatusMessage("Löschen des Scoreboard-Caches erfolgreich.", StatusMessageTypes.Success);
-            return RenderAsync(ViewType.Blank);
         }
 
         public enum ViewType

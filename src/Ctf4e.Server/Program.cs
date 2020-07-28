@@ -29,9 +29,6 @@ namespace Ctf4e.Server
                 // Ensure database is initialized and up-to-date
                 var dbContext = services.GetRequiredService<CtfDbContext>();
                 await dbContext.Database.MigrateAsync();
-
-                // Initialize singletons
-                await services.GetRequiredService<IFlagPointService>().ReloadAsync(services.GetRequiredService<IConfigurationService>());
             }
 
             await host.RunAsync();

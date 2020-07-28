@@ -14,6 +14,7 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.ViewModels;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Data;
 
@@ -22,8 +23,8 @@ namespace Ctf4e.Server.Services
     public interface IScoreboardService
     {
         Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default);
-        Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default);
-        Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default);
+        Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default, bool forceUncached = false);
+        Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default, bool forceUncached = false);
         Task<GroupScoreboard> GetGroupScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default);
     }
 
@@ -31,22 +32,23 @@ namespace Ctf4e.Server.Services
     {
         private readonly CtfDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IFlagPointService _flagPointService;
         private readonly IConfigurationService _configurationService;
-        private readonly IScoreboardCacheService _scoreboardCacheService;
+        private readonly IMemoryCache _cache;
 
         /// <summary>
         /// Database connection for Dapper queries.
         /// </summary>
         private readonly IDbConnection _dbConn;
 
-        public ScoreboardService(CtfDbContext dbContext, IMapper mapper, IFlagPointService flagPointService, IConfigurationService configurationService, IScoreboardCacheService scoreboardCacheService)
+        private double _minPointsMultiplier;
+        private int _halfPointsCount;
+
+        public ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigurationService configurationService, IMemoryCache cache)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _flagPointService = flagPointService ?? throw new ArgumentNullException(nameof(flagPointService));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-            _scoreboardCacheService = scoreboardCacheService ?? throw new ArgumentNullException(nameof(scoreboardCacheService));
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
 
             // Profile Dapper queries
             _dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
@@ -54,6 +56,9 @@ namespace Ctf4e.Server.Services
 
         public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default)
         {
+            // Load flag point parameters
+            await InitFlagPointParametersAsync(cancellationToken);
+            
             // Consistent time
             var now = DateTime.Now;
 
@@ -348,6 +353,18 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
+        /// Retrieves the flag point parameters from the configuration.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns></returns>
+        private async Task InitFlagPointParametersAsync(CancellationToken cancellationToken = default)
+        {
+            // Retrieve constants
+            _minPointsMultiplier = 1.0 / await _configurationService.GetFlagMinimumPointsDivisorAsync(cancellationToken);
+            _halfPointsCount = await _configurationService.GetFlagHalfPointsSubmissionCountAsync(cancellationToken);
+        }
+
+        /// <summary>
         /// Returns the points the flag yields for the give submission count.
         /// </summary>
         /// <param name="flag">Flag.</param>
@@ -359,16 +376,36 @@ namespace Ctf4e.Server.Services
             if(flag.IsBounty)
                 return flag.BasePoints;
 
-            int points = _flagPointService.GetFlagPoints(flag.BasePoints, submissionCount);
-            return points > flag.BasePoints ? flag.BasePoints : points;
+            // Retrieve necessary constants
+
+            // a: Base points
+            // b: Min points = multiplier*a
+            // c: 50% points y = (a+b)/2
+            // d: 50% points x
+
+            // Flag points depending on submission count x:
+            // (a-b)*((a-b)/(c-b))^(1/(d-1)*(-x+1))+b
+            // (base is solution of (a-b)*y^(-d+1)+b=c)
+
+            // (a-b)
+            double amb = flag.BasePoints - _minPointsMultiplier * flag.BasePoints;
+
+            // (c-b)=(a+b)/2-b=(a-b)/2
+            // -> (a-b)/(c-b)=2
+            double points = (amb * Math.Pow(2, (-submissionCount + 1.0) / (_halfPointsCount - 1))) + (_minPointsMultiplier * flag.BasePoints);
+            return points > flag.BasePoints ? flag.BasePoints : (int)Math.Round(points);
         }
 
-        public async Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default)
+        public async Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default, bool forceUncached = false)
         {
-            // Is there a valid, cached scoreboard?
-            if(_scoreboardCacheService.TryGetValidFullScoreboard(out var cachedScoreboard))
-                return cachedScoreboard;
+            // Is there a cached scoreboard?
+            const string fullScoreboardCacheKey = "scoreboard-full";
+            if(!forceUncached && _cache.TryGetValue(fullScoreboardCacheKey, out Scoreboard scoreboard))
+                return scoreboard;
 
+            // Load flag point parameters
+            await InitFlagPointParametersAsync(cancellationToken);
+            
             // Get current time to avoid overestimating scoreboard validity time
             DateTime now = DateTime.Now;
 
@@ -601,7 +638,6 @@ namespace Ctf4e.Server.Services
                 }
             }
 
-            Scoreboard scoreboard;
             using(MiniProfiler.Current.Step("Create final scoreboard object"))
             {
                 scoreboard = new Scoreboard
@@ -614,16 +650,23 @@ namespace Ctf4e.Server.Services
                 };
             }
 
-            _scoreboardCacheService.SetFullScoreboard(scoreboard);
+            // Update cache
+            var cacheDuration = TimeSpan.FromSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
+            _cache.Set(fullScoreboardCacheKey, scoreboard, cacheDuration);
+
             return scoreboard;
         }
 
-        public async Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default)
+        public async Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default, bool forceUncached = false)
         {
-            // Is there a valid, cached scoreboard?
-            if(_scoreboardCacheService.TryGetValidLabScoreboard(labId, out var cachedScoreboard))
-                return cachedScoreboard;
+            // Is there a cached scoreboard?
+            string scoreboardCacheKey = "scoreboard-" + labId;
+            if(!forceUncached && _cache.TryGetValue(scoreboardCacheKey, out Scoreboard scoreboard))
+                return scoreboard;
 
+            // Load flag point parameters
+            await InitFlagPointParametersAsync(cancellationToken);
+            
             // Get current time to avoid overestimating scoreboard validity time
             DateTime now = DateTime.Now;
 
@@ -872,8 +915,7 @@ namespace Ctf4e.Server.Services
                 .Where(l => l.Id == labId)
                 .Select(l => l.Name)
                 .FirstAsync(cancellationToken);
-            
-            Scoreboard scoreboard;
+
             using(MiniProfiler.Current.Step("Create final scoreboard object"))
             {
                 scoreboard = new Scoreboard
@@ -888,7 +930,10 @@ namespace Ctf4e.Server.Services
                 };
             }
 
-            _scoreboardCacheService.SetLabScoreboard(labId, scoreboard);
+            // Update cache
+            var cacheDuration = TimeSpan.FromSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
+            _cache.Set(scoreboardCacheKey, scoreboard, cacheDuration);
+
             return scoreboard;
         }
 

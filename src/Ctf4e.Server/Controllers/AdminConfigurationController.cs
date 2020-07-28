@@ -18,16 +18,12 @@ namespace Ctf4e.Server.Controllers
     {
         private readonly IUserService _userService;
         private readonly IConfigurationService _configurationService;
-        private readonly IFlagPointService _flagPointService;
-        private readonly IScoreboardCacheService _scoreboardCacheService;
 
-        public AdminConfigurationController(IUserService userService, IOptions<MainOptions> mainOptions, IConfigurationService configurationService, IFlagPointService flagPointService, IScoreboardCacheService scoreboardCacheService)
+        public AdminConfigurationController(IUserService userService, IOptions<MainOptions> mainOptions, IConfigurationService configurationService)
             : base(userService, mainOptions, "~/Views/AdminConfiguration.cshtml")
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-            _flagPointService = flagPointService ?? throw new ArgumentNullException(nameof(flagPointService));
-            _scoreboardCacheService = scoreboardCacheService ?? throw new ArgumentNullException(nameof(scoreboardCacheService));
         }
 
         private async Task<IActionResult> RenderAsync(AdminConfigurationData configurationData)
@@ -75,11 +71,6 @@ namespace Ctf4e.Server.Controllers
                 await _configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
                 await _configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
                 await _configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
-
-                // Reset singletons with cached configuration value
-                // No cancellation tokens here - cancelling could lead to an inconsistent state
-                await _flagPointService.ReloadAsync(_configurationService);
-                _scoreboardCacheService.InvalidateAll();
 
                 AddStatusMessage("Die Konfiguration wurde erfolgreich aktualisiert.", StatusMessageTypes.Success);
             }
