@@ -117,15 +117,12 @@ namespace Ctf4e.Server
                     options.RouteBasePath = "/dev/profiler";
 
                     // Only allow admins access to profiler results
-                    // TODO broken
-                    /*
                     static bool AuthorizeFunc(HttpRequest request)
                     {
                         return request.HttpContext.User.Claims.Any(c => c.Type == AuthenticationStrings.ClaimIsAdmin && c.Value == true.ToString());
                     }
                     options.ResultsAuthorize = AuthorizeFunc;
                     options.ResultsListAuthorize = AuthorizeFunc;
-                    */
                     
                     // Reduce noise for database queries
                     options.TrackConnectionOpenClose = false;
@@ -152,15 +149,9 @@ namespace Ctf4e.Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Development tools
+            // Verbose stack traces
             if(_mainOptions.DevelopmentMode)
-            {
-                // Verbose stack traces
                 app.UseDeveloperExceptionPage();
-
-                // MiniProfiler
-                app.UseMiniProfiler();
-            }
 
             // Serve static files from wwwroot/
             app.UseStaticFiles();
@@ -176,6 +167,14 @@ namespace Ctf4e.Server
             });
             app.UseAuthentication();
             app.UseAuthorization();
+            
+            // Install MiniProfiler
+            //     Needs to be after UseAuthorization(), else authorization doesn't work.
+            //     However, this does mean that earlier middleware isn't profiled!
+            //     If this ever becomes an issue, remove authorization or use a workaround.
+            //     Relevant: https://stackoverflow.com/questions/59290361/what-is-an-appropriate-way-to-drive-miniprofiler-nets-resultsauthorize-handler
+            if(_mainOptions.DevelopmentMode)
+                app.UseMiniProfiler();
 
             // Create routing endpoints
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
