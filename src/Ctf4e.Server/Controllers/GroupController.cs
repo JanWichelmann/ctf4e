@@ -21,8 +21,9 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabExecutionService _labExecutionService;
         private readonly IFlagService _flagService;
         private readonly ILabService _labService;
+        private readonly IConfigurationService _configurationService;
 
-        public GroupController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
+        public GroupController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService, IConfigurationService configurationService)
             : base(userService, mainOptions, "~/Views/Group.cshtml")
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
@@ -30,6 +31,7 @@ namespace Ctf4e.Server.Controllers
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
         private async Task<IActionResult> RenderAsync(int? labId)
@@ -51,6 +53,7 @@ namespace Ctf4e.Server.Controllers
                     AddStatusMessage("Aktuell ist kein Praktikum aktiv.", StatusMessageTypes.Info);
                     return await RenderViewAsync();
                 }
+
                 labId = currentLabExecution.LabId;
             }
 
@@ -61,6 +64,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage($"Fehler: Das Gruppen-Scoreboard für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
+
             ViewData["Scoreboard"] = scoreboard;
 
             return await RenderViewAsync(MenuItems.Group);
@@ -82,11 +86,17 @@ namespace Ctf4e.Server.Controllers
                 return Unauthorized("Could not retrieve group ID");
             }
 
-            // Try to submit flag
-            // TODO Do not hardcode CTF{}
+            // Add prefix/suffix to flag code, if necessary
+            string flagPrefix = await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted);
+            string flagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted);
             flagCode ??= "";
-            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, $"CTF{{{ flagCode.Trim() }}}", HttpContext.RequestAborted);
-            return Ok(new { success });
+            string fullFlagString = flagCode;
+            if(!flagCode.StartsWith(flagPrefix))
+                fullFlagString = flagPrefix + flagCode.Trim() + flagSuffix;
+
+            // Try to submit flag
+            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, fullFlagString, HttpContext.RequestAborted);
+            return Ok(new {success});
         }
 
         [HttpGet("labserver")]

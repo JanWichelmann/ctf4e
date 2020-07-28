@@ -25,6 +25,10 @@ namespace Ctf4e.Server.Services
         Task SetNavbarTitleAsync(string value, CancellationToken cancellationToken = default);
         Task<string> GetPageTitleAsync(CancellationToken cancellationToken = default);
         Task SetPageTitleAsync(string value, CancellationToken cancellationToken = default);
+        Task<string> GetFlagPrefixAsync(CancellationToken cancellationToken = default);
+        Task SetFlagPrefixAsync(string value, CancellationToken cancellationToken = default);
+        Task<string> GetFlagSuffixAsync(CancellationToken cancellationToken = default);
+        Task SetFlagSuffixAsync(string value, CancellationToken cancellationToken = default);
     }
 
     public class ConfigurationService : IConfigurationService
@@ -39,6 +43,8 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyPassAsGroup = "PassAsGroup";
         private const string ConfigKeyNavbarTitle = "NavbarTitle";
         private const string ConfigKeyPageTitle = "PageTitle";
+        private const string ConfigKeyFlagPrefix = "FlagPrefix";
+        private const string ConfigKeyFlagSuffix = "FlagSuffix";
 
         public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
         {
@@ -87,6 +93,18 @@ namespace Ctf4e.Server.Services
 
         public Task SetPageTitleAsync(string value, CancellationToken cancellationToken = default)
             => AddOrUpdateConfigItem(ConfigKeyPageTitle, value, cancellationToken);
+
+        public Task<string> GetFlagPrefixAsync(CancellationToken cancellationToken = default)
+            => GetConfigItemAsync(ConfigKeyFlagPrefix, s => s ?? "CTF{", cancellationToken);
+
+        public Task SetFlagPrefixAsync(string value, CancellationToken cancellationToken = default)
+            => AddOrUpdateConfigItem(ConfigKeyFlagPrefix, value, cancellationToken);
+
+        public Task<string> GetFlagSuffixAsync(CancellationToken cancellationToken = default)
+            => GetConfigItemAsync(ConfigKeyFlagSuffix, s => s ?? "}", cancellationToken);
+
+        public Task SetFlagSuffixAsync(string value, CancellationToken cancellationToken = default)
+            => AddOrUpdateConfigItem(ConfigKeyFlagSuffix, value, cancellationToken);
 
         private async Task<TValue> GetConfigItemAsync<TValue>(string key, Func<string, TValue> valueConverter, CancellationToken cancellationToken)
         {

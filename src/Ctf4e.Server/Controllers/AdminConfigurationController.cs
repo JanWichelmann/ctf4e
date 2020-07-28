@@ -7,6 +7,7 @@ using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -36,7 +37,9 @@ namespace Ctf4e.Server.Controllers
                 ScoreboardCachedSeconds = await _configurationService.GetScoreboardCachedSecondsAsync(HttpContext.RequestAborted),
                 PassAsGroup = await _configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
                 PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
-                NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted)
+                NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
+                FlagPrefix=await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted),
+                FlagSuffix=await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted)
             };
 
             int groupCount = await _userService.GetGroupsAsync().CountAsync(HttpContext.RequestAborted);
@@ -71,6 +74,8 @@ namespace Ctf4e.Server.Controllers
                 await _configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
                 await _configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
                 await _configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
+                await _configurationService.SetFlagPrefixAsync(configurationData.FlagPrefix, HttpContext.RequestAborted);
+                await _configurationService.SetFlagSuffixAsync(configurationData.FlagSuffix, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Konfiguration wurde erfolgreich aktualisiert.", StatusMessageTypes.Success);
             }

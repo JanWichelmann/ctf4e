@@ -110,7 +110,7 @@ namespace Ctf4e.Server.Controllers
             ViewData["ActiveMenuItem"] = activeMenuItem;
             
             // Page title
-            // TODO use dependency injection? Caching is also a good idea. This is very inefficient
+            // TODO use dependency injection?
             var configService = HttpContext.RequestServices.GetService<IConfigurationService>();
             ViewData["PageTitle"] = await configService.GetPageTitleAsync();
             ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync();

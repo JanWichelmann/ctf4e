@@ -1,5 +1,8 @@
 ﻿@using Ctf4e.Server.ViewModels
 @using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Services
+@using Microsoft.AspNetCore.Http
+@inject IConfigurationService ConfigurationService
 @{
     ViewData["Title"] = "Aufgaben";
 
@@ -167,11 +170,11 @@
             <label for="input-flag-code">Flag-Code</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <div class="input-group-text text-monospace">CTF{</div>
+                    <div class="input-group-text text-monospace">@(await ConfigurationService.GetFlagPrefixAsync())</div>
                 </div>
                 <input type="text" class="form-control text-monospace" id="input-flag-code" placeholder="1n5er7-f14g-c0de-here-37a12d">
                 <div class="input-group-append">
-                    <div class="input-group-text text-monospace">}</div>
+                    <div class="input-group-text text-monospace">@(await ConfigurationService.GetFlagSuffixAsync())</div>
                 </div>
             </div>
         </div>

@@ -20,5 +20,13 @@ namespace Ctf4e.Server.ViewModels
 
         [Required(AllowEmptyStrings = false)]
         public string NavbarTitle { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string FlagPrefix { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string FlagSuffix { get; set; }
     }
 }
