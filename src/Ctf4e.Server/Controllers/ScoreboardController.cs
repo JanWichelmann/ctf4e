@@ -9,6 +9,7 @@ using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using StackExchange.Profiling;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -46,22 +47,26 @@ namespace Ctf4e.Server.Controllers
         {
             // TODO allow filtering by slots (variable is already present in scoreboard entries)
 
-            Scoreboard scoreboard;
-            if(labId == null)
+            using(MiniProfiler.Current.Step("Retrieve scoreboard"))
             {
-                scoreboard = await _scoreboardService.GetFullScoreboardAsync(HttpContext.RequestAborted);
-            }
-            else
-            {
-                scoreboard = await _scoreboardService.GetLabScoreboardAsync(labId ?? 0, HttpContext.RequestAborted);
-                if(scoreboard == null)
+                Scoreboard scoreboard;
+                if(labId == null)
                 {
-                    AddStatusMessage("Dieses Praktikum existiert nicht oder enthält keine Aufgaben.", StatusMessageTypes.Warning);
-                    return await RenderAsync(ViewType.Blank);
+                    scoreboard = await _scoreboardService.GetFullScoreboardAsync(HttpContext.RequestAborted);
                 }
-            }
+                else
+                {
+                    scoreboard = await _scoreboardService.GetLabScoreboardAsync(labId ?? 0, HttpContext.RequestAborted);
+                    if(scoreboard == null)
+                    {
+                        AddStatusMessage("Dieses Praktikum existiert nicht oder enthält keine Aufgaben.", StatusMessageTypes.Warning);
+                        return await RenderAsync(ViewType.Blank);
+                    }
+                }
 
-            ViewData["Scoreboard"] = scoreboard;
+                ViewData["Scoreboard"] = scoreboard;
+            }
+            
             var currentUser = await GetCurrentUserAsync();
             ViewData["ShowAllEntries"] = showAllEntries && (currentUser.IsAdmin || currentUser.IsTutor);
 

@@ -431,6 +431,15 @@ namespace Ctf4e.Server.Services
             // Get valid submission counts for passed exercises
             // A passed exercise always has Weight = 1
             var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum)>(@"
+                    CREATE TEMPORARY TABLE MinPassedSubmissionTimes
+                      (PRIMARY KEY primary_key (ExerciseId, GroupId))
+                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS 'MinSubmissionTime'
+	                  FROM `exercisesubmissions` s
+	                  INNER JOIN `users` u ON u.`Id` = s.`UserId`
+	                  WHERE s.`ExercisePassed` = 1
+                      GROUP BY s.ExerciseId, u.GroupId
+                    ;
+
                     SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`
                     FROM `exercisesubmissions` s
                     INNER JOIN `exercises` e ON e.`Id` = s.`ExerciseId`
@@ -438,12 +447,10 @@ namespace Ctf4e.Server.Services
                     INNER JOIN `groups` g ON g.`Id` = u.`GroupId`
                     WHERE g.`ShowInScoreboard` = 1
                       AND s.`SubmissionTime` <= (
-                        SELECT MIN(s2.`SubmissionTime`)
-                        FROM `exercisesubmissions` s2
-                        INNER JOIN `users` u2 ON u2.`Id` = s2.`UserId`
-                        WHERE s2.`ExerciseId` = s.ExerciseId
-                          AND u2.`GroupId` = u.`GroupId`
-                          AND s2.`ExercisePassed` = 1
+	                    SELECT st.`MinSubmissionTime`
+	                    FROM `MinPassedSubmissionTimes` st
+	                    WHERE st.`ExerciseId` = s.ExerciseId
+                    	  AND st.`GroupId` = u.`GroupId`
                       )
                       AND EXISTS(
                         SELECT 1
@@ -508,91 +515,104 @@ namespace Ctf4e.Server.Services
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
                 .ToDictionary(s => s.Key);
 
-            // Compute group points
-            foreach(var entry in scoreboardEntries)
+            using(MiniProfiler.Current.Step("Loop scoreboard entries and compute points"))
             {
-                // Exercise points
-                validExerciseSubmissions.TryGetValue(entry.GroupId, out var groupExerciseSubmissions);
-                if(groupExerciseSubmissions != null)
+                // Compute group points
+                foreach(var entry in scoreboardEntries)
                 {
-                    foreach(var s in groupExerciseSubmissions)
-                        entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
-                }
-
-                // Flag points
-                validFlagSubmissions.TryGetValue(entry.GroupId, out var groupFlagSubmissions);
-                if(groupFlagSubmissions != null)
-                {
-                    var flagPointsPerLab = new Dictionary<int, (int FlagPoints, int BugBountyPoints, int FlagCount)>();
-                    foreach(var s in groupFlagSubmissions)
+                    // Exercise points
+                    validExerciseSubmissions.TryGetValue(entry.GroupId, out var groupExerciseSubmissions);
+                    if(groupExerciseSubmissions != null)
                     {
-                        if(!flagPointsPerLab.TryGetValue(s.LabId, out var fl))
-                            fl = (0, 0, 0);
-
-                        // Treat bounties separately
-                        if(flags[s.FlagId].Flag.IsBounty)
-                            flagPointsPerLab[s.LabId] = (fl.FlagPoints, fl.BugBountyPoints + flags[s.FlagId].CurrentPoints, fl.FlagCount);
-                        else
-                            flagPointsPerLab[s.LabId] = (fl.FlagPoints + flags[s.FlagId].CurrentPoints, fl.BugBountyPoints, fl.FlagCount + 1);
+                        foreach(var s in groupExerciseSubmissions)
+                            entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
                     }
 
-                    foreach(var fl in flagPointsPerLab)
+                    // Flag points
+                    validFlagSubmissions.TryGetValue(entry.GroupId, out var groupFlagSubmissions);
+                    if(groupFlagSubmissions != null)
                     {
-                        entry.FlagPoints += Math.Min(fl.Value.FlagPoints, flagPointLimits[fl.Key]);
-                        entry.BugBountyPoints += fl.Value.BugBountyPoints;
-                        entry.FlagCount += fl.Value.FlagCount;
+                        var flagPointsPerLab = new Dictionary<int, (int FlagPoints, int BugBountyPoints, int FlagCount)>();
+                        foreach(var s in groupFlagSubmissions)
+                        {
+                            if(!flagPointsPerLab.TryGetValue(s.LabId, out var fl))
+                                fl = (0, 0, 0);
+
+                            // Treat bounties separately
+                            if(flags[s.FlagId].Flag.IsBounty)
+                                flagPointsPerLab[s.LabId] = (fl.FlagPoints, fl.BugBountyPoints + flags[s.FlagId].CurrentPoints, fl.FlagCount);
+                            else
+                                flagPointsPerLab[s.LabId] = (fl.FlagPoints + flags[s.FlagId].CurrentPoints, fl.BugBountyPoints, fl.FlagCount + 1);
+                        }
+
+                        foreach(var fl in flagPointsPerLab)
+                        {
+                            entry.FlagPoints += Math.Min(fl.Value.FlagPoints, flagPointLimits[fl.Key]);
+                            entry.BugBountyPoints += fl.Value.BugBountyPoints;
+                            entry.FlagCount += fl.Value.FlagCount;
+                        }
                     }
-                }
 
-                entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
-                entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
+                    entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
+                    entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
+                }
             }
 
-            // Sort list to get ranking
-            scoreboardEntries.Sort((g1, g2) =>
+            using(MiniProfiler.Current.Step("Sort scoreboard entries"))
             {
-                if(g1.TotalPoints > g2.TotalPoints)
-                    return -1;
-                if(g1.TotalPoints < g2.TotalPoints)
-                    return 1;
-                if(g1.FlagCount > g2.FlagCount)
-                    return -1;
-                if(g1.FlagCount < g2.FlagCount)
-                    return 1;
-                if(g1.LastSubmissionTime < g2.LastSubmissionTime)
-                    return -1;
-                if(g1.LastSubmissionTime > g2.LastSubmissionTime)
-                    return 1;
-                return 0;
-            });
-
-            // Set rank variables
-            int lastRank = 0;
-            int lastRankPoints = 0;
-            var lastRankSubmissionTime = DateTime.MaxValue;
-            foreach(var entry in scoreboardEntries)
-            {
-                // Differing values?
-                if(entry.TotalPoints != lastRankPoints || entry.LastSubmissionTime != lastRankSubmissionTime)
+                // Sort list to get ranking
+                scoreboardEntries.Sort((g1, g2) =>
                 {
-                    // Next rank
-                    ++lastRank;
-                    lastRankPoints = entry.TotalPoints;
-                    lastRankSubmissionTime = entry.LastSubmissionTime;
-                }
-
-                // Set rank
-                entry.Rank = lastRank;
+                    if(g1.TotalPoints > g2.TotalPoints)
+                        return -1;
+                    if(g1.TotalPoints < g2.TotalPoints)
+                        return 1;
+                    if(g1.FlagCount > g2.FlagCount)
+                        return -1;
+                    if(g1.FlagCount < g2.FlagCount)
+                        return 1;
+                    if(g1.LastSubmissionTime < g2.LastSubmissionTime)
+                        return -1;
+                    if(g1.LastSubmissionTime > g2.LastSubmissionTime)
+                        return 1;
+                    return 0;
+                });
             }
 
-            var scoreboard = new Scoreboard
+            using(MiniProfiler.Current.Step("Compute ranks"))
             {
-                AllLabs = true,
-                MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
-                Entries = scoreboardEntries,
-                Flags = flags,
-                ValidUntil = now.AddSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
-            };
+                // Set rank variables
+                int lastRank = 0;
+                int lastRankPoints = 0;
+                var lastRankSubmissionTime = DateTime.MaxValue;
+                foreach(var entry in scoreboardEntries)
+                {
+                    // Differing values?
+                    if(entry.TotalPoints != lastRankPoints || entry.LastSubmissionTime != lastRankSubmissionTime)
+                    {
+                        // Next rank
+                        ++lastRank;
+                        lastRankPoints = entry.TotalPoints;
+                        lastRankSubmissionTime = entry.LastSubmissionTime;
+                    }
+
+                    // Set rank
+                    entry.Rank = lastRank;
+                }
+            }
+
+            Scoreboard scoreboard;
+            using(MiniProfiler.Current.Step("Create final scoreboard object"))
+            {
+                scoreboard = new Scoreboard
+                {
+                    AllLabs = true,
+                    MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
+                    Entries = scoreboardEntries,
+                    Flags = flags,
+                    ValidUntil = now.AddSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
+                };
+            }
 
             _scoreboardCacheService.SetFullScoreboard(scoreboard);
             return scoreboard;
@@ -676,6 +696,17 @@ namespace Ctf4e.Server.Services
             // Get valid submission counts for passed exercises
             // A passed exercise always has Weight = 1
             var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum)>(@"
+                    CREATE TEMPORARY TABLE MinPassedSubmissionTimes
+                      (PRIMARY KEY primary_key (ExerciseId, GroupId))
+                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS 'MinSubmissionTime'
+	                  FROM `exercisesubmissions` s
+	                  INNER JOIN `users` u ON u.`Id` = s.`UserId`
+                      INNER JOIN `exercises` e ON e.`Id` = s.`ExerciseId`
+	                  WHERE e.`LabId` = @labId
+                        AND s.`ExercisePassed` = 1
+                      GROUP BY s.ExerciseId, u.GroupId
+                    ;
+
                     SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`
                     FROM `exercisesubmissions` s
                     INNER JOIN `exercises` e ON e.`Id` = s.`ExerciseId`
@@ -684,12 +715,10 @@ namespace Ctf4e.Server.Services
                     WHERE g.`ShowInScoreboard` = 1
                       AND e.`LabId` = @labId
                       AND s.`SubmissionTime` <= (
-                        SELECT MIN(s2.`SubmissionTime`)
-                        FROM `exercisesubmissions` s2
-                        INNER JOIN `users` u2 ON u2.`Id` = s2.`UserId`
-                        WHERE s2.`ExerciseId` = s.ExerciseId
-                          AND u2.`GroupId` = u.`GroupId`
-                          AND s2.`ExercisePassed` = 1
+	                    SELECT st.`MinSubmissionTime`
+	                    FROM `MinPassedSubmissionTimes` st
+	                    WHERE st.`ExerciseId` = s.ExerciseId
+                    	  AND st.`GroupId` = u.`GroupId`
                       )
                       AND EXISTS(
                         SELECT 1
@@ -759,91 +788,106 @@ namespace Ctf4e.Server.Services
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
 
-            // Compute group points
-            foreach(var entry in scoreboardEntries)
+            using(MiniProfiler.Current.Step("Loop scoreboard entries and compute points"))
             {
-                // Exercise points
-                validExerciseSubmissions.TryGetValue(entry.GroupId, out var groupExerciseSubmissions);
-                if(groupExerciseSubmissions != null)
+                // Compute group points
+                foreach(var entry in scoreboardEntries)
                 {
-                    foreach(var s in groupExerciseSubmissions)
-                        entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
-                }
-
-                // Flag points
-                validFlagSubmissions.TryGetValue(entry.GroupId, out var groupFlagSubmissions);
-                if(groupFlagSubmissions != null)
-                {
-                    foreach(var s in groupFlagSubmissions)
+                    // Exercise points
+                    validExerciseSubmissions.TryGetValue(entry.GroupId, out var groupExerciseSubmissions);
+                    if(groupExerciseSubmissions != null)
                     {
-                        if(flags[s.FlagId].Flag.IsBounty)
-                            entry.BugBountyPoints += flags[s.FlagId].CurrentPoints;
-                        else
-                        {
-                            entry.FlagPoints += flags[s.FlagId].CurrentPoints;
-                            ++entry.FlagCount;
-                        }
+                        foreach(var s in groupExerciseSubmissions)
+                            entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
                     }
 
-                    if(entry.FlagPoints > lab.MaxFlagPoints)
-                        entry.FlagPoints = lab.MaxFlagPoints;
-                }
+                    // Flag points
+                    validFlagSubmissions.TryGetValue(entry.GroupId, out var groupFlagSubmissions);
+                    if(groupFlagSubmissions != null)
+                    {
+                        foreach(var s in groupFlagSubmissions)
+                        {
+                            if(flags[s.FlagId].Flag.IsBounty)
+                                entry.BugBountyPoints += flags[s.FlagId].CurrentPoints;
+                            else
+                            {
+                                entry.FlagPoints += flags[s.FlagId].CurrentPoints;
+                                ++entry.FlagCount;
+                            }
+                        }
 
-                entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
-                entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
+                        if(entry.FlagPoints > lab.MaxFlagPoints)
+                            entry.FlagPoints = lab.MaxFlagPoints;
+                    }
+
+                    entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
+                    entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
+                }
             }
 
-            // Sort list to get ranking
-            scoreboardEntries.Sort((g1, g2) =>
+            using(MiniProfiler.Current.Step("Sort scoreboard entries"))
             {
-                if(g1.TotalPoints > g2.TotalPoints)
-                    return -1;
-                if(g1.TotalPoints < g2.TotalPoints)
-                    return 1;
-                if(g1.FlagCount > g2.FlagCount)
-                    return -1;
-                if(g1.FlagCount < g2.FlagCount)
-                    return 1;
-                if(g1.LastSubmissionTime < g2.LastSubmissionTime)
-                    return -1;
-                if(g1.LastSubmissionTime > g2.LastSubmissionTime)
-                    return 1;
-                return 0;
-            });
-
-            // Set rank variables
-            int lastRank = 0;
-            int lastRankPoints = 0;
-            var lastRankSubmissionTime = DateTime.MaxValue;
-            foreach(var entry in scoreboardEntries)
-            {
-                // Differing values?
-                if(entry.TotalPoints != lastRankPoints || entry.LastSubmissionTime != lastRankSubmissionTime)
+                // Sort list to get ranking
+                scoreboardEntries.Sort((g1, g2) =>
                 {
-                    // Next rank
-                    ++lastRank;
-                    lastRankPoints = entry.TotalPoints;
-                    lastRankSubmissionTime = entry.LastSubmissionTime;
-                }
+                    if(g1.TotalPoints > g2.TotalPoints)
+                        return -1;
+                    if(g1.TotalPoints < g2.TotalPoints)
+                        return 1;
+                    if(g1.FlagCount > g2.FlagCount)
+                        return -1;
+                    if(g1.FlagCount < g2.FlagCount)
+                        return 1;
+                    if(g1.LastSubmissionTime < g2.LastSubmissionTime)
+                        return -1;
+                    if(g1.LastSubmissionTime > g2.LastSubmissionTime)
+                        return 1;
+                    return 0;
+                });
+            }
 
-                // Set rank
-                entry.Rank = lastRank;
+            using(MiniProfiler.Current.Step("Compute ranks"))
+            {
+                // Set rank variables
+                int lastRank = 0;
+                int lastRankPoints = 0;
+                var lastRankSubmissionTime = DateTime.MaxValue;
+                foreach(var entry in scoreboardEntries)
+                {
+                    // Differing values?
+                    if(entry.TotalPoints != lastRankPoints || entry.LastSubmissionTime != lastRankSubmissionTime)
+                    {
+                        // Next rank
+                        ++lastRank;
+                        lastRankPoints = entry.TotalPoints;
+                        lastRankSubmissionTime = entry.LastSubmissionTime;
+                    }
+
+                    // Set rank
+                    entry.Rank = lastRank;
+                }
             }
 
             string labName = await _dbContext.Labs.AsNoTracking()
                 .Where(l => l.Id == labId)
                 .Select(l => l.Name)
                 .FirstAsync(cancellationToken);
-            var scoreboard = new Scoreboard
+            
+            Scoreboard scoreboard;
+            using(MiniProfiler.Current.Step("Create final scoreboard object"))
             {
-                LabId = labId,
-                CurrentLabName = labName,
-                AllLabs = false,
-                MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
-                Entries = scoreboardEntries,
-                Flags = flags,
-                ValidUntil = now.AddSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
-            };
+                scoreboard = new Scoreboard
+                {
+                    LabId = labId,
+                    CurrentLabName = labName,
+                    AllLabs = false,
+                    MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
+                    Entries = scoreboardEntries,
+                    Flags = flags,
+                    ValidUntil = now.AddSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
+                };
+            }
+
             _scoreboardCacheService.SetLabScoreboard(labId, scoreboard);
             return scoreboard;
         }

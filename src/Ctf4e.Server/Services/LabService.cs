@@ -15,6 +15,7 @@ namespace Ctf4e.Server.Services
     public interface ILabService
     {
         IAsyncEnumerable<Lab> GetLabsAsync();
+        IAsyncEnumerable<Lab> GetFullLabsAsync();
         Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken = default);
         Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken = default);
@@ -34,6 +35,14 @@ namespace Ctf4e.Server.Services
         }
 
         public IAsyncEnumerable<Lab> GetLabsAsync()
+        {
+            return _dbContext.Labs.AsNoTracking()
+                .OrderBy(l => l.Id)
+                .ProjectTo<Lab>(_mapper.ConfigurationProvider)
+                .AsAsyncEnumerable();
+        }
+
+        public IAsyncEnumerable<Lab> GetFullLabsAsync()
         {
             return _dbContext.Labs.AsNoTracking()
                 .Include(l => l.Exercises)

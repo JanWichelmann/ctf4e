@@ -34,7 +34,7 @@ namespace Ctf4e.Server.Controllers
         public async Task<IActionResult> RenderLabListAsync()
         {
             // Pass labs
-            ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
+            ViewData["Labs"] = await _labService.GetFullLabsAsync().ToListAsync();
 
             return await RenderAsync(ViewType.ListLabs);
         }
