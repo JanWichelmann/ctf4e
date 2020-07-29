@@ -18,13 +18,15 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabService _labService;
         private readonly IExerciseService _exerciseService;
         private readonly IUserService _userService;
+        private readonly ILabExecutionService _labExecutionService;
 
 
-        public ApiController(ILabService labService, IExerciseService exerciseService, IUserService userService)
+        public ApiController(ILabService labService, IExerciseService exerciseService, IUserService userService, ILabExecutionService labExecutionService)
         {
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
         }
 
         [HttpPost("exercisesubmission/create")]
@@ -44,10 +46,17 @@ namespace Ctf4e.Server.Controllers
                 var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
                 if(exercise == null)
                     return NotFound(new { error = "Exercise not found" });
-
-                // Check user
-                if(!await _userService.UserExistsAsync(apiExerciseSubmission.UserId, HttpContext.RequestAborted))
-                    return NotFound(new { error = "User not found" });
+                
+                // Check lab execution
+                // This will also automatically check whether the given user exists
+                var labExecution = await _labExecutionService.GetLabExecutionForUserAsync(apiExerciseSubmission.UserId, lab.Id, HttpContext.RequestAborted);
+                var now = DateTime.Now;
+                if(labExecution == null || now < labExecution.PreStart)
+                    return NotFound(new {error = "Lab is not active for this user"});
+                
+                // Some exercises may only be submitted after the pre-start phase has ended
+                if(!exercise.IsPreStartAvailable && now < labExecution.Start)
+                    return NotFound(new {error = "This exercise may not be submitted in the pre-start phase"});
 
                 // Create submission
                 var submission = new ExerciseSubmission

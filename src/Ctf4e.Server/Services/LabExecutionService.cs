@@ -16,6 +16,7 @@ namespace Ctf4e.Server.Services
     {
         IAsyncEnumerable<LabExecution> GetLabExecutionsAsync();
         Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default);
+        Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default);
         Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken = default);
         Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken = default);
         Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken = default);
@@ -51,6 +52,16 @@ namespace Ctf4e.Server.Services
                 .Include(l => l.Lab)
                 .Include(l => l.Group)
                 .Where(l => l.GroupId == groupId && l.LabId == labId)
+                .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Lab, l => l.Group)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default)
+        {
+            return _dbContext.LabExecutions.AsNoTracking()
+                .Include(l => l.Lab)
+                .Include(l => l.Group)
+                .Where(l => l.Group.Members.Contains(new UserEntity { Id = userId }) && l.LabId == labId)
                 .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Lab, l => l.Group)
                 .FirstOrDefaultAsync(cancellationToken);
         }

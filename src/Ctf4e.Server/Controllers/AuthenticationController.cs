@@ -105,7 +105,7 @@ namespace Ctf4e.Server.Controllers
                 return await ShowGroupFormAsync();
             return await RenderAsync(ViewType.Redirect);
         }
-
+        
         private async Task DoLoginAsync(User user)
         {
             // Prepare session data to identify user

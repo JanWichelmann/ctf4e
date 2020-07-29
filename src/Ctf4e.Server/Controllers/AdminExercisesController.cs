@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-// TODO Configure whether available in PreStart mode
 namespace Ctf4e.Server.Controllers
 {
     [Route("admin/exercises")]
@@ -56,6 +55,7 @@ namespace Ctf4e.Server.Controllers
                 if(exercise == null)
                     return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
             }
+
             if(exercise == null)
                 return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
 
@@ -86,6 +86,7 @@ namespace Ctf4e.Server.Controllers
                 exercise.ExerciseNumber = exerciseData.ExerciseNumber;
                 exercise.Name = exerciseData.Name;
                 exercise.IsMandatory = exerciseData.IsMandatory;
+                exercise.IsPreStartAvailable = exerciseData.IsPreStartAvailable;
                 exercise.BasePoints = exerciseData.BasePoints;
                 exercise.PenaltyPoints = exerciseData.PenaltyPoints;
                 await _exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
@@ -126,10 +127,11 @@ namespace Ctf4e.Server.Controllers
                     ExerciseNumber = exerciseData.ExerciseNumber,
                     Name = exerciseData.Name,
                     IsMandatory = exerciseData.IsMandatory,
+                    IsPreStartAvailable = exerciseData.IsPreStartAvailable,
                     BasePoints = exerciseData.BasePoints,
                     PenaltyPoints = exerciseData.PenaltyPoints
                 };
-               await _exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
+                await _exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Aufgabe wurde erfolgreich erstellt.", StatusMessageTypes.Success);
                 return await RenderExerciseListAsync(exerciseData.LabId);

@@ -21,6 +21,8 @@ namespace Ctf4e.Server.Data.Entities
         public string Name { get; set; }
 
         public bool IsMandatory { get; set; }
+        
+        public bool IsPreStartAvailable { get; set; }
 
         public int BasePoints { get; set; }
 

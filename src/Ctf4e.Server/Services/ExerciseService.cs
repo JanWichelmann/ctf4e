@@ -70,6 +70,7 @@ namespace Ctf4e.Server.Services
                 ExerciseNumber = exercise.ExerciseNumber,
                 Name = exercise.Name,
                 IsMandatory = exercise.IsMandatory,
+                IsPreStartAvailable = exercise.IsPreStartAvailable,
                 BasePoints = exercise.BasePoints,
                 PenaltyPoints = exercise.PenaltyPoints,
                 Submissions = new List<ExerciseSubmissionEntity>()
@@ -83,7 +84,7 @@ namespace Ctf4e.Server.Services
         public async Task UpdateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default)
         {
             // Try to retrieve existing entity
-            var exerciseEntity = await _dbContext.Exercises.FindAsync(new object[] { exercise.Id }, cancellationToken);
+            var exerciseEntity = await _dbContext.Exercises.FindAsync(new object[] {exercise.Id}, cancellationToken);
             if(exerciseEntity == null)
                 throw new InvalidOperationException("Diese Aufgabe existiert nicht");
 
@@ -92,6 +93,7 @@ namespace Ctf4e.Server.Services
             exerciseEntity.ExerciseNumber = exercise.ExerciseNumber;
             exerciseEntity.Name = exercise.Name;
             exerciseEntity.IsMandatory = exercise.IsMandatory;
+            exerciseEntity.IsPreStartAvailable = exercise.IsPreStartAvailable;
             exerciseEntity.BasePoints = exercise.BasePoints;
             exerciseEntity.PenaltyPoints = exercise.PenaltyPoints;
 
@@ -104,7 +106,7 @@ namespace Ctf4e.Server.Services
             try
             {
                 // Delete entry
-                _dbContext.Exercises.Remove(new ExerciseEntity { Id = id });
+                _dbContext.Exercises.Remove(new ExerciseEntity {Id = id});
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
             catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
@@ -136,7 +138,7 @@ namespace Ctf4e.Server.Services
             try
             {
                 // Delete entry
-                _dbContext.ExerciseSubmissions.Remove(new ExerciseSubmissionEntity { Id = id });
+                _dbContext.ExerciseSubmissions.Remove(new ExerciseSubmissionEntity {Id = id});
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
             catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)

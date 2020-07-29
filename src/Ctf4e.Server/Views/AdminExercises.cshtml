@@ -35,6 +35,7 @@
             <th scope="col">Basispunktzahl</th>
             <th scope="col">Strafpunkte</th>
             <th scope="col">Pflicht</th>
+            <th scope="col">Vor-Beginn</th>
             <th scope="col">Aktionen</th>
         </tr>
         </thead>
@@ -49,6 +50,16 @@
                 <td>@e.PenaltyPoints</td>
                 <td>
                     @if(e.IsMandatory)
+                    {
+                        <span class="oi oi-check text-success"></span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-x text-danger"></span>
+                    }
+                </td>
+                <td>
+                    @if(e.IsPreStartAvailable)
                     {
                         <span class="oi oi-check text-success"></span>
                     }
@@ -145,6 +156,18 @@ else if(viewType == AdminExercisesController.ViewType.EditExercise)
                 <label asp-for="IsMandatory" class="form-check-label">Pflichtaufgabe</label>
             </div>
         </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="IsPreStartAvailable" class="form-check-input">
+                <label asp-for="IsPreStartAvailable" class="form-check-label">
+                    In Vor-Beginn-Phase einreichbar<br/>
+                    <small>
+                        Dies steuert lediglich, ob diese Aufgabe in der Vor-Beginn-Phase eingereicht werden kann.
+                        Bereits bestehende Einreichungen bleiben unangetastet und werden immer gewertet, sofern sie zwischen Vor-Beginn und Ende liegen.
+                    </small>
+                </label>
+            </div>
+        </div>
 
         <input asp-for="LabId" type="hidden">
         @Html.AntiForgeryToken()
@@ -184,6 +207,18 @@ else if(viewType == AdminExercisesController.ViewType.CreateExercise)
             <div class="form-check">
                 <input asp-for="IsMandatory" class="form-check-input">
                 <label asp-for="IsMandatory" class="form-check-label">Pflichtaufgabe</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="IsPreStartAvailable" class="form-check-input">
+                <label asp-for="IsPreStartAvailable" class="form-check-label">
+                    In Vor-Beginn-Phase einreichbar<br/>
+                    <small>
+                        Dies steuert lediglich, ob diese Aufgabe in der Vor-Beginn-Phase eingereicht werden kann.
+                        Bereits bestehende Einreichungen bleiben unangetastet und werden immer gewertet, sofern sie zwischen Vor-Beginn und Ende liegen.
+                    </small>
+                </label>
             </div>
         </div>
 
