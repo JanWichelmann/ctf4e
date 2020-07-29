@@ -40,6 +40,12 @@
     <ProjectReference Include="..\Ctf4e.Utilities\Ctf4e.Utilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Controllers\AuthenticationController.Moodle.cs">
+      <DependentUpon>AuthenticationController.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
 
   <Target Name="BeforeBuild">

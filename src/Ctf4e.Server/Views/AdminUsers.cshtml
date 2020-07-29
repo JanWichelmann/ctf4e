@@ -60,7 +60,7 @@
                             <span class="oi oi-pencil"></span>
                             Bearbeiten
                         </a>
-                        <a role="button" class="btn btn-sm btn-secondary" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.AdminLoginAsUserAsync), new { id = u.Id }))" title="Als diesen Benutzer einloggen">
+                        <a role="button" class="btn btn-sm btn-secondary" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.AdminLoginAsUserAsync), new { userId = u.Id }))" title="Als diesen Benutzer einloggen">
                             <span class="oi oi-account-login"></span>
                             Einloggen
                         </a>

@@ -21,20 +21,16 @@ using MoodleLti.Options;
 namespace Ctf4e.Server.Controllers
 {
     [Route("auth")]
-    public class AuthenticationController : ControllerBase
+    public partial class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly ISlotService _slotService;
-        private readonly IOptions<MoodleLtiOptions> _moodleLtiOptions;
-        private readonly IConfigurationService _configurationService;
 
-        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IOptions<MoodleLtiOptions> moodleLtiOptions, IConfigurationService configurationService)
+        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
             : base(userService, mainOptions, "~/Views/Authentication.cshtml")
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
-            _moodleLtiOptions = moodleLtiOptions ?? throw new ArgumentNullException(nameof(moodleLtiOptions));
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
         private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
@@ -61,7 +57,7 @@ namespace Ctf4e.Server.Controllers
         }
 
 #if DEBUG
-        [HttpGet("dev/login")]
+        [HttpGet("login/dev/{userId}")]
         public async Task<IActionResult> DevLoginAsync(int userId)
         {
             // Already logged in?
@@ -88,54 +84,12 @@ namespace Ctf4e.Server.Controllers
         }
 #endif
 
-        [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync()
-        {
-            // Already logged in?
-            var currentUser = await GetCurrentUserAsync();
-            if(currentUser != null)
-                return await RenderAsync(ViewType.Redirect);
-
-            // Parse and check request
-            var authData = await MoodleAuthenticationTools.ParseAuthenticationRequestAsync
-            (
-                Request,
-                _moodleLtiOptions.Value.OAuthConsumerKey,
-                _moodleLtiOptions.Value.OAuthSharedSecret
-            );
-
-            // Does the user exist already?
-            var user = await _userService.FindUserByMoodleUserIdAsync(authData.UserId, HttpContext.RequestAborted);
-            if(user == null)
-            {
-                var newUser = new User
-                {
-                    DisplayName = authData.FullName,
-                    MoodleUserId = authData.UserId,
-                    MoodleName = authData.LoginName,
-                    GroupFindingCode = RandomStringGenerator.GetRandomString(10),
-                    IsAdmin = !await _userService.AnyUsers(HttpContext.RequestAborted)
-                };
-                user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
-                AddStatusMessage("Account erfolgreich erstellt!", StatusMessageTypes.Success);
-            }
-
-            // Sign in user
-            await DoLoginAsync(user);
-
-            // Done
-            AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
-            if(user.Group == null)
-                return await ShowGroupFormAsync();
-            return await RenderAsync(ViewType.Redirect);
-        }
-
-        [HttpGet("loginas")]
+        [HttpGet("login/as")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
-        public async Task<IActionResult> AdminLoginAsUserAsync(int id)
+        public async Task<IActionResult> AdminLoginAsUserAsync(int userId)
         {
             // Try to retrieve user
-            var user = await _userService.GetUserAsync(id, HttpContext.RequestAborted);
+            var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
             if(user == null)
             {
                 AddStatusMessage("Dieser Benutzer existiert nicht.", StatusMessageTypes.Error);
