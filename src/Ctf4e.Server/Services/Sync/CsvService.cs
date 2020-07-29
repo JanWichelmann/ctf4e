@@ -4,7 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
+using Ctf4e.Server.Data.Entities;
+using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using MoodleLti;
@@ -28,10 +33,12 @@ namespace Ctf4e.Server.Services.Sync
     public class CsvService : ICsvService
     {
         private readonly CtfDbContext _dbContext;
+        private readonly IConfigurationService _configurationService;
 
-        public CsvService(CtfDbContext dbContext)
+        public CsvService(CtfDbContext dbContext, IConfigurationService configurationService)
         {
             _dbContext = dbContext;
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
         /// <summary>
@@ -41,9 +48,8 @@ namespace Ctf4e.Server.Services.Sync
         /// <returns></returns>
         public async Task<string> GetLabStatesAsync(CancellationToken cancellationToken)
         {
-            //TODO
-            return "";
-            /*
+            bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
+
             // Query existing labs
             var labs = await _dbContext.Labs.AsNoTracking()
                 .OrderBy(l => l.Id)
@@ -55,33 +61,39 @@ namespace Ctf4e.Server.Services.Sync
                 })
                 .ToListAsync(cancellationToken);
 
+            // Get mapping of users and groups
+            var users = await _dbContext.Users.AsNoTracking()
+                .Where(u => !u.IsAdmin
+                            && !u.IsTutor
+                            && u.GroupId != null)
+                .OrderBy(u => u.DisplayName)
+                .ToListAsync(cancellationToken);
+            var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId);
+
             // Get all passed submissions of mandatory exercises
             var passedExerciseSubmissions = await _dbContext.ExerciseSubmissions.AsNoTracking()
                 .Where(s => s.ExercisePassed
                             && s.Exercise.IsMandatory
-                            && s.Group.LabExecutions
+                            && s.User.Group.LabExecutions
                                 .Any(le => le.LabId == s.Exercise.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
                 .Select(s => new
                 {
                     s.ExerciseId,
                     s.Exercise.LabId,
-                    s.GroupId
+                    s.UserId
                 }).Distinct()
                 .ToListAsync(cancellationToken);
 
             // Get passed exercise counts per student and lab
-            var students = await _dbContext.Users.AsNoTracking()
-                .Where(u => !u.IsAdmin
-                            && !u.IsTutor
-                            && u.GroupId != null)
-                .ToDictionaryAsync(u => u.Id, u => new
+            var students = users
+                .ToDictionary(u => u.Id, u => new
                 {
                     User = u,
                     LabStates = passedExerciseSubmissions
-                        .Where(es => es.GroupId == u.GroupId)
+                        .Where(es => passAsGroup ? groupIdLookup[es.UserId] == u.GroupId : es.UserId == u.Id)
                         .GroupBy(es => es.LabId)
                         .ToDictionary(esg => esg.Key, esg => esg.Count() == labs.First(l => l.LabId == esg.Key).MandatoryExerciseCount)
-                }, cancellationToken);
+                });
 
             // Create CSV columns
             StringBuilder csv = new StringBuilder();
@@ -92,6 +104,7 @@ namespace Ctf4e.Server.Services.Sync
                 csv.Append(Escape(lab.LabName));
                 csv.Append('"');
             }
+
             csv.AppendLine();
 
             // Create entries
@@ -115,7 +128,6 @@ namespace Ctf4e.Server.Services.Sync
             }
 
             return csv.ToString();
-            */
         }
 
         /// <summary>

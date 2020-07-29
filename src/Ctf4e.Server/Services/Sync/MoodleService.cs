@@ -26,11 +26,13 @@ namespace Ctf4e.Server.Services.Sync
     {
         private readonly IMoodleGradebook _moodleGradebook;
         private readonly CtfDbContext _dbContext;
+        private readonly IConfigurationService _configurationService;
 
-        public MoodleService(IMoodleGradebook moodleGradebook, CtfDbContext dbContext)
+        public MoodleService(IMoodleGradebook moodleGradebook, CtfDbContext dbContext, IConfigurationService configurationService)
         {
             _moodleGradebook = moodleGradebook ?? throw new ArgumentNullException(nameof(moodleGradebook));
             _dbContext = dbContext;
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
         /// <summary>
@@ -40,10 +42,10 @@ namespace Ctf4e.Server.Services.Sync
         /// <returns></returns>
         public async Task UploadStateToMoodleAsync(CancellationToken cancellationToken)
         {
-            // TODO
-            /*
             // Get current gradebook columns
             var oldCols = (await _moodleGradebook.GetColumnsAsync()).ToDictionary(c => c.Tag);
+
+            bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
 
             // Query existing labs
             var labs = await _dbContext.Labs.AsNoTracking()
@@ -56,33 +58,39 @@ namespace Ctf4e.Server.Services.Sync
                 })
                 .ToListAsync(cancellationToken);
 
+            // Get mapping of users and groups
+            var users = await _dbContext.Users.AsNoTracking()
+                .Where(u => !u.IsAdmin
+                            && !u.IsTutor
+                            && u.GroupId != null)
+                .OrderBy(u => u.DisplayName)
+                .ToListAsync(cancellationToken);
+            var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId);
+
             // Get all passed submissions of mandatory exercises
             var passedExerciseSubmissions = await _dbContext.ExerciseSubmissions.AsNoTracking()
                 .Where(s => s.ExercisePassed
                             && s.Exercise.IsMandatory
-                            && s.Group.LabExecutions
+                            && s.User.Group.LabExecutions
                                 .Any(le => le.LabId == s.Exercise.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
                 .Select(s => new
                 {
                     s.ExerciseId,
                     s.Exercise.LabId,
-                    s.GroupId
+                    s.UserId
                 }).Distinct()
                 .ToListAsync(cancellationToken);
 
-            // Get students
-            var students = await _dbContext.Users.AsNoTracking()
-                .Where(u => !u.IsAdmin
-                            && !u.IsTutor
-                            && u.GroupId != null)
-                .ToListAsync(cancellationToken);
-
             // Get passed exercise counts per student and lab
-            var passedCounts = students
-                .ToDictionary(s => s.MoodleUserId, s => passedExerciseSubmissions
-                    .Where(es => es.GroupId == s.GroupId)
-                    .GroupBy(es => es.LabId)
-                    .ToDictionary(esg => esg.Key, esg => esg.Count()));
+            var students = users
+                .ToDictionary(u => u.Id, u => new
+                {
+                    User = u,
+                    LabStates = passedExerciseSubmissions
+                        .Where(es => passAsGroup ? groupIdLookup[es.UserId] == u.GroupId : es.UserId == u.Id)
+                        .GroupBy(es => es.LabId)
+                        .ToDictionary(esg => esg.Key, esg => esg.Count() == labs.First(l => l.LabId == esg.Key).MandatoryExerciseCount)
+                });
 
             // Send data
             foreach(var lab in labs)
@@ -113,26 +121,22 @@ namespace Ctf4e.Server.Services.Sync
                 }
 
                 // Insert grades
-                foreach(var s in passedCounts)
+                foreach(var student in students)
                 {
                     // Lab passed?
-                    bool passed = false;
-                    if(s.Value.TryGetValue(lab.LabId, out int passedExerciseCount))
-                        passed = passedExerciseCount == lab.MandatoryExerciseCount;
-                    await _moodleGradebook.SetGradeAsync(column.Id, s.Key, new MoodleGradebookGrade
+                    student.Value.LabStates.TryGetValue(lab.LabId, out var passed);
+                    await _moodleGradebook.SetGradeAsync(column.Id, student.Value.User.MoodleUserId, new MoodleGradebookGrade
                     {
-                         Score= passed ? 1 : 0,
-                          Comment = "",
-                           Timestamp = DateTime.Now
+                        Score = passed ? 1 : 0,
+                        Comment = "",
+                        Timestamp = DateTime.Now
                     });
                 }
             }
 
             // Delete unneeded old columns
-            //foreach(var c in oldCols)
-            //    await _moodleGradebook.DeleteColumnAsync(c.Value.Id);
-            }
-            */
+            foreach(var c in oldCols)
+                await _moodleGradebook.DeleteColumnAsync(c.Value.Id);
         }
     }
 }
