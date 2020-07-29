@@ -53,6 +53,7 @@ namespace Ctf4e.Server.Controllers
                     return await RenderGroupListAsync();
                 }
             }
+
             if(group == null)
             {
                 AddStatusMessage("Keine Gruppe übergeben.", StatusMessageTypes.Error);
@@ -155,6 +156,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage("Diese Gruppe existiert nicht.", StatusMessageTypes.Error);
                 return await RenderGroupListAsync();
             }
+
             if(group.Members.Any())
             {
                 AddStatusMessage("Die Gruppe muss leer sein, bevor sie gelöscht werden kann.", StatusMessageTypes.Error);

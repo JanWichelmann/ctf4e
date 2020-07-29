@@ -45,36 +45,36 @@
     </p>
     <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
         <thead>
-            <tr>
-                <th scope="col">Gruppe</th>
-                <th scope="col">Praktikum</th>
-                <th scope="col">Vor-Beginn</th>
-                <th scope="col">Beginn</th>
-                <th scope="col">Ende</th>
-                <th scope="col">Aktionen</th>
-            </tr>
+        <tr>
+            <th scope="col">Gruppe</th>
+            <th scope="col">Praktikum</th>
+            <th scope="col">Vor-Beginn</th>
+            <th scope="col">Beginn</th>
+            <th scope="col">Ende</th>
+            <th scope="col">Aktionen</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach(var l in labExecutions)
-            {
-                <tr>
-                    <td>#@l.GroupId: @l.Group.DisplayName</td>
-                    <td>@l.Lab.Name</td>
-                    <td>@l.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
-                    <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
-                    <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
-                    <td>
-                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.ShowEditLabExecutionFormAsync), new { groupId = l.GroupId, labId = l.LabId }))">
-                            <span class="oi oi-pencil"></span>
-                            Bearbeiten
-                        </a>
-                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab-execution-group" data-group-id="@l.GroupId" data-lab-id="@l.LabId" data-group-name="@l.Group.DisplayName" data-lab-name="@l.Lab.Name">
-                            <span class="oi oi-trash"></span>
-                            Löschen
-                        </a>
-                    </td>
-                </tr>
-            }
+        @foreach(var l in labExecutions)
+        {
+            <tr>
+                <td>#@l.GroupId: @l.Group.DisplayName</td>
+                <td>@l.Lab.Name</td>
+                <td>@l.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+                <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+                <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.ShowEditLabExecutionFormAsync), new { groupId = l.GroupId, labId = l.LabId }))">
+                        <span class="oi oi-pencil"></span>
+                        Bearbeiten
+                    </a>
+                    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab-execution-group" data-group-id="@l.GroupId" data-lab-id="@l.LabId" data-group-name="@l.Group.DisplayName" data-lab-name="@l.Lab.Name">
+                        <span class="oi oi-trash"></span>
+                        Löschen
+                    </a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
@@ -255,7 +255,7 @@ else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForG
 @section ScriptsHead
 {
     <script src="~/lib/moment/js/moment.min.js"></script>
-    <script src="~/lib/moment/js/locale/de.js"></script>
+    <script src="~/lib/moment/js/locales.min.js"></script>
     <link rel="stylesheet" type="text/css" href="~/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css">
     <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script>
@@ -282,7 +282,7 @@ else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForG
         <div class="form-group">
             <label asp-for="LabExecution.PreStart">Vor-Beginn</label>
             <div class="input-group" id="datetimepicker-prestart" data-target-input="nearest">
-                <input asp-for="LabExecution.PreStart" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-prestart" />
+                <input asp-for="LabExecution.PreStart" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-prestart"/>
                 <div class="input-group-append" data-target="#datetimepicker-prestart" data-toggle="datetimepicker">
                     <div class="input-group-text">
                         <span class="oi oi-calendar"></span>
@@ -294,7 +294,7 @@ else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForG
         <div class="form-group">
             <label asp-for="LabExecution.Start">Beginn</label>
             <div class="input-group" id="datetimepicker-start" data-target-input="nearest">
-                <input asp-for="LabExecution.Start" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-start" />
+                <input asp-for="LabExecution.Start" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-start"/>
                 <div class="input-group-append" data-target="#datetimepicker-start" data-toggle="datetimepicker">
                     <div class="input-group-text">
                         <span class="oi oi-calendar"></span>
@@ -306,7 +306,7 @@ else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForG
         <div class="form-group">
             <label asp-for="LabExecution.End">Ende</label>
             <div class="input-group" id="datetimepicker-end" data-target-input="nearest">
-                <input asp-for="LabExecution.End" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-end" />
+                <input asp-for="LabExecution.End" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-end"/>
                 <div class="input-group-append" data-target="#datetimepicker-end" data-toggle="datetimepicker">
                     <div class="input-group-text">
                         <span class="oi oi-calendar"></span>

@@ -63,6 +63,7 @@ namespace Ctf4e.Server.Controllers
                     return await RenderLabExecutionListAsync();
                 }
             }
+
             if(labExecutionData?.LabExecution == null)
             {
                 AddStatusMessage("Keine Ausführung übergeben.", StatusMessageTypes.Error);
@@ -78,7 +79,7 @@ namespace Ctf4e.Server.Controllers
             // Always show warning
             AddStatusMessage("Achtung: Das Bearbeiten einer bereits aktiven Praktikumsausführung kann zu Änderungen des \"Bestanden\"-Status und Verschiebungen im Scoreboard führen. "
                              + "Aufgaben- und Flag-Einreichungen werden nicht gelöscht, auch wenn diese bezüglich der neuen Beginn- und Endzeiten nicht möglich gewesen wären.",
-                StatusMessageTypes.Warning);
+                             StatusMessageTypes.Warning);
 
             return ShowEditLabExecutionFormAsync(groupId, labId, null);
         }

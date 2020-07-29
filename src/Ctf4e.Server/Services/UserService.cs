@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Ctf4e.Server.Services
 {
     /// <summary>
-    /// Functionality for managing users and groups.
+    ///     Functionality for managing users and groups.
     /// </summary>
     public interface IUserService
     {
@@ -62,10 +62,10 @@ namespace Ctf4e.Server.Services
         public Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken = default)
         {
             return _dbContext.Users.AsNoTracking()
-                 .Include(u => u.Group)
-                 .Where(u => u.MoodleUserId == moodleUserId)
-                 .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
-                 .FirstOrDefaultAsync(cancellationToken);
+                .Include(u => u.Group)
+                .Where(u => u.MoodleUserId == moodleUserId)
+                .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public Task<User> GetUserAsync(int id, CancellationToken cancellationToken = default)

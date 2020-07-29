@@ -18,18 +18,14 @@ namespace Ctf4e.Server.Controllers
     [Authorize]
     public class ScoreboardController : ControllerBase
     {
-        private readonly IUserService _userService;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabService _labService;
-        private readonly ILabExecutionService _labExecutionService;
 
-        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabService labService, ILabExecutionService labExecutionService)
+        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabService labService)
             : base(userService, mainOptions, "~/Views/Scoreboard.cshtml")
         {
-            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
         }
 
         private async Task<IActionResult> RenderAsync(ViewType viewType)
@@ -64,7 +60,7 @@ namespace Ctf4e.Server.Controllers
 
                 ViewData["Scoreboard"] = scoreboard;
             }
-            
+
             var currentUser = await GetCurrentUserAsync();
             ViewData["ShowAllEntries"] = showAllEntries && (currentUser.IsAdmin || currentUser.IsTutor);
             ViewData["ResetCache"] = resetCache && currentUser.IsAdmin;

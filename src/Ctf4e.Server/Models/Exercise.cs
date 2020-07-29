@@ -10,6 +10,7 @@ namespace Ctf4e.Server.Models
 
         [Required]
         public int LabId { get; set; }
+
         public Lab Lab { get; set; }
 
         public int ExerciseNumber { get; set; }
@@ -20,7 +21,7 @@ namespace Ctf4e.Server.Models
         public string Name { get; set; }
 
         public bool IsMandatory { get; set; }
-        
+
         public bool IsPreStartAvailable { get; set; }
 
         [Range(0, int.MaxValue)]

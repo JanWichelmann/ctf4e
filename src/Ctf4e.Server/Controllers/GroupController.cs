@@ -16,7 +16,6 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsGroupMember)]
     public class GroupController : ControllerBase
     {
-        private readonly IUserService _userService;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabExecutionService _labExecutionService;
         private readonly IFlagService _flagService;
@@ -26,7 +25,6 @@ namespace Ctf4e.Server.Controllers
         public GroupController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService, IConfigurationService configurationService)
             : base(userService, mainOptions, "~/Views/Group.cshtml")
         {
-            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
@@ -96,7 +94,7 @@ namespace Ctf4e.Server.Controllers
 
             // Try to submit flag
             bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, fullFlagString, HttpContext.RequestAborted);
-            return Ok(new {success});
+            return Ok(new { success });
         }
 
         [HttpGet("labserver")]

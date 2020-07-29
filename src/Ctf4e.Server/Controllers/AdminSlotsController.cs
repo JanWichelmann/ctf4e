@@ -51,6 +51,7 @@ namespace Ctf4e.Server.Controllers
                     return await RenderSlotListAsync();
                 }
             }
+
             if(slot == null)
             {
                 AddStatusMessage("Kein Slot übergeben.", StatusMessageTypes.Error);
@@ -143,6 +144,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage("Dieser Slot existiert nicht.", StatusMessageTypes.Error);
                 return await RenderSlotListAsync();
             }
+
             if(slot.Groups.Any())
             {
                 AddStatusMessage("Der Slot darf keine Gruppen enthalten.", StatusMessageTypes.Error);

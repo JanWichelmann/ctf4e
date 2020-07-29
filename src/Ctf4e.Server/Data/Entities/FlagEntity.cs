@@ -24,6 +24,7 @@ namespace Ctf4e.Server.Data.Entities
 
         [Required]
         public LabEntity Lab { get; set; }
+
         public int LabId { get; set; }
 
         public ICollection<FlagSubmissionEntity> Submissions { get; set; }

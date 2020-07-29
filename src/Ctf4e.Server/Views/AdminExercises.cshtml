@@ -22,7 +22,7 @@
             Zurück zur Praktikumsliste
         </a>
     </p>
-    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.ShowCreateExerciseFormAsync), new {labId = lab.Id}))">
+    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.ShowCreateExerciseFormAsync), new { labId = lab.Id }))">
         <span class="oi oi-plus"></span>
         Aufgabe erstellen
     </a>
@@ -69,7 +69,7 @@
                     }
                 </td>
                 <td>
-                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.ShowEditExerciseFormAsync), new {id = e.Id}))">
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.ShowEditExerciseFormAsync), new { id = e.Id }))">
                         <span class="oi oi-pencil"></span>
                         Bearbeiten
                     </a>
@@ -123,13 +123,11 @@
 }
 else if(viewType == AdminExercisesController.ViewType.EditExercise)
 {
-    var exercises = (List<Exercise>)ViewData["Exercises"];
-
     <h3 class="text-primary">
         Aufgabe bearbeiten
     </h3>
     <hr class="bg-primary" style="height: 2px">
-    <form action="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.EditExerciseAsync), new {id = Model.Id}))" method="post">
+    <form action="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.EditExerciseAsync), new { id = Model.Id }))" method="post">
         <div class="form-group">
             <label asp-for="ExerciseNumber">Aufgabennummer</label>
             <input asp-for="ExerciseNumber" class="form-control">
@@ -176,8 +174,6 @@ else if(viewType == AdminExercisesController.ViewType.EditExercise)
 }
 else if(viewType == AdminExercisesController.ViewType.CreateExercise)
 {
-    var exercises = (List<Exercise>)ViewData["Exercises"];
-
     <h3 class="text-primary">
         Aufgabe erstellen
     </h3>

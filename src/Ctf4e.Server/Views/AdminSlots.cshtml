@@ -22,35 +22,35 @@
     </a>
     <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
         <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Gruppen</th>
-                <th scope="col">Aktionen</th>
-            </tr>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Gruppen</th>
+            <th scope="col">Aktionen</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach(var s in slots)
-            {
-                <tr>
-                    <td>@s.Id</td>
-                    <td>@s.Name</td>
-                    <td>@s.Groups.Count</td>
-                    <td>
-                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.ShowEditSlotFormAsync), new { id = s.Id }))">
-                            <span class="oi oi-pencil"></span>
-                            Bearbeiten
+        @foreach(var s in slots)
+        {
+            <tr>
+                <td>@s.Id</td>
+                <td>@s.Name</td>
+                <td>@s.Groups.Count</td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.ShowEditSlotFormAsync), new { id = s.Id }))">
+                        <span class="oi oi-pencil"></span>
+                        Bearbeiten
+                    </a>
+                    @if(!s.Groups.Any())
+                    {
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-slot" data-slot-id="@s.Id" data-slot-name="@s.Name">
+                            <span class="oi oi-trash"></span>
+                            Löschen
                         </a>
-                        @if(!s.Groups.Any())
-                        {
-                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-slot" data-slot-id="@s.Id" data-slot-name="@s.Name">
-                                <span class="oi oi-trash"></span>
-                                Löschen
-                            </a>
-                        }
-                    </td>
-                </tr>
-            }
+                    }
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
@@ -90,8 +90,6 @@
 }
 else if(viewType == AdminSlotsController.ViewType.EditSlot)
 {
-    var slots = (List<Slot>)ViewData["Slots"];
-
     <h3 class="text-primary">
         Slot bearbeiten
     </h3>
@@ -113,7 +111,7 @@ else if(viewType == AdminSlotsController.ViewType.EditSlot)
                         <tr>
                             <td>@g.DisplayName (#@g.Id)</td>
                             <td>
-                                <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.ShowEditGroupFormAsync), new {id = g.Id}))">
+                                <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.ShowEditGroupFormAsync), new { id = g.Id }))">
                                     <span class="oi oi-pencil"></span>
                                     Bearbeiten
                                 </a>
@@ -131,8 +129,6 @@ else if(viewType == AdminSlotsController.ViewType.EditSlot)
 }
 else if(viewType == AdminSlotsController.ViewType.CreateSlot)
 {
-    var slots = (List<Slot>)ViewData["Slots"];
-
     <h3 class="text-primary">
         Slot erstellen
     </h3>

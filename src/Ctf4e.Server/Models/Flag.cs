@@ -24,6 +24,7 @@ namespace Ctf4e.Server.Models
 
         [Required]
         public int LabId { get; set; }
+
         public Lab Lab { get; set; }
 
         public ICollection<FlagSubmission> Submissions { get; set; }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Ctf4e.Api.Services;
+﻿using Ctf4e.Api.Services;
 using Newtonsoft.Json;
 
 namespace Ctf4e.Api
@@ -12,7 +9,9 @@ namespace Ctf4e.Api
 
         public string Data { get; set; }
 
-        private CtfApiRequest() { }
+        private CtfApiRequest()
+        {
+        }
 
         public static CtfApiRequest Create<T>(int labId, ICryptoService cryptoService, T data) where T : class
         {

@@ -7,7 +7,6 @@ using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -38,8 +37,8 @@ namespace Ctf4e.Server.Controllers
                 PassAsGroup = await _configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
                 PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
                 NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
-                FlagPrefix=await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted),
-                FlagSuffix=await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted)
+                FlagPrefix = await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted),
+                FlagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted)
             };
 
             int groupCount = await _userService.GetGroupsAsync().CountAsync(HttpContext.RequestAborted);

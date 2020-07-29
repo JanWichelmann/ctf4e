@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ctf4e.Utilities.Controllers
 {
     /// <summary>
-    /// Abstract base class for controllers.
+    ///     Abstract base class for controllers.
     /// </summary>
     public abstract class ControllerBase : Controller
     {
@@ -22,7 +18,7 @@ namespace Ctf4e.Utilities.Controllers
         }
 
         /// <summary>
-        /// Sets the displayed status message.
+        ///     Sets the displayed status message.
         /// </summary>
         /// <param name="message">The message to be displayed.</param>
         /// <param name="messageType">Sets the status message type.</param>
@@ -32,7 +28,7 @@ namespace Ctf4e.Utilities.Controllers
         }
 
         /// <summary>
-        /// Passes some global variables to the template engine and renders the previously specified view.
+        ///     Passes some global variables to the template engine and renders the previously specified view.
         /// </summary>
         /// <param name="model">The model being shown/edited in this view.</param>
         protected virtual IActionResult RenderView(object model = null)

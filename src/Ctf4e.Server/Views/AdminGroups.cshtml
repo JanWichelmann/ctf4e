@@ -22,48 +22,48 @@
     </a>
     <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
         <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Slot</th>
-                <th scope="col">Name</th>
-                <th scope="col">Mitglieder</th>
-                <th scope="col">Scoreboard?</th>
-                <th scope="col">Aktionen</th>
-            </tr>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Slot</th>
+            <th scope="col">Name</th>
+            <th scope="col">Mitglieder</th>
+            <th scope="col">Scoreboard?</th>
+            <th scope="col">Aktionen</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach(var g in groups)
-            {
-                <tr>
-                    <td>@g.Id</td>
-                    <td>@g.Slot.Name</td>
-                    <td>@g.DisplayName</td>
-                    <td>@g.Members.Count</td>
-                    <td>
-                        @if(g.ShowInScoreboard)
-                        {
-                            <span class="oi oi-check text-success"></span>
-                        }
-                        else
-                        {
-                            <span class="oi oi-x text-danger"></span>
-                        }
-                    </td>
-                    <td>
-                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.ShowEditGroupFormAsync), new { id = g.Id }))">
-                            <span class="oi oi-pencil"></span>
-                            Bearbeiten
+        @foreach(var g in groups)
+        {
+            <tr>
+                <td>@g.Id</td>
+                <td>@g.Slot.Name</td>
+                <td>@g.DisplayName</td>
+                <td>@g.Members.Count</td>
+                <td>
+                    @if(g.ShowInScoreboard)
+                    {
+                        <span class="oi oi-check text-success"></span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-x text-danger"></span>
+                    }
+                </td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.ShowEditGroupFormAsync), new { id = g.Id }))">
+                        <span class="oi oi-pencil"></span>
+                        Bearbeiten
+                    </a>
+                    @if(!g.Members.Any())
+                    {
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-group" data-group-id="@g.Id" data-group-name="@g.DisplayName">
+                            <span class="oi oi-trash"></span>
+                            Löschen
                         </a>
-                        @if(!g.Members.Any())
-                        {
-                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-group" data-group-id="@g.Id" data-group-name="@g.DisplayName">
-                                <span class="oi oi-trash"></span>
-                                Löschen
-                            </a>
-                        }
-                    </td>
-                </tr>
-            }
+                    }
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
@@ -134,18 +134,18 @@ else if(viewType == AdminGroupsController.ViewType.EditGroup)
             <label>Gruppenmitglieder</label>
             <table class="table table-sm table-bordered table-hover text-nowrap">
                 <tbody>
-                    @foreach(var u in Model.Members)
-                    {
-                        <tr>
-                            <td>@u.DisplayName (#@u.Id)</td>
-                            <td>
-                                <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.ShowEditUserFormAsync), new { id = u.Id }))">
-                                    <span class="oi oi-pencil"></span>
-                                    Bearbeiten
-                                </a>
-                            </td>
-                        </tr>
-                    }
+                @foreach(var u in Model.Members)
+                {
+                    <tr>
+                        <td>@u.DisplayName (#@u.Id)</td>
+                        <td>
+                            <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.ShowEditUserFormAsync), new { id = u.Id }))">
+                                <span class="oi oi-pencil"></span>
+                                Bearbeiten
+                            </a>
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
         </div>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Data;
 using System.Linq;
 using System.Threading;
@@ -9,7 +8,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
-using Ctf4e.Server.Extensions;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.ViewModels;
 using Dapper;
@@ -36,7 +34,7 @@ namespace Ctf4e.Server.Services
         private readonly IMemoryCache _cache;
 
         /// <summary>
-        /// Database connection for Dapper queries.
+        ///     Database connection for Dapper queries.
         /// </summary>
         private readonly IDbConnection _dbConn;
 
@@ -58,7 +56,7 @@ namespace Ctf4e.Server.Services
         {
             // Load flag point parameters
             await InitFlagPointParametersAsync(cancellationToken);
-            
+
             // Consistent time
             var now = DateTime.Now;
 
@@ -140,13 +138,13 @@ namespace Ctf4e.Server.Services
                           AND s.`SubmissionTime` < le.`End`
                       )
                     GROUP BY s.`FlagId`",
-                    (flag, submissionCount) => new AdminScoreboardFlagEntry
-                    {
-                        Flag = _mapper.Map<Flag>(flag),
-                        SubmissionCount = (int)submissionCount
-                    },
-                    new {labId},
-                    splitOn: "SubmissionCount"))
+                                                                                                             (flag, submissionCount) => new AdminScoreboardFlagEntry
+                                                                                                             {
+                                                                                                                 Flag = _mapper.Map<Flag>(flag),
+                                                                                                                 SubmissionCount = (int)submissionCount
+                                                                                                             },
+                                                                                                             new { labId },
+                                                                                                             splitOn: "SubmissionCount"))
                 .ToDictionary(f => f.Flag.Id);
             foreach(var f in scoreboardFlagStatus)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
@@ -271,7 +269,7 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
-        /// Derives the status for the given timestamp, considering the given lab execution constraints.
+        ///     Derives the status for the given timestamp, considering the given lab execution constraints.
         /// </summary>
         /// <param name="time">Timestamp to check.</param>
         /// <param name="labExecution">Lab execution data.</param>
@@ -294,7 +292,7 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
-        /// Calculates the points for the given exercise from the given submission list. Ignores tries that are outside of the lab execution constraints.
+        ///     Calculates the points for the given exercise from the given submission list. Ignores tries that are outside of the lab execution constraints.
         /// </summary>
         /// <param name="exercise">Exercise being evaluated.</param>
         /// <param name="submissions">All submissions for this exercise.</param>
@@ -338,7 +336,7 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
-        /// Calculates whether the given flag submission is valid, by checking the lab execution constraints.
+        ///     Calculates whether the given flag submission is valid, by checking the lab execution constraints.
         /// </summary>
         /// <param name="flagSubmission">Flag submission.</param>
         /// <param name="labExecution">Lab execution data.</param>
@@ -353,7 +351,7 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
-        /// Retrieves the flag point parameters from the configuration.
+        ///     Retrieves the flag point parameters from the configuration.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
@@ -365,7 +363,7 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
-        /// Returns the points the flag yields for the give submission count.
+        ///     Returns the points the flag yields for the give submission count.
         /// </summary>
         /// <param name="flag">Flag.</param>
         /// <param name="submissionCount">Number of valid submissions.</param>
@@ -405,13 +403,13 @@ namespace Ctf4e.Server.Services
 
             // Load flag point parameters
             await InitFlagPointParametersAsync(cancellationToken);
-            
+
             // Get current time to avoid overestimating scoreboard validity time
             DateTime now = DateTime.Now;
 
             // Get flag point limits
             var flagPointLimits = await _dbContext.Labs.AsNoTracking()
-                .Select(l => new {l.Id, l.MaxFlagPoints})
+                .Select(l => new { l.Id, l.MaxFlagPoints })
                 .ToDictionaryAsync(l => l.Id, l => l.MaxFlagPoints, cancellationToken);
 
             // Get list of exercises
@@ -520,12 +518,12 @@ namespace Ctf4e.Server.Services
                           AND s.`SubmissionTime` < le.`End`
                       )
                     GROUP BY f.`Id`",
-                    (flag, submissionCount) => new ScoreboardFlagEntry
-                    {
-                        Flag = _mapper.Map<Flag>(flag),
-                        SubmissionCount = (int)submissionCount
-                    },
-                    splitOn: "SubmissionCount"))
+                                                                                         (flag, submissionCount) => new ScoreboardFlagEntry
+                                                                                         {
+                                                                                             Flag = _mapper.Map<Flag>(flag),
+                                                                                             SubmissionCount = (int)submissionCount
+                                                                                         },
+                                                                                         splitOn: "SubmissionCount"))
                 .ToDictionary(f => f.Flag.Id);
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
@@ -666,7 +664,7 @@ namespace Ctf4e.Server.Services
 
             // Load flag point parameters
             await InitFlagPointParametersAsync(cancellationToken);
-            
+
             // Get current time to avoid overestimating scoreboard validity time
             DateTime now = DateTime.Now;
 
@@ -733,7 +731,7 @@ namespace Ctf4e.Server.Services
                       ) AS 'LastFlagSubmissionTime'
                     FROM `Groups` g
                     WHERE g.`ShowInScoreboard`",
-                    new {labId}))
+                                                                               new { labId }))
                 .ToList();
 
             // Get valid submission counts for passed exercises
@@ -772,7 +770,7 @@ namespace Ctf4e.Server.Services
                           AND s.`SubmissionTime` < le.`End`
                       )
                     GROUP BY g.`Id`, e.`Id`",
-                    new {labId}))
+                                                                                                                            new { labId }))
                 .ToList();
             var validExerciseSubmissions = validExerciseSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
@@ -796,7 +794,7 @@ namespace Ctf4e.Server.Services
                           AND s.`SubmissionTime` < le.`End`
                       )
                     GROUP BY g.`Id`, f.`Id`",
-                    new {labId}))
+                                                                                                                new { labId }))
                 .ToList();
             var validFlagSubmissions = validFlagSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
@@ -820,13 +818,13 @@ namespace Ctf4e.Server.Services
                           AND s.`SubmissionTime` < le.`End`
                       )
                     GROUP BY f.`Id`",
-                    (flag, submissionCount) => new ScoreboardFlagEntry
-                    {
-                        Flag = _mapper.Map<Flag>(flag),
-                        SubmissionCount = (int)submissionCount
-                    },
-                    new {labId},
-                    splitOn: "SubmissionCount"))
+                                                                                         (flag, submissionCount) => new ScoreboardFlagEntry
+                                                                                         {
+                                                                                             Flag = _mapper.Map<Flag>(flag),
+                                                                                             SubmissionCount = (int)submissionCount
+                                                                                         },
+                                                                                         new { labId },
+                                                                                         splitOn: "SubmissionCount"))
                 .ToDictionary(f => f.Flag.Id);
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
@@ -965,7 +963,7 @@ namespace Ctf4e.Server.Services
             var groupMembers = await _dbContext.Users.AsNoTracking()
                 .Where(u => u.GroupId == groupId)
                 .OrderBy(u => u.DisplayName)
-                .Select(u => new {u.Id, u.DisplayName})
+                .Select(u => new { u.Id, u.DisplayName })
                 .ToDictionaryAsync(u => u.Id, u => u.DisplayName, cancellationToken);
 
             var exercises = await _dbContext.Exercises.AsNoTracking()
@@ -983,7 +981,7 @@ namespace Ctf4e.Server.Services
                     {(passAsGroup ? "" : "AND u.`Id` = @userId")}
                     AND e.`LabId` = @labId
                     ORDER BY e.`Id`, es.`SubmissionTime`",
-                    new {groupId, userId, labId}))
+                                                                                          new { groupId, userId, labId }))
                 .Select(es => _mapper.Map<ExerciseSubmission>(es))
                 .GroupBy(es => es.ExerciseId)
                 .ToDictionary(es => es.Key, es => es.ToList());
@@ -996,7 +994,7 @@ namespace Ctf4e.Server.Services
                         .Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End)
                 })
                 .GroupBy(fs => fs.Valid)
-                .Select(fs => new {Valid = fs.Key, Count = fs.Count()})
+                .Select(fs => new { Valid = fs.Key, Count = fs.Count() })
                 .ToDictionaryAsync(fs => fs.Valid, fs => fs.Count, cancellationToken);
 
             var scoreboard = new GroupScoreboard

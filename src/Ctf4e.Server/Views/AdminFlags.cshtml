@@ -23,45 +23,45 @@
     </a>
     <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
         <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Code</th>
-                <th scope="col">Beschreibung</th>
-                <th scope="col">Basispunktzahl</th>
-                <th scope="col">Bug-Bounty?</th>
-                <th scope="col">Aktionen</th>
-            </tr>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Code</th>
+            <th scope="col">Beschreibung</th>
+            <th scope="col">Basispunktzahl</th>
+            <th scope="col">Bug-Bounty?</th>
+            <th scope="col">Aktionen</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach(var f in flags)
-            {
-                <tr>
-                    <td>@f.Id</td>
-                    <td>@f.Code</td>
-                    <td>@f.Description</td>
-                    <td>@f.BasePoints</td>
-                    <td>
-                        @if(f.IsBounty)
-                        {
-                            <span class="oi oi-check text-success"></span>
-                        }
-                        else
-                        {
-                            <span class="oi oi-x text-danger"></span>
-                        }
-                    </td>
-                    <td>
-                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminFlagsController>(nameof(AdminFlagsController.ShowEditFlagFormAsync), new { id = f.Id }))">
-                            <span class="oi oi-pencil"></span>
-                            Bearbeiten
-                        </a>
-                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag" data-flag-id="@f.Id" data-flag-name="@f.Description">
-                            <span class="oi oi-trash"></span>
-                            Löschen
-                        </a>
-                    </td>
-                </tr>
-            }
+        @foreach(var f in flags)
+        {
+            <tr>
+                <td>@f.Id</td>
+                <td>@f.Code</td>
+                <td>@f.Description</td>
+                <td>@f.BasePoints</td>
+                <td>
+                    @if(f.IsBounty)
+                    {
+                        <span class="oi oi-check text-success"></span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-x text-danger"></span>
+                    }
+                </td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminFlagsController>(nameof(AdminFlagsController.ShowEditFlagFormAsync), new { id = f.Id }))">
+                        <span class="oi oi-pencil"></span>
+                        Bearbeiten
+                    </a>
+                    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag" data-flag-id="@f.Id" data-flag-name="@f.Description">
+                        <span class="oi oi-trash"></span>
+                        Löschen
+                    </a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
@@ -104,8 +104,6 @@
 }
 else if(viewType == AdminFlagsController.ViewType.EditFlag)
 {
-    var flags = (List<Flag>)ViewData["Flags"];
-
     <h3 class="text-primary">
         Flag bearbeiten
     </h3>
@@ -118,7 +116,8 @@ else if(viewType == AdminFlagsController.ViewType.EditFlag)
             <small class="form-text text-muted">
                 Flags müssen immer dem Format &quot;CTF{&lt;flag code&gt;}&quot; entsprechen, wenn die Gruppen diese selbst einlösen können sollen.
             </small>
-        </div><div class="form-group">
+        </div>
+        <div class="form-group">
             <label asp-for="Description">Beschreibung</label>
             <input asp-for="Description" class="form-control" placeholder="Namen eingeben">
             <span asp-validation-for="Description" class="text-danger"></span>
@@ -145,8 +144,6 @@ else if(viewType == AdminFlagsController.ViewType.EditFlag)
 }
 else if(viewType == AdminFlagsController.ViewType.CreateFlag)
 {
-    var flags = (List<Flag>)ViewData["Flags"];
-
     <h3 class="text-primary">
         Flag erstellen
     </h3>

@@ -12,6 +12,7 @@ namespace Ctf4e.Server.Data.Entities
 
         [Required]
         public LabEntity Lab { get; set; }
+
         public int LabId { get; set; }
 
         public int ExerciseNumber { get; set; }
@@ -21,7 +22,7 @@ namespace Ctf4e.Server.Data.Entities
         public string Name { get; set; }
 
         public bool IsMandatory { get; set; }
-        
+
         public bool IsPreStartAvailable { get; set; }
 
         public int BasePoints { get; set; }

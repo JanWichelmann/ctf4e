@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Ctf4e.Server.Attributes;
@@ -15,22 +14,22 @@ using Microsoft.Extensions.Options;
 namespace Ctf4e.Server.Controllers
 {
     /// <summary>
-    /// Abstract base class for controllers.
+    ///     Abstract base class for controllers.
     /// </summary>
-    public abstract class ControllerBase : Ctf4e.Utilities.Controllers.ControllerBase
+    public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     {
         /// <summary>
-        /// Version of this assembly.
+        ///     Version of this assembly.
         /// </summary>
         private static string _buildId = null;
-        
+
         private readonly IUserService _userService;
         private readonly IOptions<MainOptions> _mainOptions;
         private User _currentUser = null;
         private bool _currentUserHasLoggedOut = false;
 
         protected ControllerBase(IUserService userService, IOptions<MainOptions> mainOptions, string viewPath)
-        : base(viewPath)
+            : base(viewPath)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _mainOptions = mainOptions ?? throw new ArgumentNullException(nameof(mainOptions));
@@ -44,8 +43,8 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        /// Updates the internal current user variable.
-        /// Internal method, only to be called on login due to the still unset session variable.
+        ///     Updates the internal current user variable.
+        ///     Internal method, only to be called on login due to the still unset session variable.
         /// </summary>
         /// <param name="userId">The ID of the currently logged in user.</param>
         /// <returns></returns>
@@ -55,8 +54,8 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        /// Clears the internal current user variable.
-        /// Internal method, only to be called on logout due to the still set session variable.
+        ///     Clears the internal current user variable.
+        ///     Internal method, only to be called on logout due to the still set session variable.
         /// </summary>
         /// <returns></returns>
         protected void HandleUserLogout()
@@ -66,7 +65,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        /// Updates the internal current user variable.
+        ///     Updates the internal current user variable.
         /// </summary>
         /// <returns></returns>
         private async Task ReadCurrentUserFromSessionAsync()
@@ -82,7 +81,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        /// Returns the user data of the currently authenticated user.
+        ///     Returns the user data of the currently authenticated user.
         /// </summary>
         /// <returns></returns>
         protected async Task<User> GetCurrentUserAsync()
@@ -96,7 +95,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        /// Passes some global variables to the template engine and renders the previously specified view.
+        ///     Passes some global variables to the template engine and renders the previously specified view.
         /// </summary>
         /// <param name="activeMenuItem">The page to be shown as "active" in the menu.</param>
         /// <param name="model">The model being shown/edited in this view.</param>
@@ -108,13 +107,13 @@ namespace Ctf4e.Server.Controllers
 
             // Pass active menu item
             ViewData["ActiveMenuItem"] = activeMenuItem;
-            
+
             // Page title
             // TODO use dependency injection?
             var configService = HttpContext.RequestServices.GetService<IConfigurationService>();
             ViewData["PageTitle"] = await configService.GetPageTitleAsync();
             ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync();
-            
+
             // Other render data
             ViewData["DevelopmentMode"] = _mainOptions.Value.DevelopmentMode;
             ViewData["BuildId"] = _buildId;

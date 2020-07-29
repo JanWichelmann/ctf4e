@@ -15,6 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
+using MoodleLti.Options;
 
 namespace Ctf4e.Server
 {
@@ -27,7 +29,7 @@ namespace Ctf4e.Server
         private readonly LoggerFactory _debugLoggerFactory =
             new LoggerFactory(new[]
             {
-                new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
+                new DebugLoggerProvider()
             });
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
@@ -39,7 +41,7 @@ namespace Ctf4e.Server
         public void ConfigureServices(IServiceCollection services)
         {
             // Configuration
-            services.AddOptions<MoodleLti.Options.MoodleLtiOptions>().Bind(_configuration.GetSection(nameof(MoodleLti.Options.MoodleLtiOptions)));
+            services.AddOptions<MoodleLtiOptions>().Bind(_configuration.GetSection(nameof(MoodleLtiOptions)));
             _mainOptions = _configuration.GetSection(nameof(MainOptions)).Get<MainOptions>();
             services.AddOptions<MainOptions>().Bind(_configuration.GetSection(nameof(MainOptions)));
             var dbOptions = _configuration.GetSection(nameof(CtfDbOptions)).Get<CtfDbOptions>();
@@ -52,7 +54,9 @@ namespace Ctf4e.Server
             // Database
             services.AddDbContextPool<CtfDbContext>(options =>
             {
-                options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};", mysqlOptions => { });
+                options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};", mysqlOptions =>
+                {
+                });
                 if(_environment.IsDevelopment())
                 {
                     options.UseLoggerFactory(_debugLoggerFactory)
@@ -62,7 +66,7 @@ namespace Ctf4e.Server
 
             // Entity/Model mapping
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            
+
             // Memory cache
             services.AddMemoryCache();
 
@@ -77,13 +81,16 @@ namespace Ctf4e.Server
 
             // Configuration service
             services.AddScoped<IConfigurationService, ConfigurationService>();
-            
+
             // Export/sync services
             services.AddScoped<IMoodleService, MoodleService>();
             services.AddScoped<ICsvService, CsvService>();
 
             // Change name of antiforgery cookie
-            services.AddAntiforgery(options => { options.Cookie.Name = "ctf4e.antiforgery"; });
+            services.AddAntiforgery(options =>
+            {
+                options.Cookie.Name = "ctf4e.antiforgery";
+            });
 
             // Authentication
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
@@ -105,7 +112,10 @@ namespace Ctf4e.Server
             });
 
             // Use MVC
-            var mvcBuilder = services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
+            var mvcBuilder = services.AddControllersWithViews(options =>
+            {
+                options.SuppressAsyncSuffixInActionNames = false;
+            });
 
             // Development tools
             if(_mainOptions.DevelopmentMode)
@@ -121,9 +131,10 @@ namespace Ctf4e.Server
                     {
                         return request.HttpContext.User.Claims.Any(c => c.Type == AuthenticationStrings.ClaimIsAdmin && c.Value == true.ToString());
                     }
+
                     options.ResultsAuthorize = AuthorizeFunc;
                     options.ResultsListAuthorize = AuthorizeFunc;
-                    
+
                     // Reduce noise for database queries
                     options.TrackConnectionOpenClose = false;
 
@@ -167,7 +178,7 @@ namespace Ctf4e.Server
             });
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             // Install MiniProfiler
             //     Needs to be after UseAuthorization(), else authorization doesn't work.
             //     However, this does mean that earlier middleware isn't profiled!
@@ -177,7 +188,10 @@ namespace Ctf4e.Server
                 app.UseMiniProfiler();
 
             // Create routing endpoints
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

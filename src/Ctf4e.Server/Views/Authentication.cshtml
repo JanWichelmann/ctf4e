@@ -17,19 +17,17 @@ else if(viewType == AuthenticationController.ViewType.Redirect)
     if(currentUser.IsAdmin)
     {
         <a href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Weiterleiten...</a>
-        @section ScriptsHead
-        {
-            <meta http-equiv="refresh" content="1;url=@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">
-        }
-    }
+@section ScriptsHead
+{
+    <meta http-equiv="refresh" content="1;url=@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">
+}    }
     else
     {
         <a href="@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">Weiterleiten...</a>
-        @section ScriptsHead
-        {
-            <meta http-equiv="refresh" content="1;url=@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">
-        }
-    }
+@section ScriptsHead
+{
+    <meta http-equiv="refresh" content="1;url=@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">
+}    }
 }
 else if(viewType == AuthenticationController.ViewType.GroupSelection)
 {
@@ -50,6 +48,7 @@ else if(viewType == AuthenticationController.ViewType.GroupSelection)
         Ihr Code lautet: <span class="font-weight-bold">@currentUser.GroupFindingCode</span>
     </p>
     @model Ctf4e.Server.ViewModels.GroupSelection
+    
     <form action="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.HandleGroupSelectionAsync)))" method="post">
         <div class="form-group">
             <label asp-for="OtherUserCode">Code Ihres Partners/Ihrer Partnerin</label>

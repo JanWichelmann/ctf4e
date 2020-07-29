@@ -7,10 +7,12 @@ namespace Ctf4e.Server.Models
     {
         [Required]
         public int GroupId { get; set; }
+
         public Group Group { get; set; }
 
         [Required]
         public int LabId { get; set; }
+
         public Lab Lab { get; set; }
 
         public DateTime PreStart { get; set; }

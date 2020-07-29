@@ -51,6 +51,7 @@ namespace Ctf4e.Server.Controllers
                     return await RenderLabListAsync();
                 }
             }
+
             if(lab == null)
             {
                 AddStatusMessage("Kein Praktikum übergeben.", StatusMessageTypes.Error);
@@ -149,6 +150,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage("Dieses Praktikum existiert nicht.", StatusMessageTypes.Error);
                 return await RenderLabListAsync();
             }
+
             if(lab.Executions.Any())
             {
                 AddStatusMessage("Das Praktikum hat bereits einmal stattgefunden und kann somit nicht mehr gelöscht werden.", StatusMessageTypes.Error);

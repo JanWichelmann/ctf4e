@@ -10,6 +10,7 @@ namespace Ctf4e.Server.Models
 
         [Required]
         public int SlotId { get; set; }
+
         public Slot Slot { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]

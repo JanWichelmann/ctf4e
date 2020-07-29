@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Ctf4e.Server.Data
 {
     /// <summary>
-    /// Database context.
+    ///     Database context.
     /// </summary>
     public class CtfDbContext : DbContext
     {
@@ -37,9 +37,9 @@ namespace Ctf4e.Server.Data
         {
             // Create keys for many-to-many relationship join tables lacking an own primary key
             builder.Entity<LabExecutionEntity>()
-                .HasKey(lse => new {lse.GroupId, lse.LabId});
+                .HasKey(lse => new { lse.GroupId, lse.LabId });
             builder.Entity<FlagSubmissionEntity>()
-                .HasKey(fs => new {fs.FlagId, fs.UserId});
+                .HasKey(fs => new { fs.FlagId, fs.UserId });
 
             // Add unique index to user table
             builder.Entity<UserEntity>()

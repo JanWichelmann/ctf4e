@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
-using Ctf4e.Server.Data.Entities;
-using Ctf4e.Server.Models;
-using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using MoodleLti;
-using MoodleLti.Models;
 
 namespace Ctf4e.Server.Services.Sync
 {
     public interface ICsvService
     {
         /// <summary>
-        /// Returns data about passed/failed labs in CSV format.
+        ///     Returns data about passed/failed labs in CSV format.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
@@ -28,7 +19,7 @@ namespace Ctf4e.Server.Services.Sync
     }
 
     /// <summary>
-    /// Provides methods to download the lab results as a CSV file.
+    ///     Provides methods to download the lab results as a CSV file.
     /// </summary>
     public class CsvService : ICsvService
     {
@@ -42,7 +33,7 @@ namespace Ctf4e.Server.Services.Sync
         }
 
         /// <summary>
-        /// Returns data about passed/failed labs in CSV format.
+        ///     Returns data about passed/failed labs in CSV format.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
@@ -131,7 +122,7 @@ namespace Ctf4e.Server.Services.Sync
         }
 
         /// <summary>
-        /// Escapes the given string.
+        ///     Escapes the given string.
         /// </summary>
         /// <param name="str">String.</param>
         /// <returns></returns>

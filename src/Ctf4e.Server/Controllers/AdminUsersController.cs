@@ -51,6 +51,7 @@ namespace Ctf4e.Server.Controllers
                     return await RenderUserListAsync();
                 }
             }
+
             if(user == null)
             {
                 AddStatusMessage("Kein Benutzer übergeben.", StatusMessageTypes.Error);

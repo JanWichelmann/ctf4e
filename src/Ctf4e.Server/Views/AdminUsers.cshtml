@@ -18,55 +18,55 @@
 
     <table class="table table-sm table-bordered table-hover text-nowrap">
         <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Moodle-Account</th>
-                <th scope="col">Gruppencode</th>
-                <th scope="col">Gruppen-ID</th>
-                <th scope="col">Status</th>
-                <th scope="col">Aktionen</th>
-            </tr>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Moodle-Account</th>
+            <th scope="col">Gruppencode</th>
+            <th scope="col">Gruppen-ID</th>
+            <th scope="col">Status</th>
+            <th scope="col">Aktionen</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach(var u in users)
-            {
-                <tr>
-                    <td>@u.Id</td>
-                    <td>@u.DisplayName</td>
-                    <td>@u.MoodleName (#@u.MoodleUserId)</td>
-                    <td>@u.GroupFindingCode</td>
-                    <td>
-                        @if(u.GroupId != null)
-                        {
-                            <a href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.EditGroupAsync), new {id = u.GroupId}))" title="Gruppe bearbeiten">
-                                <span class="oi oi-people"></span>
-                                #@u.GroupId
-                            </a>
-                        }
-                    </td>
-                    <td>
-                        @if(u.IsAdmin)
-                        {
-                            <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Hat Administratorrechte"></span>
-                        }
-                        else if(u.IsTutor)
-                        {
-                            <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Hat Tutorrechte"></span>
-                        }
-                    </td>
-                    <td>
-                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.ShowEditUserFormAsync), new { id = u.Id }))">
-                            <span class="oi oi-pencil"></span>
-                            Bearbeiten
+        @foreach(var u in users)
+        {
+            <tr>
+                <td>@u.Id</td>
+                <td>@u.DisplayName</td>
+                <td>@u.MoodleName (#@u.MoodleUserId)</td>
+                <td>@u.GroupFindingCode</td>
+                <td>
+                    @if(u.GroupId != null)
+                    {
+                        <a href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.EditGroupAsync), new { id = u.GroupId }))" title="Gruppe bearbeiten">
+                            <span class="oi oi-people"></span>
+                            #@u.GroupId
                         </a>
-                        <a role="button" class="btn btn-sm btn-secondary" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.AdminLoginAsUserAsync), new { userId = u.Id }))" title="Als diesen Benutzer einloggen">
-                            <span class="oi oi-account-login"></span>
-                            Einloggen
-                        </a>
-                    </td>
-                </tr>
-            }
+                    }
+                </td>
+                <td>
+                    @if(u.IsAdmin)
+                    {
+                        <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Hat Administratorrechte"></span>
+                    }
+                    else if(u.IsTutor)
+                    {
+                        <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Hat Tutorrechte"></span>
+                    }
+                </td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.ShowEditUserFormAsync), new { id = u.Id }))">
+                        <span class="oi oi-pencil"></span>
+                        Bearbeiten
+                    </a>
+                    <a role="button" class="btn btn-sm btn-secondary" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.AdminLoginAsUserAsync), new { userId = u.Id }))" title="Als diesen Benutzer einloggen">
+                        <span class="oi oi-account-login"></span>
+                        Einloggen
+                    </a>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 }

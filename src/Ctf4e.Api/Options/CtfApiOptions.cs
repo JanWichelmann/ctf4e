@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Ctf4e.Api.Options
+﻿namespace Ctf4e.Api.Options
 {
     public class CtfApiOptions
     {

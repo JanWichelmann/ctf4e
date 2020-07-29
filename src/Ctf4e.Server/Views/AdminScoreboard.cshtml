@@ -1,6 +1,6 @@
-﻿@using Ctf4e.Server.Models
+﻿@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
-@using Ctf4e.Server.Controllers
 @{
     ViewData["Title"] = "Admin-Scoreboard";
 
@@ -95,7 +95,7 @@
     </div>
     <div id="user@(user.UserId)-card" class="collapse">
         <div class="card-body">
-            <a class="btn btn-primary mb-3" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CallLabServerAsync), new {labId = adminScoreboard.LabId, userId = user.UserId}))" target="_blank">
+            <a class="btn btn-primary mb-3" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CallLabServerAsync), new { labId = adminScoreboard.LabId, userId = user.UserId }))" target="_blank">
                 <span class="oi oi-external-link"></span>
                 Zum Praktikumsserver (Admin-Modus)
             </a>
@@ -323,7 +323,7 @@
                 previous: 'oi oi-chevron-left',
                 next: 'oi oi-chevron-right',
                 today: 'oi oi-home',
-                clear: 'oi oi-trask',
+                clear: 'oi oi-trash',
                 close: 'oi oi-x'
             }
         });
@@ -342,11 +342,11 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Wollen Sie die Einreichung von quot;<span data-replace="user-name"></span>&quot zur Aufgabe &quot;<span data-replace="exercise-name"></span>&quot; wirklich löschen?
+                    Wollen Sie die Einreichung von &quot;<span data-replace="user-name"></span>&quot; zur Aufgabe &quot;<span data-replace="exercise-name"></span>&quot; wirklich löschen?
                 </p>
             </div>
             <div class="modal-footer">
-                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteExerciseSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
+                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteExerciseSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
                     @Html.AntiForgeryToken()
@@ -360,7 +360,7 @@
 <div class="modal fade" id="modal-add-exercise-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateExerciseSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
+            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateExerciseSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Aufgabeneinreichung erstellen</h5>
                     <button type="button" class="close" data-dismiss="modal">
@@ -413,11 +413,11 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Wollen Sie die Flag-Einreichung von <span data-replace="user-name"></span>&quot wirklich löschen?
+                    Wollen Sie die Flag-Einreichung von &quot;<span data-replace="user-name"></span>&quot; wirklich löschen?
                 </p>
             </div>
             <div class="modal-footer">
-                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteFlagSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
+                <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.DeleteFlagSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
@@ -432,7 +432,7 @@
 <div class="modal fade" id="modal-add-flag-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateFlagSubmissionAsync), new {labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId}))" method="post">
+            <form action="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.CreateFlagSubmissionAsync), new { labId = adminScoreboard.LabId, slotId = adminScoreboard.SlotId }))" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Flageinreichung erstellen</h5>
                     <button type="button" class="close" data-dismiss="modal">
@@ -466,30 +466,30 @@
 </div>
 <script>
     $('#modal-delete-exercise-submission').on('show.bs.modal', function (e) {
-        var submissionId = $(e.relatedTarget).data('submission-id');
-        var userName = $(e.relatedTarget).data('user-name');
-        var exerciseName = $(e.relatedTarget).data('exercise-name');
+        let submissionId = $(e.relatedTarget).data('submission-id');
+        let userName = $(e.relatedTarget).data('user-name');
+        let exerciseName = $(e.relatedTarget).data('exercise-name');
         $(e.currentTarget).find('span[data-replace="user-name"]').text(userName);
         $(e.currentTarget).find('span[data-replace="exercise-name"]').text(exerciseName);
         $(e.currentTarget).find('input[data-replace="submission-id"]').val(submissionId);
     });
     $('#modal-add-exercise-submission').on('show.bs.modal', function (e) {
-        var exerciseId = $(e.relatedTarget).data('exercise-id');
-        var userId = $(e.relatedTarget).data('user-id');
+        let exerciseId = $(e.relatedTarget).data('exercise-id');
+        let userId = $(e.relatedTarget).data('user-id');
         $(e.currentTarget).find('input[data-replace="exercise-id"]').val(exerciseId);
         $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
     });
     $('#modal-delete-flag-submission').on('show.bs.modal', function (e) {
-        var flagId = $(e.relatedTarget).data('flag-id');
-        var userId = $(e.relatedTarget).data('user-id');
-        var userName = $(e.relatedTarget).data('user-name');
+        let flagId = $(e.relatedTarget).data('flag-id');
+        let userId = $(e.relatedTarget).data('user-id');
+        let userName = $(e.relatedTarget).data('user-name');
         $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
         $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
         $(e.currentTarget).find('span[data-replace="user-name"]').text(userName);
     });
     $('#modal-add-flag-submission').on('show.bs.modal', function (e) {
-        var flagId = $(e.relatedTarget).data('flag-id');
-        var userId = $(e.relatedTarget).data('user-id');
+        let flagId = $(e.relatedTarget).data('flag-id');
+        let userId = $(e.relatedTarget).data('user-id');
         $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
         $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
     });

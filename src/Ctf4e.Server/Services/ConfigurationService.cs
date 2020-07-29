@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Server.Data;
@@ -126,13 +125,13 @@ namespace Ctf4e.Server.Services
         private async Task AddOrUpdateConfigItem<TValue>(string key, TValue value, CancellationToken cancellationToken)
         {
             // Write updated config to database
-            var config = await _dbContext.ConfigurationItems.FindAsync(new object[] {key}, cancellationToken);
+            var config = await _dbContext.ConfigurationItems.FindAsync(new object[] { key }, cancellationToken);
             if(config == null)
-                await _dbContext.ConfigurationItems.AddAsync(new ConfigurationItemEntity {Key = key, Value = value.ToString()}, cancellationToken);
+                await _dbContext.ConfigurationItems.AddAsync(new ConfigurationItemEntity { Key = key, Value = value.ToString() }, cancellationToken);
             else
                 config.Value = value.ToString();
             await _dbContext.SaveChangesAsync(cancellationToken);
-            
+
             // Update cache
             _cache.Set(key, value.ToString());
         }

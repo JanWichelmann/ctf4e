@@ -22,49 +22,49 @@
     </a>
     <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
         <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Aufgaben</th>
-                <th scope="col">Flags</th>
-                <th scope="col">Max. Flag-Punkte</th>
-                <th scope="col">Aktionen</th>
-            </tr>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Aufgaben</th>
+            <th scope="col">Flags</th>
+            <th scope="col">Max. Flag-Punkte</th>
+            <th scope="col">Aktionen</th>
+        </tr>
         </thead>
         <tbody>
-            @foreach(var l in labs)
-            {
-                <tr>
-                    <td>@l.Id</td>
-                    <td>@l.Name</td>
-                    <td>
-                        <a href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.RenderExerciseListAsync), new {labId = l.Id}))" title="Aufgabenliste öffnen">
-                            <span class="oi oi-list"></span>
+        @foreach(var l in labs)
+        {
+            <tr>
+                <td>@l.Id</td>
+                <td>@l.Name</td>
+                <td>
+                    <a href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.RenderExerciseListAsync), new { labId = l.Id }))" title="Aufgabenliste öffnen">
+                        <span class="oi oi-list"></span>
+                    </a>
+                    @l.Exercises.Count
+                </td>
+                <td>
+                    <a href="@(Url.Action<AdminFlagsController>(nameof(AdminFlagsController.RenderFlagListAsync), new { labId = l.Id }))" title="Flagliste öffnen">
+                        <span class="oi oi-list"></span>
+                    </a>
+                    @l.Flags.Count
+                </td>
+                <td>@l.MaxFlagPoints</td>
+                <td>
+                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabsController>(nameof(AdminLabsController.ShowEditLabFormAsync), new { id = l.Id }))">
+                        <span class="oi oi-pencil"></span>
+                        Bearbeiten
+                    </a>
+                    @if(!l.Executions.Any())
+                    {
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab" data-lab-id="@l.Id" data-lab-name="@l.Name">
+                            <span class="oi oi-trash"></span>
+                            Löschen
                         </a>
-                        @l.Exercises.Count
-                    </td>
-                    <td>
-                        <a href="@(Url.Action<AdminFlagsController>(nameof(AdminFlagsController.RenderFlagListAsync), new {labId = l.Id}))" title="Flagliste öffnen">
-                            <span class="oi oi-list"></span>
-                        </a>
-                        @l.Flags.Count
-                    </td>
-                    <td>@l.MaxFlagPoints</td>
-                    <td>
-                        <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminLabsController>(nameof(AdminLabsController.ShowEditLabFormAsync), new { id = l.Id }))">
-                            <span class="oi oi-pencil"></span>
-                            Bearbeiten
-                        </a>
-                        @if(!l.Executions.Any())
-                        {
-                            <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab" data-lab-id="@l.Id" data-lab-name="@l.Name">
-                                <span class="oi oi-trash"></span>
-                                Löschen
-                            </a>
-                        }
-                    </td>
-                </tr>
-            }
+                    }
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
@@ -138,18 +138,18 @@ else if(viewType == AdminLabsController.ViewType.EditLab)
                 <label>Aufgaben</label>
                 <table class="table table-sm table-bordered table-hover text-nowrap">
                     <tbody>
-                        @foreach(var e in Model.Exercises)
-                        {
-                            <tr>
-                                <td>@e.Name (#@e.Id / Nr. @e.ExerciseNumber)</td>
-                                <td>
-                                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.ShowEditExerciseFormAsync), new {id = e.Id}))">
-                                        <span class="oi oi-pencil"></span>
-                                        Bearbeiten
-                                    </a>
-                                </td>
-                            </tr>
-                        }
+                    @foreach(var e in Model.Exercises)
+                    {
+                        <tr>
+                            <td>@e.Name (#@e.Id / Nr. @e.ExerciseNumber)</td>
+                            <td>
+                                <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminExercisesController>(nameof(AdminExercisesController.ShowEditExerciseFormAsync), new { id = e.Id }))">
+                                    <span class="oi oi-pencil"></span>
+                                    Bearbeiten
+                                </a>
+                            </td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
@@ -160,18 +160,18 @@ else if(viewType == AdminLabsController.ViewType.EditLab)
                 <label>Flags</label>
                 <table class="table table-sm table-bordered table-hover text-nowrap">
                     <tbody>
-                        @foreach(var f in Model.Flags)
-                        {
-                            <tr>
-                                <td>@f.Description (#@f.Id)</td>
-                                <td>
-                                    <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminFlagsController>(nameof(AdminFlagsController.ShowEditFlagFormAsync), new {id = f.Id}))">
-                                        <span class="oi oi-pencil"></span>
-                                        Bearbeiten
-                                    </a>
-                                </td>
-                            </tr>
-                        }
+                    @foreach(var f in Model.Flags)
+                    {
+                        <tr>
+                            <td>@f.Description (#@f.Id)</td>
+                            <td>
+                                <a role="button" class="btn btn-sm btn-primary" href="@(Url.Action<AdminFlagsController>(nameof(AdminFlagsController.ShowEditFlagFormAsync), new { id = f.Id }))">
+                                    <span class="oi oi-pencil"></span>
+                                    Bearbeiten
+                                </a>
+                            </td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
@@ -183,8 +183,6 @@ else if(viewType == AdminLabsController.ViewType.EditLab)
 }
 else if(viewType == AdminLabsController.ViewType.CreateLab)
 {
-    var labs = (List<Lab>)ViewData["Labs"];
-
     <h3 class="text-primary">
         Praktikum erstellen
     </h3>

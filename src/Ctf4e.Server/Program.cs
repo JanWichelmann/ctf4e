@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Ctf4e.Server.Data;
-using Ctf4e.Server.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

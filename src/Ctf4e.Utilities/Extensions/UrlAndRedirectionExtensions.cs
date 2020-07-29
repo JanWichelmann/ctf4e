@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ctf4e.Utilities.Extensions
 {
     public static class UrlAndRedirectionExtensions
     {
-        private static string GetControllerName<TController>()where TController : Controller
+        private static string GetControllerName<TController>() where TController : Controller
         {
             const string controllerNameSuffix = "Controller";
 
@@ -20,18 +17,18 @@ namespace Ctf4e.Utilities.Extensions
         }
 
         /// <summary>
-        /// Generates a URL for the given controller and action.
+        ///     Generates a URL for the given controller and action.
         /// </summary>
         /// <typeparam name="TController">Type of target controller.</typeparam>
         /// <param name="urlHelper">URL helper object.</param>
         /// <param name="actionMethodName">Name of target action method.</param>
         /// <param name="values">Optional. Action method arguments.</param>
-        /// <exception cref="Exception">Thrown when the underlying <see cref="UrlHelperExtensions.Action(IUrlHelper, string, string, object)"/> call returns an empty string.</exception>
+        /// <exception cref="Exception">Thrown when the underlying <see cref="UrlHelperExtensions.Action(IUrlHelper, string, string, object)" /> call returns an empty string.</exception>
         /// <returns></returns>
         public static string Action<TController>(this IUrlHelper urlHelper, string actionMethodName, object values = null) where TController : Controller
         {
             string controllerName = GetControllerName<TController>();
-            
+
             string url = urlHelper.Action(actionMethodName, controllerName, values);
             if(string.IsNullOrEmpty(url))
                 throw new Exception($"Could not generate URL for controller \"{controllerName}\" and action method \"{actionMethodName}\".");
@@ -40,7 +37,7 @@ namespace Ctf4e.Utilities.Extensions
         }
 
         /// <summary>
-        /// Redirects to the given controller and action.
+        ///     Redirects to the given controller and action.
         /// </summary>
         /// <typeparam name="TController">Type of target controller.</typeparam>
         /// <param name="controller">Source controller issuing the redirect.</param>

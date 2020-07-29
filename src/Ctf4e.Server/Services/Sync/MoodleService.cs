@@ -12,7 +12,7 @@ namespace Ctf4e.Server.Services.Sync
     public interface IMoodleService
     {
         /// <summary>
-        /// Uploads the entire lab state into the associated Moodle course.
+        ///     Uploads the entire lab state into the associated Moodle course.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
@@ -20,7 +20,7 @@ namespace Ctf4e.Server.Services.Sync
     }
 
     /// <summary>
-    /// Provides methods for synchronizing the results with Moodle.
+    ///     Provides methods for synchronizing the results with Moodle.
     /// </summary>
     public class MoodleService : IMoodleService
     {
@@ -36,7 +36,7 @@ namespace Ctf4e.Server.Services.Sync
         }
 
         /// <summary>
-        /// Uploads the entire lab state into the associated Moodle course.
+        ///     Uploads the entire lab state into the associated Moodle course.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>

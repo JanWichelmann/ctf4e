@@ -1,7 +1,6 @@
-﻿@using Ctf4e.Server.ViewModels
-@using Ctf4e.Server.Controllers
+﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Services
-@using Microsoft.AspNetCore.Http
+@using Ctf4e.Server.ViewModels
 @inject IConfigurationService ConfigurationService
 @{
     ViewData["Title"] = "Aufgaben";
@@ -73,7 +72,7 @@
 
     @if(groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
     {
-        <a class="btn btn-primary" href="@(Url.Action<GroupController>(nameof(GroupController.CallLabServerAsync), new {labId = groupScoreboard.LabId}))" target="_blank">
+        <a class="btn btn-primary" href="@(Url.Action<GroupController>(nameof(GroupController.CallLabServerAsync), new { labId = groupScoreboard.LabId }))" target="_blank">
             <span class="oi oi-external-link"></span>
             Zum Praktikumsserver
         </a>
@@ -114,38 +113,38 @@
                 <div class="card-body">
                     <table class="table table-sm">
                         <thead>
-                            <tr>
-                                <th scope="col">Zeitpunkt des Lösungsversuchs</th>
-                                <th scope="col">Korrekte Lösung?</th>
-                                <th scope="col">Gruppenmitglied</th>
-                            </tr>
+                        <tr>
+                            <th scope="col">Zeitpunkt des Lösungsversuchs</th>
+                            <th scope="col">Korrekte Lösung?</th>
+                            <th scope="col">Gruppenmitglied</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @foreach(var submission in exercise.Submissions)
-                            {
-                                <tr>
-                                    <td>
-                                        @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
-                                        @if(submission.SubmissionTime < (groupScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (groupScoreboard.LabExecution?.End ?? DateTime.MinValue))
-                                        {
-                                            <span class="badge badge-warning" title="Dieser Lösungsversuch fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if(submission.ExercisePassed)
-                                        {
-                                            <span class="oi oi-circle-check text-success align-middle"></span>
-                                        }
-                                        else
-                                        {
-                                            <span class="oi oi-circle-x text-danger align-middle"></span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @groupScoreboard.GroupMembers[submission.UserId]
-                                    </td>
-                                </tr>
-                            }
+                        @foreach(var submission in exercise.Submissions)
+                        {
+                            <tr>
+                                <td>
+                                    @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
+                                    @if(submission.SubmissionTime < (groupScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (groupScoreboard.LabExecution?.End ?? DateTime.MinValue))
+                                    {
+                                        <span class="badge badge-warning" title="Dieser Lösungsversuch fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if(submission.ExercisePassed)
+                                    {
+                                        <span class="oi oi-circle-check text-success align-middle"></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="oi oi-circle-x text-danger align-middle"></span>
+                                    }
+                                </td>
+                                <td>
+                                    @groupScoreboard.GroupMembers[submission.UserId]
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>

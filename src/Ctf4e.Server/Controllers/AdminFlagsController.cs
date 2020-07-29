@@ -55,6 +55,7 @@ namespace Ctf4e.Server.Controllers
                 if(flag == null)
                     return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
             }
+
             if(flag == null)
                 return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
 

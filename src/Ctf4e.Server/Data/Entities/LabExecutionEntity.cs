@@ -7,10 +7,12 @@ namespace Ctf4e.Server.Data.Entities
     {
         [Required]
         public GroupEntity Group { get; set; }
+
         public int GroupId { get; set; }
 
         [Required]
         public LabEntity Lab { get; set; }
+
         public int LabId { get; set; }
 
         public DateTime PreStart { get; set; }

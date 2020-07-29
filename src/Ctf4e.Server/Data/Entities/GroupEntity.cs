@@ -12,6 +12,7 @@ namespace Ctf4e.Server.Data.Entities
 
         [Required]
         public SlotEntity Slot { get; set; }
+
         public int SlotId { get; set; }
 
         [Required]

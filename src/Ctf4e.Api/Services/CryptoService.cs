@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using Ctf4e.Api.Options;
@@ -12,15 +11,15 @@ namespace Ctf4e.Api.Services
     public interface ICryptoService
     {
         /// <summary>
-        /// Adds a timestamp to the given plain text, encrypts it and returns string representation of the cipher text.
+        ///     Adds a timestamp to the given plain text, encrypts it and returns string representation of the cipher text.
         /// </summary>
         /// <param name="plain">Plain text.</param>
         /// <returns></returns>
         string Encrypt(string plain);
 
         /// <summary>
-        /// Decodes and decrypts the given cipher text.
-        /// This function also checks the included timestamp; if it exceeds the internal validity period, an <see cref="CryptographicException"/> is thrown.
+        ///     Decodes and decrypts the given cipher text.
+        ///     This function also checks the included timestamp; if it exceeds the internal validity period, an <see cref="CryptographicException" /> is thrown.
         /// </summary>
         /// <param name="cipher"></param>
         /// <returns></returns>
@@ -28,17 +27,18 @@ namespace Ctf4e.Api.Services
     }
 
     /// <summary>
-    /// Provides functions to encrypt/decrypt strings while guaranteeing freshness and integrity.
+    ///     Provides functions to encrypt/decrypt strings while guaranteeing freshness and integrity.
     /// </summary>
     public class CryptoService : ICryptoService
     {
-        private static readonly TimeSpan TimestampValidityDuration = new TimeSpan(0, 3, 0);
+        private static readonly TimeSpan _timestampValidityDuration = new TimeSpan(0, 3, 0);
 
         private readonly byte[] _key;
 
         public CryptoService(IOptions<CtfApiOptions> options)
             : this(options.Value.LabApiCode)
-        { }
+        {
+        }
 
         public CryptoService(string labApiCode)
         {
@@ -49,7 +49,7 @@ namespace Ctf4e.Api.Services
         }
 
         /// <summary>
-        /// Adds a timestamp to the given plain text, encrypts it and returns string representation of the cipher text.
+        ///     Adds a timestamp to the given plain text, encrypts it and returns string representation of the cipher text.
         /// </summary>
         /// <param name="plain">Plain text.</param>
         /// <returns></returns>
@@ -87,8 +87,8 @@ namespace Ctf4e.Api.Services
         }
 
         /// <summary>
-        /// Decodes and decrypts the given cipher text.
-        /// This function also checks the included timestamp; if it exceeds the internal validity period, an <see cref="CryptographicException"/> is thrown.
+        ///     Decodes and decrypts the given cipher text.
+        ///     This function also checks the included timestamp; if it exceeds the internal validity period, an <see cref="CryptographicException" /> is thrown.
         /// </summary>
         /// <param name="cipher"></param>
         /// <returns></returns>
@@ -114,7 +114,7 @@ namespace Ctf4e.Api.Services
 
             // Extract time stamp and verify
             DateTime timestamp = DateTime.FromBinary(BitConverter.ToInt64(plainBytes.Slice(0, 8)));
-            if(DateTime.UtcNow - timestamp > TimestampValidityDuration)
+            if(DateTime.UtcNow - timestamp > _timestampValidityDuration)
                 throw new CryptographicException("Timestamp validation failed.");
 
             // Convert plain bytes back into string

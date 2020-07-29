@@ -1,20 +1,18 @@
-﻿using System;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Ctf4e.Api
 {
     /// <summary>
-    /// Defines a login request to a lab server.
+    ///     Defines a login request to a lab server.
     /// </summary>
     public class UserLoginRequest
     {
         public int UserId { get; set; }
 
         public string UserDisplayName { get; set; }
-        
+
         public int? GroupId { get; set; }
-        
+
         public string GroupDisplayName { get; set; }
 
         public bool AdminMode { get; set; }
