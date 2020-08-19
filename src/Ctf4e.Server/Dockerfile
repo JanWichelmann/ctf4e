@@ -17,5 +17,5 @@ RUN npx grunt
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim
 WORKDIR /app
 COPY --from=build /app/publish .
-COPY --from=build-static /src/src/Ctf4e.Server/wwwroot/lib ./www-root/lib
+COPY --from=build-static /src/src/Ctf4e.Server/wwwroot/lib ./wwwroot/lib
 ENTRYPOINT ["dotnet", "Ctf4e.Server.dll"]
