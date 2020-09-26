@@ -13,7 +13,7 @@ namespace Ctf4e.Api
 
         public int? GroupId { get; set; }
 
-        public string GroupDisplayName { get; set; }
+        public string GroupName { get; set; }
 
         public bool AdminMode { get; set; }
 
