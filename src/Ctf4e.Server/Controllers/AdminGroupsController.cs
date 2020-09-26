@@ -20,7 +20,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ISlotService _slotService;
 
         public AdminGroupsController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
-            : base(userService, mainOptions, "~/Views/AdminGroups.cshtml")
+            : base("~/Views/AdminGroups.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));

@@ -25,7 +25,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ISlotService _slotService;
 
         public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
-            : base(userService, mainOptions, "~/Views/Authentication.cshtml")
+            : base("~/Views/Authentication.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));

@@ -22,7 +22,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabService _labService;
 
         public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabService labService)
-            : base(userService, mainOptions, "~/Views/Scoreboard.cshtml")
+            : base("~/Views/Scoreboard.cshtml", userService, mainOptions)
         {
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));

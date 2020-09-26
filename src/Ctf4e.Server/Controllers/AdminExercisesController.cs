@@ -21,7 +21,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabService _labService;
 
         public AdminExercisesController(IUserService userService, IOptions<MainOptions> mainOptions, IExerciseService exerciseService, ILabService labService)
-            : base(userService, mainOptions, "~/Views/AdminExercises.cshtml")
+            : base("~/Views/AdminExercises.cshtml", userService, mainOptions)
         {
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));

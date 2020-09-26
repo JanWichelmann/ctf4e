@@ -20,7 +20,7 @@ namespace Ctf4e.Server.Controllers
         private readonly IConfigurationService _configurationService;
 
         public AdminConfigurationController(IUserService userService, IOptions<MainOptions> mainOptions, IConfigurationService configurationService)
-            : base(userService, mainOptions, "~/Views/AdminConfiguration.cshtml")
+            : base("~/Views/AdminConfiguration.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));

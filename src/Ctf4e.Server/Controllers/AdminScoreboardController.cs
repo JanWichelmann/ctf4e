@@ -29,7 +29,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ICsvService _csvService;
 
         public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, IExerciseService exerciseService, IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService)
-            : base(userService, mainOptions, "~/Views/AdminScoreboard.cshtml")
+            : base("~/Views/AdminScoreboard.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
@@ -166,7 +166,7 @@ namespace Ctf4e.Server.Controllers
                 UserId = userId,
                 UserDisplayName = user.DisplayName,
                 GroupId = group?.Id,
-                GroupDisplayName = group?.DisplayName,
+                GroupName = group?.DisplayName,
                 AdminMode = true
             };
             string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());

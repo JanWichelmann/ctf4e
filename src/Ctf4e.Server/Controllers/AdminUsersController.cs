@@ -19,7 +19,7 @@ namespace Ctf4e.Server.Controllers
         private readonly IUserService _userService;
 
         public AdminUsersController(IUserService userService, IOptions<MainOptions> mainOptions)
-            : base(userService, mainOptions, "~/Views/AdminUsers.cshtml")
+            : base("~/Views/AdminUsers.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }

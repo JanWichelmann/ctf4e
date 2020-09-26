@@ -19,7 +19,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabService _labService;
 
         public AdminLabsController(IUserService userService, IOptions<MainOptions> mainOptions, ILabService labService)
-            : base(userService, mainOptions, "~/Views/AdminLabs.cshtml")
+            : base("~/Views/AdminLabs.cshtml", userService, mainOptions)
         {
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }

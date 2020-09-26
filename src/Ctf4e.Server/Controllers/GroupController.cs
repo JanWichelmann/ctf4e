@@ -23,7 +23,7 @@ namespace Ctf4e.Server.Controllers
         private readonly IConfigurationService _configurationService;
 
         public GroupController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService, IConfigurationService configurationService)
-            : base(userService, mainOptions, "~/Views/Group.cshtml")
+            : base("~/Views/Group.cshtml", userService, mainOptions)
         {
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
@@ -131,7 +131,7 @@ namespace Ctf4e.Server.Controllers
                 UserId = currentUser.Id,
                 UserDisplayName = currentUser.DisplayName,
                 GroupId = currentUser.GroupId,
-                GroupDisplayName = currentUser.Group?.DisplayName,
+                GroupName = currentUser.Group?.DisplayName,
                 AdminMode = false
             };
             string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());

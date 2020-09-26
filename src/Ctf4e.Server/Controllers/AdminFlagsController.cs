@@ -21,7 +21,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabService _labService;
 
         public AdminFlagsController(IUserService userService, IOptions<MainOptions> mainOptions, IFlagService flagService, ILabService labService)
-            : base(userService, mainOptions, "~/Views/AdminFlags.cshtml")
+            : base("~/Views/AdminFlags.cshtml", userService, mainOptions)
         {
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));

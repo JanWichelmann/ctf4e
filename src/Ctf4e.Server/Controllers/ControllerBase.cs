@@ -28,7 +28,7 @@ namespace Ctf4e.Server.Controllers
         private User _currentUser = null;
         private bool _currentUserHasLoggedOut = false;
 
-        protected ControllerBase(IUserService userService, IOptions<MainOptions> mainOptions, string viewPath)
+        protected ControllerBase(string viewPath, IUserService userService, IOptions<MainOptions> mainOptions)
             : base(viewPath)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));

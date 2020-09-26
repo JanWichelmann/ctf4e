@@ -19,7 +19,7 @@ namespace Ctf4e.Server.Controllers
         private readonly ISlotService _slotService;
 
         public AdminSlotsController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
-            : base(userService, mainOptions, "~/Views/AdminSlots.cshtml")
+            : base("~/Views/AdminSlots.cshtml", userService, mainOptions)
         {
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
         }
