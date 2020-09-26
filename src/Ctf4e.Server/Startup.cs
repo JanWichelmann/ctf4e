@@ -90,6 +90,7 @@ namespace Ctf4e.Server
             services.AddAntiforgery(options =>
             {
                 options.Cookie.Name = "ctf4e.antiforgery";
+                options.Cookie.SameSite = SameSiteMode.Lax;
             });
 
             // Authentication
@@ -174,7 +175,7 @@ namespace Ctf4e.Server
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 Secure = CookieSecurePolicy.SameAsRequest,
-                MinimumSameSitePolicy = SameSiteMode.Strict
+                MinimumSameSitePolicy = SameSiteMode.Lax
             });
             app.UseAuthentication();
             app.UseAuthorization();
