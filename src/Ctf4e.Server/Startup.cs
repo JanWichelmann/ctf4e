@@ -150,12 +150,12 @@ namespace Ctf4e.Server
                         return true;
                     };
                 }).AddEntityFramework();
+            }
 
-                // IDE-only tools
-                if(_environment.IsDevelopment())
-                {
-                    mvcBuilder.AddRazorRuntimeCompilation();
-                }
+            // IDE-only tools
+            if(_environment.IsDevelopment())
+            {
+                mvcBuilder.AddRazorRuntimeCompilation();
             }
         }
 
