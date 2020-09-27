@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Ctf4e.Api
+namespace Ctf4e.Api.Models
 {
     /// <summary>
     ///     Defines a login request to a lab server.
