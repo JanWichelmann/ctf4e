@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Login";
+
+    var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
+}
+
+@if(viewType == AuthenticationController.ViewType.Blank)
+{
+    <!-- Status messages only -->
+}
+else if(viewType == AuthenticationController.ViewType.Redirect)
+{
+    <a asp-controller="Group" asp-action="RenderPageAsync">Weiterleiten...</a>
+    @section ScriptsHead
+    {
+        <meta http-equiv="refresh" content="1;url=@(Url.Action<GroupController>(nameof(GroupController.RenderPageAsync)))">
+    }
+}

@@ -1,0 +1,34 @@
+@using Ctf4e.LabServer.Options
+@using Ctf4e.LabServer.ViewModels
+@{
+    ViewData["Title"] = "Konfiguration bearbeiten";
+
+    string configuration = ViewData.ContainsKey("Configuration") ? (string)ViewData["Configuration"] : null;
+    bool writable = ViewData.ContainsKey("Writable") && (bool)ViewData["Writable"];
+}
+
+@if(configuration != null)
+{
+    <h3 class="text-primary">
+        Konfiguration bearbeiten
+    </h3>
+    <hr class="bg-primary" style="height: 2px;">
+    
+    <p class="text-danger font-weight-bold">
+        ACHTUNG: Das Verändern der Konfiguration nach Freischaltung des Praktikums kann unter Umständen zu Fehlern und Datenverlust führen.
+    </p>
+    <p class="text-danger">
+        Das Verändern der CTF-API-Konfiguration zur Laufzeit wird nicht unterstützt.
+    </p>
+
+    <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfigurationAsync">
+        <textarea name="configuration" class="form-control text-monospace" rows="40" cols="100">@configuration</textarea>
+        
+        @if(writable)
+        {
+            <button type="submit" class="btn btn-outline-danger mt-2">
+                Änderungen speichern
+            </button>
+        }
+    </form>
+}

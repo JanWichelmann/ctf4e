@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Ctf4e.LabServer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CTF4E_LAB_CONFIG_FILE": "config-debug.json",
+        "CTF4E_LAB_CERT_FILE": "debug.pfx",
+        "CTF4E_LAB_CERT_PASSWORD": "ctf4e"
+      },
+      "applicationUrl": "https://localhost:5001"
+    }
+  }
+}
