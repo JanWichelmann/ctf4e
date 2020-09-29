@@ -82,8 +82,9 @@ namespace Ctf4e.LabServer.Controllers
 
                 var groupIdStr = User.Claims.First(c => c.Type == AuthenticationStrings.ClaimGroupId).Value;
                 _currentUser.GroupId = groupIdStr == null ? (int?)null : int.Parse(groupIdStr);
-                
-                _adminMode = bool.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimAdminMode).Value);
+
+                var adminModeClaim = User.Claims.FirstOrDefault(c => c.Type == AuthenticationStrings.ClaimAdminMode);
+                _adminMode = adminModeClaim != null && bool.Parse(adminModeClaim.Value);
             }
         }
 
