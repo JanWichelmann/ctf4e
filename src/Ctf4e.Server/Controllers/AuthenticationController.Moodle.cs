@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -30,13 +33,14 @@ namespace Ctf4e.Server.Controllers
             var user = await _userService.FindUserByMoodleUserIdAsync(authData.UserId, HttpContext.RequestAborted);
             if(user == null)
             {
+                bool firstUser = !await _userService.AnyUsers(HttpContext.RequestAborted);
                 var newUser = new User
                 {
                     DisplayName = authData.FullName,
                     MoodleUserId = authData.UserId,
                     MoodleName = authData.LoginName,
                     GroupFindingCode = RandomStringGenerator.GetRandomString(10),
-                    IsAdmin = !await _userService.AnyUsers(HttpContext.RequestAborted)
+                    IsAdmin = firstUser
                 };
                 user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
                 AddStatusMessage("Account erfolgreich erstellt!", StatusMessageTypes.Success);
@@ -47,7 +51,7 @@ namespace Ctf4e.Server.Controllers
 
             // Done
             AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
-            if(user.Group == null)
+            if(user.Group == null && !user.IsAdmin)
                 return await ShowGroupFormAsync();
             return await RenderAsync(ViewType.Redirect);
         }
