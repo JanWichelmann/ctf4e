@@ -76,12 +76,20 @@ namespace Ctf4e.LabServer.Controllers
                 _currentUser = new User
                 {
                     UserId = int.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserId).Value),
-                    UserDisplayName = User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserDisplayName).Value,
-                    GroupName = User.Claims.First(c => c.Type == AuthenticationStrings.ClaimGroupName).Value
+                    UserDisplayName = User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserDisplayName).Value
                 };
 
-                var groupIdStr = User.Claims.First(c => c.Type == AuthenticationStrings.ClaimGroupId).Value;
-                _currentUser.GroupId = groupIdStr == null ? (int?)null : int.Parse(groupIdStr);
+                var groupIdClaim = User.Claims.FirstOrDefault(c => c.Type == AuthenticationStrings.ClaimGroupId);
+                if(groupIdClaim != null)
+                {
+                    _currentUser.GroupId = int.Parse(groupIdClaim.Value);
+                    _currentUser.GroupName = User.Claims.First(c => c.Type == AuthenticationStrings.ClaimGroupName).Value;
+                }
+                else
+                {
+                    _currentUser.GroupId = null;
+                    _currentUser.GroupName = "";
+                }
 
                 var adminModeClaim = User.Claims.FirstOrDefault(c => c.Type == AuthenticationStrings.ClaimAdminMode);
                 _adminMode = adminModeClaim != null && bool.Parse(adminModeClaim.Value);

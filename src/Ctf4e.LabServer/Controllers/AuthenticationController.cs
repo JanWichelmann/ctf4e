@@ -102,10 +102,13 @@ namespace Ctf4e.LabServer.Controllers
             var claims = new List<Claim>
             {
                 new Claim(AuthenticationStrings.ClaimUserId, userId.ToString()),
-                new Claim(AuthenticationStrings.ClaimUserDisplayName, userDisplayName),
-                new Claim(AuthenticationStrings.ClaimGroupId, groupId.ToString()),
-                new Claim(AuthenticationStrings.ClaimGroupName, groupName)
+                new Claim(AuthenticationStrings.ClaimUserDisplayName, userDisplayName ?? "")
             };
+            if(groupId != null)
+            {
+                claims.Add(new Claim(AuthenticationStrings.ClaimGroupId, groupId.ToString()));
+                claims.Add(new Claim(AuthenticationStrings.ClaimGroupName, groupName ?? ""));
+            }
             if(adminMode)
                 claims.Add(new Claim(AuthenticationStrings.ClaimAdminMode, true.ToString()));
 
