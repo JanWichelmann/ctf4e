@@ -161,7 +161,7 @@ namespace Ctf4e.Server.Controllers
 
             // Build authentication string
             var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
-            var group = user.GroupId != null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1);
+            var group = user.GroupId == null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1);
             var authData = new UserLoginRequest
             {
                 UserId = userId,
