@@ -12,6 +12,7 @@ using Ctf4e.LabServer.InputModels;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.LabServer.Controllers
 {
@@ -23,13 +24,15 @@ namespace Ctf4e.LabServer.Controllers
         private readonly IStateService _stateService;
         private readonly ICtfApiClient _ctfApiClient;
         private readonly IOptionsSnapshot<LabOptions> _labOptions;
+        private readonly ILogger<GroupController> _logger;
 
-        public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions)
+        public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions, ILogger<GroupController> logger)
             : base("~/Views/Group.cshtml", labOptions)
         {
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
             _ctfApiClient = ctfApiClient ?? throw new ArgumentNullException(nameof(ctfApiClient));
             _labOptions = labOptions ?? throw new ArgumentNullException(nameof(labOptions));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private async Task<IActionResult> RenderAsync()
@@ -90,6 +93,12 @@ namespace Ctf4e.LabServer.Controllers
                 AddStatusMessage("Diese Aufgabe existiert nicht.", StatusMessageTypes.Error);
                 return await RenderAsync();
             }
+            catch(Exception ex)
+            {
+                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
+                _logger.LogError(ex, "An error occured during evaluation of a solution attempt.");
+                return await RenderAsync();
+            }
         }
 
         [HttpPost("admin/solve")]
@@ -127,6 +136,12 @@ namespace Ctf4e.LabServer.Controllers
                 AddStatusMessage("Diese Aufgabe existiert nicht.", StatusMessageTypes.Error);
                 return await RenderAsync();
             }
+            catch(Exception ex)
+            {
+                AddStatusMessage("Ein Fehler ist aufgetreten: " + ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Could not mark exercise as solved.");
+                return await RenderAsync();
+            }
         }
 
         [HttpPost("admin/reset")]
@@ -148,6 +163,12 @@ namespace Ctf4e.LabServer.Controllers
             catch(ArgumentException)
             {
                 AddStatusMessage("Diese Aufgabe existiert nicht.", StatusMessageTypes.Error);
+                return await RenderAsync();
+            }
+            catch(Exception ex)
+            {
+                AddStatusMessage("Ein Fehler ist aufgetreten: " + ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Could not reset exercise.");
                 return await RenderAsync();
             }
         }
