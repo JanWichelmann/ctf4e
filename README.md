@@ -25,7 +25,7 @@ This is the main application, which keeps track of exercise results, flag submis
 A new instance of the CTF server can be created by following these steps:
 1. Pull the files from the `run/server/` folder.
 2. Edit `config.json` and `.env` to match the corresponding runtime environment.
-3. `docker-compose up` will start the CTF server.
+3. `docker-compose up -d` will start the CTF server.
 
 Finally, open a browser and navigate to the specified host/port.
 
@@ -44,7 +44,12 @@ Features:
 
 ### Quick start
 
-Coming soon...
+The folder `run/labserver/` contains an example `docker-compose` configuration for setting up a CTF server combined with a single lab server instance.
+1. Pull the files from the `run/labserver/` folder.
+2. Edit `config.json`, `config-labserver1.json` and `.env` to match the corresponding runtime environment. The lab server configuration file format is documented in [`docs/labserver-config.md`](docs/labserver-config.md).
+3. `docker-compose up -d` will start the CTF server and a lab server.
+
+Finally, open a browser and navigate to the specified host/port.
 
 ## Contributing
 
