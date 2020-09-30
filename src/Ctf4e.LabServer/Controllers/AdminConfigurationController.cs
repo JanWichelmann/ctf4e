@@ -72,7 +72,7 @@ namespace Ctf4e.LabServer.Controllers
                 var newOptions = JsonConvert.DeserializeObject<ConfigFile>(configuration).LabOptions;
 
                 // Group state directory should exist
-                if(!Directory.Exists(newOptions.GroupStateDirectory))
+                if(!Directory.Exists(newOptions.UserStateDirectory))
                 {
                     AddStatusMessage("Das angegebene Verzeichnis mit Gruppendaten existiert nicht.", StatusMessageTypes.Error);
                     error = true;

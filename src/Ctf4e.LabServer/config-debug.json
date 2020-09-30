@@ -1,6 +1,6 @@
 {
   "CtfApiOptions": {
-    "CtfServerApiBaseUrl": "https://localhost:5000/api",
+    "CtfServerApiBaseUrl": "https://localhost:5000/api/",
     "LabId": 1,
     "LabApiCode": "12345"
   },
@@ -10,7 +10,7 @@
     "PassAsGroup": true,
     "PageTitle": "CTF4E Lab Server",
     "NavbarTitle": "CTF4E Lab Server",
-    "GroupStateDirectory": "R:\\users\\",
+    "UserStateDirectory": "R:\\users",
     "Exercises": [
       {
         "Id": 10,
@@ -56,7 +56,7 @@
         "FlagCode": "CTF{test-flag}",
         "Title": "Flag1",
         "DescriptionFormat": "Please enter another secret of <strong>{0}</strong>.",
-        "Link": "https://google.de/",
+        "Link": "http://localhost:5000/",
         "AllowAnySolution": false,
         "ValidSolutions": [
           {

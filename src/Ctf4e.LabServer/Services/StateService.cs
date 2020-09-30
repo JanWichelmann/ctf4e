@@ -108,7 +108,7 @@ namespace Ctf4e.LabServer.Services
                 // Read user data
                 _userStates = new ConcurrentDictionary<int, UserState>();
                 Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
-                foreach(string userStateFileName in Directory.GetFiles(options.GroupStateDirectory, "u*.json"))
+                foreach(string userStateFileName in Directory.GetFiles(options.UserStateDirectory, "u*.json"))
                 {
                     // Read file
                     int userId = int.Parse(userIdRegex.Match(userStateFileName).Groups[1].Value);
@@ -213,7 +213,7 @@ namespace Ctf4e.LabServer.Services
         private UserStateFile ReadUserStateFile(string userStateFileName)
         {
             // Read user state file
-            string path = Path.Combine(_optionsMonitor.CurrentValue.GroupStateDirectory, userStateFileName);
+            string path = Path.Combine(_optionsMonitor.CurrentValue.UserStateDirectory, userStateFileName);
             if(!File.Exists(path))
                 return null;
             return JsonConvert.DeserializeObject<UserStateFile>(File.ReadAllText(path));
@@ -231,7 +231,7 @@ namespace Ctf4e.LabServer.Services
             {
                 Exercises = userState.Exercises.Values.ToArray()
             };
-            File.WriteAllText(Path.Combine(_optionsMonitor.CurrentValue.GroupStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
+            File.WriteAllText(Path.Combine(_optionsMonitor.CurrentValue.UserStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
         }
 
         /// <summary>

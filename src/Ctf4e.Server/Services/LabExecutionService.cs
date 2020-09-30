@@ -8,7 +8,11 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Profiling;
+using StackExchange.Profiling.Data;
 
 namespace Ctf4e.Server.Services
 {
@@ -56,14 +60,21 @@ namespace Ctf4e.Server.Services
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default)
+        public async Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default)
         {
-            return _dbContext.LabExecutions.AsNoTracking()
-                .Include(l => l.Lab)
-                .Include(l => l.Group)
-                .Where(l => l.Group.Members.Contains(new UserEntity { Id = userId }) && l.LabId == labId)
-                .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Lab, l => l.Group)
-                .FirstOrDefaultAsync(cancellationToken);
+            // We have to match against user IDs, which does not seem to be supported by EF
+            var dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
+            var labExecutionEntity = (await dbConn.QueryAsync<LabExecutionEntity>(@"
+                 SELECT le.*
+                 FROM `LabExecutions` le
+                 INNER JOIN `Groups` g ON g.`Id` = le.`GroupId`
+                 WHERE le.`LabId` = @labId
+                 AND g.`Id` = (
+                     SELECT u.`GroupId`
+                     FROM `Users` u
+                     WHERE u.`Id` = @userId
+                 )", new {labId, userId})).FirstOrDefault();
+            return _mapper.Map<LabExecutionEntity, LabExecution>(labExecutionEntity);
         }
 
         public Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken = default)

@@ -33,7 +33,7 @@ services:
         target: /config
       - type: volume
         source: ctf4e-labserver1-state
-        target: /groups
+        target: /users
     environment:
       - CTF4E_LAB_CONFIG_FILE=/config/${CONFIG_FILE_NAME_LABSERVER1}
       - CTF4E_LAB_CERT_FILE=/config/${CERT_FILE_NAME_LABSERVER1}

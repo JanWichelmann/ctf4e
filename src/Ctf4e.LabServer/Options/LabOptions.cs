@@ -18,7 +18,7 @@ namespace Ctf4e.LabServer.Options
         
         public string NavbarTitle { get; set; }
         
-        public string GroupStateDirectory { get; set; }
+        public string UserStateDirectory { get; set; }
         
         public LabOptionsExerciseEntry[] Exercises { get; set; }
     }

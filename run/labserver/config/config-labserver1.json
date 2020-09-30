@@ -10,7 +10,7 @@
     "PassAsGroup": true,
     "PageTitle": "CTF4E Lab Server",
     "NavbarTitle": "CTF4E Lab Server",
-    "GroupStateDirectory": "/groups",
+    "UserStateDirectory": "/users",
     "Exercises": [
       {
         "Id": 10,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Api.Models;
@@ -42,6 +43,8 @@ namespace Ctf4e.Api.Services
             // WORKAROUND: The current implementation of RestSharp silently swallows exceptions; check and throw possible exceptions manually
             if(response.ErrorException != null)
                 throw response.ErrorException;
+            if(!response.IsSuccessful)
+                throw new WebException("The server returned an error status code: " + response.StatusDescription);
         }
     }
 }
