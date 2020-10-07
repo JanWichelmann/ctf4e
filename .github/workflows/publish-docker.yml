@@ -27,7 +27,7 @@ jobs:
         password: ${{secrets.DOCKER_ACCESS_TOKEN}}
         tags: latest,${{ steps.get_version.outputs.VERSION }}
         dockerfile: src/Ctf4e.Server/Dockerfile
-        build_args: BUILD_VERSION=${{ steps.get_version.outputs.SHORT_HASH }}
+        build-args: BUILD_VERSION=${{ steps.get_version.outputs.SHORT_HASH }}
     
     - name: Build and push lab server docker image
       uses: docker/build-push-action@v1
@@ -37,4 +37,3 @@ jobs:
         password: ${{secrets.DOCKER_ACCESS_TOKEN}}
         tags: latest,${{ steps.get_version.outputs.VERSION }}
         dockerfile: src/Ctf4e.LabServer/Dockerfile
-        build_args: BUILD_VERSION=${{ steps.get_version.outputs.SHORT_HASH }}

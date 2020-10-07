@@ -29,6 +29,9 @@
 
     // Build ID
     var buildId = (string)ViewData["BuildId"];
+
+    // Development mode
+    var devMode = (bool)ViewData["DevelopmentMode"];
 }
 <!DOCTYPE html>
 <html lang="de">
@@ -177,17 +180,17 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                Powered by <a href="https://github.com/JanWichelmann/ctf4e">CTF4E</a>
+                Powered by <a href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
             </div>
             <div class="col text-right">
-                @if(currentUser != null && currentUser.IsAdmin)
+                @if(devMode && currentUser != null && currentUser.IsAdmin)
                 {
                     <a href="~/dev/profiler/results-index" target="_blank">Profiler</a>
                     @:&middot;
-                    <span>
-                        Build #<a href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
-                    </span>
                 }
+                <span>
+                    Build #<a href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
+                </span>
             </div>
         </div>
     </div>
