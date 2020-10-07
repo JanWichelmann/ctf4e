@@ -58,11 +58,11 @@
         </small>
     </div>
     <div class="form-group">
-        <label asp-for="FlagHalfPointsSubmissionCount">Anzahl der Flageinreichungen bis 50% der möglichen Punkte</label>
+        <label asp-for="FlagHalfPointsSubmissionCount">Anzahl der Flageinreichungen bis Mittelwert der Punkte</label>
         <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
         <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
         <small>
-            Diese Zahl legt fest, bei wie vielen Flageinreichungen noch ca. 50% der Basispunktzahl gewährt werden.
+            Diese Zahl legt fest, bei wie vielen Flageinreichungen noch der Mittelwert zwischen Basispunktzahl und Minimalpunktzahl (<code>(basis+min)/2</code>) gewährt wird.
         </small>
     </div>
     <div class="form-group">
@@ -83,6 +83,25 @@
             Diese Zahl legt fest, wie viele Sekunden ein gecachtes Scoreboard gültig ist, bevor ein neues erzeugt wird.
             Ziel dieser Einstellung ist, die Datenbank zu entlasten, da hierfür mehrere große Queries ausgeführt werden müssen.
             Der Wert sollte anfangs möglichst niedrig angesetzt sein, und erst bei Bedarf erhöht werden.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="GroupSizeMin">Minimale Gruppengröße</label>
+        <input asp-for="GroupSizeMin" class="form-control">
+        <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
+        <small>
+            Diese Zahl legt fest, wie viele Mitglieder eine Gruppe mindestens haben muss.
+            So muss sich jeder Teilnehmer nach Registrierung zu einer entsprechend großen Gruppe finden.
+            Kleinere Gruppen können nur von Administratoren erstellt werden.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="GroupSizeMax">Maximale Gruppengröße</label>
+        <input asp-for="GroupSizeMax" class="form-control">
+        <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
+        <small>
+            Diese Zahl legt fest, wie viele Mitglieder eine Gruppe maximal haben darf.
+            Größere Gruppen können nur von Administratoren erstellt werden.
         </small>
     </div>
     <div class="form-group">
@@ -108,62 +127,86 @@
 <hr class="bg-primary mb-2" style="height: 2px">
 
 <p>
-    Dies zeigt die Entwicklung der Flagpunktzahl abhängig von der Anzahl der Flag-Funde. Als Flag-Basispunktzahl wird <strong>100</strong> angenommen, aktuell gibt es insgesamt <strong>@groupCount</strong> Gruppen.
+    Dies zeigt die Entwicklung der Flagpunktzahl abhängig von der Anzahl der Flag-Funde.
 </p>
+<div class="form-group">
+    <label for="input-flag-base-points">Flag-Basispunktzahl</label>
+    <input type="number" min="1" id="input-flag-base-points" class="form-control" value="100">
+</div>
+<div class="form-group">
+    <label for="input-group-count">Anzahl der Gruppen</label>
+    <input type="number" min="1" id="input-group-count" class="form-control" value="@(Math.Max(groupCount, 2))">
+</div>
 <canvas id="canvas-flag-points"></canvas>
 
 <script>
-    var flagBasePoints = 100;
-    var groupCount = @groupCount;
-    var chartConfig = {
-        type: 'line',
-        data: {
-            labels: Array.from(Array(groupCount + 1).keys()),
-            datasets: [
-                {
-                    label: "Flag-Punkte",
-                    data: Array.from(Array(groupCount + 1).keys()), // dummy values
-                    borderColor: "rgb(0, 97, 122)",
-                    fill: false,
-                    lineTension: 0
-                }
-            ]
-        },
-        options: {
-        }
-    };
+    let flagPointsChart;
+    
+    let inputFlagBasePoints = $("#input-flag-base-points");
+    let inputGroupCount = $("#input-group-count");
+    let inputFlagMinimumPointsDivisor = $("#input-flag-minimum-points-divisor");
+    let inputFlagHalfPointsSubmissionCount = $("#input-flag-half-points-submission-count");
 
-    function updateChart() {
-        var minPointsDivisor = $("#input-flag-minimum-points-divisor").val();
-        var minPointsMultiplier = 1.0 / minPointsDivisor;
-        var halfPointsSubmissionCount = $("#input-flag-half-points-submission-count").val();
+    function updateChart()
+    {
+        let flagBasePoints = Number(inputFlagBasePoints.val());
+        let groupCount = Number(inputGroupCount.val());
+        let minPointsDivisor = Number(inputFlagMinimumPointsDivisor.val());
+        let minPointsMultiplier = 1.0 / minPointsDivisor;
+        let halfPointsSubmissionCount = Number(inputFlagHalfPointsSubmissionCount.val());
+        
+        // Update labels
+        console.log('g', groupCount);
+        while (flagPointsChart.data.labels.length < groupCount)
+            flagPointsChart.data.labels.push(flagPointsChart.data.labels.length + 1);
+        while (flagPointsChart.data.labels.length > groupCount)
+            flagPointsChart.data.labels.pop();
+        
+        flagPointsChart.data.datasets[0].data.length = groupCount;
 
-        for (var i = 0; i < groupCount + 1; i++) {
-
+        for (let i = 0; i < groupCount; i++) 
+        {
             // For details see FlagPointService
-            var amb = flagBasePoints - minPointsMultiplier * flagBasePoints;
-            var points = (amb * Math.pow(2, (-i + 1) / (halfPointsSubmissionCount - 1.0))) + (minPointsMultiplier * flagBasePoints);
-            chartConfig.data.datasets[0].data[i] = Math.round(points);
+            let amb = flagBasePoints - minPointsMultiplier * flagBasePoints;
+            let points = (amb * Math.pow(2, (-i) / (halfPointsSubmissionCount - 1.0))) + (minPointsMultiplier * flagBasePoints);
+            flagPointsChart.data.datasets[0].data[i] = Math.round(points);
         }
 
-        window.flagPointsChart.update();
+        flagPointsChart.update();
     }
 
-    window.onload = function() {
-        var ctx = $("#canvas-flag-points")[0].getContext('2d');
-        window.flagPointsChart = new Chart(ctx, chartConfig);
+    window.onload = function() 
+    {
+        let chartConfig = {
+            type: 'line',
+            data: {
+                labels: [1, 2], // dummy
+                datasets: [
+                    {
+                        label: "Flag-Punkte",
+                        data: new Array(2).fill(0), // dummy
+                        borderColor: "rgb(0, 97, 122)",
+                        fill: false,
+                        lineTension: 0
+                    }
+                ]
+            },
+            options: {
+                animation: {
+                    duration: 100   
+                }
+            }
+        };
+        
+        let ctx = $("#canvas-flag-points")[0].getContext('2d');
+        flagPointsChart = new Chart(ctx, chartConfig);
         updateChart();
     }
 
-    $("#input-flag-minimum-points-divisor").change(function () {
-        updateChart();
-    });
-    $("#input-flag-half-points-submission-count").change(function () {
-        updateChart();
-    });
-    $("#input-create-split-groups").change(function () {
-        updateChart();
-    });
+    inputFlagBasePoints.change(updateChart);
+    inputGroupCount.change(updateChart);
+    inputFlagMinimumPointsDivisor.change(updateChart);
+    inputFlagHalfPointsSubmissionCount.change(updateChart);
 </script>
 
 

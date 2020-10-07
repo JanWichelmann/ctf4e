@@ -51,12 +51,12 @@ else if(viewType == AuthenticationController.ViewType.GroupSelection)
     
     <form action="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.HandleGroupSelectionAsync)))" method="post">
         <div class="form-group">
-            <label asp-for="OtherUserCode">Code Ihres Partners/Ihrer Partnerin</label>
-            <input asp-for="OtherUserCode" class="form-control" placeholder="Code eingeben">
+            <label asp-for="OtherUserCodes">Codes Ihrer Gruppenpartner/Gruppenpartnerinnen</label>
+            <textarea asp-for="OtherUserCodes" class="form-control" placeholder="Codes eingeben" rows="4" cols="40"></textarea>
             <small class="form-text text-muted">
-                Der Code wird bei erstmaligem Login angezeigt.
+                Ein Code pro Zeile.
             </small>
-            <span asp-validation-for="OtherUserCode" class="text-danger"></span>
+            <span asp-validation-for="OtherUserCodes" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="SlotId">Praktikumstermin</label>
@@ -80,14 +80,14 @@ else if(viewType == AuthenticationController.ViewType.GroupSelection)
                 <label asp-for="ShowInScoreboard" class="form-check-label">Am CTF teilnehmen und Gruppe im Scoreboard anzeigen</label>
                 <small class="form-text text-muted">
                     Mit Setzen dieses Feldes nehmen Sie am Praktikums-internen Capture-The-Flag teil, und Ihr Gruppenname wird im Scoreboard angezeigt.
-                    Die Teilnahme am CTF ist komplett freiwillig und hat keinerlei Nachteile. Das Scoreboard zeigt stets nur die zehn besten Gruppen an.
+                    Die Teilnahme am CTF ist komplett freiwillig und hat keinerlei Nachteile. Das Scoreboard zeigt stets nur die oberen Plätze an.
                 </small>
             </div>
         </div>
         <p>
             Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben.
-            Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut über das Moodle einloggen.
-            Im Anschluss sollten Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe haben.
+            Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut einloggen.
+            Im Anschluss haben Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe.
         </p>
 
         @Html.AntiForgeryToken()

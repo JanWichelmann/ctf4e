@@ -38,7 +38,9 @@ namespace Ctf4e.Server.Controllers
                 PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
                 NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
                 FlagPrefix = await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted),
-                FlagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted)
+                FlagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted),
+                GroupSizeMin = await _configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted),
+                GroupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted)
             };
 
             int groupCount = await _userService.GetGroupsAsync().CountAsync(HttpContext.RequestAborted);
@@ -63,18 +65,39 @@ namespace Ctf4e.Server.Controllers
                 return await RenderAsync(configurationData);
             }
 
+            // Update configuration
             try
             {
-                // Update configuration
+                if(configurationData.FlagHalfPointsSubmissionCount <= 1)
+                    configurationData.FlagHalfPointsSubmissionCount = 2;
                 await _configurationService.SetFlagHalfPointsSubmissionCountAsync(configurationData.FlagHalfPointsSubmissionCount, HttpContext.RequestAborted);
+                
+                if(configurationData.FlagMinimumPointsDivisor <= 1)
+                    configurationData.FlagMinimumPointsDivisor = 2;
                 await _configurationService.SetFlagMinimumPointsDivisorAsync(configurationData.FlagMinimumPointsDivisor, HttpContext.RequestAborted);
+                
+                if(configurationData.ScoreboardEntryCount < 3)
+                    configurationData.ScoreboardEntryCount = 3;
                 await _configurationService.SetScoreboardEntryCountAsync(configurationData.ScoreboardEntryCount, HttpContext.RequestAborted);
+                
+                if(configurationData.ScoreboardCachedSeconds < 0)
+                    configurationData.ScoreboardCachedSeconds = 0;
                 await _configurationService.SetScoreboardCachedSecondsAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
+                
                 await _configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
+                
                 await _configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
                 await _configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
+                
                 await _configurationService.SetFlagPrefixAsync(configurationData.FlagPrefix, HttpContext.RequestAborted);
                 await _configurationService.SetFlagSuffixAsync(configurationData.FlagSuffix, HttpContext.RequestAborted);
+
+                if(configurationData.GroupSizeMin <= 0)
+                    configurationData.GroupSizeMin = 1;
+                if(configurationData.GroupSizeMin > configurationData.GroupSizeMax)
+                    configurationData.GroupSizeMax = configurationData.GroupSizeMin + 1;
+                await _configurationService.SetGroupSizeMinAsync(configurationData.GroupSizeMin, HttpContext.RequestAborted);
+                await _configurationService.SetGroupSizeMaxAsync(configurationData.GroupSizeMax, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Konfiguration wurde erfolgreich aktualisiert.", StatusMessageTypes.Success);
             }

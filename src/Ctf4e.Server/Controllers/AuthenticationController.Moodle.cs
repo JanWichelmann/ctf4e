@@ -51,7 +51,7 @@ namespace Ctf4e.Server.Controllers
 
             // Done
             AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
-            if(user.Group == null && !user.IsAdmin)
+            if(user.Group == null)
                 return await ShowGroupFormAsync();
             return await RenderAsync(ViewType.Redirect);
         }

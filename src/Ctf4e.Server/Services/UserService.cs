@@ -28,7 +28,7 @@ namespace Ctf4e.Server.Services
         IAsyncEnumerable<Group> GetGroupsInSlotAsync(int slotId);
         Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken = default);
         Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken = default);
-        Task CreateGroupAsync(Group group, string groupFindingCode1, string groupFindingCode2, CancellationToken cancellationToken = default);
+        Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken = default);
         Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken = default);
         Task UpdateGroupAsync(Group group, CancellationToken cancellationToken = default);
         Task DeleteGroupAsync(int id, CancellationToken cancellationToken = default);
@@ -109,7 +109,7 @@ namespace Ctf4e.Server.Services
             // Try to retrieve existing user entity
             var userEntity = await _dbContext.Users.FindAsync(new object[] { user.Id }, cancellationToken);
             if(userEntity == null)
-                throw new InvalidOperationException("Dieser Benutzer existiert nicht");
+                throw new ArgumentException("This user does not exist.", nameof(user));
 
             // Update entry
             userEntity.DisplayName = user.DisplayName;
@@ -161,19 +161,19 @@ namespace Ctf4e.Server.Services
                 .AnyAsync(cancellationToken);
         }
 
-        public async Task CreateGroupAsync(Group group, string groupFindingCode1, string groupFindingCode2, CancellationToken cancellationToken = default)
+        public async Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken = default)
         {
             // Retrieve affected users
             var userEntities = await _dbContext.Users.AsQueryable()
-                .Where(u => u.GroupFindingCode == groupFindingCode1 || u.GroupFindingCode == groupFindingCode2)
+                .Where(u => groupFindingCodes.Contains(u.GroupFindingCode))
                 .Include(u => u.Group)
                 .ToListAsync(cancellationToken);
-            if(userEntities.Count != 2)
-                throw new ArgumentException("Ungültiger Code.");
+            if(userEntities.Count != groupFindingCodes.Count)
+                throw new ArgumentException("At least one group finding code is invalid.");
             if(userEntities.Any(u => u.Group != null))
-                throw new InvalidOperationException("Mindestens ein Benutzer ist bereits einer Gruppe zugewiesen.");
+                throw new InvalidOperationException("At least one user is already assigned to a group.");
 
-            // Create new group(s)
+            // Create new group
             var groupEntity = _dbContext.Groups.Add(new GroupEntity
             {
                 SlotId = group.SlotId,
@@ -183,10 +183,11 @@ namespace Ctf4e.Server.Services
             }).Entity;
 
             // Update users
-            userEntities[0].GroupId = groupEntity.Id;
-            groupEntity.Members.Add(userEntities[0]);
-            userEntities[1].GroupId = groupEntity.Id;
-            groupEntity.Members.Add(userEntities[1]);
+            foreach(var userEntity in userEntities)
+            {
+                userEntity.GroupId = groupEntity.Id;
+                groupEntity.Members.Add(userEntity);
+            }
 
             // Apply changes
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -213,7 +214,7 @@ namespace Ctf4e.Server.Services
             // Try to retrieve existing user entity
             var groupEntity = await _dbContext.Groups.FindAsync(new object[] { group.Id }, cancellationToken);
             if(groupEntity == null)
-                throw new InvalidOperationException("Diese Gruppe existiert nicht");
+                throw new ArgumentException("The group does not exist.", nameof(group));
 
             // Update entry
             groupEntity.DisplayName = group.DisplayName;

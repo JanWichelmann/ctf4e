@@ -17,9 +17,9 @@ namespace Ctf4e.Server.Services
         Task<int> GetScoreboardEntryCountAsync(CancellationToken cancellationToken = default);
         Task SetScoreboardEntryCountAsync(int value, CancellationToken cancellationToken = default);
         Task<int> GetScoreboardCachedSecondsAsync(CancellationToken cancellationToken = default);
-        Task SetScoreboardCachedSecondsAsync(int value, CancellationToken cancellationToken = default);
         Task<bool> GetPassAsGroupAsync(CancellationToken cancellationToken = default);
         Task SetPassAsGroupAsync(bool value, CancellationToken cancellationToken = default);
+        Task SetScoreboardCachedSecondsAsync(int value, CancellationToken cancellationToken = default);
         Task<string> GetNavbarTitleAsync(CancellationToken cancellationToken = default);
         Task SetNavbarTitleAsync(string value, CancellationToken cancellationToken = default);
         Task<string> GetPageTitleAsync(CancellationToken cancellationToken = default);
@@ -28,6 +28,10 @@ namespace Ctf4e.Server.Services
         Task SetFlagPrefixAsync(string value, CancellationToken cancellationToken = default);
         Task<string> GetFlagSuffixAsync(CancellationToken cancellationToken = default);
         Task SetFlagSuffixAsync(string value, CancellationToken cancellationToken = default);
+        Task SetGroupSizeMinAsync(int value, CancellationToken cancellationToken = default);
+        Task<int> GetGroupSizeMinAsync(CancellationToken cancellationToken = default);
+        Task SetGroupSizeMaxAsync(int value, CancellationToken cancellationToken = default);
+        Task<int> GetGroupSizeMaxAsync(CancellationToken cancellationToken = default);
     }
 
     public class ConfigurationService : IConfigurationService
@@ -44,6 +48,8 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyPageTitle = "PageTitle";
         private const string ConfigKeyFlagPrefix = "FlagPrefix";
         private const string ConfigKeyFlagSuffix = "FlagSuffix";
+        private const string ConfigKeyGroupSizeMin = "GroupSizeMin";
+        private const string ConfigKeyGroupSizeMax = "GroupSizeMax";
 
         public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
         {
@@ -105,10 +111,23 @@ namespace Ctf4e.Server.Services
         public Task SetFlagSuffixAsync(string value, CancellationToken cancellationToken = default)
             => AddOrUpdateConfigItem(ConfigKeyFlagSuffix, value, cancellationToken);
 
+        public Task SetGroupSizeMinAsync(int value, CancellationToken cancellationToken = default)
+            => AddOrUpdateConfigItem(ConfigKeyGroupSizeMin, value, cancellationToken);
+
+        public Task<int> GetGroupSizeMinAsync(CancellationToken cancellationToken = default)
+            => GetConfigItemAsync(ConfigKeyGroupSizeMin, s => s == null ? 1 : int.Parse(s), cancellationToken);
+
+        public Task SetGroupSizeMaxAsync(int value, CancellationToken cancellationToken = default)
+            => AddOrUpdateConfigItem(ConfigKeyGroupSizeMax, value, cancellationToken);
+
+        public Task<int> GetGroupSizeMaxAsync(CancellationToken cancellationToken = default)
+            => GetConfigItemAsync(ConfigKeyGroupSizeMax, s => s == null ? 2 : int.Parse(s), cancellationToken);
+
         private async Task<TValue> GetConfigItemAsync<TValue>(string key, Func<string, TValue> valueConverter, CancellationToken cancellationToken)
         {
             // Try to retrieve from config cache
-            if(!_cache.TryGetValue(key, out string value))
+            string cacheKey = "config-" + key;
+            if(!_cache.TryGetValue(cacheKey, out string value))
             {
                 // Retrieve from database
                 var config = await _dbContext.ConfigurationItems.AsNoTracking()
@@ -116,7 +135,7 @@ namespace Ctf4e.Server.Services
                 value = config?.Value;
 
                 // Update cache
-                _cache.Set(key, value);
+                _cache.Set(cacheKey, value);
             }
 
             return valueConverter(value);
@@ -125,6 +144,7 @@ namespace Ctf4e.Server.Services
         private async Task AddOrUpdateConfigItem<TValue>(string key, TValue value, CancellationToken cancellationToken)
         {
             // Write updated config to database
+            string cacheKey = "config-" + key;
             var config = await _dbContext.ConfigurationItems.FindAsync(new object[] { key }, cancellationToken);
             if(config == null)
                 await _dbContext.ConfigurationItems.AddAsync(new ConfigurationItemEntity { Key = key, Value = value.ToString() }, cancellationToken);
@@ -133,7 +153,7 @@ namespace Ctf4e.Server.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             // Update cache
-            _cache.Set(key, value.ToString());
+            _cache.Set(cacheKey, value.ToString());
         }
     }
 }

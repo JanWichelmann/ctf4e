@@ -32,5 +32,11 @@ namespace Ctf4e.Server.ViewModels
         [Required(AllowEmptyStrings = true)]
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string FlagSuffix { get; set; }
+
+        [Required]
+        public int GroupSizeMin { get; set; }
+
+        [Required]
+        public int GroupSizeMax { get; set; }
     }
 }

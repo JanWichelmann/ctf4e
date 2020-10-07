@@ -140,13 +140,13 @@ namespace Ctf4e.Server.Services
                           )
                         WHERE f.`LabId` = @labId
                         GROUP BY f.`Id`",
-                     (flag, submissionCount) => new AdminScoreboardFlagEntry
-                     {
-                         Flag = _mapper.Map<Flag>(flag),
-                         SubmissionCount = (int)submissionCount
-                     },
-                     new { labId },
-                     splitOn: "SubmissionCount"))
+                                                                                                             (flag, submissionCount) => new AdminScoreboardFlagEntry
+                                                                                                             {
+                                                                                                                 Flag = _mapper.Map<Flag>(flag),
+                                                                                                                 SubmissionCount = (int)submissionCount
+                                                                                                             },
+                                                                                                             new { labId },
+                                                                                                             splitOn: "SubmissionCount"))
                 .ToDictionary(f => f.Flag.Id);
             foreach(var f in scoreboardFlagStatus)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
@@ -531,12 +531,12 @@ namespace Ctf4e.Server.Services
                               AND s.`SubmissionTime` < le.`End`
                           )
                         GROUP BY f.`Id`",
-                     (flag, submissionCount) => new ScoreboardFlagEntry
-                     {
-                         Flag = _mapper.Map<Flag>(flag),
-                         SubmissionCount = (int)submissionCount
-                     },
-                     splitOn: "SubmissionCount"))
+                                                                                         (flag, submissionCount) => new ScoreboardFlagEntry
+                                                                                         {
+                                                                                             Flag = _mapper.Map<Flag>(flag),
+                                                                                             SubmissionCount = (int)submissionCount
+                                                                                         },
+                                                                                         splitOn: "SubmissionCount"))
                 .ToDictionary(f => f.Flag.Id);
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
@@ -663,7 +663,8 @@ namespace Ctf4e.Server.Services
 
             // Update cache
             var cacheDuration = TimeSpan.FromSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
-            _cache.Set(fullScoreboardCacheKey, scoreboard, cacheDuration);
+            if(cacheDuration > TimeSpan.Zero)
+                _cache.Set(fullScoreboardCacheKey, scoreboard, cacheDuration);
 
             return scoreboard;
         }
@@ -840,13 +841,13 @@ namespace Ctf4e.Server.Services
                           )
                         WHERE f.`LabId` = @labId
                         GROUP BY f.`Id`",
-                     (flag, submissionCount) => new ScoreboardFlagEntry
-                     {
-                         Flag = _mapper.Map<Flag>(flag),
-                         SubmissionCount = (int)submissionCount
-                     },
-                     new { labId },
-                     splitOn: "SubmissionCount"))
+                                                                                         (flag, submissionCount) => new ScoreboardFlagEntry
+                                                                                         {
+                                                                                             Flag = _mapper.Map<Flag>(flag),
+                                                                                             SubmissionCount = (int)submissionCount
+                                                                                         },
+                                                                                         new { labId },
+                                                                                         splitOn: "SubmissionCount"))
                 .ToDictionary(f => f.Flag.Id);
             foreach(var f in flags)
                 f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
@@ -952,7 +953,8 @@ namespace Ctf4e.Server.Services
 
             // Update cache
             var cacheDuration = TimeSpan.FromSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
-            _cache.Set(scoreboardCacheKey, scoreboard, cacheDuration);
+            if(cacheDuration > TimeSpan.Zero)
+                _cache.Set(scoreboardCacheKey, scoreboard, cacheDuration);
 
             return scoreboard;
         }

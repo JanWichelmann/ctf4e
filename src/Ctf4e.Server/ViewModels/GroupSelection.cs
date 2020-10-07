@@ -1,12 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Ctf4e.Server.Constants;
 
 namespace Ctf4e.Server.ViewModels
 {
     public class GroupSelection
     {
-        [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
-        public string OtherUserCode { get; set; }
+        [Required(AllowEmptyStrings = true, ErrorMessage = ValidationStrings.FieldIsRequired)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string OtherUserCodes { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
         [StringLength(50)]

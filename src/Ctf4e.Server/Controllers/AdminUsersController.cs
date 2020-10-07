@@ -95,7 +95,7 @@ namespace Ctf4e.Server.Controllers
 
                 AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
             }
-            catch(InvalidOperationException ex)
+            catch(Exception ex)
             {
                 AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
                 return await ShowEditUserFormAsync(null, userData);

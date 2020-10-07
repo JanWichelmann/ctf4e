@@ -23,12 +23,14 @@ namespace Ctf4e.Server.Controllers
     {
         private readonly IUserService _userService;
         private readonly ISlotService _slotService;
+        private readonly IConfigurationService _configurationService;
 
-        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
+        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IConfigurationService configurationService)
             : base("~/Views/Authentication.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
+            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
         private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
@@ -179,17 +181,39 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Try to create group
-            // Error checking is done by service method
             var currentUser = await GetCurrentUserAsync();
             try
             {
+                // Filter group codes
+                var groupSizeMin = await _configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted);
+                var groupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted);
+                var codes = groupSelection.OtherUserCodes
+                    .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(c => !string.IsNullOrWhiteSpace(c))
+                    .Append(currentUser.GroupFindingCode)
+                    .Select(c => c.Trim())
+                    .Distinct()
+                    .ToList();
+                if(codes.Count < groupSizeMin)
+                {
+                    AddStatusMessage($"Es wurden zu wenig Codes eingegeben. Die minimale Gruppengröße beträgt {groupSizeMin}.", StatusMessageTypes.Error);
+                    return await ShowGroupFormAsync(groupSelection);
+                }
+                if(codes.Count > groupSizeMax)
+                {
+                    AddStatusMessage($"Es wurden zu viele Codes eingegeben. Die maximale Gruppengröße beträgt {groupSizeMax}.", StatusMessageTypes.Error);
+                    return await ShowGroupFormAsync(groupSelection);
+                }
+                
+                // Create group
+                // The service method will do further error checking (i.e., validity of codes, whether users are already in a group, ...)
                 var group = new Group
                 {
                     DisplayName = groupSelection.DisplayName,
                     SlotId = groupSelection.SlotId,
                     ShowInScoreboard = groupSelection.ShowInScoreboard
                 };
-                await _userService.CreateGroupAsync(group, currentUser.GroupFindingCode, groupSelection.OtherUserCode, HttpContext.RequestAborted);
+                await _userService.CreateGroupAsync(group, codes, HttpContext.RequestAborted);
             }
             catch(ArgumentException)
             {
@@ -198,7 +222,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException)
             {
-                AddStatusMessage("Der dem eingegebenen Code zugehörige Benutzer ist bereits einer Gruppe zugewiesen.", StatusMessageTypes.Error);
+                AddStatusMessage("Mindestens ein eingegebener Code ist bereits einer Gruppe zugewiesen.", StatusMessageTypes.Error);
                 return await ShowGroupFormAsync(groupSelection);
             }
             catch
