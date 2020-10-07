@@ -124,10 +124,11 @@ namespace Ctf4e.Server.Services
             var scoreboardFlagStatus = (await _dbConn.QueryAsync<FlagEntity, long, AdminScoreboardFlagEntry>(@"
                         SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
                         FROM `Flags` f
-                        LEFT JOIN `FlagSubmissions` s ON s.`FlagId` = f.`Id`
-                        INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                        INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                        WHERE f.`LabId` = @labId
+                        LEFT JOIN(
+                          `FlagSubmissions` s
+                          INNER JOIN `Users` u ON u.`Id` = s.`UserId`
+                          INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
+                        ) ON s.`FlagId` = f.`Id`
                           AND g.`ShowInScoreboard` = 1
                           AND EXISTS(
                             SELECT 1
@@ -137,7 +138,8 @@ namespace Ctf4e.Server.Services
                               AND le.`PreStart` <= s.`SubmissionTime`
                               AND s.`SubmissionTime` < le.`End`
                           )
-                        GROUP BY s.`FlagId`",
+                        WHERE f.`LabId` = @labId
+                        GROUP BY f.`Id`",
                      (flag, submissionCount) => new AdminScoreboardFlagEntry
                      {
                          Flag = _mapper.Map<Flag>(flag),
@@ -470,8 +472,17 @@ namespace Ctf4e.Server.Services
                       (PRIMARY KEY primary_key (ExerciseId, GroupId))
                       SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS 'MinSubmissionTime'
 	                  FROM `ExerciseSubmissions` s
+                      INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
 	                  INNER JOIN `Users` u ON u.`Id` = s.`UserId`
 	                  WHERE s.`ExercisePassed` = 1
+                        AND EXISTS(
+                          SELECT 1
+                          FROM `LabExecutions` le
+                          WHERE u.`GroupId` = le.`GroupId`
+                            AND le.`LabId` = e.`LabId`
+                            AND le.`PreStart` <= s.`SubmissionTime`
+                            AND s.`SubmissionTime` < le.`End`
+                        )
                       GROUP BY s.ExerciseId, u.GroupId
                     ;
 
@@ -505,10 +516,12 @@ namespace Ctf4e.Server.Services
             var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
                         SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
                         FROM `Flags` f
-                        LEFT JOIN `FlagSubmissions` s ON s.`FlagId` = f.`Id`
-                        INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                        INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                        WHERE g.`ShowInScoreboard` = 1
+                        LEFT JOIN(
+                          `FlagSubmissions` s
+                          INNER JOIN `Users` u ON u.`Id` = s.`UserId`
+                          INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
+                        ) ON s.`FlagId` = f.`Id`
+                          AND g.`ShowInScoreboard` = 1
                           AND EXISTS(
                             SELECT 1
                             FROM `LabExecutions` le
@@ -684,7 +697,6 @@ namespace Ctf4e.Server.Services
                 return null; // No scoreboard for empty labs
 
             // Initialize scoreboard entries with group data and latest submission timestamps
-            // Initialize scoreboard entries with group data and latest submission timestamps
             var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
                     SELECT
                       g.`Id` AS 'GroupId',
@@ -745,6 +757,14 @@ namespace Ctf4e.Server.Services
                       INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
 	                  WHERE e.`LabId` = @labId
                         AND s.`ExercisePassed` = 1
+                        AND EXISTS(
+                          SELECT 1
+                          FROM `LabExecutions` le
+                          WHERE u.`GroupId` = le.`GroupId`
+                            AND le.`LabId` = @labId
+                            AND le.`PreStart` <= s.`SubmissionTime`
+                            AND s.`SubmissionTime` < le.`End`
+                        )
                       GROUP BY s.ExerciseId, u.GroupId
                     ;
 
@@ -804,10 +824,11 @@ namespace Ctf4e.Server.Services
             var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
                         SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
                         FROM `Flags` f
-                        LEFT JOIN `FlagSubmissions` s ON s.`FlagId` = f.`Id`
-                        INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                        INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                        WHERE f.`LabId` = @labId
+                        LEFT JOIN(
+                          `FlagSubmissions` s
+                          INNER JOIN `Users` u ON u.`Id` = s.`UserId`
+                          INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
+                        ) ON s.`FlagId` = f.`Id`
                           AND g.`ShowInScoreboard` = 1
                           AND EXISTS(
                             SELECT 1
@@ -817,6 +838,7 @@ namespace Ctf4e.Server.Services
                               AND le.`PreStart` <= s.`SubmissionTime`
                               AND s.`SubmissionTime` < le.`End`
                           )
+                        WHERE f.`LabId` = @labId
                         GROUP BY f.`Id`",
                      (flag, submissionCount) => new ScoreboardFlagEntry
                      {
