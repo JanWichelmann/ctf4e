@@ -28,8 +28,11 @@ namespace Ctf4e.Server.Controllers
         private readonly ILabService _labService;
         private readonly IMoodleService _moodleService;
         private readonly ICsvService _csvService;
+        private readonly ILabExecutionService _labExecutionService;
 
-        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, IExerciseService exerciseService, IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService)
+        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, IExerciseService exerciseService,
+                                         IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService,
+                                         ILabExecutionService labExecutionService)
             : base("~/Views/AdminScoreboard.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
@@ -39,6 +42,7 @@ namespace Ctf4e.Server.Controllers
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
             _moodleService = moodleService ?? throw new ArgumentNullException(nameof(moodleService));
             _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
+            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
         }
 
         private async Task<IActionResult> RenderAsync(int labId, int slotId, object model = null)
@@ -49,9 +53,19 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenderScoreboardAsync(int labId, int slotId)
+        public async Task<IActionResult> RenderScoreboardAsync(int? labId, int? slotId)
         {
-            return await RenderAsync(labId, slotId);
+            if(labId == null || slotId == null)
+            {
+                // Show the most recently executed lab and slot as default
+                var recentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(HttpContext.RequestAborted);
+                if(recentLabExecution != null)
+                {
+                    labId = recentLabExecution.LabId;
+                    slotId = recentLabExecution.Group?.SlotId;
+                }
+            }
+            return await RenderAsync(labId ?? 0, slotId ?? 0);
         }
 
         [HttpPost("exercisesubmission/delete/")]

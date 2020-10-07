@@ -22,6 +22,7 @@ namespace Ctf4e.Server.Services
         Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default);
         Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default);
         Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken = default);
+        Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken = default);
         Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken = default);
         Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken = default);
         Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default);
@@ -85,6 +86,17 @@ namespace Ctf4e.Server.Services
                 .OrderByDescending(l => l.PreStart <= now && now < l.End) // Pick an active one...
                 .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.PreStart, now))) // ...and/or the one with the most recent pre start time
                 .ProjectTo<LabExecution>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken = default)
+        {
+            var now = DateTime.Now;
+            return _dbContext.LabExecutions.AsNoTracking()
+                .Include(l => l.Group)
+                .OrderByDescending(l => l.PreStart <= now && now < l.End) // Pick an active one...
+                .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.PreStart, now))) // ...and/or the one with the most recent pre start time
+                .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Group)
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
