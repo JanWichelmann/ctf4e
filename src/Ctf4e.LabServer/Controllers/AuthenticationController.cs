@@ -77,13 +77,13 @@ namespace Ctf4e.LabServer.Controllers
         [HttpGet("login")]
         public async Task<IActionResult> LoginAsync(string code)
         {
-            // Already logged in?
-            var currentUser = GetCurrentUser();
-            if(currentUser != null)
-                return Render(ViewType.Redirect);
-
             // Parse and check request
             var loginData = UserLoginRequest.Deserialize(_cryptoService.Decrypt(code));
+            
+            // Already logged in?
+            var currentUser = GetCurrentUser();
+            if(currentUser != null && currentUser.UserId == loginData.UserId && GetAdminMode() == loginData.AdminMode)
+                return Render(ViewType.Redirect);
 
             // Make sure user account exists
             await _stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId);
