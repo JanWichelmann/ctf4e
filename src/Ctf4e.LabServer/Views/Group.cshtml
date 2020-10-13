@@ -5,6 +5,7 @@
 
     var groupScoreboard = (UserScoreboard)ViewData["Scoreboard"];
     var adminMode = (bool)ViewData["AdminMode"];
+    var options = (LabOptions)ViewData["LabOptions"];
 }
 
 <h3 class="text-primary">
@@ -35,7 +36,14 @@
                 }
                 else if(exercise.SolvedByGroupMember)
                 {
-                    <span class="oi oi-circle-check text-secondary align-middle" title="Aufgabe von Gruppenmitglied gelöst"></span>
+                    if(options.PassAsGroup)
+                    {
+                        <span class="oi oi-circle-check text-success align-middle" title="Aufgabe von Gruppenmitglied gelöst (genügt zum Bestehen)"></span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-circle-check text-secondary align-middle" title="Aufgabe von Gruppenmitglied gelöst (muss noch selbst gelöst werden)"></span>
+                    }
                 }
             </td>
             <td>
