@@ -1,5 +1,7 @@
 ﻿@using Ctf4e.LabServer.ViewModels
 @using Ctf4e.LabServer.Configuration
+@using Ctf4e.LabServer.Configuration.Exercises
+@using Ctf4e.LabServer.InputModels
 @{
     ViewData["Title"] = "Lösungen einreichen";
 
@@ -13,88 +15,113 @@
 </h3>
 <hr class="bg-primary" style="height: 2px;">
 
-<table class="table table-striped table-sm">
-    <thead>
-    <tr>
-        <th></th>
-        <th scope="col">Aufgabe</th>
-        <th scope="col"></th>
-        @if(adminMode)
-        {
-            <th scope="col">Admin</th>
-        }
-    </tr>
-    </thead>
-    <tbody>
-    @foreach(var exercise in groupScoreboard.Exercises)
-    {
-        <tr>
-            <td>
-                @if(exercise.Solved)
+@foreach(var exercise in groupScoreboard.Exercises)
+{
+    <div class="card mb-3">
+        <h5 class="card-header">
+            @if(exercise.Solved)
+            {
+                <span class="oi oi-circle-check small text-success" title="Aufgabe gelöst"></span>
+            }
+            else if(exercise.SolvedByGroupMember)
+            {
+                if(labConfiguration.PassAsGroup)
                 {
-                    <span class="oi oi-circle-check text-success align-middle" title="Aufgabe gelöst"></span>
-                }
-                else if(exercise.SolvedByGroupMember)
-                {
-                    if(labConfiguration.PassAsGroup)
-                    {
-                        <span class="oi oi-circle-check text-success align-middle" title="Aufgabe von Gruppenmitglied gelöst (genügt zum Bestehen)"></span>
-                    }
-                    else
-                    {
-                        <span class="oi oi-circle-check text-secondary align-middle" title="Aufgabe von Gruppenmitglied gelöst (muss noch selbst gelöst werden)"></span>
-                    }
-                }
-            </td>
-            <td>
-                @if(string.IsNullOrEmpty(exercise.Exercise.Link)) // "IsNullOrEmpty" is a used as a workaround for https://github.com/dotnet/runtime/issues/36510
-                {
-                    @exercise.Exercise.Title
+                    <span class="oi oi-circle-check small text-success" title="Aufgabe von Gruppenmitglied gelöst (genügt zum Bestehen)"></span>
                 }
                 else
                 {
-                    <a href="@exercise.Exercise.Link" target="_blank">@exercise.Exercise.Title</a>
+                    <span class="oi oi-circle-check small text-secondary" title="Aufgabe von Gruppenmitglied gelöst (muss noch selbst gelöst werden)"></span>
                 }
-                @if(!string.IsNullOrEmpty(exercise.Description))
+            }
+
+            @if(string.IsNullOrEmpty(exercise.Exercise.Link)) // "IsNullOrEmpty" is a used as a workaround for https://github.com/dotnet/runtime/issues/36510
+            {
+                @exercise.Exercise.Title
+            }
+            else
+            {
+                <a href="@exercise.Exercise.Link" target="_blank">@exercise.Exercise.Title</a>
+            }
+
+            @if(adminMode)
+            {
+                <div class="float-right p-0">
+                    <span class="oi oi-star small" title="Admin-Menü"></span>
+                    <a role="button" class="btn-sm btn-success oi oi-check" href="#" data-toggle="modal" data-target="#modal-mark-exercise-solved" data-exercise-id="@exercise.Exercise.Id" data-exercise-name="@exercise.Exercise.Title" title="(Admin) Als gelöst markieren"></a>
+                    <a role="button" class="btn-sm btn-danger oi oi-action-undo" href="#" data-toggle="modal" data-target="#modal-reset-exercise" data-exercise-id="@exercise.Exercise.Id" data-exercise-name="@exercise.Exercise.Title" title="(Admin) Zurücksetzen"></a>
+                </div>
+            }
+        </h5>
+
+        @if(exercise.Solved && !string.IsNullOrEmpty(exercise.Exercise.FlagCode))
+        {
+            <div class="card-body text-monospace">
+                @exercise.Exercise.FlagCode
+            </div>
+        }
+
+        <div class="card-body">
+            @if(!string.IsNullOrEmpty(exercise.Description))
+            {
+                <p class="card-text">
+                    @Html.Raw(exercise.Description)
+                </p>
+            }
+
+            @if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.String)
+            {
+                var lastInput = ViewData.ContainsKey("LastStringInput") ? (StringExerciseInputData)ViewData["LastStringInput"] : null;
+                if(lastInput?.ExerciseId != exercise.Exercise.Id)
                 {
-                    <br>
-                    <span class="text-muted">@Html.Raw(exercise.Description)</span>
+                    lastInput = null;
                 }
-                @if(exercise.Solved && !string.IsNullOrEmpty(exercise.Exercise.FlagCode))
-                {
-                    <br>
-                    <span class="text-monospace">@exercise.Exercise.FlagCode</span>
-                }
-            </td>
-            <td class="align-middle">
-                <form class="form-inline" method="post" asp-controller="Group" asp-action="CheckInputAsync">
+
+                <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInputAsync">
+                    <div class="form-group">
+                        <input type="text" class="form-control text-monospace" name="input" placeholder="Lösung eingeben" value="@(lastInput?.Input ?? "")">
+                    </div>
+
                     <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
-                    <input type="text" class="form-control text-monospace mr-2" name="input" placeholder="Lösung eingeben">
 
                     <button type="submit" class="btn btn-primary">
                         Überprüfen
                     </button>
                 </form>
-            </td>
-            @if(adminMode)
-            {
-                <td class="align-middle">
-                    <a role="button" class="btn btn-success" href="#" data-toggle="modal" data-target="#modal-mark-exercise-solved" data-exercise-id="@exercise.Exercise.Id" data-exercise-name="@exercise.Exercise.Title">
-                        <span class="oi oi-check"></span>
-                        Lösen
-                        <span class="oi oi-star"></span>
-                    </a>
-                    <a role="button" class="btn btn-danger" href="#" data-toggle="modal" data-target="#modal-reset-exercise" data-exercise-id="@exercise.Exercise.Id" data-exercise-name="@exercise.Exercise.Title">
-                        <span class="oi oi-action-undo"></span>
-                        Zurücksetzen
-                        <span class="oi oi-star"></span>
-                    </a>
-                </td>
             }
-        </tr>
-    }
-    </tbody>
-</table>
+            else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.MultipleChoice)
+            {
+                var exerciseData = (LabConfigurationMultipleChoiceExerciseEntry)exercise.Exercise;
+                
+                var lastInput = ViewData.ContainsKey("LastMultipleChoiceInput") ? (MultipleChoiceExerciseInputData)ViewData["LastMultipleChoiceInput"] : null;
+                if(lastInput?.ExerciseId != exercise.Exercise.Id)
+                {
+                    lastInput = null;
+                }
+
+                <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInputAsync">
+                    <div class="form-group">
+                        @for(int i = 0; i < exerciseData.Options.Length; ++i)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="selectedOptions[]" value="@i" id="option-@i" @(lastInput?.SelectedOptions?.Contains(i) ?? false ? "checked" : "")>
+                                <label class="form-check-label" for="option-@i">
+                                    @exerciseData.Options[i].Value
+                                </label>
+                            </div>
+                        }
+                    </div>
+
+                    <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
+
+                    <button type="submit" class="btn btn-primary">
+                        Überprüfen
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+}
 
 @if(adminMode)
 {
@@ -141,7 +168,7 @@
                             Soll die Aufgabe <span class="font-weight-bold" data-replace="exercise-name"></span> wirklich zurückgesetzt werden?
                         </p>
                         <p>
-                            Hinweis: Dies setzt lediglich den Status der Aufgabe auf diesem Server zurück; 
+                            Hinweis: Dies setzt lediglich den Status der Aufgabe auf diesem Server zurück;
                             existierende Einreichungen im CTF-System bleiben unberührt und müssen manuell gelöscht werden.
                         </p>
                     </div>

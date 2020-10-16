@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ctf4e.LabServer.InputModels
 {
-    public class ExerciseInputData
+    public class StringExerciseInputData
     {
         public int ExerciseId { get; set; }
 

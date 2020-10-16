@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -29,15 +30,13 @@ namespace Ctf4e.LabServer.Models.State
             return exerciseState;
         }
 
-        /// <summary>
-        /// Checks whether the internal state is still consistent with the given exercise data, and updates it if necessary.
-        /// The return value indicates whether the state has been updated.
-        /// </summary>
-        /// <param name="exercise">Exercise data.</param>
-        public bool Update(LabConfigurationStringExerciseEntry exercise)
+        public override bool Update(LabConfigurationExerciseEntry exercise)
         {
+            if(!(exercise is LabConfigurationStringExerciseEntry stringExercise))
+                throw new ArgumentException("Invalid exercise type", nameof(exercise));
+            
             // Is the expected solution still valid?
-            if(exercise.AllowAnySolution)
+            if(stringExercise.AllowAnySolution)
             {
                 // We allow any solution, so no need to store a name
                 if(SolutionName != null)
@@ -50,10 +49,10 @@ namespace Ctf4e.LabServer.Models.State
             else
             {
                 // Check whether the exercise requires a specific, existing solution
-                if(SolutionName == null || exercise.ValidSolutions.All(s => s.Name != SolutionName))
+                if(SolutionName == null || stringExercise.ValidSolutions.All(s => s.Name != SolutionName))
                 {
                     // Pick a random solution
-                    var random = exercise.ValidSolutions[RandomNumberGenerator.GetInt32(exercise.ValidSolutions.Length)];
+                    var random = stringExercise.ValidSolutions[RandomNumberGenerator.GetInt32(stringExercise.ValidSolutions.Length)];
                     SolutionName = random.Name;
                     return true;
                 }
@@ -62,41 +61,35 @@ namespace Ctf4e.LabServer.Models.State
             return false;
         }
 
-        /// <summary>
-        /// Returns whether the given input string is a valid solution.
-        /// </summary>
-        /// <param name="exercise">Exercise data.</param>
-        /// <param name="input">Input.</param>
-        /// <returns></returns>
-        public bool ValidateInput(LabConfigurationStringExerciseEntry exercise, string input)
+        public override bool ValidateInput(LabConfigurationExerciseEntry exercise, object input)
         {
-            if(exercise.UseRegex)
+            if(!(exercise is LabConfigurationStringExerciseEntry stringExercise))
+                throw new ArgumentException("Invalid exercise type", nameof(exercise));
+            if(!(input is string inputStr))
+                throw new ArgumentException("Invalid input type", nameof(input));
+            
+            if(stringExercise.UseRegex)
             {
                 // Match any solution
-                if(exercise.AllowAnySolution)
-                    return exercise.ValidSolutions.Any(s => Regex.IsMatch(input, s.Value));
+                if(stringExercise.AllowAnySolution)
+                    return stringExercise.ValidSolutions.Any(s => Regex.IsMatch(inputStr, s.Value));
 
                 // Match specific solution
-                var pattern = exercise.ValidSolutions.FirstOrDefault(s => s.Name == SolutionName)?.Value;
+                var pattern = stringExercise.ValidSolutions.FirstOrDefault(s => s.Name == SolutionName)?.Value;
                 if(pattern == null)
                     return false;
-                return Regex.IsMatch(input, pattern);
+                return Regex.IsMatch(inputStr, pattern);
             }
 
             // Compare against any solution
-            if(exercise.AllowAnySolution)
-                return exercise.ValidSolutions.Any(s => s.Value == input);
+            if(stringExercise.AllowAnySolution)
+                return stringExercise.ValidSolutions.Any(s => s.Value == inputStr);
 
             // Compare against specific solutions
-            return exercise.ValidSolutions.FirstOrDefault(s => s.Name == SolutionName)?.Value == input;
+            return stringExercise.ValidSolutions.FirstOrDefault(s => s.Name == SolutionName)?.Value == inputStr;
         }
 
-        /// <summary>
-        /// Returns a description string for the given exercise, with placeholders replaced by values from this state.
-        /// </summary>
-        /// <param name="exercise">Exercise data.</param>
-        /// <returns></returns>
-        public string FormatDescriptionString(LabConfigurationStringExerciseEntry exercise)
+        public override string FormatDescriptionString(LabConfigurationExerciseEntry exercise)
         {
             if(exercise.DescriptionFormat == null)
                 return "";

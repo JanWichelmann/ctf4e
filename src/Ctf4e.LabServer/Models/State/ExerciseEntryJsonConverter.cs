@@ -16,13 +16,12 @@ namespace Ctf4e.LabServer.Models.State
             JObject jsonObject = JObject.Load(reader);
             var exerciseType = jsonObject[nameof(UserStateFileExerciseEntry.Type)]?.ToObject<UserStateFileExerciseEntryType>();
 
-            UserStateFileExerciseEntry exerciseState;
-            if(exerciseType == UserStateFileExerciseEntryType.String)
+            UserStateFileExerciseEntry exerciseState = exerciseType switch
             {
-                exerciseState = new UserStateFileStringExerciseEntry();
-            }
-            else
-                throw new JsonSerializationException("Unknown exercise state type");
+                UserStateFileExerciseEntryType.String => new UserStateFileStringExerciseEntry(),
+                UserStateFileExerciseEntryType.MultipleChoice => new UserStateFileMultipleChoiceExerciseEntry(),
+                _ => throw new JsonSerializationException("Unknown exercise state type")
+            };
 
             serializer.Populate(jsonObject.CreateReader(), exerciseState);
 

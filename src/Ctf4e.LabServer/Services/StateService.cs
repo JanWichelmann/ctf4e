@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Ctf4e.LabServer.ViewModels;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nito.AsyncEx;
 
 namespace Ctf4e.LabServer.Services
@@ -39,7 +40,7 @@ namespace Ctf4e.LabServer.Services
         /// <param name="userId">User ID.</param>
         /// <param name="input">Input.</param>
         /// <returns></returns>
-        Task<bool> CheckInputAsync(int exerciseId, int userId, string input);
+        Task<bool> CheckInputAsync(int exerciseId, int userId, object input);
 
         /// <summary>
         /// Marks the given exercise as solved.
@@ -153,6 +154,18 @@ namespace Ctf4e.LabServer.Services
 
                             userStateChanged = stringExerciseState.Update(stringExercise);
                         }
+                        else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
+                        {
+                            if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState))
+                            {
+                                // Create empty state for this exercise
+                                userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
+                                userStateChanged = true;
+                                continue;
+                            }
+
+                            userStateChanged = multipleChoiceExerciseState.Update(multipleChoiceExercise);
+                        }
                     }
 
                     // Update user state file, if necessary
@@ -254,6 +267,8 @@ namespace Ctf4e.LabServer.Services
                     {
                         if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
                             userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
+                        else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
                     }
 
                     // Store new user state
@@ -281,7 +296,7 @@ namespace Ctf4e.LabServer.Services
         /// <param name="userId">User ID.</param>
         /// <param name="input">Input.</param>
         /// <returns></returns>
-        public async Task<bool> CheckInputAsync(int exerciseId, int userId, string input)
+        public async Task<bool> CheckInputAsync(int exerciseId, int userId, object input)
         {
             // Ensure synchronized access
             var configReadLock = await _configLock.WriterLockAsync();
@@ -301,11 +316,12 @@ namespace Ctf4e.LabServer.Services
                     var exerciseState = userState.Exercises[exerciseId];
 
                     // Update user
-                    bool correct;
-                    if(exercise is LabConfigurationStringExerciseEntry stringExercise && exerciseState is UserStateFileStringExerciseEntry stringExerciseState)
-                        correct = stringExerciseState.ValidateInput(stringExercise, input);
-                    else
-                        throw new Exception($"Invalid exercise data/state combination for user {userId}, exercise {exerciseId}");
+                    bool correct = exerciseState switch
+                    {
+                        UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.ValidateInput(exercise, input),
+                        UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.ValidateInput(exercise, input),
+                        _ => false
+                    };
 
                     if(!exerciseState.Solved && correct)
                     {
@@ -436,10 +452,13 @@ namespace Ctf4e.LabServer.Services
                         Exercises = _exercises.Select(e =>
                         {
                             var exerciseState = userState.Exercises[e.Key];
-                            string description = null;
-                            if(exerciseState is UserStateFileStringExerciseEntry stringExerciseState && e.Value is LabConfigurationStringExerciseEntry stringExercise)
-                                description = stringExerciseState.FormatDescriptionString(stringExercise);
-                            
+                            string description = exerciseState switch
+                            {
+                                UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.FormatDescriptionString(e.Value),
+                                UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.FormatDescriptionString(e.Value),
+                                _ => null
+                            };
+
                             return new UserScoreboardExerciseEntry
                             {
                                 Exercise = e.Value,

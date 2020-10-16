@@ -16,13 +16,12 @@ namespace Ctf4e.LabServer.Configuration.Exercises
             JObject jsonObject = JObject.Load(reader);
             var exerciseType = jsonObject[nameof(LabConfigurationExerciseEntry.Type)]?.ToObject<LabConfigurationExerciseEntryType>();
 
-            LabConfigurationExerciseEntry exercise;
-            if(exerciseType == LabConfigurationExerciseEntryType.String)
+            LabConfigurationExerciseEntry exercise = exerciseType switch
             {
-                exercise = new LabConfigurationStringExerciseEntry();
-            }
-            else
-                throw new JsonSerializationException("Unknown exercise type");
+                LabConfigurationExerciseEntryType.String => new LabConfigurationStringExerciseEntry(),
+                LabConfigurationExerciseEntryType.MultipleChoice => new LabConfigurationMultipleChoiceExerciseEntry(),
+                _ => throw new JsonSerializationException("Unknown exercise type")
+            };
 
             serializer.Populate(jsonObject.CreateReader(), exercise);
 

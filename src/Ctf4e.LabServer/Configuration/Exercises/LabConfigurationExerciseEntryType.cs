@@ -6,6 +6,7 @@ namespace Ctf4e.LabServer.Configuration.Exercises
     [JsonConverter(typeof(StringEnumConverter))]
     public enum LabConfigurationExerciseEntryType
     {
-        String
+        String,
+        MultipleChoice
     }
 }

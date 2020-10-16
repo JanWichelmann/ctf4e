@@ -54,45 +54,85 @@ namespace Ctf4e.LabServer.Controllers
             return RenderAsync();
         }
 
-        [HttpPost("check")]
+        private async Task<bool> CheckInputAsync(int exerciseId, object input)
+        {
+            // Get current user
+            int userId = GetCurrentUser().UserId;
+
+            // Check input
+            bool correct = await _stateService.CheckInputAsync(exerciseId, userId, input);
+
+            // Notify CTF system
+            int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
+            if(exerciseNumber != null)
+            {
+                await _ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
+                {
+                    ExerciseNumber = exerciseNumber.Value,
+                    UserId = userId,
+                    ExercisePassed = correct,
+                    Weight = 1,
+                    SubmissionTime = DateTime.Now
+                });
+            }
+
+            return correct;
+        }
+
+        [HttpPost("check/string")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CheckInputAsync(ExerciseInputData exerciseInputData)
+        public async Task<IActionResult> CheckStringInputAsync(StringExerciseInputData inputData)
         {
             try
             {
-                // Get current user
-                int userId = GetCurrentUser().UserId;
+                ViewData["LastStringInput"] = inputData;
+                
+                if(!ModelState.IsValid)
+                {
+                    AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                    return await RenderAsync();
+                }
                 
                 // Check input
-                bool correct = await _stateService.CheckInputAsync(exerciseInputData.ExerciseId, userId, exerciseInputData.Input);
-
-                // Notify CTF system
-                int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseInputData.ExerciseId)?.CtfExerciseNumber;
-                if(exerciseNumber != null)
-                {
-                    await _ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
-                    {
-                        ExerciseNumber = exerciseNumber.Value,
-                        UserId = userId,
-                        ExercisePassed = correct,
-                        Weight = 1,
-                        SubmissionTime = DateTime.Now
-                    });
-                }
-
-                if(!correct)
+                if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
                 {
                     AddStatusMessage("Diese Lösung ist nicht korrekt.", StatusMessageTypes.Error);
-                    ViewData["LastInput"] = exerciseInputData;
                     return await RenderAsync();
                 }
 
                 AddStatusMessage("Die Aufgabe wurde korrekt gelöst!", StatusMessageTypes.Success);
                 return await RenderAsync();
             }
-            catch(ArgumentException)
+            catch(Exception ex)
             {
-                AddStatusMessage("Diese Aufgabe existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
+                _logger.LogError(ex, "An error occured during evaluation of a solution attempt.");
+                return await RenderAsync();
+            }
+        }
+
+        [HttpPost("check/multiplechoice")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckMultipleChoiceInputAsync(MultipleChoiceExerciseInputData inputData)
+        {
+            try
+            {
+                ViewData["LastMultipleChoiceInput"] = inputData;
+                
+                if(!ModelState.IsValid)
+                {
+                    AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                    return await RenderAsync();
+                }
+                
+                // Check input
+                if(!await CheckInputAsync(inputData.ExerciseId, inputData.SelectedOptions))
+                {
+                    AddStatusMessage("Diese Lösung ist nicht korrekt.", StatusMessageTypes.Error);
+                    return await RenderAsync();
+                }
+
+                AddStatusMessage("Die Aufgabe wurde korrekt gelöst!", StatusMessageTypes.Success);
                 return await RenderAsync();
             }
             catch(Exception ex)
@@ -112,7 +152,7 @@ namespace Ctf4e.LabServer.Controllers
             {
                 // Get current user
                 int userId = GetCurrentUser().UserId;
-                
+
                 // Set status
                 await _stateService.MarkExerciseSolvedAsync(exerciseId, userId);
 
@@ -155,7 +195,7 @@ namespace Ctf4e.LabServer.Controllers
             {
                 // Get current user
                 int userId = GetCurrentUser().UserId;
-                
+
                 // Reset status
                 await _stateService.ResetExerciseStatusAsync(exerciseId, userId);
 

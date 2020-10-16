@@ -6,6 +6,7 @@ namespace Ctf4e.LabServer.Models.State
     [JsonConverter(typeof(StringEnumConverter))]
     public enum UserStateFileExerciseEntryType
     {
-        String
+        String,
+        MultipleChoice
     }
 }
