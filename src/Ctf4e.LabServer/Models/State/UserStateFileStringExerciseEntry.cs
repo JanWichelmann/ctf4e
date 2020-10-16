@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Ctf4e.LabServer.Configuration.Exercises;
 
 namespace Ctf4e.LabServer.Models.State
@@ -69,9 +70,24 @@ namespace Ctf4e.LabServer.Models.State
         /// <returns></returns>
         public bool ValidateInput(LabConfigurationStringExerciseEntry exercise, string input)
         {
+            if(exercise.UseRegex)
+            {
+                // Match any solution
+                if(exercise.AllowAnySolution)
+                    return exercise.ValidSolutions.Any(s => Regex.IsMatch(input, s.Value));
+
+                // Match specific solution
+                var pattern = exercise.ValidSolutions.FirstOrDefault(s => s.Name == SolutionName)?.Value;
+                if(pattern == null)
+                    return false;
+                return Regex.IsMatch(input, pattern);
+            }
+
+            // Compare against any solution
             if(exercise.AllowAnySolution)
                 return exercise.ValidSolutions.Any(s => s.Value == input);
 
+            // Compare against specific solutions
             return exercise.ValidSolutions.FirstOrDefault(s => s.Name == SolutionName)?.Value == input;
         }
 

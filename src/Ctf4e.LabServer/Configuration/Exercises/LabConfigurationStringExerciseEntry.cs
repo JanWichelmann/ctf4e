@@ -13,6 +13,11 @@ namespace Ctf4e.LabServer.Configuration.Exercises
         /// or whether only a certain, randomly picked solution is allowed.
         /// </summary>
         public bool AllowAnySolution { get; set; }
+        
+        /// <summary>
+        /// Controls whether the solutions are treated as regular expressions.
+        /// </summary>
+        public bool UseRegex { get; set; }
 
         public LabOptionsStringExerciseSolutionEntry[] ValidSolutions { get; set; }
 

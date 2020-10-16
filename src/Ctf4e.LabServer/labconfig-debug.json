@@ -12,6 +12,7 @@
       "Link": null,
       "Type": "string",
       "AllowAnySolution": true,
+      "UseRegex": false,
       "ValidSolutions": [
         {
           "Name": null,
@@ -32,6 +33,7 @@
       "Link": null,
       "Type": "string",
       "AllowAnySolution": false,
+      "UseRegex": false,
       "ValidSolutions": [
         {
           "Name": "Alice",
@@ -52,14 +54,15 @@
       "Link": "http://localhost:5000/",
       "Type": "string",
       "AllowAnySolution": false,
+      "UseRegex": true,
       "ValidSolutions": [
         {
           "Name": "Alice",
-          "Value": "5"
+          "Value": "^alice+[0-9]+"
         },
         {
           "Name": "Bob",
-          "Value": "10"
+          "Value": "(bob){2,}"
         }
       ]
     }
