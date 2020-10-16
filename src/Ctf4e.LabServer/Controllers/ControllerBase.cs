@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Models;
+using Ctf4e.LabServer.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Ctf4e.LabServer.Options;
 
 namespace Ctf4e.LabServer.Controllers
 {
@@ -21,11 +22,13 @@ namespace Ctf4e.LabServer.Controllers
         private bool _adminMode = false;
         private bool _currentUserHasLoggedOut = false;
         private IOptionsSnapshot<LabOptions> _labOptions;
+        private readonly ILabConfigurationService _labConfiguration;
 
-        protected ControllerBase(string viewPath, IOptionsSnapshot<LabOptions> labOptions)
+        protected ControllerBase(string viewPath, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration)
             : base(viewPath)
         {
             _labOptions = labOptions ?? throw new ArgumentNullException(nameof(labOptions));
+            _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
         }
 
         /// <summary>
@@ -138,6 +141,7 @@ namespace Ctf4e.LabServer.Controllers
 
             // Pass current lab configuration
             ViewData["LabOptions"] = _labOptions.Value;
+            ViewData["LabConfiguration"] = _labConfiguration.CurrentConfiguration;
 
             // Render view
             return RenderView(model);

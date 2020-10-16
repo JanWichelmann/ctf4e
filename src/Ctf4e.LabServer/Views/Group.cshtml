@@ -1,11 +1,11 @@
-﻿@using Ctf4e.LabServer.Options
-@using Ctf4e.LabServer.ViewModels
+﻿@using Ctf4e.LabServer.ViewModels
+@using Ctf4e.LabServer.Configuration
 @{
     ViewData["Title"] = "Lösungen einreichen";
 
     var groupScoreboard = (UserScoreboard)ViewData["Scoreboard"];
     var adminMode = (bool)ViewData["AdminMode"];
-    var options = (LabOptions)ViewData["LabOptions"];
+    var labConfiguration = (LabConfiguration)ViewData["LabConfiguration"];
 }
 
 <h3 class="text-primary">
@@ -36,7 +36,7 @@
                 }
                 else if(exercise.SolvedByGroupMember)
                 {
-                    if(options.PassAsGroup)
+                    if(labConfiguration.PassAsGroup)
                     {
                         <span class="oi oi-circle-check text-success align-middle" title="Aufgabe von Gruppenmitglied gelöst (genügt zum Bestehen)"></span>
                     }

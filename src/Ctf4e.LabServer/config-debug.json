@@ -7,68 +7,7 @@
   "LabOptions": {
     "CtfServerBaseUrl": "https://localhost:5000/",
     "DevelopmentMode": true,
-    "PassAsGroup": true,
-    "PageTitle": "CTF4E Lab Server",
-    "NavbarTitle": "CTF4E Lab Server",
     "UserStateDirectory": "R:\\users",
-    "Exercises": [
-      {
-        "Id": 10,
-        "CtfExerciseNumber": 10,
-        "FlagCode": null,
-        "Title": "Exercise1",
-        "DescriptionFormat": null,
-        "Link": null,
-        "AllowAnySolution": true,
-        "ValidSolutions": [
-          {
-            "Name": null,
-            "Value": "21"
-          },
-          {
-            "Name": null,
-            "Value": "22"
-          }
-        ]
-      },
-      {
-        "Id": 20,
-        "CtfExerciseNumber": 20,
-        "FlagCode": null,
-        "Title": "Exercise2",
-        "DescriptionFormat": "Please enter secret of <strong>{0}</strong>.",
-        "Link": null,
-        "AllowAnySolution": false,
-        "ValidSolutions": [
-          {
-            "Name": "Alice",
-            "Value": "alice"
-          },
-          {
-            "Name": "Bob",
-            "Value": "2"
-          }
-        ]
-      },
-      {
-        "Id": 30,
-        "CtfExerciseNumber": null,
-        "FlagCode": "CTF{test-flag}",
-        "Title": "Flag1",
-        "DescriptionFormat": "Please enter another secret of <strong>{0}</strong>.",
-        "Link": "http://localhost:5000/",
-        "AllowAnySolution": false,
-        "ValidSolutions": [
-          {
-            "Name": "Alice",
-            "Value": "5"
-          },
-          {
-            "Name": "Bob",
-            "Value": "10"
-          }
-        ]
-      }
-    ]
+    "LabConfigurationFile": "labconfig-debug.json"
   }
 }

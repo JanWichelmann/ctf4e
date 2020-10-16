@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using Ctf4e.Api;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
+using Ctf4e.LabServer.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.Constants;
-using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -26,8 +26,8 @@ namespace Ctf4e.LabServer.Controllers
         private readonly ICryptoService _cryptoService;
         private readonly IStateService _stateService;
 
-        public AuthenticationController(ICryptoService cryptoService, IStateService stateService, IOptionsSnapshot<LabOptions> labOptions)
-            : base("~/Views/Authentication.cshtml", labOptions)
+        public AuthenticationController(ICryptoService cryptoService, IStateService stateService, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration)
+            : base("~/Views/Authentication.cshtml", labOptions, labConfiguration)
         {
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));

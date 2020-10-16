@@ -8,11 +8,12 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ctf4e.LabServer.Configuration;
+using Ctf4e.LabServer.Configuration.Exercises;
 using Ctf4e.LabServer.Models.State;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.ViewModels;
 using Nito.AsyncEx;
 
@@ -20,6 +21,11 @@ namespace Ctf4e.LabServer.Services
 {
     public interface IStateService
     {
+        /// <summary>
+        /// Reloads the configuration and updates caches.
+        /// </summary>
+        void Reload();
+
         /// <summary>
         /// Checks whether the given user state object exists. If it does exist, the old user state is updated, else a new one is generated.
         /// </summary>
@@ -57,6 +63,8 @@ namespace Ctf4e.LabServer.Services
         /// <param name="userId">User ID.</param>
         /// <returns></returns>
         Task<UserScoreboard> GetUserScoreboardAsync(int userId);
+
+        void Dispose();
     }
 
     /// <summary>
@@ -65,11 +73,11 @@ namespace Ctf4e.LabServer.Services
     public class StateService : IDisposable, IStateService
     {
         private readonly IOptionsMonitor<LabOptions> _optionsMonitor;
-        private readonly IDisposable _optionsMonitorListener;
+        private readonly ILabConfigurationService _labConfiguration;
 
         private ConcurrentDictionary<int, UserState> _userStates;
 
-        private SortedDictionary<int, LabOptionsExerciseEntry> _exercises;
+        private SortedDictionary<int, LabConfigurationExerciseEntry> _exercises;
 
         /// <summary>
         /// Top level lock to prevent concurrent reading and writing of state objects.
@@ -81,34 +89,32 @@ namespace Ctf4e.LabServer.Services
         /// </summary>
         private readonly SemaphoreSlim _loginLock = new SemaphoreSlim(1, 1);
 
-        public StateService(IOptionsMonitor<LabOptions> optionsMonitor)
+        public StateService(IOptionsMonitor<LabOptions> optionsMonitor, ILabConfigurationService labConfiguration)
         {
             _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
-            _optionsMonitorListener = _optionsMonitor.OnChange(Reload);
+            _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
 
             // Load state
-            Reload(_optionsMonitor.CurrentValue, null);
+            Reload();
         }
 
         /// <summary>
         /// Reloads the configuration and updates caches.
         /// </summary>
-        /// <param name="options">Current options value.</param>
-        /// <param name="optionsName">Ignored.</param>
-        private void Reload(LabOptions options, string optionsName)
+        public void Reload()
         {
             var configWriteLock = _configLock.WriterLock();
             try
             {
                 // Read exercises
-                _exercises = new SortedDictionary<int, LabOptionsExerciseEntry>(options.Exercises.ToDictionary(e => e.Id));
+                _exercises = new SortedDictionary<int, LabConfigurationExerciseEntry>(_labConfiguration.CurrentConfiguration.Exercises.ToDictionary(e => e.Id));
 
                 // Check for solutions empty
 
                 // Read user data
                 _userStates = new ConcurrentDictionary<int, UserState>();
                 Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
-                foreach(string userStateFileName in Directory.GetFiles(options.UserStateDirectory, "u*.json"))
+                foreach(string userStateFileName in Directory.GetFiles(_optionsMonitor.CurrentValue.UserStateDirectory, "u*.json"))
                 {
                     // Read file
                     int userId = int.Parse(userIdRegex.Match(userStateFileName).Groups[1].Value);
@@ -129,54 +135,23 @@ namespace Ctf4e.LabServer.Services
                     _userStates.TryAdd(userId, userState);
 
                     // Fix exercise list, if necessary
-                    // - Add entries for new exercises
-                    // - Update expected solutions
+                    // - Add entries for new exercises, or exercises which have a new type
+                    // - Update existing states to be consistent with new exercise data
                     // Old exercise entries are not deleted, in order to prevent accidental data loss.
                     bool userStateChanged = false;
                     foreach(var exercise in _exercises)
                     {
-                        if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState))
+                        if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
                         {
-                            // Create empty state for this exercise
-                            exerciseState = new UserStateFileExerciseEntry
+                            if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileStringExerciseEntry stringExerciseState))
                             {
-                                ExerciseId = exercise.Value.Id,
-                                Solved = false,
-                            };
-
-                            // Require a specific, randomly picked solution?
-                            if(!exercise.Value.AllowAnySolution)
-                            {
-                                var random = exercise.Value.ValidSolutions[RandomNumberGenerator.GetInt32(exercise.Value.ValidSolutions.Length)];
-                                exerciseState.SolutionName = random.Name;
-                            }
-
-                            userState.Exercises.TryAdd(exercise.Value.Id, exerciseState);
-                            userStateChanged = true;
-                            continue;
-                        }
-
-                        // Is the expected solution still valid?
-                        if(exercise.Value.AllowAnySolution)
-                        {
-                            // We allow any solution, so no need to store a name
-                            if(exerciseState.SolutionName != null)
-                            {
-                                // Drop previous solution name
-                                exerciseState.SolutionName = null;
+                                // Create empty state for this exercise
+                                userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
                                 userStateChanged = true;
+                                continue;
                             }
-                        }
-                        else
-                        {
-                            // Check whether the exercise requires a specific, existing solution
-                            if(exerciseState.SolutionName == null || exercise.Value.ValidSolutions.All(s => s.Name != exerciseState.SolutionName))
-                            {
-                                // Pick a random solution
-                                var random = exercise.Value.ValidSolutions[RandomNumberGenerator.GetInt32(exercise.Value.ValidSolutions.Length)];
-                                exerciseState.SolutionName = random.Name;
-                                userStateChanged = true;
-                            }
+
+                            userStateChanged = stringExerciseState.Update(stringExercise);
                         }
                     }
 
@@ -229,7 +204,7 @@ namespace Ctf4e.LabServer.Services
             var userState = _userStates[userId];
             var userStateFile = new UserStateFile
             {
-                Exercises = userState.Exercises.Values.ToArray()
+                Exercises = userState.Exercises.Values.ToList()
             };
             File.WriteAllText(Path.Combine(_optionsMonitor.CurrentValue.UserStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
         }
@@ -277,21 +252,8 @@ namespace Ctf4e.LabServer.Services
                     // Initialize exercises
                     foreach(var exercise in _exercises)
                     {
-                        // Create empty state for this exercise
-                        var exerciseState = new UserStateFileExerciseEntry
-                        {
-                            ExerciseId = exercise.Value.Id,
-                            Solved = false
-                        };
-
-                        // Require a specific, randomly picked solution?
-                        if(!exercise.Value.AllowAnySolution)
-                        {
-                            var random = exercise.Value.ValidSolutions[RandomNumberGenerator.GetInt32(exercise.Value.ValidSolutions.Length)];
-                            exerciseState.SolutionName = random.Name;
-                        }
-
-                        userState.Exercises.TryAdd(exercise.Value.Id, exerciseState);
+                        if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
                     }
 
                     // Store new user state
@@ -336,17 +298,18 @@ namespace Ctf4e.LabServer.Services
                 {
                     // Get exercise data
                     var exercise = _exercises[exerciseId];
-                    var userExercise = userState.Exercises[exerciseId];
+                    var exerciseState = userState.Exercises[exerciseId];
 
                     // Update user
                     bool correct;
-                    if(exercise.AllowAnySolution)
-                        correct = exercise.ValidSolutions.Any(s => s.Value == input);
+                    if(exercise is LabConfigurationStringExerciseEntry stringExercise && exerciseState is UserStateFileStringExerciseEntry stringExerciseState)
+                        correct = stringExerciseState.ValidateInput(stringExercise, input);
                     else
-                        correct = exercise.ValidSolutions.FirstOrDefault(s => s.Name == userExercise.SolutionName)?.Value == input;
-                    if(!userExercise.Solved && correct)
+                        throw new Exception($"Invalid exercise data/state combination for user {userId}, exercise {exerciseId}");
+
+                    if(!exerciseState.Solved && correct)
                     {
-                        userExercise.Solved = true;
+                        exerciseState.Solved = true;
                         WriteUserStateFile(userId);
                     }
 
@@ -470,12 +433,20 @@ namespace Ctf4e.LabServer.Services
                     // Output object
                     var scoreboard = new UserScoreboard
                     {
-                        Exercises = _exercises.Select(e => new UserScoreboardExerciseEntry
+                        Exercises = _exercises.Select(e =>
                         {
-                            Exercise = e.Value,
-                            Solved = userState.Exercises[e.Key].Solved,
-                            SolvedByGroupMember = userState.GroupMembers.Any(g => g.Exercises[e.Key].Solved),
-                            Description = string.Format(e.Value.DescriptionFormat, userState.Exercises[e.Key].SolutionName)
+                            var exerciseState = userState.Exercises[e.Key];
+                            string description = null;
+                            if(exerciseState is UserStateFileStringExerciseEntry stringExerciseState && e.Value is LabConfigurationStringExerciseEntry stringExercise)
+                                description = stringExerciseState.FormatDescriptionString(stringExercise);
+                            
+                            return new UserScoreboardExerciseEntry
+                            {
+                                Exercise = e.Value,
+                                Solved = exerciseState.Solved,
+                                SolvedByGroupMember = userState.GroupMembers.Any(g => g.Exercises[e.Key].Solved),
+                                Description = description
+                            };
                         }).ToArray()
                     };
 
@@ -498,7 +469,6 @@ namespace Ctf4e.LabServer.Services
             foreach(var u in _userStates)
                 u.Value.Lock?.Dispose();
             _loginLock?.Dispose();
-            _optionsMonitorListener?.Dispose();
         }
     }
 }

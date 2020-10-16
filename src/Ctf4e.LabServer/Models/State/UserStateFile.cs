@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Ctf4e.LabServer.Models.State
 {
     /// <summary>
@@ -6,6 +8,6 @@ namespace Ctf4e.LabServer.Models.State
     public class UserStateFile
     {
         public int? GroupId { get; set; }
-        public UserStateFileExerciseEntry[] Exercises { get; set; }
+        public List<UserStateFileExerciseEntry> Exercises { get; set; }
     }
 }

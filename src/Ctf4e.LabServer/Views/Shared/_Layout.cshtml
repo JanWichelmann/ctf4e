@@ -1,6 +1,6 @@
-﻿@using Ctf4e.LabServer.Options
-@using Ctf4e.Utilities
+﻿@using Ctf4e.Utilities
 @using Ctf4e.LabServer.Constants
+@using Ctf4e.LabServer.Configuration
 @{
     // Retrieve status messages
     var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
@@ -29,13 +29,14 @@
     var activeMenuItem = (MenuItems)ViewData["ActiveMenuItem"];
 
     var labOptions = (LabOptions)ViewData["LabOptions"];
+    var labConfiguration = (LabConfiguration)ViewData["LabConfiguration"];
 }
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - @labOptions.PageTitle</title>
+    <title>@ViewData["Title"] - @labConfiguration.PageTitle</title>
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/lib/open-iconic/css/open-iconic-bootstrap.min.css">
@@ -49,7 +50,7 @@
     <nav class="navbar navbar-expand navbar-light bg-light">
         <a class="navbar-brand" asp-controller="Group" asp-action="RenderPageAsync">
             <!--<img alt="logo" class="img-fluid" src="/img/logo.png" style="max-height: 50px;">-->
-            @labOptions.NavbarTitle
+            @labConfiguration.NavbarTitle
         </a>
         <ul class="navbar-nav px-3 mr-auto">
             <li class="nav-item">

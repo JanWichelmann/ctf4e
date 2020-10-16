@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Api.Services;
+using Ctf4e.LabServer.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.InputModels;
-using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.Extensions.Logging;
@@ -24,14 +24,16 @@ namespace Ctf4e.LabServer.Controllers
         private readonly IStateService _stateService;
         private readonly ICtfApiClient _ctfApiClient;
         private readonly IOptionsSnapshot<LabOptions> _labOptions;
+        private readonly ILabConfigurationService _labConfiguration;
         private readonly ILogger<GroupController> _logger;
 
-        public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions, ILogger<GroupController> logger)
-            : base("~/Views/Group.cshtml", labOptions)
+        public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, ILogger<GroupController> logger)
+            : base("~/Views/Group.cshtml", labOptions, labConfiguration)
         {
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
             _ctfApiClient = ctfApiClient ?? throw new ArgumentNullException(nameof(ctfApiClient));
             _labOptions = labOptions ?? throw new ArgumentNullException(nameof(labOptions));
+            _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -65,7 +67,7 @@ namespace Ctf4e.LabServer.Controllers
                 bool correct = await _stateService.CheckInputAsync(exerciseInputData.ExerciseId, userId, exerciseInputData.Input);
 
                 // Notify CTF system
-                int? exerciseNumber = _labOptions.Value.Exercises.FirstOrDefault(e => e.Id == exerciseInputData.ExerciseId)?.CtfExerciseNumber;
+                int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseInputData.ExerciseId)?.CtfExerciseNumber;
                 if(exerciseNumber != null)
                 {
                     await _ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
@@ -115,7 +117,7 @@ namespace Ctf4e.LabServer.Controllers
                 await _stateService.MarkExerciseSolvedAsync(exerciseId, userId);
 
                 // Notify CTF system
-                int? exerciseNumber = _labOptions.Value.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
+                int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
                 if(exerciseNumber != null)
                 {
                     await _ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission

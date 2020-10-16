@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Api.DependencyInjection;
 using Ctf4e.Api.Options;
+using Ctf4e.LabServer.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,8 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Ctf4e.LabServer.Constants;
-using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
+using Microsoft.Extensions.Options;
+using Nito.AsyncEx;
 
 namespace Ctf4e.LabServer
 {
@@ -32,7 +34,7 @@ namespace Ctf4e.LabServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Configuration
+            // Options
             services.AddOptions<CtfApiOptions>().Bind(_configuration.GetSection(nameof(CtfApiOptions)));
             _labOptions = _configuration.GetSection(nameof(LabOptions)).Get<LabOptions>();
             services.AddOptions<LabOptions>().Bind(_configuration.GetSection(nameof(LabOptions)));
@@ -43,6 +45,14 @@ namespace Ctf4e.LabServer
 
             // Memory cache
             services.AddMemoryCache();
+            
+            // Lab configuration
+            services.AddSingleton<ILabConfigurationService>(s =>
+            {
+                var labConfig = new LabConfigurationService(s.GetRequiredService<IOptionsMonitor<LabOptions>>());
+                labConfig.ReadConfigurationAsync().GetAwaiter().GetResult();
+                return labConfig;
+            });
 
             // Lab state service
             services.AddSingleton<IStateService, StateService>();

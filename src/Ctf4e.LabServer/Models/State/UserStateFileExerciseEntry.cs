@@ -1,12 +1,15 @@
+using Newtonsoft.Json;
+
 namespace Ctf4e.LabServer.Models.State
 {
     /// <summary>
     /// Contains the state of one exercise.
     /// </summary>
-    public class UserStateFileExerciseEntry
+    [JsonConverter(typeof(ExerciseEntryJsonConverter))]
+    public abstract class UserStateFileExerciseEntry
     {
         public int ExerciseId { get; set; }
         public bool Solved { get; set; }
-        public string SolutionName { get; set; }
+        public UserStateFileExerciseEntryType Type { get; set; }
     }
 }

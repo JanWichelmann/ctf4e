@@ -1,4 +1,3 @@
-@using Ctf4e.LabServer.Options
 @using Ctf4e.LabServer.ViewModels
 @{
     ViewData["Title"] = "Konfiguration bearbeiten";
@@ -16,9 +15,6 @@
     
     <p class="text-danger font-weight-bold">
         ACHTUNG: Das Verändern der Konfiguration nach Freischaltung des Praktikums kann unter Umständen zu Fehlern und Datenverlust führen.
-    </p>
-    <p class="text-danger">
-        Das Verändern der CTF-API-Konfiguration zur Laufzeit wird nicht unterstützt.
     </p>
 
     <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfigurationAsync">
