@@ -19,4 +19,5 @@ EXPOSE 5000
 WORKDIR /app
 COPY --from=build /app/publish .
 COPY --from=build-static /src/src/Ctf4e.Server/wwwroot/lib ./wwwroot/lib
+COPY --from=build-static /src/src/Ctf4e.Server/wwwroot/css ./wwwroot/css
 ENTRYPOINT ["dotnet", "Ctf4e.Server.dll"]
