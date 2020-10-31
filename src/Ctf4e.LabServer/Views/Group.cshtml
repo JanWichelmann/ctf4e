@@ -71,6 +71,8 @@
 
             @if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.String)
             {
+                var exerciseData = (LabConfigurationStringExerciseEntry)exercise.Exercise;
+
                 var lastInput = ViewData.ContainsKey("LastStringInput") ? (StringExerciseInputData)ViewData["LastStringInput"] : null;
                 if(lastInput?.ExerciseId != exercise.Exercise.Id)
                 {
@@ -78,9 +80,14 @@
                 }
 
                 <form class="form" method="post" asp-controller="Group" asp-action="CheckStringInputAsync">
-                    <div class="form-group">
+                    @if(exerciseData.Multiline)
+                    {
+                        <textarea class="form-control" name="input" placeholder="Lösung eingeben" rows="5">@(lastInput?.Input ?? "")</textarea>
+                    }
+                    else
+                    {
                         <input type="text" class="form-control text-monospace" name="input" placeholder="Lösung eingeben" value="@(lastInput?.Input ?? "")">
-                    </div>
+                    }
 
                     <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
 
@@ -92,7 +99,7 @@
             else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.MultipleChoice)
             {
                 var exerciseData = (LabConfigurationMultipleChoiceExerciseEntry)exercise.Exercise;
-                
+
                 var lastInput = ViewData.ContainsKey("LastMultipleChoiceInput") ? (MultipleChoiceExerciseInputData)ViewData["LastMultipleChoiceInput"] : null;
                 if(lastInput?.ExerciseId != exercise.Exercise.Id)
                 {

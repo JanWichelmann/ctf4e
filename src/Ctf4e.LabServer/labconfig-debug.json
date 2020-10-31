@@ -13,6 +13,7 @@
       "Type": "String",
       "AllowAnySolution": true,
       "UseRegex": false,
+      "Multiline": false,
       "ValidSolutions": [
         {
           "Name": null,
@@ -34,6 +35,7 @@
       "Type": "String",
       "AllowAnySolution": false,
       "UseRegex": false,
+      "Multiline": false,
       "ValidSolutions": [
         {
           "Name": "Alice",
@@ -55,6 +57,7 @@
       "Type": "String",
       "AllowAnySolution": false,
       "UseRegex": true,
+      "Multiline": true,
       "ValidSolutions": [
         {
           "Name": "Alice",

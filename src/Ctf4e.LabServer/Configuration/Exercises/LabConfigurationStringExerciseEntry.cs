@@ -18,6 +18,11 @@ namespace Ctf4e.LabServer.Configuration.Exercises
         /// Controls whether the solutions are treated as regular expressions.
         /// </summary>
         public bool UseRegex { get; set; }
+        
+        /// <summary>
+        /// Controls whether the exercise allows multiline inputs. Regular expressions are not affected (explicitly test for \n).
+        /// </summary>
+        public bool Multiline { get; set; }
 
         public LabOptionsStringExerciseSolutionEntry[] ValidSolutions { get; set; }
 
