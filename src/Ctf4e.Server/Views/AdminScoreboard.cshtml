@@ -309,25 +309,9 @@
 
 @section ScriptsHead
 {
-    <script src="~/lib/moment/js/moment.min.js"></script>
-    <script src="~/lib/moment/js/locales.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="~/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css">
-    <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script>
-        $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
-            icons: {
-                time: 'oi oi-clock',
-                date: 'oi oi-calendar',
-                up: 'oi oi-arrow-thick-top',
-                down: 'oi oi-arrow-thick-bottom',
-                previous: 'oi oi-chevron-left',
-                next: 'oi oi-chevron-right',
-                today: 'oi oi-home',
-                clear: 'oi oi-trash',
-                close: 'oi oi-x'
-            }
-        });
-    </script>
+    <link href="~/lib/flatpickr/css/flatpickr.min.css" rel="stylesheet" />
+    <script src="~/lib/flatpickr/js/flatpickr.min.js"></script>
+    <script src="~/lib/flatpickr/js/l10n/de.js"></script>
 }
 
 <!-- Exercise and Flag submission modals -->
@@ -370,18 +354,11 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="input-add-exercise-submission-time">Einreichungszeitpunkt</label>
-                        <div class="input-group" id="datetimepicker-add-exercise-submission-time" data-target-input="nearest">
-                            <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control datetimepicker-input" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" data-target="#datetimepicker-add-exercise-submission-time"/>
-                            <div class="input-group-append" data-target="#datetimepicker-add-exercise-submission-time" data-toggle="datetimepicker">
-                                <div class="input-group-text">
-                                    <span class="oi oi-calendar"></span>
-                                </div>
-                            </div>
-                        </div>
+                        <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" />
                     </div>
                     <div class="form-group">
                         <label for="input-add-exercise-submission-weight">Gewichtung (nur für Fehlversuche)</label>
-                        <input id="input-add-exercise-submission-weight" name="weight" type="number" min="0" value="1" class="form-control"/>
+                        <input id="input-add-exercise-submission-weight" name="weight" type="number" min="0" value="1" class="form-control" />
                     </div>
                     <div class="form-group">
                         <div class="form-check">
@@ -442,14 +419,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="input-add-flag-submission-time">Einreichungszeitpunkt</label>
-                        <div class="input-group" id="datetimepicker-add-flag-submission-time" data-target-input="nearest">
-                            <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control datetimepicker-input" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" data-target="#datetimepicker-add-flag-submission-time"/>
-                            <div class="input-group-append" data-target="#datetimepicker-add-flag-submission-time" data-toggle="datetimepicker">
-                                <div class="input-group-text">
-                                    <span class="oi oi-calendar"></span>
-                                </div>
-                            </div>
-                        </div>
+                        <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -464,7 +434,19 @@
         </div>
     </div>
 </div>
+
 <script>
+    // Date time picker
+    flatpickr.localize(flatpickr.l10ns.de);                               
+    options = {
+                 "dateFormat": "d.m.Y H:i",
+                 "enableTime": true,
+                 "allowInput": true
+             };
+    flatpickr(document.getElementById("input-add-exercise-submission-time"), options);
+    flatpickr(document.getElementById("input-add-flag-submission-time"), options);
+
+    // Modals
     $('#modal-delete-exercise-submission').on('show.bs.modal', function (e) {
         let submissionId = $(e.relatedTarget).data('submission-id');
         let userName = $(e.relatedTarget).data('user-name');
@@ -492,13 +474,6 @@
         let userId = $(e.relatedTarget).data('user-id');
         $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
         $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
-    });
-    $(function () {
-        var dateTimePickerSettings = {
-            locale: 'de'
-        };
-        $('#datetimepicker-add-exercise-submission-time').datetimepicker(dateTimePickerSettings);
-        $('#datetimepicker-add-flag-submission-time').datetimepicker(dateTimePickerSettings);
     });
 </script>
 

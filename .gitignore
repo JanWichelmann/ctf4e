@@ -430,3 +430,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+watcherTasks.xml
+/src/Ctf4e.Server/wwwroot/lib
+/src/Ctf4e.Server/wwwroot/css
+/src/Ctf4e.LabServer/wwwroot/lib
+/src/Ctf4e.LabServer/wwwroot/css

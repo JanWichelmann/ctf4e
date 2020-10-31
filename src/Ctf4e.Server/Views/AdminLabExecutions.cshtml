@@ -159,7 +159,7 @@
 else if(viewType == AdminLabExecutionsController.ViewType.EditLabExecution)
 {
     <h3 class="text-primary">
-        Ausführung von Praktikum &quot;@Model.LabExecution.Lab.Name&quot; für Gruppe &quot;@Model.LabExecution.Group.DisplayName&quot; bearbeiten
+        Ausführung bearbeiten
     </h3>
     <hr class="bg-primary" style="height: 2px">
     <form action="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.EditLabExecutionAsync)))" method="post">
@@ -254,25 +254,9 @@ else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForG
 
 @section ScriptsHead
 {
-    <script src="~/lib/moment/js/moment.min.js"></script>
-    <script src="~/lib/moment/js/locales.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="~/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css">
-    <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script>
-        $.fn.datetimepicker.Constructor.Default = $.extend({}, $.fn.datetimepicker.Constructor.Default, {
-            icons: {
-                time: 'oi oi-clock',
-                date: 'oi oi-calendar',
-                up: 'oi oi-arrow-thick-top',
-                down: 'oi oi-arrow-thick-bottom',
-                previous: 'oi oi-chevron-left',
-                next: 'oi oi-chevron-right',
-                today: 'oi oi-home',
-                clear: 'oi oi-trask',
-                close: 'oi oi-x'
-            }
-        });
-    </script>
+    <link href="~/lib/flatpickr/css/flatpickr.min.css" rel="stylesheet" />
+    <script src="~/lib/flatpickr/js/flatpickr.min.js"></script>
+    <script src="~/lib/flatpickr/js/l10n/de.js"></script>
 }
 
 @functions
@@ -281,50 +265,31 @@ else if(viewType == AdminLabExecutionsController.ViewType.CreateLabExecutionForG
     {
         <div class="form-group">
             <label asp-for="LabExecution.PreStart">Vor-Beginn</label>
-            <div class="input-group" id="datetimepicker-prestart" data-target-input="nearest">
-                <input asp-for="LabExecution.PreStart" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-prestart"/>
-                <div class="input-group-append" data-target="#datetimepicker-prestart" data-toggle="datetimepicker">
-                    <div class="input-group-text">
-                        <span class="oi oi-calendar"></span>
-                    </div>
-                </div>
-            </div>
+            <input asp-for="LabExecution.PreStart" id="datetime-prestart" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control" />
             <span asp-validation-for="LabExecution.PreStart" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="LabExecution.Start">Beginn</label>
-            <div class="input-group" id="datetimepicker-start" data-target-input="nearest">
-                <input asp-for="LabExecution.Start" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-start"/>
-                <div class="input-group-append" data-target="#datetimepicker-start" data-toggle="datetimepicker">
-                    <div class="input-group-text">
-                        <span class="oi oi-calendar"></span>
-                    </div>
-                </div>
-            </div>
+            <input asp-for="LabExecution.Start" id="datetime-start" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control" />
             <span asp-validation-for="LabExecution.Start" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="LabExecution.End">Ende</label>
-            <div class="input-group" id="datetimepicker-end" data-target-input="nearest">
-                <input asp-for="LabExecution.End" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control datetimepicker-input" data-target="#datetimepicker-end"/>
-                <div class="input-group-append" data-target="#datetimepicker-end" data-toggle="datetimepicker">
-                    <div class="input-group-text">
-                        <span class="oi oi-calendar"></span>
-                    </div>
-                </div>
-            </div>
+            <input asp-for="LabExecution.End" id="datetime-end" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control" />
             <span asp-validation-for="LabExecution.End" class="text-danger"></span>
         </div>
 
         <script type="text/javascript">
-            $(function () {
-                var dateTimePickerSettings = {
-                    locale: 'de'
-                };
-                $('#datetime-prestart').datetimepicker(dateTimePickerSettings);
-                $('#datetime-start').datetimepicker(dateTimePickerSettings);
-                $('#datetime-end').datetimepicker(dateTimePickerSettings);
-            });
+            flatpickr.localize(flatpickr.l10ns.de);
+            
+            options = {
+                          "dateFormat": "d.m.Y H:i",
+                          "enableTime": true,
+                          "allowInput": true
+                      };
+            flatpickr(document.getElementById("datetime-prestart"), options);
+            flatpickr(document.getElementById("datetime-start"), options);
+            flatpickr(document.getElementById("datetime-end"), options);
         </script>
     }
 }

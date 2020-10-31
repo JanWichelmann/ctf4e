@@ -1,0 +1,35 @@
+/* Bootstrap theming */
+
+$blue: #003e80;
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+
+/* Footer */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  // Margin bottom by footer height
+  margin-bottom: 40px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+
+  // Vertically center the text
+  line-height: 40px;
+}
+
+
+/* Navigation */
+
+.navbar-nav li:hover > .dropdown-menu {
+  display: block;
+}
