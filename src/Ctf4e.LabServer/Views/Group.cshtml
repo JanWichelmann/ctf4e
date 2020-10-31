@@ -77,7 +77,7 @@
                     lastInput = null;
                 }
 
-                <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInputAsync">
+                <form class="form" method="post" asp-controller="Group" asp-action="CheckStringInputAsync">
                     <div class="form-group">
                         <input type="text" class="form-control text-monospace" name="input" placeholder="Lösung eingeben" value="@(lastInput?.Input ?? "")">
                     </div>

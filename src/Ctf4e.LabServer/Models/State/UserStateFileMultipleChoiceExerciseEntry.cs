@@ -10,10 +10,10 @@ namespace Ctf4e.LabServer.Models.State
 {
     public class UserStateFileMultipleChoiceExerciseEntry : UserStateFileExerciseEntry
     {
-        public static UserStateFileStringExerciseEntry CreateState(LabConfigurationMultipleChoiceExerciseEntry exercise)
+        public static UserStateFileMultipleChoiceExerciseEntry CreateState(LabConfigurationMultipleChoiceExerciseEntry exercise)
         {
             // Create empty state for this exercise
-            var exerciseState = new UserStateFileStringExerciseEntry
+            var exerciseState = new UserStateFileMultipleChoiceExerciseEntry
             {
                 ExerciseId = exercise.Id,
                 Solved = false,
