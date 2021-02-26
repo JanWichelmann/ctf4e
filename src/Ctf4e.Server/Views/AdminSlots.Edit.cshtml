@@ -1,0 +1,41 @@
+@model Ctf4e.Server.Models.Slot
+
+<h3 class="text-primary">
+    Slot bearbeiten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<form asp-controller="AdminSlots" asp-action="EditSlot" method="post">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    
+    @if(Model.Groups?.Any() == true)
+    {
+        <div class="form-group">
+            <label>Gruppen</label>
+            <table class="table table-sm table-bordered table-hover text-nowrap">
+                <tbody>
+                @foreach(var g in Model.Groups)
+                {
+                    <tr>
+                        <td>@g.DisplayName (#@g.Id)</td>
+                        <td>
+                            <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@g.Id">
+                                <span class="oi oi-pencil"></span>
+                                Bearbeiten
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    
+    <input asp-for="Id" type="hidden">
+    
+    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+</form>

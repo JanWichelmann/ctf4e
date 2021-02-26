@@ -18,7 +18,7 @@
 <p>Aktuelle Uhrzeit (UTC): @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
 
 <hr class="bg-primary mb-2 mt-1" style="height: 2px;">
-<form action="@(Url.Action<AdminConfigurationController>(nameof(AdminConfigurationController.UpdateConfigAsync)))" method="post">
+<form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
     <div class="form-group">
         <label asp-for="PageTitle">Seitentitel</label>
         <input asp-for="PageTitle" class="form-control">

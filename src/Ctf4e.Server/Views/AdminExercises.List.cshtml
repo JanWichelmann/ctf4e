@@ -1,0 +1,116 @@
+@using Ctf4e.Server.Controllers
+@using Ctf4e.Server.Models
+@model List<Exercise>
+@{
+    var lab = (Lab)ViewData["Lab"];
+}
+
+<h3 class="text-primary">
+    Aufgaben von Praktikum &quot;@lab.Name&quot; verwalten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<p>
+    <a class="text-primary" asp-controller="AdminLabs" asp-action="RenderLabList">
+        <span class="oi oi-arrow-left"></span>
+        Zurück zur Praktikumsliste
+    </a>
+</p>
+<a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowCreateExerciseForm" asp-route-labId="lab.Id">
+    <span class="oi oi-plus"></span>
+    Aufgabe erstellen
+</a>
+<table class="table table-sm table-bordered table-hover text-nowrap mt-2">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Nr.</th>
+        <th scope="col">Name</th>
+        <th scope="col">Basispunktzahl</th>
+        <th scope="col">Strafpunkte</th>
+        <th scope="col">Pflicht</th>
+        <th scope="col">Vor-Beginn</th>
+        <th scope="col">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var e in Model)
+    {
+        <tr>
+            <td>@e.Id</td>
+            <td>@e.ExerciseNumber</td>
+            <td>@e.Name</td>
+            <td>@e.BasePoints</td>
+            <td>@e.PenaltyPoints</td>
+            <td>
+                @if(e.IsMandatory)
+                {
+                    <span class="oi oi-check text-success"></span>
+                }
+                else
+                {
+                    <span class="oi oi-x text-danger"></span>
+                }
+            </td>
+            <td>
+                @if(e.IsPreStartAvailable)
+                {
+                    <span class="oi oi-check text-success"></span>
+                }
+                else
+                {
+                    <span class="oi oi-x text-danger"></span>
+                }
+            </td>
+            <td>
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowEditExerciseForm" asp-route-id="@e.Id">
+                    <span class="oi oi-pencil"></span>
+                    Bearbeiten
+                </a>
+                <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-exercise" data-exercise-id="@e.Id" data-exercise-name="@e.Name">
+                    <span class="oi oi-trash"></span>
+                    Löschen
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modal-delete-exercise" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Aufgabe löschen</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Wollen Sie die Aufgabe &quot;<span data-replace="exercise-name"></span>&quot; wirklich löschen?
+                </p>
+                <p>
+                    Beachten Sie, dass hierbei auch alle bereits abgeschickten Lösungsversuche unwiderruflich gelöscht werden!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="AdminExercises" asp-action="DeleteExercise" method="post">
+                    <input type="hidden" data-replace="exercise-id" name="id" value="">
+
+                    <button type="submit" class="btn btn-outline-danger">Aufgabe löschen</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        $('#modal-delete-exercise').on('show.bs.modal',
+            function(e) {
+                var exerciseId = $(e.relatedTarget).data('exercise-id');
+                var exerciseName = $(e.relatedTarget).data('exercise-name');
+                $(e.currentTarget).find('span[data-replace="exercise-name"]').text(exerciseName);
+                $(e.currentTarget).find('input[data-replace="exercise-id"]').val(exerciseId);
+            });
+    </script>

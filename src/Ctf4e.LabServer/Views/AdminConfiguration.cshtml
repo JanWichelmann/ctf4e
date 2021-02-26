@@ -17,7 +17,7 @@
         ACHTUNG: Das Verändern der Konfiguration nach Freischaltung des Praktikums kann unter Umständen zu Fehlern und Datenverlust führen.
     </p>
 
-    <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfigurationAsync">
+    <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
         <textarea name="configuration" class="form-control text-monospace" rows="40" cols="100">@configuration</textarea>
         
         @if(writable)

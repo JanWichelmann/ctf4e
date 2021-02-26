@@ -47,7 +47,7 @@
 <body>
 <header>
     <nav class="navbar navbar-expand navbar-light bg-light">
-        <a class="navbar-brand" asp-controller="Group" asp-action="RenderPageAsync">
+        <a class="navbar-brand" asp-controller="Group" asp-action="RenderPage">
             <!--<img alt="logo" class="img-fluid" src="/img/logo.png" style="max-height: 50px;">-->
             @labConfiguration.NavbarTitle
         </a>
@@ -61,7 +61,7 @@
                     <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "group"))">Gruppenstatus</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" asp-controller="Group" asp-action="RenderPageAsync">Aufgaben</a>
+                    <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" asp-controller="Group" asp-action="RenderPage">Aufgaben</a>
                 </li>
             }
         </ul>
@@ -75,7 +75,7 @@
                         <span>Admin</span>
                     </a>
                     <div class="dropdown-menu mt-0">
-                        <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPageAsync">Konfiguration</a>
+                        <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">Konfiguration</a>
                     </div>
                 </li>
             </ul>
@@ -93,7 +93,7 @@
                     <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Administrator-Modus"></span>
                 }
             </span>
-            <a class="btn btn-sm btn-outline-primary mr-1" asp-controller="Authentication" asp-action="LogoutAsync">
+            <a class="btn btn-sm btn-outline-primary mr-1" asp-controller="Authentication" asp-action="Logout">
                 <span class="oi oi-account-logout"></span>
                 Abmelden
             </a>

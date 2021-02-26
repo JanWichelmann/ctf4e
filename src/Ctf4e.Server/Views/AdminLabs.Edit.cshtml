@@ -1,0 +1,77 @@
+@model Ctf4e.Server.Models.Lab
+
+<h3 class="text-primary">
+    Praktikum bearbeiten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<form asp-controller="AdminLabs" asp-action="EditLab" method="post">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ServerBaseUrl">Basis-URL für Praktikumsserver</label>
+        <input asp-for="ServerBaseUrl" class="form-control" placeholder="URL eingeben">
+        <span asp-validation-for="ServerBaseUrl" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ApiCode">API-Code</label>
+        <input asp-for="ApiCode" class="form-control" placeholder="Code eingeben">
+        <span asp-validation-for="ApiCode" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="MaxFlagPoints">Maximale Flagpunkte</label>
+        <input asp-for="MaxFlagPoints" class="form-control">
+        <span asp-validation-for="MaxFlagPoints" class="text-danger"></span>
+    </div>
+    @if(Model.Exercises?.Any() == true)
+    {
+        <div class="form-group">
+            <label>Aufgaben</label>
+            <table class="table table-sm table-bordered table-hover text-nowrap">
+                <tbody>
+                @foreach(var e in Model.Exercises)
+                {
+                    <tr>
+                        <td>@e.Name (#@e.Id / Nr. @e.ExerciseNumber)</td>
+                        <td>
+                            <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowEditExerciseForm" asp-route-id="@e.Id">
+                                <span class="oi oi-pencil"></span>
+                                Bearbeiten
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+    @if(Model.Flags?.Any() == true)
+    {
+        <div class="form-group">
+            <label>Flags</label>
+            <table class="table table-sm table-bordered table-hover text-nowrap">
+                <tbody>
+                @foreach(var f in Model.Flags)
+                {
+                    <tr>
+                        <td>@f.Description (#@f.Id)</td>
+                        <td>
+                            <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowEditFlagForm" asp-route-id="@f.Id">
+                                <span class="oi oi-pencil"></span>
+                                Bearbeiten
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <input asp-for="Id" type="hidden">
+
+    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+</form>

@@ -1,0 +1,31 @@
+@model Ctf4e.Server.Models.Lab
+
+<h3 class="text-primary">
+    Praktikum erstellen
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<form asp-controller="AdminLabs" asp-action="CreateLab" method="post">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ServerBaseUrl">Basis-URL für Praktikumsserver</label>
+        <input asp-for="ServerBaseUrl" class="form-control" placeholder="URL eingeben">
+        <span asp-validation-for="ServerBaseUrl" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ApiCode">API-Code</label>
+        <input asp-for="ApiCode" class="form-control" placeholder="Code eingeben" value="@RandomStringGenerator.GetRandomString(32)">
+        <span asp-validation-for="ApiCode" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="MaxFlagPoints">Maximale Flagpunkte</label>
+        <input asp-for="MaxFlagPoints" class="form-control">
+        <span asp-validation-for="MaxFlagPoints" class="text-danger"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Praktikum erstellen</button>
+</form>

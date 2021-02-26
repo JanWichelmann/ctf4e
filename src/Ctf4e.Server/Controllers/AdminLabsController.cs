@@ -24,9 +24,10 @@ namespace Ctf4e.Server.Controllers
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
 
-        private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
+        private Task<IActionResult> RenderAsync(ViewType viewType, object model)
         {
             ViewData["ViewType"] = viewType;
+            
             return RenderViewAsync(MenuItems.AdminLabs, model);
         }
 
@@ -34,9 +35,9 @@ namespace Ctf4e.Server.Controllers
         public async Task<IActionResult> RenderLabListAsync()
         {
             // Pass labs
-            ViewData["Labs"] = await _labService.GetFullLabsAsync().ToListAsync();
+            var labs = await _labService.GetFullLabsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.ListLabs);
+            return await RenderAsync(ViewType.List, labs);
         }
 
         private async Task<IActionResult> ShowEditLabFormAsync(int? id, Lab lab = null)
@@ -58,7 +59,7 @@ namespace Ctf4e.Server.Controllers
                 return await RenderLabListAsync();
             }
 
-            return await RenderAsync(ViewType.EditLab, lab);
+            return await RenderAsync(ViewType.Edit, lab);
         }
 
         [HttpGet("edit")]
@@ -102,7 +103,7 @@ namespace Ctf4e.Server.Controllers
         [HttpGet("create")]
         public async Task<IActionResult> ShowCreateLabFormAsync(Lab lab = null)
         {
-            return await RenderAsync(ViewType.CreateLab, lab);
+            return await RenderAsync(ViewType.Create, lab);
         }
 
         [HttpPost("create")]
@@ -174,9 +175,9 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListLabs,
-            EditLab,
-            CreateLab
+            List,
+            Edit,
+            Create
         }
     }
 }

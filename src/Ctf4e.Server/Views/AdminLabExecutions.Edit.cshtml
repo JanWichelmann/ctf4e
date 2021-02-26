@@ -1,0 +1,15 @@
+@model Ctf4e.Server.ViewModels.AdminLabExecution
+
+<h3 class="text-primary">
+    Ausführung bearbeiten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<form asp-controller="AdminLabExecutions" asp-action="EditLabExecution" method="post">
+    <partial name="AdminLabExecutions._Form.cshtml" />
+    
+    <input asp-for="LabExecution.GroupId" type="hidden">
+    <input asp-for="LabExecution.LabId" type="hidden">
+
+    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+</form>

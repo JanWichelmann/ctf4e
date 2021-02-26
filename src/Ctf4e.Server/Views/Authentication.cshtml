@@ -16,17 +16,17 @@ else if(viewType == AuthenticationController.ViewType.Redirect)
 {
     if(currentUser.IsAdmin)
     {
-        <a href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Weiterleiten...</a>
+        <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Weiterleiten...</a>
 @section ScriptsHead
 {
-    <meta http-equiv="refresh" content="1;url=@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">
+    <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderScoreboard", "AdminScoreboard"))">
 }    }
     else
     {
-        <a href="@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">Weiterleiten...</a>
+        <a asp-controller="Group" asp-action="RenderLabPage">Weiterleiten...</a>
 @section ScriptsHead
 {
-    <meta http-equiv="refresh" content="1;url=@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">
+    <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderLabPage", "Group"))">
 }    }
 }
 else if(viewType == AuthenticationController.ViewType.GroupSelection)
@@ -49,7 +49,7 @@ else if(viewType == AuthenticationController.ViewType.GroupSelection)
     </p>
     @model Ctf4e.Server.ViewModels.GroupSelection
     
-    <form action="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.HandleGroupSelectionAsync)))" method="post">
+    <form asp-controller="Authentication" asp-action="HandleGroupSelection" method="post">
         <div class="form-group">
             <label asp-for="OtherUserCodes">Codes Ihrer Gruppenpartner/Gruppenpartnerinnen</label>
             <textarea asp-for="OtherUserCodes" class="form-control" placeholder="Codes eingeben" rows="4" cols="40"></textarea>

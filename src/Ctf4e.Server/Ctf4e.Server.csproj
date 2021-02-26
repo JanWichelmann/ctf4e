@@ -2,9 +2,10 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>283ba80f-8978-49d8-89d5-e6315818c641</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -69,6 +70,84 @@
     <_ContentIncludedByDefault Remove="wwwroot\lib\tempusdominus\js\tempusdominus-bootstrap-4.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\js\jquery.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\popper\js\popper.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\AdminExercises.Create.cshtml">
+      <DependentUpon>AdminExercises.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminExercises.Edit.cshtml">
+      <DependentUpon>AdminExercises.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminExercises.List.cshtml">
+      <DependentUpon>AdminExercises.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminFlags.Create.cshtml">
+      <DependentUpon>AdminFlags.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminFlags.List.cshtml">
+      <DependentUpon>AdminFlags.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminFlags.Edit.cshtml">
+      <DependentUpon>AdminFlags.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminGroups.Create.cshtml">
+      <DependentUpon>AdminGroups.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminGroups.Edit.cshtml">
+      <DependentUpon>AdminGroups.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminGroups.List.cshtml">
+      <DependentUpon>AdminGroups.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabExecutions.List.cshtml">
+      <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabExecutions.CreateForGroup.cshtml">
+      <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabExecutions.Edit.cshtml">
+      <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabExecutions.CreateForSlot.cshtml">
+      <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabExecutions._Form.cshtml">
+      <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabs.Create.cshtml">
+      <DependentUpon>AdminLabs.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabs.List.cshtml">
+      <DependentUpon>AdminLabs.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminLabs.Edit.cshtml">
+      <DependentUpon>AdminLabs.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminSlots.Create.cshtml">
+      <DependentUpon>AdminSlots.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminSlots.List.cshtml">
+      <DependentUpon>AdminSlots.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminSlots.Edit.cshtml">
+      <DependentUpon>AdminSlots.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminUsers.Edit.cshtml">
+      <DependentUpon>AdminUsers.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminUsers.List.cshtml">
+      <DependentUpon>AdminUsers.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminScoreboard.Users.cshtml">
+      <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminScoreboard.Sync.cshtml">
+      <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\AdminScoreboard.Flags.cshtml">
+      <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
+    </Content>
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />

@@ -6,7 +6,6 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Ctf4e.Utilities.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -27,11 +26,11 @@ namespace Ctf4e.Server.Controllers
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
 
-        private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model = null)
+        private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
         {
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
-                return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                return this.RedirectToAction("RenderLabList", "AdminLabs");
             ViewData["Lab"] = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
 
             ViewData["ViewType"] = viewType;
@@ -41,9 +40,9 @@ namespace Ctf4e.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> RenderFlagListAsync(int labId)
         {
-            ViewData["Flags"] = await _flagService.GetFlagsAsync(labId).ToListAsync();
+            var flags = await _flagService.GetFlagsAsync(labId).ToListAsync();
 
-            return await RenderAsync(ViewType.ListFlags, labId);
+            return await RenderAsync(ViewType.List, labId, flags);
         }
 
         private async Task<IActionResult> ShowEditFlagFormAsync(int? id, Flag flag = null)
@@ -53,13 +52,13 @@ namespace Ctf4e.Server.Controllers
             {
                 flag = await _flagService.GetFlagAsync(id.Value, HttpContext.RequestAborted);
                 if(flag == null)
-                    return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                    return this.RedirectToAction("RenderLabList", "AdminLabs");
             }
 
             if(flag == null)
-                return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                return this.RedirectToAction("RenderLabList", "AdminLabs");
 
-            return await RenderAsync(ViewType.EditFlag, flag.LabId, flag);
+            return await RenderAsync(ViewType.Edit, flag.LabId, flag);
         }
 
         [HttpGet("edit")]
@@ -102,7 +101,7 @@ namespace Ctf4e.Server.Controllers
         [HttpGet("create")]
         public async Task<IActionResult> ShowCreateFlagFormAsync(int labId, Flag flag = null)
         {
-            return await RenderAsync(ViewType.CreateFlag, labId, flag);
+            return await RenderAsync(ViewType.Create, labId, flag);
         }
 
         [HttpPost("create")]
@@ -146,7 +145,7 @@ namespace Ctf4e.Server.Controllers
             // Input check
             var flag = await _flagService.GetFlagAsync(id, HttpContext.RequestAborted);
             if(flag == null)
-                return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                return this.RedirectToAction("RenderLabList", "AdminLabs");
 
             try
             {
@@ -165,9 +164,9 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListFlags,
-            EditFlag,
-            CreateFlag
+            List,
+            Edit,
+            Create
         }
     }
 }

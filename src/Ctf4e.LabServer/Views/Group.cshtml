@@ -79,7 +79,7 @@
                     lastInput = null;
                 }
 
-                <form class="form" method="post" asp-controller="Group" asp-action="CheckStringInputAsync">
+                <form class="form" method="post" asp-controller="Group" asp-action="CheckStringInput">
                     @if(exerciseData.Multiline)
                     {
                         <textarea class="form-control" name="input" placeholder="Lösung eingeben" rows="5">@(lastInput?.Input ?? "")</textarea>
@@ -106,7 +106,7 @@
                     lastInput = null;
                 }
 
-                <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInputAsync">
+                <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInput">
                     <div class="form-group">
                         @for(int i = 0; i < exerciseData.Options.Length; ++i)
                         {
@@ -135,7 +135,7 @@
     <div class="modal fade" id="modal-mark-exercise-solved" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form asp-controller="Group" asp-action="MarkExerciseAsSolvedAsync" method="post">
+                <form asp-controller="Group" asp-action="MarkExerciseAsSolved" method="post">
                     <div class="modal-header">
                         <h5 class="modal-title">Aufgabe als gelöst markieren</h5>
                         <button type="button" class="close" data-dismiss="modal">
@@ -163,7 +163,7 @@
     <div class="modal fade" id="modal-reset-exercise" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form asp-controller="Group" asp-action="ResetExerciseStatusAsync" method="post">
+                <form asp-controller="Group" asp-action="ResetExerciseStatus" method="post">
                     <div class="modal-header">
                         <h5 class="modal-title">Aufgabe zurücksetzen</h5>
                         <button type="button" class="close" data-dismiss="modal">

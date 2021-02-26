@@ -146,10 +146,10 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
 
 <hr class="bg-primary mb-2 mt-1" style="height: 2px;">
 
-<form action="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync)))" method="get">
+<form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
     <div class="form-group">
         <label for="input-lab-id">Scoreboard auswählen</label>
-        <select id="input-lab-id" name="labId" asp-items="@new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId)" class="form-control">
+        <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
             <option value="" selected>Gesamtwertung über alle Praktika</option>
         </select>
     </div>

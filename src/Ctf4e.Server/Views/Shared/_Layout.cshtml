@@ -49,7 +49,7 @@
 <body>
 <header>
     <nav class="navbar navbar-expand navbar-light bg-light">
-        <a class="navbar-brand" href="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync)))">
+        <a class="navbar-brand" asp-controller="Scoreboard" asp-action="RenderScoreboard">
             <!--<img alt="logo" class="img-fluid" src="/img/logo.png" style="max-height: 50px;">-->
             @ViewData["NavbarTitle"]
         </a>
@@ -57,18 +57,18 @@
             @if(currentUser != null)
             {
                 <li class="nav-item">
-                    <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "text-primary" : "")" href="@(Url.Action<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync)))">Scoreboard</a>
+                    <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "text-primary" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">Scoreboard</a>
                 </li>
                 @if(currentUser.Group != null)
                 {
                     <li class="nav-item">
-                        <a class="nav-link @(activeMenuItem == MenuItems.Group ? "text-primary" : "")" href="@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))">Gruppenstatus</a>
+                        <a class="nav-link @(activeMenuItem == MenuItems.Group ? "text-primary" : "")" asp-controller="Group" asp-action="RenderLabPage">Gruppenstatus</a>
                     </li>
                 }
                 else
                 {
                     <li class="nav-item">
-                        <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.ShowGroupFormAsync)))">Gruppe gründen</a>
+                        <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" asp-controller="Authentication" asp-action="ShowGroupForm">Gruppe gründen</a>
                     </li>
                 }
             }
@@ -93,23 +93,23 @@
                     @if(currentUser.IsAdmin)
                     {
                         <div class="dropdown-menu mt-0">
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" href="@(Url.Action<AdminUsersController>(nameof(AdminUsersController.RenderUserListAsync)))">Benutzer</a>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" href="@(Url.Action<AdminGroupsController>(nameof(AdminGroupsController.RenderGroupListAsync)))">Gruppen</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" asp-controller="AdminUsers" asp-action="RenderUserList">Benutzer</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" asp-controller="AdminGroups" asp-action="RenderGroupList">Gruppen</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" href="@(Url.Action<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync)))">Praktika</a>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" href="@(Url.Action<AdminSlotsController>(nameof(AdminSlotsController.RenderSlotListAsync)))">Terminslots</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">Praktika</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" asp-controller="AdminSlots" asp-action="RenderSlotList">Terminslots</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" href="@(Url.Action<AdminLabExecutionsController>(nameof(AdminLabExecutionsController.RenderLabExecutionListAsync)))">Aktive Praktika</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">Aktive Praktika</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" href="@(Url.Action<AdminConfigurationController>(nameof(AdminConfigurationController.RenderAsync)))">Konfiguration</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="Render">Konfiguration</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Admin-Scoreboard</a>
+                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Admin-Scoreboard</a>
                         </div>
                     }
                     else if(currentUser.IsTutor)
                     {
                         <div class="dropdown-menu mt-0">
-                            <a class="nav-link @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" href="@(Url.Action<AdminScoreboardController>(nameof(AdminScoreboardController.RenderScoreboardAsync)))">Admin-Scoreboard</a>
+                            <a class="nav-link @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Admin-Scoreboard</a>
                         </div>
                     }
                 </li>
@@ -132,7 +132,7 @@
                     <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Tutorrechte"></span>
                 }
             </span>
-            <a class="btn btn-sm btn-outline-primary mr-1" href="@(Url.Action<AuthenticationController>(nameof(AuthenticationController.LogoutAsync)))">
+            <a class="btn btn-sm btn-outline-primary mr-1" asp-controller="Authentication" asp-action="Logout">
                 <span class="oi oi-account-logout"></span>
                 Abmelden
             </a>

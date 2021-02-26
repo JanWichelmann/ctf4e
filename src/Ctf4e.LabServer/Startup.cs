@@ -80,7 +80,6 @@ namespace Ctf4e.LabServer
             // Use MVC
             var mvcBuilder = services.AddControllersWithViews(options =>
             {
-                options.SuppressAsyncSuffixInActionNames = false;
             });
 
             // IDE-only tools

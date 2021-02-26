@@ -9,6 +9,7 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
+using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,11 +46,11 @@ namespace Ctf4e.Server.Controllers
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
         }
 
-        private async Task<IActionResult> RenderAsync(int labId, int slotId, object model = null)
+        private async Task<IActionResult> RenderAsync(int labId, int slotId)
         {
-            ViewData["Scoreboard"] = await _scoreboardService.GetAdminScoreboardAsync(labId, slotId, HttpContext.RequestAborted);
+            var scoreboard = await _scoreboardService.GetAdminScoreboardAsync(labId, slotId, HttpContext.RequestAborted);
 
-            return await RenderViewAsync(MenuItems.AdminScoreboard, model);
+            return await RenderViewAsync(MenuItems.AdminScoreboard, scoreboard);
         }
 
         [HttpGet]

@@ -1,0 +1,59 @@
+@model List<Ctf4e.Server.Models.User>
+
+<h3 class="text-primary">
+    Benutzer verwalten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<table class="table table-sm table-bordered table-hover text-nowrap">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Moodle-Account</th>
+        <th scope="col">Gruppencode</th>
+        <th scope="col">Gruppen-ID</th>
+        <th scope="col">Status</th>
+        <th scope="col">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var u in Model)
+    {
+        <tr>
+            <td>@u.Id</td>
+            <td>@u.DisplayName</td>
+            <td>@u.MoodleName (#@u.MoodleUserId)</td>
+            <td>@u.GroupFindingCode</td>
+            <td>
+                @if(u.GroupId != null)
+                {
+                    <a asp-controller="AdminGroups" asp-action="EditGroup" asp-route-id="@u.GroupId" title="Gruppe bearbeiten">
+                        <span class="oi oi-people"></span>
+                        #@u.GroupId
+                    </a>                }
+            </td>
+            <td>
+                @if(u.IsAdmin)
+                {
+                    <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Hat Administratorrechte"></span>
+                }
+                else if(u.IsTutor)
+                {
+                    <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Hat Tutorrechte"></span>
+                }
+            </td>
+            <td>
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminUsers" asp-action="ShowEditUserForm" asp-route-id="@u.Id">
+                    <span class="oi oi-pencil"></span>
+                    Bearbeiten
+                </a>
+                <a role="button" class="btn btn-sm btn-secondary" asp-controller="Authentication" asp-action="AdminLoginAsUser" asp-route-userId="@u.Id" title="Als diesen Benutzer einloggen">
+                    <span class="oi oi-account-login"></span>
+                    Einloggen
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

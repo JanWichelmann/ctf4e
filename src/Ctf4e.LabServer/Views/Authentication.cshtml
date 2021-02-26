@@ -10,9 +10,9 @@
 }
 else if(viewType == AuthenticationController.ViewType.Redirect)
 {
-    <a asp-controller="Group" asp-action="RenderPageAsync">Weiterleiten...</a>
+    <a asp-controller="Group" asp-action="RenderPage">Weiterleiten...</a>
     @section ScriptsHead
     {
-        <meta http-equiv="refresh" content="1;url=@(Url.Action<GroupController>(nameof(GroupController.RenderPageAsync)))">
+        <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderPage", "Group"))">
     }
 }

@@ -72,7 +72,7 @@
 
     @if(groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
     {
-        <a class="btn btn-primary" href="@(Url.Action<GroupController>(nameof(GroupController.CallLabServerAsync), new { labId = groupScoreboard.LabId }))" target="_blank">
+        <a class="btn btn-primary" asp-controller="Group" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
             <span class="oi oi-external-link"></span>
             Zum Praktikumsserver
         </a>
@@ -236,7 +236,7 @@
 
     <script>
         function submit_flag() {
-            $.ajax("@(Url.Action<GroupController>(nameof(GroupController.SubmitFlagAsync), new { labId = groupScoreboard.LabId }))",
+            $.ajax("@Url.Action("SubmitFlag", "Group", new { labId = groupScoreboard.LabId })",
                 {
                     type: "POST",
                     data: {
@@ -260,7 +260,7 @@
     </h5>
     <hr class="bg-primary mb-2 mt-1" style="height: 2px">
 
-    <form action="@(Url.Action<GroupController>(nameof(GroupController.RenderLabPageAsync)))" method="get">
+    <form asp-controller="Group" asp-action="RenderLabPage" method="get">
         <div class="form-group">
             <label for="input-lab-id">Praktikum</label>
             <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">

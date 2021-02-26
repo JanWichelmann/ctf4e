@@ -1,0 +1,47 @@
+<h3 class="text-primary mt-5">
+    Synchronisation mit externen Systemen
+</h3>
+<hr class="bg-primary mb-2" style="height: 2px">
+
+<a class="btn btn-primary mb-2" asp-controller="AdminScoreboard" asp-action="DownloadAsCsv">
+    <span class="oi oi-data-transfer-download"></span>
+    Ergebnisse als CSV herunterladen
+</a>
+
+<a class="btn btn-warning mb-2" href="#" onclick="sync_moodle()">
+    <span class="oi oi-transfer"></span>
+    Ergebnisse in Moodlekurs hochladen
+</a>
+
+<div class="modal fade" id="modal-sync-moodle" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ergebnisse in Moodlekurs hochladen</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Dieses Kommando lädt die kompletten Kursergebnisse über die API in den angebundenen Moodlekurs hoch.
+                </p>
+                <p>
+                    <strong>Achtung:</strong> Dieser Vorgang dauert einige Zeit, und sollte nicht unterbrochen werden.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-controller="AdminScoreboard" asp-action="UploadToMoodle">
+                    <button type="submit" class="btn btn-outline-warning">Ergebnisse hochladen</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        function sync_moodle() {
+            $("#modal-sync-moodle").modal();
+        }
+    </script>

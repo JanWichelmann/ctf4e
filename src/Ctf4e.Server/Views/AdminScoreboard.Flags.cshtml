@@ -1,0 +1,38 @@
+@model Ctf4e.Server.ViewModels.AdminScoreboard
+
+<h3 class="text-primary mt-5">
+    Flags (alle Terminslots)
+</h3>
+<hr class="bg-primary mb-2" style="height: 2px">
+
+<table class="table table-sm" id="flags-table">
+    <thead>
+    <tr>
+        <th></th>
+        <th scope="col">Beschreibung</th>
+        <th scope="col">Funde</th>
+        <th scope="col">Punkte</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var flag in Model.Flags)
+    {
+        <tr>
+            <th scope="row">#@flag.Flag.Id</th>
+            <td>
+                @flag.Flag.Description
+                @if(flag.Flag.IsBounty)
+                {
+                    <span class="oi oi-bug text-primary" title="Bug-Bounty"></span>
+                }
+            </td>
+            <td>
+                @flag.SubmissionCount
+            </td>
+            <td>
+                @flag.CurrentPoints / @flag.Flag.BasePoints
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

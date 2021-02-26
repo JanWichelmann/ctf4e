@@ -1,19 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Description>Utility functions for the CTF4E server implementations.</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Utilities\**" />
     <EmbeddedResource Remove="Utilities\**" />
     <None Remove="Utilities\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
   </ItemGroup>
 
   <ItemGroup>

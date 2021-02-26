@@ -1,0 +1,94 @@
+@model List<Ctf4e.Server.Models.Group>
+
+<h3 class="text-primary">
+    Gruppen verwalten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowCreateGroupForm">
+    <span class="oi oi-plus"></span>
+    Gruppe erstellen
+</a>
+<table class="table table-sm table-bordered table-hover text-nowrap mt-2">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Slot</th>
+        <th scope="col">Name</th>
+        <th scope="col">Mitglieder</th>
+        <th scope="col">Scoreboard?</th>
+        <th scope="col">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var g in Model)
+    {
+        <tr>
+            <td>@g.Id</td>
+            <td>@g.Slot.Name</td>
+            <td>@g.DisplayName</td>
+            <td>@g.Members.Count</td>
+            <td>
+                @if(g.ShowInScoreboard)
+                {
+                    <span class="oi oi-check text-success"></span>
+                }
+                else
+                {
+                    <span class="oi oi-x text-danger"></span>
+                }
+            </td>
+            <td>
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@g.Id">
+                    <span class="oi oi-pencil"></span>
+                    Bearbeiten
+                </a>
+                @if(!g.Members.Any())
+                {
+                    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-group" data-group-id="@g.Id" data-group-name="@g.DisplayName">
+                        <span class="oi oi-trash"></span>
+                        Löschen
+                    </a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modal-delete-group" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Gruppe löschen</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Wollen Sie die Gruppe &quot;<span data-replace="group-name"></span>&quot; wirklich löschen?
+                </p>
+                <p>
+                    Alle mit dieser Gruppe verbundenen Aufgaben- und Flag-Einreichungen werden unwiderruflich gelöscht.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="AdminGroups" asp-action="DeleteGroup" method="post">
+                    <input type="hidden" data-replace="group-id" name="id" value="">
+
+                    <button type="submit" class="btn btn-outline-danger">Gruppe löschen</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        $('#modal-delete-group').on('show.bs.modal', function (e) {
+            var groupId = $(e.relatedTarget).data('group-id');
+            var groupName = $(e.relatedTarget).data('group-name');
+            $(e.currentTarget).find('span[data-replace="group-name"]').text(groupName);
+            $(e.currentTarget).find('input[data-replace="group-id"]').val(groupId);
+        });
+    </script>

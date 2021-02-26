@@ -9,9 +9,9 @@
     "Password": "ctf4e"
   },
   "MoodleLtiOptions": {
-    "BaseUrl": "https://moodle.url/",
-    "CourseId": "42",
-    "ToolTypeId": "21",
+    "BaseUrl": "https://moodle.uni-luebeck.de/",
+    "CourseId": "2917",
+    "ToolTypeId": "1",
     "ResourceLinkId": "1",
     "OAuthConsumerKey": "ctf4e",
     "OAuthSharedSecret": "ctf4e-secret"

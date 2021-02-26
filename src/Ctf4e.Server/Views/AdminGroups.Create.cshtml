@@ -1,0 +1,32 @@
+@using Ctf4e.Server.Models
+@model Group
+@{
+    var slots = (List<Slot>)ViewData["Slots"];
+}
+
+<h3 class="text-primary">
+    Gruppe erstellen
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<form asp-controller="AdminGroups" asp-action="CreateGroup" method="post">
+    <div class="form-group">
+        <label asp-for="DisplayName">Name</label>
+        <input asp-for="DisplayName" class="form-control" placeholder="Namen eingeben">
+        <span asp-validation-for="DisplayName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SlotId">Slot</label>
+        <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control">
+            <option disabled selected>Slot auswählen</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input asp-for="ShowInScoreboard" class="form-check-input">
+            <label asp-for="ShowInScoreboard" class="form-check-label">In Scoreboard anzeigen</label>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Gruppe erstellen</button>
+</form>

@@ -1,0 +1,16 @@
+@model Ctf4e.Server.Models.Slot
+
+<h3 class="text-primary">
+    Slot erstellen
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<form asp-controller="AdminSlots" asp-action="CreateSlot" method="post">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Slot erstellen</button>
+</form>

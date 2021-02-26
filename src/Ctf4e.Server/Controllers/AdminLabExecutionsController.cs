@@ -31,7 +31,7 @@ namespace Ctf4e.Server.Controllers
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
 
-        private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
+        private Task<IActionResult> RenderAsync(ViewType viewType, object model)
         {
             ViewData["ViewType"] = viewType;
             return RenderViewAsync(MenuItems.AdminLabExecutions, model);
@@ -41,11 +41,11 @@ namespace Ctf4e.Server.Controllers
         public async Task<IActionResult> RenderLabExecutionListAsync()
         {
             // Pass data
-            ViewData["LabExecutions"] = await _labExecutionService.GetLabExecutionsAsync().ToListAsync();
+            var labExecutions = await _labExecutionService.GetLabExecutionsAsync().ToListAsync();
             ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.ListLabExecutions);
+            return await RenderAsync(ViewType.List, labExecutions);
         }
 
         private async Task<IActionResult> ShowEditLabExecutionFormAsync(int? groupId, int? labId, AdminLabExecution labExecutionData = null)
@@ -70,7 +70,7 @@ namespace Ctf4e.Server.Controllers
                 return await RenderLabExecutionListAsync();
             }
 
-            return await RenderAsync(ViewType.EditLabExecution, labExecutionData);
+            return await RenderAsync(ViewType.Edit, labExecutionData);
         }
 
         [HttpGet("edit")]
@@ -123,7 +123,7 @@ namespace Ctf4e.Server.Controllers
             ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.CreateLabExecutionForSlot, labExecutionData);
+            return await RenderAsync(ViewType.CreateForSlot, labExecutionData);
         }
 
         [HttpPost("create/slot")]
@@ -182,7 +182,7 @@ namespace Ctf4e.Server.Controllers
             ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
             ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.CreateLabExecutionForGroup, labExecutionData);
+            return await RenderAsync(ViewType.CreateForGroup, labExecutionData);
         }
 
         [HttpPost("create/group")]
@@ -272,10 +272,10 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListLabExecutions,
-            EditLabExecution,
-            CreateLabExecutionForSlot,
-            CreateLabExecutionForGroup
+            List,
+            Edit,
+            CreateForSlot,
+            CreateForGroup
         }
     }
 }

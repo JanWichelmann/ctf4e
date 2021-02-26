@@ -115,7 +115,6 @@ namespace Ctf4e.Server
             // Use MVC
             var mvcBuilder = services.AddControllersWithViews(options =>
             {
-                options.SuppressAsyncSuffixInActionNames = false;
             });
 
             // Development tools

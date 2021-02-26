@@ -26,7 +26,7 @@ namespace Ctf4e.Server.Controllers
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
         }
 
-        private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
+        private Task<IActionResult> RenderAsync(ViewType viewType, object model)
         {
             ViewData["ViewType"] = viewType;
             return RenderViewAsync(MenuItems.AdminGroups, model);
@@ -35,10 +35,10 @@ namespace Ctf4e.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> RenderGroupListAsync()
         {
-            // Pass users
-            ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
+            // Pass groups
+            var groups = await _userService.GetGroupsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.ListGroups);
+            return await RenderAsync(ViewType.List, groups);
         }
 
         private async Task<IActionResult> ShowEditGroupFormAsync(int? id, Group group = null)
@@ -63,7 +63,7 @@ namespace Ctf4e.Server.Controllers
             // Pass list of slots
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.EditGroup, group);
+            return await RenderAsync(ViewType.Edit, group);
         }
 
         [HttpGet("edit")]
@@ -109,7 +109,7 @@ namespace Ctf4e.Server.Controllers
             // Pass list of slots
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.CreateGroup, group);
+            return await RenderAsync(ViewType.Create, group);
         }
 
         [HttpPost("create")]
@@ -180,9 +180,9 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListGroups,
-            EditGroup,
-            CreateGroup
+            List,
+            Edit,
+            Create
         }
     }
 }

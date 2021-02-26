@@ -1,0 +1,95 @@
+@using Ctf4e.Server.Models
+@model List<Flag>
+@{
+    var lab = (Lab)ViewData["Lab"];
+}
+
+<h3 class="text-primary">
+    Flags von Praktikum &quot;@lab.Name&quot; verwalten
+</h3>
+<hr class="bg-primary" style="height: 2px">
+
+<a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowCreateFlagForm" asp-route-labId="@lab.Id">
+    <span class="oi oi-plus"></span>
+    Flag erstellen
+</a>
+<table class="table table-sm table-bordered table-hover text-nowrap mt-2">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Code</th>
+        <th scope="col">Beschreibung</th>
+        <th scope="col">Basispunktzahl</th>
+        <th scope="col">Bug-Bounty?</th>
+        <th scope="col">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var f in Model)
+    {
+        <tr>
+            <td>@f.Id</td>
+            <td>@f.Code</td>
+            <td>@f.Description</td>
+            <td>@f.BasePoints</td>
+            <td>
+                @if(f.IsBounty)
+                {
+                    <span class="oi oi-check text-success"></span>
+                }
+                else
+                {
+                    <span class="oi oi-x text-danger"></span>
+                }
+            </td>
+            <td>
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowEditFlagForm" asp-route-id="@f.Id">
+                    <span class="oi oi-pencil"></span>
+                    Bearbeiten
+                </a>
+                <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag" data-flag-id="@f.Id" data-flag-name="@f.Description">
+                    <span class="oi oi-trash"></span>
+                    Löschen
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modal-delete-flag" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Flag löschen</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Wollen Sie die Flag mit der Beschreibung &quot;<span data-replace="flag-name"></span>&quot; wirklich löschen?
+                </p>
+                <p>
+                    Beachten Sie, dass hierbei auch alle Flag-Fünde unwiderruflich gelöscht werden!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="AdminFlags" asp-action="DeleteFlag" method="post">
+                    <input type="hidden" data-replace="flag-id" name="id" value="">
+                    
+                    <button type="submit" class="btn btn-outline-danger">Flag löschen</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        $('#modal-delete-flag').on('show.bs.modal', function (e) {
+            var flagId = $(e.relatedTarget).data('flag-id');
+            var flagName = $(e.relatedTarget).data('flag-name');
+            $(e.currentTarget).find('span[data-replace="flag-name"]').text(flagName);
+            $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
+        });
+    </script>

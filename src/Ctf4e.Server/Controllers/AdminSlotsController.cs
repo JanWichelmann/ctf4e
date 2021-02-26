@@ -24,7 +24,7 @@ namespace Ctf4e.Server.Controllers
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
         }
 
-        private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
+        private Task<IActionResult> RenderAsync(ViewType viewType, object model)
         {
             ViewData["ViewType"] = viewType;
             return RenderViewAsync(MenuItems.AdminSlots, model);
@@ -34,9 +34,9 @@ namespace Ctf4e.Server.Controllers
         public async Task<IActionResult> RenderSlotListAsync()
         {
             // Pass slots
-            ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+            var slots = await _slotService.GetSlotsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.ListSlots);
+            return await RenderAsync(ViewType.List, slots);
         }
 
         private async Task<IActionResult> ShowEditSlotFormAsync(int? id, Slot slot = null)
@@ -58,7 +58,7 @@ namespace Ctf4e.Server.Controllers
                 return await RenderSlotListAsync();
             }
 
-            return await RenderAsync(ViewType.EditSlot, slot);
+            return await RenderAsync(ViewType.Edit, slot);
         }
 
         [HttpGet("edit")]
@@ -99,7 +99,7 @@ namespace Ctf4e.Server.Controllers
         [HttpGet("create")]
         public async Task<IActionResult> ShowCreateSlotFormAsync(Slot slot = null)
         {
-            return await RenderAsync(ViewType.CreateSlot, slot);
+            return await RenderAsync(ViewType.Create, slot);
         }
 
         [HttpPost("create")]
@@ -168,9 +168,9 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListSlots,
-            EditSlot,
-            CreateSlot
+            List,
+            Edit,
+            Create
         }
     }
 }

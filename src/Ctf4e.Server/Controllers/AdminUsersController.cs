@@ -24,7 +24,7 @@ namespace Ctf4e.Server.Controllers
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
-        private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
+        private Task<IActionResult> RenderAsync(ViewType viewType, object model)
         {
             ViewData["ViewType"] = viewType;
             return RenderViewAsync(MenuItems.AdminUsers, model);
@@ -34,9 +34,9 @@ namespace Ctf4e.Server.Controllers
         public async Task<IActionResult> RenderUserListAsync()
         {
             // Pass users
-            ViewData["Users"] = await _userService.GetUsersAsync().ToListAsync();
+            var users = await _userService.GetUsersAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.ListUsers);
+            return await RenderAsync(ViewType.List, users);
         }
 
         private async Task<IActionResult> ShowEditUserFormAsync(int? id, User user = null)
@@ -61,7 +61,7 @@ namespace Ctf4e.Server.Controllers
             // Pass list of groups
             ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
 
-            return await RenderAsync(ViewType.EditUser, user);
+            return await RenderAsync(ViewType.Edit, user);
         }
 
         [HttpGet("edit")]
@@ -106,8 +106,8 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListUsers,
-            EditUser
+            List,
+            Edit
         }
     }
 }

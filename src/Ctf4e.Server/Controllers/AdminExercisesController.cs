@@ -6,7 +6,6 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Ctf4e.Utilities.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -27,11 +26,11 @@ namespace Ctf4e.Server.Controllers
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
 
-        private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model = null)
+        private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
         {
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
-                return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                return RedirectToAction("RenderLabList", "AdminLabs");
             ViewData["Lab"] = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
 
             ViewData["ViewType"] = viewType;
@@ -41,9 +40,9 @@ namespace Ctf4e.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> RenderExerciseListAsync(int labId)
         {
-            ViewData["Exercises"] = await _exerciseService.GetExercisesAsync(labId).ToListAsync();
+            var exercises = await _exerciseService.GetExercisesAsync(labId).ToListAsync();
 
-            return await RenderAsync(ViewType.ListExercises, labId);
+            return await RenderAsync(ViewType.List, labId, exercises);
         }
 
         private async Task<IActionResult> ShowEditExerciseFormAsync(int? id, Exercise exercise = null)
@@ -53,13 +52,13 @@ namespace Ctf4e.Server.Controllers
             {
                 exercise = await _exerciseService.GetExerciseAsync(id.Value, HttpContext.RequestAborted);
                 if(exercise == null)
-                    return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                    return this.RedirectToAction("RenderLabList", "AdminLabs");
             }
 
             if(exercise == null)
-                return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                return this.RedirectToAction("RenderLabList", "AdminLabs");
 
-            return await RenderAsync(ViewType.EditExercise, exercise.LabId, exercise);
+            return await RenderAsync(ViewType.Edit, exercise.LabId, exercise);
         }
 
         [HttpGet("edit")]
@@ -104,7 +103,7 @@ namespace Ctf4e.Server.Controllers
         [HttpGet("create")]
         public async Task<IActionResult> ShowCreateExerciseFormAsync(int labId, Exercise exercise = null)
         {
-            return await RenderAsync(ViewType.CreateExercise, labId, exercise);
+            return await RenderAsync(ViewType.Create, labId, exercise);
         }
 
         [HttpPost("create")]
@@ -150,7 +149,7 @@ namespace Ctf4e.Server.Controllers
             // Input check
             var exercise = await _exerciseService.GetExerciseAsync(id, HttpContext.RequestAborted);
             if(exercise == null)
-                return this.RedirectToAction<AdminLabsController>(nameof(AdminLabsController.RenderLabListAsync));
+                return this.RedirectToAction("RenderLabList", "AdminLabs");
 
             try
             {
@@ -169,9 +168,9 @@ namespace Ctf4e.Server.Controllers
 
         public enum ViewType
         {
-            ListExercises,
-            EditExercise,
-            CreateExercise
+            List,
+            Edit,
+            Create
         }
     }
 }

@@ -9,7 +9,6 @@ using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
-using Ctf4e.Utilities.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -52,7 +51,7 @@ namespace Ctf4e.Server.Controllers
 
             // Assigned to group?
             if(currentUser.Group == null)
-                return this.RedirectToAction<AuthenticationController>(nameof(ShowGroupFormAsync)); // Cookie is already set, so redirection is safe
+                return RedirectToAction("ShowGroupForm", "Authentication"); // Cookie is already set, so redirection is safe
             return await RenderAsync(ViewType.Redirect);
         }
 
@@ -154,7 +153,7 @@ namespace Ctf4e.Server.Controllers
             // Does the user already have a group?
             var currentUser = await GetCurrentUserAsync();
             if(currentUser.Group != null)
-                return this.RedirectToAction<ScoreboardController>(nameof(ScoreboardController.RenderScoreboardAsync));
+                return this.RedirectToAction("RenderScoreboard", "Scoreboard");
 
             // Pass slots
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
