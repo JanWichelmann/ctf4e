@@ -15,10 +15,10 @@ jobs:
     - name: Extract verson from tag
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/libs\//}
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: 5.0.x
     - name: Install dependencies
       run: dotnet restore
     - name: Build
