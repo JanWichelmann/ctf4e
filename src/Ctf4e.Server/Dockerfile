@@ -1,5 +1,5 @@
 # Build ASP.NET Core application
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 ARG BUILD_VERSION=unknown
 WORKDIR /src
 COPY . .
@@ -14,8 +14,7 @@ RUN npm install
 RUN npx grunt
 
 # Produce final image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim
-EXPOSE 5000
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 WORKDIR /app
 COPY --from=build /app/publish .
 COPY --from=build-static /src/src/Ctf4e.Server/wwwroot/lib ./wwwroot/lib

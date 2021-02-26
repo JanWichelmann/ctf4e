@@ -31,17 +31,6 @@ namespace Ctf4e.LabServer
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.ConfigureKestrel(options =>
-                    {
-                        options.Listen(IPAddress.Any, 5001, listenOptions =>
-                        {
-                            // Use HTTPS if there is a certificate specified in environment variables
-                            string certName = Environment.GetEnvironmentVariable("CTF4E_LAB_CERT_FILE");
-                            string certPassword = Environment.GetEnvironmentVariable("CTF4E_LAB_CERT_PASSWORD");
-                            if(certName != null && File.Exists(certName))
-                                listenOptions.UseHttps(certName, certPassword ?? "");
-                        });
-                    });
                 })
                 .ConfigureAppConfiguration((hostBuilderContext, config) =>
                 {

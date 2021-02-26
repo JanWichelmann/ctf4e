@@ -6,8 +6,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "CTF4E_LAB_CONFIG_FILE": "config-debug.json",
-        "CTF4E_LAB_CERT_FILE": "debug.pfx",
-        "CTF4E_LAB_CERT_PASSWORD": "ctf4e"
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "debug.pfx",
+        "ASPNETCORE_Kestrel__Certificates__Default__Password": "ctf4e"
       },
       "applicationUrl": "https://localhost:5001"
     }

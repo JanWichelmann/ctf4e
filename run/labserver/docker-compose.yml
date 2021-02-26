@@ -9,10 +9,10 @@ services:
         target: /config
     environment:
       - CTF4E_CONFIG_FILE=/config/${CONFIG_FILE_NAME}
-      - CTF4E_CERT_FILE=/config/${CERT_FILE_NAME}
-      - CTF4E_CERT_PASSWORD=${CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/config/${CERT_FILE_NAME}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
     ports:
-      - "${HOST_PORT}:5000"
+      - "80:80"
     depends_on:
       - ctf4e-database
   
@@ -36,10 +36,10 @@ services:
         target: /users
     environment:
       - CTF4E_LAB_CONFIG_FILE=/config/${CONFIG_FILE_NAME_LABSERVER1}
-      - CTF4E_LAB_CERT_FILE=/config/${CERT_FILE_NAME_LABSERVER1}
-      - CTF4E_LAB_CERT_PASSWORD=${CERT_PASSWORD_LABSERVER1}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/config/${CERT_FILE_NAME_LABSERVER1}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD_LABSERVER1}
     ports:
-      - "${HOST_PORT_LABSERVER1}:5001"
+      - "81:80"
     depends_on:
       - ctf4e-database
   
