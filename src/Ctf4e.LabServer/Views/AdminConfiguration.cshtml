@@ -1,4 +1,3 @@
-@using Ctf4e.LabServer.ViewModels
 @{
     ViewData["Title"] = "Konfiguration bearbeiten";
 
@@ -6,25 +5,30 @@
     bool writable = ViewData.ContainsKey("Writable") && (bool)ViewData["Writable"];
 }
 
-@if(configuration != null)
-{
-    <h3 class="text-primary">
-        Konfiguration bearbeiten
-    </h3>
-    <hr class="bg-primary" style="height: 2px;">
-    
-    <p class="text-danger font-weight-bold">
-        ACHTUNG: Das Verändern der Konfiguration nach Freischaltung des Praktikums kann unter Umständen zu Fehlern und Datenverlust führen.
-    </p>
+<div class="container">
+    @if(configuration != null)
+    {
+        <h3 class="header">
+            Konfiguration bearbeiten
+        </h3>
+        <hr class="header">
 
-    <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
-        <textarea name="configuration" class="form-control text-monospace" rows="40" cols="100">@configuration</textarea>
-        
-        @if(writable)
-        {
-            <button type="submit" class="btn btn-outline-danger mt-2">
-                Änderungen speichern
-            </button>
-        }
-    </form>
-}
+        <p class="text-danger font-weight-bold">
+            ACHTUNG: Das Verändern der Konfiguration nach Freischaltung des Praktikums kann unter Umständen zu Fehlern und Datenverlust führen.
+            Es wird dringend empfohlen, vorher ein Backup der alten Konfiguration und der Benutzerdateien zu erstellen.
+        </p>
+
+        <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
+            <div class="mb-3">
+                <textarea name="configuration" class="form-control font-monospace" rows="40" cols="100">@configuration</textarea>
+            </div>
+
+            @if(writable)
+            {
+                <button type="submit" class="btn btn-outline-danger">
+                    Änderungen speichern
+                </button>
+            }
+        </form>
+    }
+</div>

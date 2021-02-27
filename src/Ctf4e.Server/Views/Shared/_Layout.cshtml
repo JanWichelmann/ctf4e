@@ -1,5 +1,4 @@
 ﻿@using Ctf4e.Server.Constants
-@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
 @{
     // Retrieve status messages
@@ -188,6 +187,7 @@
         </div>
     </nav>
 </header>
+
 @if(statusMessages.Any())
 {
     <div class="container generic-max-width bg-white">
@@ -226,6 +226,7 @@
         </div>
     </div>
 }
+
 <main role="main" class="pb-4 flex-grow-1">
     @RenderBody()
 </main>
@@ -251,7 +252,9 @@
         </div>
     </div>
 </footer>
+
 <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 @await RenderSectionAsync("ScriptsBody", required: false)
+
 </body>
 </html>

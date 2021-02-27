@@ -94,6 +94,7 @@ namespace Ctf4e.Server.Controllers
             string fullFlagString = code;
             if(!code.StartsWith(flagPrefix))
                 fullFlagString = flagPrefix + code.Trim() + flagSuffix;
+            // TODO remove prefix/suffix handling and let users simply manually specify both? Probably better for usability, as users copy around entire flags anyway
 
             // Try to submit flag
             bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, fullFlagString, HttpContext.RequestAborted);

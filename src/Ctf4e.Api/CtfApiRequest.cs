@@ -9,7 +9,7 @@ namespace Ctf4e.Api
 
         public string Data { get; set; }
 
-        private CtfApiRequest()
+        public CtfApiRequest()
         {
         }
 

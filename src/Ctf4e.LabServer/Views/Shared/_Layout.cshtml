@@ -34,116 +34,148 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+
     <title>@ViewData["Title"] - @labConfiguration.PageTitle</title>
+
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/css/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/ctf4e-labserver.min.css">
-    <link rel="stylesheet" href="~/lib/open-iconic/css/open-iconic-bootstrap.min.css">
-    <script src="~/lib/jquery/js/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/lib/popper/js/popper.min.js"></script>
+
     @await RenderSectionAsync("ScriptsHead", required: false)
 </head>
-<body>
+<body class="d-flex flex-column">
 <header>
-    <nav class="navbar navbar-expand navbar-light bg-light">
-        <a class="navbar-brand" asp-controller="Group" asp-action="RenderPage">
-            <!--<img alt="logo" class="img-fluid" src="/img/logo.png" style="max-height: 50px;">-->
-            @labConfiguration.NavbarTitle
-        </a>
-        <ul class="navbar-nav px-3 mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "scoreboard"))">Scoreboard</a>
-            </li>
-            @if(currentUser != null)
-            {
-                <li class="nav-item">
-                    <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "group"))">Gruppenstatus</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" asp-controller="Group" asp-action="RenderPage">Aufgaben</a>
-                </li>
-            }
-        </ul>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <button class="navbar-toggler mt-3 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Navigation umschalten">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar-content">
+                <a class="navbar-brand" asp-controller="Group" asp-action="RenderPage">
+                    @labConfiguration.NavbarTitle
+                </a>
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "scoreboard"))">
+                            Scoreboard
+                        </a>
+                    </li>
+                    @if(currentUser != null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "group"))">
+                                Gruppenstatus
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Group" asp-action="RenderPage">
+                                Aufgaben
+                            </a>
+                        </li>
+                    }
+                </ul>
 
-        @if(currentUser != null && adminMode)
-        {
-            bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration;
-            <ul class="navbar-nav px-3 ml-auto">
-                <li class="nav-item dropdown @(visitsAdminPage ? "active" : "")">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                        <span>Admin</span>
-                    </a>
-                    <div class="dropdown-menu mt-0">
-                        <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">Konfiguration</a>
-                    </div>
-                </li>
-            </ul>
-        }
-
-        @if(currentUser != null)
-        {
-            <span class="mr-2">
-                Angemeldet als
-                <strong>
-                    @currentUser.UserDisplayName
-                </strong>
-                @if(adminMode)
+                @if(currentUser != null)
                 {
-                    <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Administrator-Modus"></span>
-                }
-            </span>
-            <a class="btn btn-sm btn-outline-primary mr-1" asp-controller="Authentication" asp-action="Logout">
-                <span class="oi oi-account-logout"></span>
-                Abmelden
-            </a>
-        }
-    </nav>
-</header>
-<div class="container pb-2 pt-4">
-    <main>
-        @foreach(var statusMessage in statusMessages)
-        {
-            <div class="row mt-2">
-                <div class="col-sm">
-                    <div class="alert @StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
-                        @switch(statusMessage.Type)
+                    <ul class="navbar-nav ms-auto">
+                        @if(adminMode)
                         {
-                            case StatusMessageTypes.Info:
-                                <span class="oi oi-info mr-3"></span>
-                                break;
-                            case StatusMessageTypes.Success:
-                                <span class="oi oi-check mr-3"></span>
-                                break;
-                            case StatusMessageTypes.Warning:
-                                <span class="oi oi-warning mr-3"></span>
-                                break;
-                            case StatusMessageTypes.Error:
-                                <span class="oi oi-x mr-3"></span>
-                                break;
+                            bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration;
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown">
+                                    Admin
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end mt-0">
+                                    <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">
+                                        Konfiguration
+                                    </a>
+                                </ul>
+                            </li>
                         }
 
-                        @statusMessage.Message
-                        <button type="button" class="close" data-dismiss="alert">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
-        @RenderBody()
-    </main>
-</div>
+                        <!-- Profile -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <strong>
+                                    @currentUser.UserDisplayName
+                                </strong>
+                            </a>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
+                            <ul class="dropdown-menu dropdown-menu-end mt-0">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
+                                        <i class="bi bi-door-closed"></i>
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </nav>
+</header>
+
+@if(statusMessages.Any())
+{
+    <div class="container generic-max-width bg-white">
         <div class="row">
+            <div class="col px-4">
+                @foreach(var statusMessage in statusMessages)
+                {
+                    <div class="row mt-3">
+                        <div class="col-sm">
+                            <div class="alert @StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
+                                <span class="me-2">
+                                    @switch(statusMessage.Type)
+                                    {
+                                        case StatusMessageTypes.Info:
+                                            <i class="bi bi-info-circle"></i>
+                                            break;
+                                        case StatusMessageTypes.Success:
+                                            <i class="bi bi-check-circle"></i>
+                                            break;
+                                        case StatusMessageTypes.Warning:
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            break;
+                                        case StatusMessageTypes.Error:
+                                            <i class="bi bi-x-circle"></i>
+                                            break;
+                                    }
+                                </span>
+
+                                @statusMessage.Message
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<main role="main" class="pb-4 flex-grow-1">
+    @RenderBody()
+</main>
+
+<footer class="border-top footer d-print-none flex-shrink-0">
+    <div class="container">
+        <div class="row mt-2 pb-2">
             <div class="col">
-                Powered by <a href="https://github.com/JanWichelmann/ctf4e">CTF4E</a>
+                Powered by <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
             </div>
         </div>
     </div>
 </footer>
+
+<script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 @await RenderSectionAsync("ScriptsBody", required: false)
+
 </body>
 </html>

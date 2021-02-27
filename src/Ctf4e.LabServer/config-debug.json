@@ -1,7 +1,7 @@
 {
   "CtfApiOptions": {
     "CtfServerApiBaseUrl": "https://localhost:5000/api/",
-    "LabId": 1,
+    "LabId": 11,
     "LabApiCode": "12345"
   },
   "LabOptions": {

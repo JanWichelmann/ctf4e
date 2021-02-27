@@ -104,92 +104,86 @@ namespace Ctf4e.LabServer.Services
         /// </summary>
         public void Reload()
         {
-            var configWriteLock = _configLock.WriterLock();
-            try
+            // We update the entire state, ensure that no one is reading right now
+            // This lock will be automatically released upon return
+            using var configWriteLock = _configLock.WriterLock();
+
+            // Read exercises
+            _exercises = new SortedDictionary<int, LabConfigurationExerciseEntry>(_labConfiguration.CurrentConfiguration.Exercises.ToDictionary(e => e.Id));
+
+            // Read user data
+            _userStates = new ConcurrentDictionary<int, UserState>();
+            Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
+            foreach(string userStateFileName in Directory.GetFiles(_optionsMonitor.CurrentValue.UserStateDirectory, "u*.json"))
             {
-                // Read exercises
-                _exercises = new SortedDictionary<int, LabConfigurationExerciseEntry>(_labConfiguration.CurrentConfiguration.Exercises.ToDictionary(e => e.Id));
-
-                // Check for solutions empty
-
-                // Read user data
-                _userStates = new ConcurrentDictionary<int, UserState>();
-                Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
-                foreach(string userStateFileName in Directory.GetFiles(_optionsMonitor.CurrentValue.UserStateDirectory, "u*.json"))
+                // Read file
+                int userId = int.Parse(userIdRegex.Match(userStateFileName).Groups[1].Value);
+                var userStateFile = ReadUserStateFile(userStateFileName);
+                if(userStateFile == null)
                 {
-                    // Read file
-                    int userId = int.Parse(userIdRegex.Match(userStateFileName).Groups[1].Value);
-                    var userStateFile = ReadUserStateFile(userStateFileName);
-                    if(userStateFile == null)
-                    {
-                        throw new Exception($"Could not read state file for user #{userId}");
-                    }
-
-                    // Store user state
-                    var userState = new UserState
-                    {
-                        Lock = new SemaphoreSlim(1, 1),
-                        GroupId = userStateFile.GroupId,
-                        GroupMembers = new List<UserState>(),
-                        Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId))
-                    };
-                    _userStates.TryAdd(userId, userState);
-
-                    // Fix exercise list, if necessary
-                    // - Add entries for new exercises, or exercises which have a new type
-                    // - Update existing states to be consistent with new exercise data
-                    // Old exercise entries are not deleted, in order to prevent accidental data loss.
-                    bool userStateChanged = false;
-                    foreach(var exercise in _exercises)
-                    {
-                        if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
-                        {
-                            if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileStringExerciseEntry stringExerciseState))
-                            {
-                                // Create empty state for this exercise
-                                userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
-                                userStateChanged = true;
-                                continue;
-                            }
-
-                            userStateChanged = stringExerciseState.Update(stringExercise);
-                        }
-                        else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
-                        {
-                            if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState))
-                            {
-                                // Create empty state for this exercise
-                                userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
-                                userStateChanged = true;
-                                continue;
-                            }
-
-                            userStateChanged = multipleChoiceExerciseState.Update(multipleChoiceExercise);
-                        }
-                    }
-
-                    // Update user state file, if necessary
-                    if(userStateChanged)
-                        WriteUserStateFile(userId);
+                    throw new Exception($"Could not read state file for user #{userId}");
                 }
 
-                // Link groups
-                foreach(var g in _userStates.Where(u => u.Value.GroupId != null).GroupBy(u => u.Value.GroupId))
+                // Store user state
+                var userState = new UserState
                 {
-                    if(g.Count() <= 1)
-                        continue;
+                    Lock = new SemaphoreSlim(1, 1),
+                    GroupId = userStateFile.GroupId,
+                    GroupMembers = new List<UserState>(),
+                    Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId))
+                };
+                _userStates.TryAdd(userId, userState);
 
-                    foreach(var u in g)
-                    foreach(var u2 in g)
+                // Fix exercise list, if necessary
+                // - Add entries for new exercises, or exercises which have a new type
+                // - Update existing states to be consistent with new exercise data
+                // Old exercise entries are not deleted, in order to prevent accidental data loss.
+                bool userStateChanged = false;
+                foreach(var exercise in _exercises)
+                {
+                    if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
                     {
-                        if(u.Key != u2.Key)
-                            u.Value.GroupMembers.Add(u2.Value);
+                        if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileStringExerciseEntry stringExerciseState))
+                        {
+                            // Create empty state for this exercise
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
+                            userStateChanged = true;
+                            continue;
+                        }
+
+                        userStateChanged = stringExerciseState.Update(stringExercise);
+                    }
+                    else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
+                    {
+                        if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState))
+                        {
+                            // Create empty state for this exercise
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
+                            userStateChanged = true;
+                            continue;
+                        }
+
+                        userStateChanged = multipleChoiceExerciseState.Update(multipleChoiceExercise);
                     }
                 }
+
+                // Update user state file, if necessary
+                if(userStateChanged)
+                    WriteUserStateFile(userId);
             }
-            finally
+
+            // Link groups
+            foreach(var g in _userStates.Where(u => u.Value.GroupId != null).GroupBy(u => u.Value.GroupId))
             {
-                configWriteLock.Dispose();
+                if(g.Count() <= 1)
+                    continue;
+
+                foreach(var u in g)
+                foreach(var u2 in g)
+                {
+                    if(u.Key != u2.Key)
+                        u.Value.GroupMembers.Add(u2.Value);
+                }
             }
         }
 
@@ -217,6 +211,7 @@ namespace Ctf4e.LabServer.Services
             var userState = _userStates[userId];
             var userStateFile = new UserStateFile
             {
+                GroupId = userState.GroupId,
                 Exercises = userState.Exercises.Values.ToList()
             };
             File.WriteAllText(Path.Combine(_optionsMonitor.CurrentValue.UserStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
@@ -229,7 +224,7 @@ namespace Ctf4e.LabServer.Services
         public async Task ProcessLoginAsync(int userId, int? groupId)
         {
             // Ensure synchronized access
-            var configReadLock = await _configLock.WriterLockAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync();
             await _loginLock.WaitAsync();
             try
             {
@@ -275,9 +270,43 @@ namespace Ctf4e.LabServer.Services
                     _userStates.TryAdd(userId, userState);
                 }
 
-                // Find group members
+                // New user/new group: Update group member lists
+                // Remove user from existing group member lists
+                if(userState.GroupMembers.Any())
+                {
+                    foreach(var groupMember in userState.GroupMembers)
+                    {
+                        await groupMember.Lock.WaitAsync();
+                        try
+                        {
+                            groupMember.GroupMembers.Remove(userState);
+                        }
+                        finally
+                        {
+                            groupMember.Lock.Release();
+                        }
+                    }
+
+                    userState.GroupMembers.Clear();
+                }
+
+                // Find group members of current user
                 if(groupId != null)
-                    userState.GroupMembers.AddRange(_userStates.Where(u => u.Value.GroupId == groupId).Select(u => u.Value));
+                    userState.GroupMembers.AddRange(_userStates.Where(u => u.Value.GroupId == groupId && u.Key != userId).Select(u => u.Value));
+
+                // Update lists of group members
+                foreach(var groupMember in userState.GroupMembers)
+                {
+                    await groupMember.Lock.WaitAsync();
+                    try
+                    {
+                        groupMember.GroupMembers.Add(userState);
+                    }
+                    finally
+                    {
+                        groupMember.Lock.Release();
+                    }
+                }
 
                 // Save new user state
                 WriteUserStateFile(userId);
@@ -285,7 +314,6 @@ namespace Ctf4e.LabServer.Services
             finally
             {
                 _loginLock.Release();
-                configReadLock.Dispose();
             }
         }
 
@@ -299,46 +327,40 @@ namespace Ctf4e.LabServer.Services
         public async Task<bool> CheckInputAsync(int exerciseId, int userId, object input)
         {
             // Ensure synchronized access
-            var configReadLock = await _configLock.WriterLockAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync();
+
+            // Check input values
+            if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
+                throw new ArgumentException();
+
+            // Get state object
+            var userState = _userStates[userId];
+            await userState.Lock.WaitAsync();
             try
             {
-                // Check input values
-                if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
-                    throw new ArgumentException();
+                // Get exercise data
+                var exercise = _exercises[exerciseId];
+                var exerciseState = userState.Exercises[exerciseId];
 
-                // Get state object
-                var userState = _userStates[userId];
-                await userState.Lock.WaitAsync();
-                try
+                // Update user
+                bool correct = exerciseState switch
                 {
-                    // Get exercise data
-                    var exercise = _exercises[exerciseId];
-                    var exerciseState = userState.Exercises[exerciseId];
+                    UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.ValidateInput(exercise, input),
+                    UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.ValidateInput(exercise, input),
+                    _ => false
+                };
 
-                    // Update user
-                    bool correct = exerciseState switch
-                    {
-                        UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.ValidateInput(exercise, input),
-                        UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.ValidateInput(exercise, input),
-                        _ => false
-                    };
-
-                    if(!exerciseState.Solved && correct)
-                    {
-                        exerciseState.Solved = true;
-                        WriteUserStateFile(userId);
-                    }
-
-                    return correct;
-                }
-                finally
+                if(!exerciseState.Solved && correct)
                 {
-                    userState.Lock.Release();
+                    exerciseState.Solved = true;
+                    WriteUserStateFile(userId);
                 }
+
+                return correct;
             }
             finally
             {
-                configReadLock.Dispose();
+                userState.Lock.Release();
             }
         }
 
@@ -351,36 +373,31 @@ namespace Ctf4e.LabServer.Services
         public async Task MarkExerciseSolvedAsync(int exerciseId, int userId)
         {
             // Ensure synchronized access
-            var configReadLock = await _configLock.WriterLockAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync();
+
+
+            // Check input values
+            if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
+                throw new ArgumentException();
+
+            // Get state object
+            var userState = _userStates[userId];
+            await userState.Lock.WaitAsync();
             try
             {
-                // Check input values
-                if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
-                    throw new ArgumentException();
+                // Get exercise data
+                var userExercise = userState.Exercises[exerciseId];
 
-                // Get state object
-                var userState = _userStates[userId];
-                await userState.Lock.WaitAsync();
-                try
+                // Update user
+                if(!userExercise.Solved)
                 {
-                    // Get exercise data
-                    var userExercise = userState.Exercises[exerciseId];
-
-                    // Update user
-                    if(!userExercise.Solved)
-                    {
-                        userExercise.Solved = true;
-                        WriteUserStateFile(userId);
-                    }
-                }
-                finally
-                {
-                    userState.Lock.Release();
+                    userExercise.Solved = true;
+                    WriteUserStateFile(userId);
                 }
             }
             finally
             {
-                configReadLock.Dispose();
+                userState.Lock.Release();
             }
         }
 
@@ -393,36 +410,30 @@ namespace Ctf4e.LabServer.Services
         public async Task ResetExerciseStatusAsync(int exerciseId, int userId)
         {
             // Ensure synchronized access
-            var configReadLock = await _configLock.WriterLockAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync();
+
+            // Check input values
+            if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
+                throw new ArgumentException();
+
+            // Get state object
+            var userState = _userStates[userId];
+            await userState.Lock.WaitAsync();
             try
             {
-                // Check input values
-                if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
-                    throw new ArgumentException();
+                // Get exercise data
+                var userExercise = userState.Exercises[exerciseId];
 
-                // Get state object
-                var userState = _userStates[userId];
-                await userState.Lock.WaitAsync();
-                try
+                // Update user
+                if(userExercise.Solved)
                 {
-                    // Get exercise data
-                    var userExercise = userState.Exercises[exerciseId];
-
-                    // Update user
-                    if(userExercise.Solved)
-                    {
-                        userExercise.Solved = false;
-                        WriteUserStateFile(userId);
-                    }
-                }
-                finally
-                {
-                    userState.Lock.Release();
+                    userExercise.Solved = false;
+                    WriteUserStateFile(userId);
                 }
             }
             finally
             {
-                configReadLock.Dispose();
+                userState.Lock.Release();
             }
         }
 
@@ -434,52 +445,46 @@ namespace Ctf4e.LabServer.Services
         public async Task<UserScoreboard> GetUserScoreboardAsync(int userId)
         {
             // Ensure synchronized access
-            var configReadLock = await _configLock.WriterLockAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync();
+
+            // Check input values
+            if(!_userStates.ContainsKey(userId))
+                throw new ArgumentException();
+
+            // Get state object
+            var userState = _userStates[userId];
+            await userState.Lock.WaitAsync();
             try
             {
-                // Check input values
-                if(!_userStates.ContainsKey(userId))
-                    throw new ArgumentException();
-
-                // Get state object
-                var userState = _userStates[userId];
-                await userState.Lock.WaitAsync();
-                try
+                // Output object
+                var scoreboard = new UserScoreboard
                 {
-                    // Output object
-                    var scoreboard = new UserScoreboard
+                    Exercises = _exercises.Select(e =>
                     {
-                        Exercises = _exercises.Select(e =>
+                        var exerciseState = userState.Exercises[e.Key];
+                        string description = exerciseState switch
                         {
-                            var exerciseState = userState.Exercises[e.Key];
-                            string description = exerciseState switch
-                            {
-                                UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.FormatDescriptionString(e.Value),
-                                UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.FormatDescriptionString(e.Value),
-                                _ => null
-                            };
+                            UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.FormatDescriptionString(e.Value),
+                            UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.FormatDescriptionString(e.Value),
+                            _ => null
+                        };
 
-                            return new UserScoreboardExerciseEntry
-                            {
-                                Exercise = e.Value,
-                                Solved = exerciseState.Solved,
-                                SolvedByGroupMember = userState.GroupMembers.Any(g => g.Exercises[e.Key].Solved),
-                                Description = description
-                            };
-                        }).ToArray()
-                    };
+                        return new UserScoreboardExerciseEntry
+                        {
+                            Exercise = e.Value,
+                            Solved = exerciseState.Solved,
+                            SolvedByGroupMember = userState.GroupMembers.Any(g => g.Exercises[e.Key].Solved),
+                            Description = description
+                        };
+                    }).ToArray()
+                };
 
-                    // Done
-                    return scoreboard;
-                }
-                finally
-                {
-                    userState.Lock.Release();
-                }
+                // Done
+                return scoreboard;
             }
             finally
             {
-                configReadLock.Dispose();
+                userState.Lock.Release();
             }
         }
 

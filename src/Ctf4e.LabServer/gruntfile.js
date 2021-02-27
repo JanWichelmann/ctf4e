@@ -21,9 +21,10 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     {expand: true, flatten: true, src: ['node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'], dest: 'wwwroot/lib/bootstrap/js/'},
-                    {expand: true, flatten: true, src: ['node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css'], dest: 'wwwroot/lib/open-iconic/css/'},
-                    {expand: true, flatten: true, src: ['node_modules/open-iconic/font/fonts/*'], dest: 'wwwroot/lib/open-iconic/fonts/'},
-                    {expand: true, flatten: true, src: ['node_modules/jquery/dist/jquery.min.js'], dest: 'wwwroot/lib/jquery/js/'}
+                    {expand: true, flatten: true, src: ['node_modules/@popperjs/core/dist/umd/popper.min.js'], dest: 'wwwroot/lib/popper/js/'},
+                    {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/bootstrap-icons.css'], dest:'wwwroot/lib/bootstrap-icons/css'},
+                    {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff'], dest:'wwwroot/lib/bootstrap-icons/css/fonts'},
+                    {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2'], dest:'wwwroot/lib/bootstrap-icons/css/fonts'}
                 ]
             }
         }

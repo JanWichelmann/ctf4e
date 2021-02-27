@@ -124,7 +124,7 @@ namespace Ctf4e.LabServer.Controllers
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Konnte neue Konfiguration nicht anwenden:" + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage("Konnte neue Konfiguration nicht anwenden: " + ex.Message + "\nMöglicherweise ist das System jetzt in einem inkonsistenten Zustand. Es wird empfohlen, die aktuelle Konfiguration zu prüfen und einen Neustart durchzuführen.", StatusMessageTypes.Error);
             }
 
             return await RenderAsync();

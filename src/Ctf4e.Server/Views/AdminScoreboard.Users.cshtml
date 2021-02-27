@@ -7,29 +7,21 @@
 
 @foreach(var user in Model.UserEntries)
 {
-    <div class="card">
-    <div class="card-header" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
+    <div class="card mb-1">
+    <div class="card-header container" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
         <div class="row">
-            <div class="col-sm text-left">
-                @if(Model.PassAsGroup)
-                {
-                    <i class="bi bi-people text-dark" title="Bestehen als Gruppe"></i>
-                }
-                else
-                {
-                    <i class="bi bi-person text-dark" title="Bestehen als Einzelperson"></i>
-                }
+            <div class="col">
                 @if(user.HasPassed)
                 {
-                    <i class="bi bi-circle-check text-success" title="Bestanden"></i>
+                    <i class="bi bi-check-circle-fill text-success" title="Bestanden"></i>
                 }
                 else
                 {
-                    <i class="bi bi-circle-x text-danger" title="Nicht bestanden"></i>
+                    <i class="bi bi-x-circle-fill text-danger" title="Nicht bestanden"></i>
                 }
                 <span class="ml-2">@user.UserName</span>
             </div>
-            <div class="col-sm text-right">
+            <div class="col-auto ms-auto">
                 @if(user.Status == ScoreboardGroupStatus.BeforePreStart)
                 {
                     <span class="badge bg-info" title="Warten auf Vor-Beginn-Phase">Vor Praktikum-Vor-Beginn</span>
@@ -65,31 +57,30 @@
 
             @foreach(var exercise in user.Exercises)
             {
-                <div class="card">
-                    <div class="card-header" id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-exercise@(exercise.Exercise.Id)-card">
+                <div class="card mb-2">
+                    <div class="card-header container">
                         <div class="row">
-                            <div class="col-sm text-left">
+                            <div class="col">
                                 @exercise.Exercise.Name
                                 @if(exercise.Exercise.IsMandatory)
                                 {
                                     <span class="badge bg-info">Pflicht</span>
                                 }
                             </div>
-                            <div class="col-sm text-right">
+                            <div class="col-auto ms-auto">
                                 <span class="badge bg-light" title="Gültige Versuche (Versuche insgesamt)">@exercise.ValidTries (@exercise.Tries) Versuche</span>
                                 @if(exercise.Passed)
                                 {
                                     <span class="badge bg-primary">@exercise.Points Punkte</span>
-                                    <i class="bi bi-circle-check text-success" title="Gelöst"></i>
+                                    <i class="bi bi-check-circle-fill text-success" title="Gelöst"></i>
                                 }
                                 else
                                 {
-                                    <i class="bi bi-circle-x text-danger" title="Nicht gelöst"></i>
+                                    <i class="bi bi-x-circle-fill text-danger" title="Nicht gelöst"></i>
                                 }
                             </div>
                         </div>
                     </div>
-                    <div id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card" class="collapse">
                         <div class="card-body">
                             <table class="table table-sm">
                                 <thead>
@@ -154,7 +145,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
                 </div>
             }
 

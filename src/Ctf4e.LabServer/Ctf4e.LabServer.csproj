@@ -21,5 +21,16 @@
     <ProjectReference Include="..\Ctf4e.Api\Ctf4e.Api.csproj" />
     <ProjectReference Include="..\Ctf4e.Utilities\Ctf4e.Utilities.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\js\bootstrap.bundle.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\js\jquery.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\css\open-iconic-bootstrap.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.otf" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.woff" />
+  </ItemGroup>
 
 </Project>
