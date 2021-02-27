@@ -93,7 +93,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
                 return await ShowEditFlagFormAsync(null, flagData);
             }
         }
@@ -133,7 +133,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
                 return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
             }
         }
@@ -156,7 +156,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Fehler: " + ex, StatusMessageTypes.Error);
+                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
             return await RenderFlagListAsync(flag.LabId);

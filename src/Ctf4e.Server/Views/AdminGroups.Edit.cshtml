@@ -4,31 +4,31 @@
     var slots = (List<Slot>)ViewData["Slots"];
 }
 
-<h3 class="text-primary">
+<h3 class="header">
     Gruppe bearbeiten
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <form asp-controller="AdminGroups" asp-action="EditGroup" method="post">
-    <div class="form-group">
-        <label asp-for="DisplayName">Name</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="DisplayName">Name</label>
         <input asp-for="DisplayName" class="form-control" placeholder="Namen eingeben">
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="SlotId">Slot</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="SlotId">Slot</label>
         <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control">
             <option disabled selected>Slot auswählen</option>
         </select>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="form-check">
             <input asp-for="ShowInScoreboard" class="form-check-input">
             <label asp-for="ShowInScoreboard" class="form-check-label">In Scoreboard anzeigen</label>
         </div>
     </div>
-    <div class="form-group">
-        <label>Gruppenmitglieder</label>
+    <div class="mb-3">
+        <label class="form-label">Gruppenmitglieder</label>
         <table class="table table-sm table-bordered table-hover text-nowrap">
             <tbody>
             @foreach(var u in Model.Members)
@@ -37,7 +37,7 @@
                     <td>@u.DisplayName (#@u.Id)</td>
                     <td>
                         <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminUsers" asp-action="ShowEditUserForm" asp-route-id="@u.Id">
-                            <span class="oi oi-pencil"></span>
+                            <i class="bi bi-pencil"></i>
                             Bearbeiten
                         </a>
                     </td>

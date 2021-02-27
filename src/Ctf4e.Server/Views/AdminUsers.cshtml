@@ -5,11 +5,13 @@
     var viewType = (AdminUsersController.ViewType)ViewData["ViewType"];
 }
 
-@if(viewType == AdminUsersController.ViewType.List)
-{
-    <partial name="AdminUsers.List.cshtml" />
-}
-else if(viewType == AdminUsersController.ViewType.Edit)
-{
-    <partial name="AdminUsers.Edit.cshtml" />
-}
+<div class="container">
+    @if(viewType == AdminUsersController.ViewType.List)
+    {
+        <partial name="AdminUsers.List.cshtml" />
+    }
+    else if(viewType == AdminUsersController.ViewType.Edit)
+    {
+        <partial name="AdminUsers.Edit.cshtml" />
+    }
+</div>

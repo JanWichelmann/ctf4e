@@ -39,7 +39,7 @@ namespace Ctf4e.Server.Controllers
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
-                AddStatusMessage("Fehler: Sie sind nicht eingeloggt oder keiner Gruppe zugewiesen.", StatusMessageTypes.Error);
+                AddStatusMessage("Sie sind nicht eingeloggt oder keiner Gruppe zugewiesen.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -60,7 +60,7 @@ namespace Ctf4e.Server.Controllers
             var scoreboard = await _scoreboardService.GetGroupScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
             if(scoreboard == null)
             {
-                AddStatusMessage($"Fehler: Das Gruppen-Scoreboard für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage($"Das Gruppen-Scoreboard für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -76,26 +76,37 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpPost("flag")]
-        public async Task<IActionResult> SubmitFlagAsync(int labId, string flagCode)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitFlagAsync(int labId, string code)
         {
             // Retrieve group ID
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
-                return Unauthorized("Could not retrieve group ID");
+                AddStatusMessage("Beim Abfragen der Gruppen-ID ist ein Fehler aufgetreten.", StatusMessageTypes.Error);
+                return await RenderLabPageAsync(labId);
             }
 
             // Add prefix/suffix to flag code, if necessary
             string flagPrefix = await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted);
             string flagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted);
-            flagCode ??= "";
-            string fullFlagString = flagCode;
-            if(!flagCode.StartsWith(flagPrefix))
-                fullFlagString = flagPrefix + flagCode.Trim() + flagSuffix;
+            code ??= "";
+            string fullFlagString = code;
+            if(!code.StartsWith(flagPrefix))
+                fullFlagString = flagPrefix + code.Trim() + flagSuffix;
 
             // Try to submit flag
             bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, fullFlagString, HttpContext.RequestAborted);
-            return Ok(new { success });
+            if(success)
+            {
+                AddStatusMessage("Einlösen der Flag erfolgreich!", StatusMessageTypes.Success);
+            }
+            else
+            {
+                AddStatusMessage("Die Flag konnte nicht eingelöst werden.", StatusMessageTypes.Error);
+            }
+
+            return await RenderLabPageAsync(labId);
         }
 
         [HttpGet("labserver")]
@@ -105,7 +116,7 @@ namespace Ctf4e.Server.Controllers
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
             {
-                AddStatusMessage("Fehler: Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage("Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -113,7 +124,7 @@ namespace Ctf4e.Server.Controllers
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
-                AddStatusMessage("Fehler: Sie sind nicht eingeloggt oder keiner Gruppe zugewiesen.", StatusMessageTypes.Error);
+                AddStatusMessage("Sie sind nicht eingeloggt oder keiner Gruppe zugewiesen.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -122,7 +133,7 @@ namespace Ctf4e.Server.Controllers
             var labExecution = await _labExecutionService.GetLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
             if(labExecution == null || now < labExecution.PreStart)
             {
-                AddStatusMessage("Fehler: Dieses Praktikum ist nicht aktiv.", StatusMessageTypes.Error);
+                AddStatusMessage("Dieses Praktikum ist nicht aktiv.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 

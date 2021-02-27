@@ -4,31 +4,31 @@
     var lab = (Lab)ViewData["Lab"];
 }
 
-<h3 class="text-primary">
+<h3 class="header">
     Flag erstellen
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <form asp-controller="AdminFlags" asp-action="CreateFlag" method="post">
-    <div class="form-group">
-        <label asp-for="Code">Flag-Code</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Code">Flag-Code</label>
         <input asp-for="Code" class="form-control" placeholder="Flag-Code eingeben" value="CTF{1n5er7-f14g-c0de-here-@RandomStringGenerator.GetRandomString(6)}">
         <span asp-validation-for="Code" class="text-danger"></span>
         <small class="form-text text-muted">
             Flags müssen immer dem Format &quot;CTF{&lt;flag code&gt;}&quot; entsprechen, wenn die Gruppen diese selbst einlösen können sollen.
         </small>
     </div>
-    <div class="form-group">
-        <label asp-for="Description">Beschreibung</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Description">Beschreibung</label>
         <input asp-for="Description" class="form-control" placeholder="Namen eingeben">
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="BasePoints">Basispunktzahl</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="BasePoints">Basispunktzahl</label>
         <input asp-for="BasePoints" class="form-control">
         <span asp-validation-for="BasePoints" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsBounty" class="form-check-input">
             <label asp-for="IsBounty" class="form-check-label">Bug-Bounty?</label>

@@ -5,10 +5,10 @@
     var labs = (List<Lab>)ViewData["Labs"];
 }
 
-<h3 class="text-primary">
+<h3 class="header">
     Ausführungen verwalten
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <p>
     Praktikumsausführungen steuern, wann ein Praktikumstermin startet und endet. Hierfür gibt es folgende Regeln:
@@ -23,17 +23,17 @@
 </p>
 <p>
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForGroupForm">
-        <span class="oi oi-plus"></span>
+        <i class="bi bi-plus"></i>
         Praktikum für eine Gruppe starten
     </a>
 </p>
 <p>
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForSlotForm">
-        <span class="oi oi-plus"></span>
+        <i class="bi bi-plus"></i>
         Praktikum für alle Gruppen eines Termins starten / anpassen
     </a>
-    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab-execution-slot">
-        <span class="oi oi-trash"></span>
+    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-slot">
+        <i class="bi bi-trash"></i>
         Praktikum für alle Gruppen eines Termins abbrechen
     </a>
 </p>
@@ -59,11 +59,11 @@
             <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowEditLabExecutionForm" asp-route-groupId="@l.GroupId" asp-route-labId="@l.LabId">
-                    <span class="oi oi-pencil"></span>
+                    <i class="bi bi-pencil"></i>
                     Bearbeiten
                 </a>
-                <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-lab-execution-group" data-group-id="@l.GroupId" data-lab-id="@l.LabId" data-group-name="@l.Group.DisplayName" data-lab-name="@l.Lab.Name">
-                    <span class="oi oi-trash"></span>
+                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-group" data-groupid="@l.GroupId" data-labid="@l.LabId" data-groupname="@l.Group.DisplayName" data-labname="@l.Lab.Name">
+                    <i class="bi bi-trash"></i>
                     Löschen
                 </a>
             </td>
@@ -77,9 +77,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Ausführung für Gruppe löschen</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -95,7 +93,7 @@
                     <input type="hidden" data-replace="lab-id" name="labId" value="">
                     
                     <button type="submit" class="btn btn-outline-danger">Ausführung löschen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
         </div>
@@ -107,22 +105,20 @@
             <form asp-controller="AdminLabExecutions" asp-action="DeleteLabExecutionForSlot" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Alle Ausführungen für Terminslot löschen</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>
                         Hinweis: Die betroffenen Gruppen können dann keine Aufgaben mehr bearbeiten, und der &quot;Bestanden&quot;-Status wird zurückgesetzt.
                     </p>
-                    <div class="form-group">
-                        <label>Praktikum</label>
+                    <div class="mb-3">
+                        <label class="form-label">Praktikum</label>
                         <select name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-control">
                             <option value="" disabled selected>Praktikum auswählen</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Terminslot</label>
+                    <div class="mb-3">
+                        <label class="form-label">Terminslot</label>
                         <select name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control">
                             <option value="" disabled selected>Slot auswählen</option>
                         </select>
@@ -130,21 +126,18 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-outline-danger">Ausführungen löschen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 <script>
-        $('#modal-delete-lab-execution-group').on('show.bs.modal', function (e) {
-            var groupId = $(e.relatedTarget).data('group-id');
-            var labId = $(e.relatedTarget).data('lab-id');
-            var groupName = $(e.relatedTarget).data('group-name');
-            var labName = $(e.relatedTarget).data('lab-name');
-            $(e.currentTarget).find('span[data-replace="group-name"]').text(groupName);
-            $(e.currentTarget).find('input[data-replace="group-id"]').val(groupId);
-            $(e.currentTarget).find('span[data-replace="lab-name"]').text(labName);
-            $(e.currentTarget).find('input[data-replace="lab-id"]').val(labId);
-        });
-    </script>
+document.getElementById("modal-delete-lab-execution-group").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="group-id"]').value = e.relatedTarget.dataset.groupid;
+    e.target.querySelector('span[data-replace="group-name"]').innerText = e.relatedTarget.dataset.groupname;
+    e.target.querySelector('input[data-replace="lab-id"]').value = e.relatedTarget.dataset.labid;
+    e.target.querySelector('span[data-replace="lab-name"]').innerText = e.relatedTarget.dataset.labname;
+});
+</script>

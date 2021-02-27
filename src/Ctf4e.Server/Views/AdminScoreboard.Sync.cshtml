@@ -1,26 +1,24 @@
 <h3 class="text-primary mt-5">
     Synchronisation mit externen Systemen
 </h3>
-<hr class="bg-primary mb-2" style="height: 2px">
+<hr class="header-secondary">
 
 <a class="btn btn-primary mb-2" asp-controller="AdminScoreboard" asp-action="DownloadAsCsv">
-    <span class="oi oi-data-transfer-download"></span>
+    <i class="bi bi-data-transfer-download"></i>
     Ergebnisse als CSV herunterladen
 </a>
 
-<a class="btn btn-warning mb-2" href="#" onclick="sync_moodle()">
-    <span class="oi oi-transfer"></span>
+<button class="btn btn-warning mb-2" href="#" data-bs-toggle="modal" data-bs-target="#modal-sync-moodle">
+    <i class="bi bi-transfer"></i>
     Ergebnisse in Moodlekurs hochladen
-</a>
+</button>
 
 <div class="modal fade" id="modal-sync-moodle" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Ergebnisse in Moodlekurs hochladen</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -33,15 +31,9 @@
             <div class="modal-footer">
                 <form method="post" asp-controller="AdminScoreboard" asp-action="UploadToMoodle">
                     <button type="submit" class="btn btn-outline-warning">Ergebnisse hochladen</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-        function sync_moodle() {
-            $("#modal-sync-moodle").modal();
-        }
-    </script>

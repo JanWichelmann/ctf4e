@@ -15,120 +15,85 @@
     var currentUser = (User)ViewData["CurrentUser"];
 }
 
-@if(viewType == ScoreboardController.ViewType.Blank)
-{
-    <!-- Status messages only -->
-}
-else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
-{
-    <h3 class="text-primary">
-        @if(scoreboard.AllLabs)
-        {
-            @: Scoreboard: Gesamtwertung über alle Praktika
-        }
-        else
-        {
-            @: Praktikums-Scoreboard: @scoreboard.CurrentLabName
-        }
-    </h3>
-    <hr class="bg-primary" style="height: 2px">
-
-    <table class="table table-sm" id="flags-table">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Punkte</th>
-            <th scope="col">Flags</th>
-            <th scope="col">Gruppe</th>
-        </tr>
-        </thead>
-        <tbody>
-        @{
-            int lastRank = 0;
-            int entryCount = 0;
-            bool currentGroupShown = false;
-        }
-        @foreach(var entry in scoreboard.Entries)
-        {
-            if(entryCount >= scoreboard.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
+<div class="container">
+    @if(viewType == ScoreboardController.ViewType.Blank)
+    {
+        <!-- Status messages only -->
+    }
+    else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
+    {
+        <h3 class="header">
+            @if(scoreboard.AllLabs)
             {
-                break;
+                @: Scoreboard: Gesamtwertung über alle Praktika
             }
-            bool isCurrentGroup = entry.GroupId == currentUser.GroupId;
-            currentGroupShown |= isCurrentGroup;
-            <tr class="@(isCurrentGroup ? "table-active" : "")">
-                <th scope="row">
-                    @if(entry.Rank != lastRank)
-                    {
-                        @entry.Rank
-                        @if(entry.Rank == 1)
-                        {
-                            <span class="oi oi-badge" style="color: rgb(255, 204, 1);"></span>
-                        }
-                        else if(entry.Rank == 2)
-                        {
-                            <span class="oi oi-badge" style="color: rgb(180, 184, 188);"></span>
-                        }
-                        else if(entry.Rank == 3)
-                        {
-                            <span class="oi oi-badge" style="color: rgb(209, 166, 132);"></span>
-                        }
-                    }
-                </th>
-                <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
-                    @entry.TotalPoints
-                    @if(isCurrentGroup || currentUser.IsAdmin || currentUser.IsTutor)
-                    {
-                        <span class="text-muted">
-                            @if(entry.BugBountyPoints == 0)
-                            {
-                                @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
-                            }
-                            else
-                            {
-                                @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
-                            }
-                        </span>
-                    }
-                    @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
-                    {
-                        <span class="oi oi-bug text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></span>
-                    }
-                </td>
-                <td>
-                    @entry.FlagCount
-                </td>
-                <td>
-                    @entry.GroupName
-                </td>
-            </tr>
-            ++entryCount;
-            lastRank = entry.Rank;
-        }
-        @if(!currentGroupShown && currentUser.GroupId != null)
-        {
-            var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
-            if(entry != null)
+            else
             {
-                <tr class="table-active">
+                @: Praktikums-Scoreboard: @scoreboard.CurrentLabName
+            }
+        </h3>
+        <hr class="header">
+
+        <table class="table table-sm" id="flags-table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Punkte</th>
+                <th scope="col">Flags</th>
+                <th scope="col">Gruppe</th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                int lastRank = 0;
+                int entryCount = 0;
+                bool currentGroupShown = false;
+            }
+            @foreach(var entry in scoreboard.Entries)
+            {
+                if(entryCount >= scoreboard.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
+                {
+                    break;
+                }
+                bool isCurrentGroup = entry.GroupId == currentUser.GroupId;
+                currentGroupShown |= isCurrentGroup;
+                <tr class="@(isCurrentGroup ? "table-active" : "")">
                     <th scope="row">
-                        @entry.Rank
+                        @if(entry.Rank != lastRank)
+                        {
+                            @entry.Rank
+                            @if(entry.Rank == 1)
+                            {
+                                <i class="bi bi-badge" style="color: rgb(255, 204, 1);"></i>
+                            }
+                            else if(entry.Rank == 2)
+                            {
+                                <i class="bi bi-badge" style="color: rgb(180, 184, 188);"></i>
+                            }
+                            else if(entry.Rank == 3)
+                            {
+                                <i class="bi bi-badge" style="color: rgb(209, 166, 132);"></i>
+                            }
+                        }
                     </th>
                     <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
                         @entry.TotalPoints
-                        <span class="text-muted">
-                            @if(entry.BugBountyPoints == 0)
-                            {
-                                @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
-                            }
-                            else
-                            {
-                                @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
-                            }
-                        </span>
+                        @if(isCurrentGroup || currentUser.IsAdmin || currentUser.IsTutor)
+                        {
+                            <span class="text-muted">
+                                @if(entry.BugBountyPoints == 0)
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
+                                }
+                                else
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
+                                }
+                            </span>
+                        }
                         @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                         {
-                            <span class="oi oi-bug text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></span>
+                            <i class="bi bi-bug-fill text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></i>
                         }
                     </td>
                     <td>
@@ -138,55 +103,92 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                         @entry.GroupName
                     </td>
                 </tr>
+                ++entryCount;
+                lastRank = entry.Rank;
             }
+            @if(!currentGroupShown && currentUser.GroupId != null)
+            {
+                var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
+                if(entry != null)
+                {
+                    <tr class="table-active">
+                        <th scope="row">
+                            @entry.Rank
+                        </th>
+                        <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
+                            @entry.TotalPoints
+                            <span class="text-muted">
+                                @if(entry.BugBountyPoints == 0)
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
+                                }
+                                else
+                                {
+                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
+                                }
+                            </span>
+                            @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                            {
+                                <i class="bi bi-bug-fill text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></i>
+                            }
+                        </td>
+                        <td>
+                            @entry.FlagCount
+                        </td>
+                        <td>
+                            @entry.GroupName
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    }
+
+    <hr class="header-secondary">
+
+    <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
+        <div class="mb-3">
+            <label class="form-label" for="input-lab-id">Scoreboard auswählen</label>
+            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
+                <option value="" selected>Gesamtwertung über alle Praktika</option>
+            </select>
+        </div>
+        @if(currentUser.IsAdmin || currentUser.IsTutor)
+        {
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
+                    <label for="input-showAllEntries" class="form-check-label">
+                        Alle Einträge anzeigen
+                        <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="Nur für Tutoren und Administratoren"></i>
+                    </label>
+                </div>
+            </div>
         }
-        </tbody>
-    </table>
-}
-
-<hr class="bg-primary mb-2 mt-1" style="height: 2px;">
-
-<form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
-    <div class="form-group">
-        <label for="input-lab-id">Scoreboard auswählen</label>
-        <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
-            <option value="" selected>Gesamtwertung über alle Praktika</option>
-        </select>
-    </div>
-    @if(currentUser.IsAdmin || currentUser.IsTutor)
-    {
-        <div class="form-group">
-            <div class="form-check">
-                <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
-                <label for="input-showAllEntries" class="form-check-label">
-                    Alle Einträge anzeigen
-                    <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Nur für Tutoren und Administratoren"></span>
-                </label>
+        @if(currentUser.IsAdmin)
+        {
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
+                    <label for="input-resetCache" class="form-check-label">
+                        Cache umgehen und Scoreboard vollständig aus der Datenbank laden
+                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></i>
+                    </label>
+                </div>
             </div>
-        </div>
-    }
-    @if(currentUser.IsAdmin)
-    {
-        <div class="form-group">
-            <div class="form-check">
-                <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
-                <label for="input-resetCache" class="form-check-label">
-                    Cache umgehen und Scoreboard vollständig aus der Datenbank laden
-                    <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></span>
-                </label>
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label for="input-reload">
-                Automatisch neu laden nach (Sekunden)
-                <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></span>
-            </label>
-            <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
-        </div>
-    }
-    <button type="submit" class="btn btn-primary">
-        <span class="oi oi-reload"></span>
-        Gewähltes Scoreboard anzeigen
-    </button>
-</form>
+            <div class="mb-3">
+                <label class="form-label" for="input-reload">
+                    Automatisch neu laden nach (Sekunden)
+                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></i>
+                </label>
+                <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
+            </div>
+        }
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-arrow-return-right"></i>
+            Gewähltes Scoreboard anzeigen
+        </button>
+    </form>
+</div>

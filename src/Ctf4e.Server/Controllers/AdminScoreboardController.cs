@@ -83,7 +83,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Fehler: " + ex, StatusMessageTypes.Error);
+                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -111,7 +111,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -131,7 +131,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Fehler: " + ex, StatusMessageTypes.Error);
+                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -157,7 +157,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -170,7 +170,7 @@ namespace Ctf4e.Server.Controllers
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
             {
-                AddStatusMessage("Fehler: Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage("Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -207,7 +207,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
             }
 
             return await RenderAsync(0, 0);
@@ -224,7 +224,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
             }
 
             return await RenderAsync(0, 0);

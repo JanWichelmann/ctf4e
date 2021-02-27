@@ -1,5 +1,4 @@
 ﻿@using System.Globalization
-@using Ctf4e.Server.Controllers
 @model Ctf4e.Server.ViewModels.AdminConfigurationData
 @{
     ViewData["Title"] = "Konfiguration";
@@ -7,153 +6,153 @@
     int groupCount = (int)ViewData["GroupCount"];
 }
 
-<h3 class="text-primary">
-    Konfiguration bearbeiten
-</h3>
-<hr class="bg-primary mb-2" style="height: 2px">
+<div class="container">
+    <h3 class="header">
+        Konfiguration bearbeiten
+    </h3>
+    <hr class="header-secondary">
 
-<p>Eingestellte Kultur: @CultureInfo.CurrentCulture.ToString()</p>
-<p>Eingestellte Zeitzone: @TimeZoneInfo.Local.ToString()</p>
-<p>Aktuelle Uhrzeit: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
-<p>Aktuelle Uhrzeit (UTC): @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+    <p>Eingestellte Kultur: @CultureInfo.CurrentCulture.ToString()</p>
+    <p>Eingestellte Zeitzone: @TimeZoneInfo.Local.ToString()</p>
+    <p>Aktuelle Uhrzeit: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+    <p>Aktuelle Uhrzeit (UTC): @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
 
-<hr class="bg-primary mb-2 mt-1" style="height: 2px;">
-<form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
-    <div class="form-group">
-        <label asp-for="PageTitle">Seitentitel</label>
-        <input asp-for="PageTitle" class="form-control">
-        <span asp-validation-for="PageTitle" class="text-danger"></span>
-        <small>
-            Dieser Titel wird im HTML-<span class="text-monospace">&lt;title&gt;</span>-Element eingesetzt.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="NavbarTitle">Titel in Menüleiste</label>
-        <input asp-for="NavbarTitle" class="form-control">
-        <span asp-validation-for="NavbarTitle" class="text-danger"></span>
-        <small>
-            Dieser Titel wird oben links in der Menüleiste angezeigt.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="FlagPrefix">Flag-Format</label>
-        <div class="input-group">
-            <input type="text" class="form-control text-monospace text-right" asp-for="FlagPrefix">
-            <div class="input-group-text text-monospace">1n5er7-f14g-c0de-here-37a12d</div>
-            <input type="text" class="form-control text-monospace" asp-for="FlagSuffix">
-        </div>
-        <span asp-validation-for="FlagPrefix" class="text-danger"></span>
-        <span asp-validation-for="FlagSuffix" class="text-danger"></span>
-        <small>
-            Das angegebene Präfix und Suffix wird bei jeder Flag vorausgesetzt.
-            Flags, die sich nicht an dieses Format halten, können nicht eingelöst werden.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="FlagMinimumPointsDivisor">Teiler für Flag-Minimalpunktzahl</label>
-        <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
-        <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
-        <small>
-            Die Flag-Basispunktzahl dividiert durch diese Zahl ergibt die Minimalpunktzahl, die für jede Flag garantiert gewährt wird.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="FlagHalfPointsSubmissionCount">Anzahl der Flageinreichungen bis Mittelwert der Punkte</label>
-        <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
-        <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
-        <small>
-            Diese Zahl legt fest, bei wie vielen Flageinreichungen noch der Mittelwert zwischen Basispunktzahl und Minimalpunktzahl (<code>(basis+min)/2</code>) gewährt wird.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="ScoreboardEntryCount">Anzahl der angezeigten Einträge im offenen Scoreboard</label>
-        <input asp-for="ScoreboardEntryCount" class="form-control">
-        <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
-        <small>
-            Diese Zahl legt fest, wie viele Einträge im für alle Gruppen einsehbaren Scoreboard gezeigt werden.
-            Diese Zahl kann unter bestimmten Umständen überschritten werden, wenn mehrere Gruppen auf demselben Platz sind,
-            und diese sonst nicht alle gleichberechtigt angezeigt werden könnten.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="ScoreboardCachedSeconds">Scoreboard-Gültigkeitsdauer in Sekunden</label>
-        <input asp-for="ScoreboardCachedSeconds" class="form-control">
-        <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
-        <small>
-            Diese Zahl legt fest, wie viele Sekunden ein gecachtes Scoreboard gültig ist, bevor ein neues erzeugt wird.
-            Ziel dieser Einstellung ist, die Datenbank zu entlasten, da hierfür mehrere große Queries ausgeführt werden müssen.
-            Der Wert sollte anfangs möglichst niedrig angesetzt sein, und erst bei Bedarf erhöht werden.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="GroupSizeMin">Minimale Gruppengröße</label>
-        <input asp-for="GroupSizeMin" class="form-control">
-        <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
-        <small>
-            Diese Zahl legt fest, wie viele Mitglieder eine Gruppe mindestens haben muss.
-            So muss sich jeder Teilnehmer nach Registrierung zu einer entsprechend großen Gruppe finden.
-            Kleinere Gruppen können nur von Administratoren erstellt werden.
-        </small>
-    </div>
-    <div class="form-group">
-        <label asp-for="GroupSizeMax">Maximale Gruppengröße</label>
-        <input asp-for="GroupSizeMax" class="form-control">
-        <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
-        <small>
-            Diese Zahl legt fest, wie viele Mitglieder eine Gruppe maximal haben darf.
-            Größere Gruppen können nur von Administratoren erstellt werden.
-        </small>
-    </div>
-    <div class="form-group">
-        <div class="form-check">
-            <input asp-for="PassAsGroup" class="form-check-input">
-            <label asp-for="PassAsGroup" class="form-check-label">Als Gruppe bestehen</label>
-            <br>
+    <hr class="header-secondary">
+    <form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
+        <div class="mb-3">
+            <label class="form-label" asp-for="PageTitle">Seitentitel</label>
+            <input asp-for="PageTitle" class="form-control">
+            <span asp-validation-for="PageTitle" class="text-danger"></span>
             <small>
-                Wenn diese Einstellung aktiv ist, werden alle Einreichungen auf Gruppenebene gewertet.
-                Somit ist es unerheblich, welcher Teilnehmer eine Aufgabe eingereicht hat.
-                Diese Einstellung hat keinen Einfluss auf die Wertung im Scoreboard.
+                Dieser Titel wird im HTML-<span class="text-monospace">&lt;title&gt;</span>-Element eingesetzt.
             </small>
         </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="NavbarTitle">Titel in Menüleiste</label>
+            <input asp-for="NavbarTitle" class="form-control">
+            <span asp-validation-for="NavbarTitle" class="text-danger"></span>
+            <small>
+                Dieser Titel wird oben links in der Menüleiste angezeigt.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="FlagPrefix">Flag-Format</label>
+            <div class="input-group">
+                <input type="text" class="form-control font-monospace text-right" asp-for="FlagPrefix">
+                <div class="input-group-text font-monospace">1n5er7-f14g-c0de-here-37a12d</div>
+                <input type="text" class="form-control font-monospace" asp-for="FlagSuffix">
+            </div>
+            <span asp-validation-for="FlagPrefix" class="text-danger"></span>
+            <span asp-validation-for="FlagSuffix" class="text-danger"></span>
+            <small>
+                Das angegebene Präfix und Suffix wird bei jeder Flag vorausgesetzt.
+                Flags, die sich nicht an dieses Format halten, können nicht eingelöst werden.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="FlagMinimumPointsDivisor">Teiler für Flag-Minimalpunktzahl</label>
+            <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
+            <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
+            <small>
+                Die Flag-Basispunktzahl dividiert durch diese Zahl ergibt die Minimalpunktzahl, die für jede Flag garantiert gewährt wird.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="FlagHalfPointsSubmissionCount">Anzahl der Flageinreichungen bis Mittelwert der Punkte</label>
+            <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
+            <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
+            <small>
+                Diese Zahl legt fest, bei wie vielen Flageinreichungen noch der Mittelwert zwischen Basispunktzahl und Minimalpunktzahl (<code>(basis+min)/2</code>) gewährt wird.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="ScoreboardEntryCount">Anzahl der angezeigten Einträge im offenen Scoreboard</label>
+            <input asp-for="ScoreboardEntryCount" class="form-control">
+            <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
+            <small>
+                Diese Zahl legt fest, wie viele Einträge im für alle Gruppen einsehbaren Scoreboard gezeigt werden.
+                Diese Zahl kann unter bestimmten Umständen überschritten werden, wenn mehrere Gruppen auf demselben Platz sind,
+                und diese sonst nicht alle gleichberechtigt angezeigt werden könnten.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="ScoreboardCachedSeconds">Scoreboard-Gültigkeitsdauer in Sekunden</label>
+            <input asp-for="ScoreboardCachedSeconds" class="form-control">
+            <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
+            <small>
+                Diese Zahl legt fest, wie viele Sekunden ein gecachtes Scoreboard gültig ist, bevor ein neues erzeugt wird.
+                Ziel dieser Einstellung ist, die Datenbank zu entlasten, da hierfür mehrere große Queries ausgeführt werden müssen.
+                Der Wert sollte anfangs möglichst niedrig angesetzt sein, und erst bei Bedarf erhöht werden.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="GroupSizeMin">Minimale Gruppengröße</label>
+            <input asp-for="GroupSizeMin" class="form-control">
+            <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
+            <small>
+                Diese Zahl legt fest, wie viele Mitglieder eine Gruppe mindestens haben muss.
+                So muss sich jeder Teilnehmer nach Registrierung zu einer entsprechend großen Gruppe finden.
+                Kleinere Gruppen können nur von Administratoren erstellt werden.
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="GroupSizeMax">Maximale Gruppengröße</label>
+            <input asp-for="GroupSizeMax" class="form-control">
+            <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
+            <small>
+                Diese Zahl legt fest, wie viele Mitglieder eine Gruppe maximal haben darf.
+                Größere Gruppen können nur von Administratoren erstellt werden.
+            </small>
+        </div>
+        <div class="mb-3">
+            <div class="form-check">
+                <input asp-for="PassAsGroup" class="form-check-input">
+                <label asp-for="PassAsGroup" class="form-check-label">Als Gruppe bestehen</label>
+                <br>
+                <small>
+                    Wenn diese Einstellung aktiv ist, werden alle Einreichungen auf Gruppenebene gewertet.
+                    Somit ist es unerheblich, welcher Teilnehmer eine Aufgabe eingereicht hat.
+                    Diese Einstellung hat keinen Einfluss auf die Wertung im Scoreboard.
+                </small>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+    </form>
+
+    <h3 class="text-primary mt-5">
+        Visualisierung der Flagpunkte
+    </h3>
+    <hr class="header-secondary">
+
+    <p>
+        Dies zeigt die Entwicklung der Flagpunktzahl abhängig von der Anzahl der Flag-Funde.
+    </p>
+    <div class="mb-3">
+        <label class="form-label" for="input-flag-base-points">Flag-Basispunktzahl</label>
+        <input type="number" min="1" id="input-flag-base-points" class="form-control" value="100">
     </div>
+    <div class="mb-3">
+        <label class="form-label" for="input-group-count">Anzahl der Gruppen</label>
+        <input type="number" min="1" id="input-group-count" class="form-control" value="@(Math.Max(groupCount, 2))">
+    </div>
+    <canvas id="canvas-flag-points"></canvas>
 
-    @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
-</form>
-
-<h3 class="text-primary mt-5">
-    Visualisierung der Flagpunkte
-</h3>
-<hr class="bg-primary mb-2" style="height: 2px">
-
-<p>
-    Dies zeigt die Entwicklung der Flagpunktzahl abhängig von der Anzahl der Flag-Funde.
-</p>
-<div class="form-group">
-    <label for="input-flag-base-points">Flag-Basispunktzahl</label>
-    <input type="number" min="1" id="input-flag-base-points" class="form-control" value="100">
-</div>
-<div class="form-group">
-    <label for="input-group-count">Anzahl der Gruppen</label>
-    <input type="number" min="1" id="input-group-count" class="form-control" value="@(Math.Max(groupCount, 2))">
-</div>
-<canvas id="canvas-flag-points"></canvas>
-
-<script>
+    <script>
     let flagPointsChart;
     
-    let inputFlagBasePoints = $("#input-flag-base-points");
-    let inputGroupCount = $("#input-group-count");
-    let inputFlagMinimumPointsDivisor = $("#input-flag-minimum-points-divisor");
-    let inputFlagHalfPointsSubmissionCount = $("#input-flag-half-points-submission-count");
+    let inputFlagBasePoints = document.getElementById("input-flag-base-points");
+    let inputGroupCount = document.getElementById("input-group-count");
+    let inputFlagMinimumPointsDivisor = document.getElementById("input-flag-minimum-points-divisor");
+    let inputFlagHalfPointsSubmissionCount = document.getElementById("input-flag-half-points-submission-count");
 
     function updateChart()
     {
-        let flagBasePoints = Number(inputFlagBasePoints.val());
-        let groupCount = Number(inputGroupCount.val());
-        let minPointsDivisor = Number(inputFlagMinimumPointsDivisor.val());
+        let flagBasePoints = Number(inputFlagBasePoints.value);
+        let groupCount = Number(inputGroupCount.value);
+        let minPointsDivisor = Number(inputFlagMinimumPointsDivisor.value);
         let minPointsMultiplier = 1.0 / minPointsDivisor;
-        let halfPointsSubmissionCount = Number(inputFlagHalfPointsSubmissionCount.val());
+        let halfPointsSubmissionCount = Number(inputFlagHalfPointsSubmissionCount.value);
         
         // Update labels
         console.log('g', groupCount);
@@ -185,7 +184,7 @@
                     {
                         label: "Flag-Punkte",
                         data: new Array(2).fill(0), // dummy
-                        borderColor: "rgb(0, 97, 122)",
+                        borderColor: "#003e80",
                         fill: false,
                         lineTension: 0
                     }
@@ -198,17 +197,17 @@
             }
         };
         
-        let ctx = $("#canvas-flag-points")[0].getContext('2d');
+        let ctx = document.getElementById("canvas-flag-points").getContext('2d');
         flagPointsChart = new Chart(ctx, chartConfig);
         updateChart();
     }
 
-    inputFlagBasePoints.change(updateChart);
-    inputGroupCount.change(updateChart);
-    inputFlagMinimumPointsDivisor.change(updateChart);
-    inputFlagHalfPointsSubmissionCount.change(updateChart);
+    inputFlagBasePoints.addEventListener("change", updateChart);
+    inputGroupCount.addEventListener("change", updateChart);
+    inputFlagMinimumPointsDivisor.addEventListener("change", updateChart);
+    inputFlagHalfPointsSubmissionCount.addEventListener("change", updateChart);
 </script>
-
+</div>
 
 <!-- Necessary includes -->
 

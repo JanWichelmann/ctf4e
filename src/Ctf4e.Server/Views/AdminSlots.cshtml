@@ -5,15 +5,17 @@
     var viewType = (AdminSlotsController.ViewType)ViewData["ViewType"];
 }
 
-@if(viewType == AdminSlotsController.ViewType.List)
-{
-    <partial name="AdminSlots.List.cshtml" />
-}
-else if(viewType == AdminSlotsController.ViewType.Edit)
-{
-    <partial name="AdminSlots.Edit.cshtml" />
-}
-else if(viewType == AdminSlotsController.ViewType.Create)
-{
-    <partial name="AdminSlots.Create.cshtml" />
-}
+<div class="container">
+    @if(viewType == AdminSlotsController.ViewType.List)
+    {
+        <partial name="AdminSlots.List.cshtml" />
+    }
+    else if(viewType == AdminSlotsController.ViewType.Edit)
+    {
+        <partial name="AdminSlots.Edit.cshtml" />
+    }
+    else if(viewType == AdminSlotsController.ViewType.Create)
+    {
+        <partial name="AdminSlots.Create.cshtml" />
+    }
+</div>

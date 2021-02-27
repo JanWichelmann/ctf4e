@@ -36,163 +36,222 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+
     <title>@ViewData["Title"] - @ViewData["PageTitle"]</title>
+
     <link rel="icon" type="image/x-icon" href="~/favicon.ico">
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/css/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/ctf4e-server.min.css">
-    <link rel="stylesheet" href="~/lib/open-iconic/css/open-iconic-bootstrap.min.css">
-    <script src="~/lib/jquery/js/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src="~/lib/popper/js/popper.min.js"></script>
+
     @await RenderSectionAsync("ScriptsHead", required: false)
 </head>
-<body>
+<body class="d-flex flex-column">
 <header>
-    <nav class="navbar navbar-expand navbar-light bg-light">
-        <a class="navbar-brand" asp-controller="Scoreboard" asp-action="RenderScoreboard">
-            <!--<img alt="logo" class="img-fluid" src="/img/logo.png" style="max-height: 50px;">-->
-            @ViewData["NavbarTitle"]
-        </a>
-        <ul class="navbar-nav px-3 mr-auto">
-            @if(currentUser != null)
-            {
-                <li class="nav-item">
-                    <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "text-primary" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">Scoreboard</a>
-                </li>
-                @if(currentUser.Group != null)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link @(activeMenuItem == MenuItems.Group ? "text-primary" : "")" asp-controller="Group" asp-action="RenderLabPage">Gruppenstatus</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item">
-                        <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "text-primary" : "")" asp-controller="Authentication" asp-action="ShowGroupForm">Gruppe gründen</a>
-                    </li>
-                }
-            }
-        </ul>
-
-        @if(currentUser != null && (currentUser.IsAdmin || currentUser.IsTutor))
-        {
-            bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration
-                                   || activeMenuItem == MenuItems.AdminExercises
-                                   || activeMenuItem == MenuItems.AdminFlags
-                                   || activeMenuItem == MenuItems.AdminGroups
-                                   || activeMenuItem == MenuItems.AdminLabExecutions
-                                   || activeMenuItem == MenuItems.AdminLabs
-                                   || activeMenuItem == MenuItems.AdminScoreboard
-                                   || activeMenuItem == MenuItems.AdminSlots
-                                   || activeMenuItem == MenuItems.AdminUsers;
-            <ul class="navbar-nav px-3 ml-auto">
-                <li class="nav-item dropdown @(visitsAdminPage ? "active" : "")">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                        <span>Admin</span>
-                    </a>
-                    @if(currentUser.IsAdmin)
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <button class="navbar-toggler mt-3 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Navigation umschalten">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar-content">
+                <a class="navbar-brand" asp-controller="Scoreboard" asp-action="RenderScoreboard">
+                    @ViewData["NavbarTitle"]
+                </a>
+                <ul class="navbar-nav me-auto">
+                    @if(currentUser != null)
                     {
-                        <div class="dropdown-menu mt-0">
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" asp-controller="AdminUsers" asp-action="RenderUserList">Benutzer</a>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" asp-controller="AdminGroups" asp-action="RenderGroupList">Gruppen</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">Praktika</a>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" asp-controller="AdminSlots" asp-action="RenderSlotList">Terminslots</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">Aktive Praktika</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="Render">Konfiguration</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Admin-Scoreboard</a>
-                        </div>
-                    }
-                    else if(currentUser.IsTutor)
-                    {
-                        <div class="dropdown-menu mt-0">
-                            <a class="nav-link @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Admin-Scoreboard</a>
-                        </div>
-                    }
-                </li>
-            </ul>
-        }
-
-        @if(currentUser != null)
-        {
-            <span class="mr-2">
-                Angemeldet als
-                <strong>
-                    @currentUser.DisplayName
-                </strong>
-                @if(currentUser.IsAdmin)
-                {
-                    <span class="oi oi-star" style="color: rgb(255, 204, 1);" title="Administratorrechte"></span>
-                }
-                else if(currentUser.IsTutor)
-                {
-                    <span class="oi oi-star" style="color: rgb(209, 166, 132);" title="Tutorrechte"></span>
-                }
-            </span>
-            <a class="btn btn-sm btn-outline-primary mr-1" asp-controller="Authentication" asp-action="Logout">
-                <span class="oi oi-account-logout"></span>
-                Abmelden
-            </a>
-        }
-    </nav>
-</header>
-<div class="container pb-2 pt-4">
-    <main>
-        @foreach(var statusMessage in statusMessages)
-        {
-            <div class="row mt-2">
-                <div class="col-sm">
-                    <div class="alert @StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
-                        @switch(statusMessage.Type)
+                        <li class="nav-item">
+                            <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "active" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">
+                                Scoreboard
+                            </a>
+                        </li>
+                        @if(currentUser.Group != null)
                         {
-                            case StatusMessageTypes.Info:
-                                <span class="oi oi-info mr-3"></span>
-                                break;
-                            case StatusMessageTypes.Success:
-                                <span class="oi oi-check mr-3"></span>
-                                break;
-                            case StatusMessageTypes.Warning:
-                                <span class="oi oi-warning mr-3"></span>
-                                break;
-                            case StatusMessageTypes.Error:
-                                <span class="oi oi-x mr-3"></span>
-                                break;
+                            <li class="nav-item">
+                                <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Group" asp-action="RenderLabPage">
+                                    Gruppenstatus
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "active" : "")" asp-controller="Authentication" asp-action="ShowGroupForm">
+                                    Gruppe gründen
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+
+                @if(currentUser != null)
+                {
+                    bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration
+                                           || activeMenuItem == MenuItems.AdminExercises
+                                           || activeMenuItem == MenuItems.AdminFlags
+                                           || activeMenuItem == MenuItems.AdminGroups
+                                           || activeMenuItem == MenuItems.AdminLabExecutions
+                                           || activeMenuItem == MenuItems.AdminLabs
+                                           || activeMenuItem == MenuItems.AdminScoreboard
+                                           || activeMenuItem == MenuItems.AdminSlots
+                                           || activeMenuItem == MenuItems.AdminUsers;
+
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Admin -->
+                        @if(currentUser.IsAdmin || currentUser.IsTutor)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown">
+                                    Admin
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end mt-0">
+                                    @if(currentUser.IsAdmin || currentUser.IsTutor)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">
+                                                Admin-Scoreboard
+                                            </a>
+                                        </li>
+                                    }
+                                    @if(currentUser.IsAdmin)
+                                    {
+                                        <li>
+                                            <hr class="dropdown-divider" />
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" asp-controller="AdminUsers" asp-action="RenderUserList">
+                                                Benutzer
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" asp-controller="AdminGroups" asp-action="RenderGroupList">
+                                                Gruppen
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider" />
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">
+                                                Praktika
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" asp-controller="AdminSlots" asp-action="RenderSlotList">
+                                                Terminslots
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider" />
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">
+                                                Aktive Praktika
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider" />
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="Render">
+                                                Konfiguration
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
                         }
 
-                        @statusMessage.Message
-                        <button type="button" class="close" data-dismiss="alert">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
-        @RenderBody()
-    </main>
-</div>
-
-<footer class="border-top footer text-muted">
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                Powered by <a href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
-            </div>
-            <div class="col text-right">
-                @if(devMode && currentUser != null && currentUser.IsAdmin)
-                {
-                    <a href="~/dev/profiler/results-index" target="_blank">Profiler</a>
-                    @:&middot;
+                        <!-- Profile -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <strong>
+                                    @currentUser.DisplayName
+                                </strong>
+                            </a>
+                            
+                            <ul class="dropdown-menu dropdown-menu-end mt-0">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
+                                        <i class="bi bi-door-closed"></i>
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 }
-                <span>
-                    Build #<a href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
-                </span>
+            </div>
+        </div>
+    </nav>
+</header>
+@if(statusMessages.Any())
+{
+    <div class="container generic-max-width bg-white">
+        <div class="row">
+            <div class="col px-4">
+                @foreach(var statusMessage in statusMessages)
+                {
+                    <div class="row mt-3">
+                        <div class="col-sm">
+                            <div class="alert @StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
+                                <span class="me-2">
+                                    @switch(statusMessage.Type)
+                                    {
+                                        case StatusMessageTypes.Info:
+                                            <i class="bi bi-info-circle"></i>
+                                            break;
+                                        case StatusMessageTypes.Success:
+                                            <i class="bi bi-check-circle"></i>
+                                            break;
+                                        case StatusMessageTypes.Warning:
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            break;
+                                        case StatusMessageTypes.Error:
+                                            <i class="bi bi-x-circle"></i>
+                                            break;
+                                    }
+                                </span>
+
+                                @statusMessage.Message
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+<main role="main" class="pb-4 flex-grow-1">
+    @RenderBody()
+</main>
+
+<footer class="border-top footer d-print-none flex-shrink-0">
+    <div class="container">
+        <div class="row mt-2 pb-2">
+            <div class="col">
+                Powered by <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
+            </div>
+            <div class="col d-flex align-items-center justify-content-end">
+                <div>
+                    @if(devMode && currentUser != null && currentUser.IsAdmin)
+                    {
+                        <a class="link-footer" href="~/dev/profiler/results-index" target="_blank">Profiler</a>
+                        <span class="font-weight-bold">&middot;</span>
+                    }
+                    <span>
+                        Build #<a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 </footer>
+<script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 @await RenderSectionAsync("ScriptsBody", required: false)
 </body>
 </html>

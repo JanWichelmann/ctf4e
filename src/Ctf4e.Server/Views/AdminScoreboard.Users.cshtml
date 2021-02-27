@@ -8,83 +8,83 @@
 @foreach(var user in Model.UserEntries)
 {
     <div class="card">
-    <div class="card-header" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-card">
+    <div class="card-header" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
         <div class="row">
             <div class="col-sm text-left">
                 @if(Model.PassAsGroup)
                 {
-                    <span class="oi oi-people text-dark" title="Bestehen als Gruppe"></span>
+                    <i class="bi bi-people text-dark" title="Bestehen als Gruppe"></i>
                 }
                 else
                 {
-                    <span class="oi oi-person text-dark" title="Bestehen als Einzelperson"></span>
+                    <i class="bi bi-person text-dark" title="Bestehen als Einzelperson"></i>
                 }
                 @if(user.HasPassed)
                 {
-                    <span class="oi oi-circle-check text-success" title="Bestanden"></span>
+                    <i class="bi bi-circle-check text-success" title="Bestanden"></i>
                 }
                 else
                 {
-                    <span class="oi oi-circle-x text-danger" title="Nicht bestanden"></span>
+                    <i class="bi bi-circle-x text-danger" title="Nicht bestanden"></i>
                 }
                 <span class="ml-2">@user.UserName</span>
             </div>
             <div class="col-sm text-right">
                 @if(user.Status == ScoreboardGroupStatus.BeforePreStart)
                 {
-                    <span class="badge badge-info" title="Warten auf Vor-Beginn-Phase">Vor Praktikum-Vor-Beginn</span>
+                    <span class="badge bg-info" title="Warten auf Vor-Beginn-Phase">Vor Praktikum-Vor-Beginn</span>
                 }
                 else if(user.Status == ScoreboardGroupStatus.PreStart)
                 {
-                    <span class="badge badge-warning" title="Vor-Beginn-Phase aktiv">Vor-Beginn-Phase</span>
+                    <span class="badge bg-warning" title="Vor-Beginn-Phase aktiv">Vor-Beginn-Phase</span>
                 }
                 else if(user.Status == ScoreboardGroupStatus.Start)
                 {
-                    <span class="badge badge-warning" title="Praktikum aktiv">Praktikum aktiv</span>
+                    <span class="badge bg-warning" title="Praktikum aktiv">Praktikum aktiv</span>
                 }
                 else if(user.Status == ScoreboardGroupStatus.End)
                 {
-                    <span class="badge badge-success" title="Praktikum beendet">Praktikum beendet</span>
+                    <span class="badge bg-success" title="Praktikum beendet">Praktikum beendet</span>
                 }
                 else if(user.Status == ScoreboardGroupStatus.Undefined)
                 {
-                    <span class="badge badge-danger" title="Keine Praktikumsausführung konfiguriert">Nicht konfiguriert</span>
+                    <span class="badge bg-danger" title="Keine Praktikumsausführung konfiguriert">Nicht konfiguriert</span>
                 }
-                <span class="badge badge-primary" title="Pflichtaufgaben">@user.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
-                <span class="badge badge-secondary" title="Freiwillige Aufgaben">@user.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
-                <span class="badge badge-info" title="Gefundene Flags">@user.FoundFlagsCount / @Model.FlagCount</span>
+                <span class="badge bg-primary" title="Pflichtaufgaben">@user.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
+                <span class="badge bg-secondary" title="Freiwillige Aufgaben">@user.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
+                <span class="badge bg-info" title="Gefundene Flags">@user.FoundFlagsCount / @Model.FlagCount</span>
             </div>
         </div>
     </div>
     <div id="user@(user.UserId)-card" class="collapse">
         <div class="card-body">
             <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">
-                <span class="oi oi-external-link"></span>
+                <i class="bi bi-external-link"></i>
                 Zum Praktikumsserver (Admin-Modus)
             </a>
 
             @foreach(var exercise in user.Exercises)
             {
                 <div class="card">
-                    <div class="card-header" id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#user@(user.UserId)-exercise@(exercise.Exercise.Id)-card">
+                    <div class="card-header" id="user@(user.UserId)-exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-exercise@(exercise.Exercise.Id)-card">
                         <div class="row">
                             <div class="col-sm text-left">
                                 @exercise.Exercise.Name
                                 @if(exercise.Exercise.IsMandatory)
                                 {
-                                    <span class="badge badge-info">Pflicht</span>
+                                    <span class="badge bg-info">Pflicht</span>
                                 }
                             </div>
                             <div class="col-sm text-right">
-                                <span class="badge badge-light" title="Gültige Versuche (Versuche insgesamt)">@exercise.ValidTries (@exercise.Tries) Versuche</span>
+                                <span class="badge bg-light" title="Gültige Versuche (Versuche insgesamt)">@exercise.ValidTries (@exercise.Tries) Versuche</span>
                                 @if(exercise.Passed)
                                 {
-                                    <span class="badge badge-primary">@exercise.Points Punkte</span>
-                                    <span class="oi oi-circle-check text-success" title="Gelöst"></span>
+                                    <span class="badge bg-primary">@exercise.Points Punkte</span>
+                                    <i class="bi bi-circle-check text-success" title="Gelöst"></i>
                                 }
                                 else
                                 {
-                                    <span class="oi oi-circle-x text-danger" title="Nicht gelöst"></span>
+                                    <i class="bi bi-circle-x text-danger" title="Nicht gelöst"></i>
                                 }
                             </div>
                         </div>
@@ -105,8 +105,8 @@
                                     @if(currentUser.IsAdmin)
                                     {
                                         <th>
-                                            <a role="button" class="btn btn-sm btn-primary" href="#" data-toggle="modal" data-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Exercise.Id" data-user-id="@user.UserId">
-                                                <span class="oi oi-plus"></span>
+                                            <a role="button" class="btn btn-sm btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exerciseid="@exercise.Exercise.Id" data-userid="@user.UserId">
+                                                <i class="bi bi-plus"></i>
                                                 Hinzufügen
                                             </a>
                                         </th>
@@ -121,11 +121,11 @@
                                         <td>
                                             @if(submission.ExercisePassed)
                                             {
-                                                <span class="oi oi-circle-check text-success align-middle"></span>
+                                                <i class="bi bi-circle-check text-success align-middle"></i>
                                             }
                                             else
                                             {
-                                                <span class="oi oi-circle-x text-danger align-middle"></span>
+                                                <i class="bi bi-circle-x text-danger align-middle"></i>
                                             }
                                         </td>
                                         <td>
@@ -143,8 +143,8 @@
                                         @if(currentUser.IsAdmin)
                                         {
                                             <td>
-                                                <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-exercise-submission" data-submission-id="@submission.Id" data-exercise-name="@exercise.Exercise.Name" data-user-name="@user.UserName">
-                                                    <span class="oi oi-trash"></span>
+                                                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@user.UserName">
+                                                    <i class="bi bi-trash"></i>
                                                     Löschen
                                                 </a>
                                             </td>
@@ -180,13 +180,13 @@
                             @flag.Flag.Description
                             @if(flag.Flag.IsBounty)
                             {
-                                <span class="oi oi-bug text-primary" title="Bug-Bounty"></span>
+                                <i class="bi bi-bug-fill text-primary" title="Bug-Bounty"></i>
                             }
                         </td>
                         <td>
                             @if(flag.Submitted)
                             {
-                                <span class="oi oi-check text-success" title="@flag.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)"></span>
+                                <i class="bi bi-check-circle-fill text-success" title="@flag.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)"></i>
                             }
                         </td>
                         <td>
@@ -194,12 +194,12 @@
                             {
                                 if(flag.Valid)
                                 {
-                                    <span class="oi oi-check text-success"></span>
-                                    <span class="badge badge-primary">@flag.CurrentPoints Punkte</span>
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    <span class="badge bg-primary">@flag.CurrentPoints Punkte</span>
                                 }
                                 else
                                 {
-                                    <span class="oi oi-x text-danger"></span>
+                                    <i class="bi bi-x-circle-fill text-danger"></i>
                                 }
                             }
                         </td>
@@ -208,15 +208,15 @@
                             <td>
                                 @if(flag.Submitted)
                                 {
-                                    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId" data-user-name="@user.UserName">
-                                        <span class="oi oi-trash"></span>
+                                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-flag-submission" data-flagid="@flag.Flag.Id" data-userid="@user.UserId" data-username="@user.UserName">
+                                        <i class="bi bi-trash"></i>
                                         Zurücksetzen
                                     </a>
                                 }
                                 else
                                 {
-                                    <a role="button" class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#modal-add-flag-submission" data-flag-id="@flag.Flag.Id" data-user-id="@user.UserId">
-                                        <span class="oi oi-flag"></span>
+                                    <a role="button" class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-flag-submission" data-flagid="@flag.Flag.Id" data-userid="@user.UserId">
+                                        <i class="bi bi-flag-fill"></i>
                                         Einreichen
                                     </a>
                                 }
@@ -237,9 +237,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Aufgabeneinreichung löschen</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -250,9 +248,8 @@
                 <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
-                    @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-outline-danger">Einreichung löschen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
         </div>
@@ -264,20 +261,18 @@
             <form asp-controller="AdminScoreboard" asp-action="CreateExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Aufgabeneinreichung erstellen</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="input-add-exercise-submission-time">Einreichungszeitpunkt</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="input-add-exercise-submission-time">Einreichungszeitpunkt</label>
                         <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" />
                     </div>
-                    <div class="form-group">
-                        <label for="input-add-exercise-submission-weight">Gewichtung (nur für Fehlversuche)</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="input-add-exercise-submission-weight">Gewichtung (nur für Fehlversuche)</label>
                         <input id="input-add-exercise-submission-weight" name="weight" type="number" min="0" value="1" class="form-control" />
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <div class="form-check">
                             <input id="input-add-exercise-submission-passed" type="checkbox" name="passed" class="form-check-input" checked value="true">
                             <label for="input-add-exercise-submission-passed" class="form-check-label">Bestanden</label>
@@ -288,9 +283,8 @@
                     <input type="hidden" data-replace="exercise-id" name="exerciseId" value="">
                     <input type="hidden" data-replace="user-id" name="userId" value="">
 
-                    @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-outline-primary">Einreichung erstellen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </div>
             </form>
         </div>
@@ -301,9 +295,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Flageinreichung löschen</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -315,9 +307,8 @@
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
-                    @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-outline-danger">Einreichung löschen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
         </div>
@@ -329,13 +320,11 @@
             <form asp-controller="AdminScoreboard" asp-action="CreateFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Flageinreichung erstellen</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="input-add-flag-submission-time">Einreichungszeitpunkt</label>
+                    <div class="mb-3">
+                        <label class="form-label" for="input-add-flag-submission-time">Einreichungszeitpunkt</label>
                         <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" />
                     </div>
                 </div>
@@ -343,9 +332,8 @@
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
-                    @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-outline-primary">Einreichung erstellen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </div>
             </form>
         </div>
@@ -353,43 +341,37 @@
 </div>
 
 <script>
-    // Date time picker
-    flatpickr.localize(flatpickr.l10ns.de);                               
-    options = {
-                 "dateFormat": "d.m.Y H:i",
-                 "enableTime": true,
-                 "allowInput": true
-             };
-    flatpickr(document.getElementById("input-add-exercise-submission-time"), options);
-    flatpickr(document.getElementById("input-add-flag-submission-time"), options);
+// Date time picker
+flatpickr.localize(flatpickr.l10ns.de);                               
+options = {
+             "dateFormat": "d.m.Y H:i",
+             "enableTime": true,
+             "allowInput": true
+         };
+flatpickr(document.getElementById("input-add-exercise-submission-time"), options);
+flatpickr(document.getElementById("input-add-flag-submission-time"), options);
 
-    // Modals
-    $('#modal-delete-exercise-submission').on('show.bs.modal', function (e) {
-        let submissionId = $(e.relatedTarget).data('submission-id');
-        let userName = $(e.relatedTarget).data('user-name');
-        let exerciseName = $(e.relatedTarget).data('exercise-name');
-        $(e.currentTarget).find('span[data-replace="user-name"]').text(userName);
-        $(e.currentTarget).find('span[data-replace="exercise-name"]').text(exerciseName);
-        $(e.currentTarget).find('input[data-replace="submission-id"]').val(submissionId);
-    });
-    $('#modal-add-exercise-submission').on('show.bs.modal', function (e) {
-        let exerciseId = $(e.relatedTarget).data('exercise-id');
-        let userId = $(e.relatedTarget).data('user-id');
-        $(e.currentTarget).find('input[data-replace="exercise-id"]').val(exerciseId);
-        $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
-    });
-    $('#modal-delete-flag-submission').on('show.bs.modal', function (e) {
-        let flagId = $(e.relatedTarget).data('flag-id');
-        let userId = $(e.relatedTarget).data('user-id');
-        let userName = $(e.relatedTarget).data('user-name');
-        $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
-        $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
-        $(e.currentTarget).find('span[data-replace="user-name"]').text(userName);
-    });
-    $('#modal-add-flag-submission').on('show.bs.modal', function (e) {
-        let flagId = $(e.relatedTarget).data('flag-id');
-        let userId = $(e.relatedTarget).data('user-id');
-        $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
-        $(e.currentTarget).find('input[data-replace="user-id"]').val(userId);
-    });
+// Modals
+document.getElementById("modal-delete-exercise-submission").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="submission-id"]').value = e.relatedTarget.dataset.submissionid;
+    e.target.querySelector('span[data-replace="user-name"]').innerText = e.relatedTarget.dataset.username;
+    e.target.querySelector('span[data-replace="exercise-name"]').innerText = e.relatedTarget.dataset.exercisename;
+});
+document.getElementById("modal-add-exercise-submission").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="exercise-id"]').value = e.relatedTarget.dataset.exerciseid;
+    e.target.querySelector('input[data-replace="user-id"]').value = e.relatedTarget.dataset.userid;
+});
+document.getElementById("modal-delete-flag-submission").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="flag-id"]').value = e.relatedTarget.dataset.flagid;
+    e.target.querySelector('input[data-replace="user-id"]').value = e.relatedTarget.dataset.userid;
+    e.target.querySelector('span[data-replace="user-name"]').innerText = e.relatedTarget.dataset.username;
+});
+document.getElementById("modal-add-flag-submission").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="flag-id"]').value = e.relatedTarget.dataset.flagid;
+    e.target.querySelector('input[data-replace="user-id"]').value = e.relatedTarget.dataset.userid;
+});
 </script>

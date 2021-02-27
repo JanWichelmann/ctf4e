@@ -2,29 +2,38 @@
 
 $blue: #003e80;
 
+/* Load bootstrap */
+
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 
-/* Footer */
+/* General */
 
 html {
   position: relative;
-  min-height: 100%;
 }
 
 body {
-  // Margin bottom by footer height
-  margin-bottom: 40px;
+  min-height: 100vh;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
+footer {
+  a.link-footer {
+    //color: white;
+    text-decoration: none;
 
-  // Vertically center the text
-  line-height: 40px;
+    &:hover, &:focus {
+      text-decoration: underline;
+    //  color: shade-color(white, $link-shade-percentage);
+    }
+  }
+}
+
+// HACK: Fix line height in badges with icons
+.badge {
+  &.badge-icon {
+    line-height: 1.5;
+  }
 }
 
 
@@ -32,4 +41,51 @@ body {
 
 .navbar-nav li:hover > .dropdown-menu {
   display: block;
+}
+
+li.nav-item {
+  padding-left: 0.5*$spacer;
+  padding-right: 0.5*$spacer;
+}
+
+ul.dropdown-menu {
+  li {
+    padding-left: 0.5*$spacer;
+  }
+}
+
+/* Headlines */
+
+h3.header {
+  color: $blue;
+  margin-top: 2*$spacer;
+}
+
+h5.header {
+  color: $blue;
+  margin-top: 2*$spacer;
+}
+
+hr.header {
+  color: $blue;
+  opacity: 1;
+  height: 2px;
+}
+
+hr.header-secondary {
+  color: $blue;
+  height: 1px;
+}
+
+
+/* Icons */
+
+.bi {
+  margin-right: .25rem;
+}
+
+.bi::before {
+  // Hack: Reset weird line height override in bi-* classes, so icons are centered
+  line-height: 1.5 !important;
+  vertical-align: middle !important;
 }

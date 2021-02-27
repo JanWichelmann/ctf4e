@@ -4,40 +4,40 @@
     var groups = (List<Group>)ViewData["Groups"];
 }
 
-<h3 class="text-primary">
+<h3 class="header">
     Benutzer bearbeiten
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <form asp-controller="AdminUsers" asp-action="EditUser" method="post">
-    <div class="form-group">
-        <label asp-for="DisplayName">Name</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="DisplayName">Name</label>
         <input asp-for="DisplayName" class="form-control" placeholder="Namen eingeben">
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label>Moodle-Account</label>
+    <div class="mb-3">
+        <label class="form-label">Moodle-Account</label>
         <input asp-for="MoodleName" class="form-control" readonly="readonly">
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsAdmin" class="form-check-input">
             <label asp-for="IsAdmin" class="form-check-label">Administratorrechte</label>
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsTutor" class="form-check-input">
             <label asp-for="IsTutor" class="form-check-label">Tutorrechte</label>
         </div>
     </div>
-    <div class="form-group">
-        <label asp-for="GroupFindingCode">Gruppencode</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="GroupFindingCode">Gruppencode</label>
         <input asp-for="GroupFindingCode" class="form-control" placeholder="Code zur Gruppengründung eingeben">
         <span asp-validation-for="GroupFindingCode" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="GroupId">Gruppe</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="GroupId">Gruppe</label>
         <select asp-for="GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
             <option value="" selected>(keine)</option>
         </select>

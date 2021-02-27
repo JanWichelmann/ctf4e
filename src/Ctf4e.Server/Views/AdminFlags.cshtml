@@ -6,15 +6,17 @@
     
 }
 
-@if(viewType == AdminFlagsController.ViewType.List)
-{
-    <partial name="AdminFlags.List.cshtml" />
-}
-else if(viewType == AdminFlagsController.ViewType.Edit)
-{
-    <partial name="AdminFlags.Edit.cshtml" />
-}
-else if(viewType == AdminFlagsController.ViewType.Create)
-{
-    <partial name="AdminFlags.Create.cshtml" />
-}
+<div class="container">
+    @if(viewType == AdminFlagsController.ViewType.List)
+    {
+        <partial name="AdminFlags.List.cshtml" />
+    }
+    else if(viewType == AdminFlagsController.ViewType.Edit)
+    {
+        <partial name="AdminFlags.Edit.cshtml" />
+    }
+    else if(viewType == AdminFlagsController.ViewType.Create)
+    {
+        <partial name="AdminFlags.Create.cshtml" />
+    }
+</div>

@@ -1,6 +1,6 @@
-﻿@using Ctf4e.Server.Controllers
-@using Ctf4e.Server.Services
+﻿@using Ctf4e.Server.Services
 @using Ctf4e.Server.ViewModels
+@using Ctf4e.Server.Models
 @inject IConfigurationService ConfigurationService
 @{
     ViewData["Title"] = "Aufgaben";
@@ -8,37 +8,35 @@
     var groupScoreboard = (GroupScoreboard)ViewData["Scoreboard"];
 }
 
+<div class="container">
 @if(groupScoreboard != null)
 {
-    <div class="row align-items-center">
-        <div class="col text-left">
-            <h3 class="text-primary">
-                Praktikum: @groupScoreboard.CurrentLab.Name
-            </h3>
-        </div>
-        <div class="col text-right">
-            @if(groupScoreboard.HasPassed)
-            {
-                <span class="badge badge-success" style="font-size: 1rem;">
-                    <span class="oi oi-check"></span>
-                    Bestanden
-                </span>
-            }
-        </div>
+    <div class="float-end">
+        @if(!groupScoreboard.HasPassed)
+        {
+            <span class="badge bg-success" style="font-size: 1rem;">
+                <i class="bi bi-check-circle"></i>
+                Bestanden
+            </span>
+        }
     </div>
-    <hr class="bg-primary mt-2" style="height: 2px">
 
-    @switch(groupScoreboard.LabExecutionStatus)
+    <h3 class="header">
+        Praktikum: @groupScoreboard.CurrentLab.Name
+    </h3>
+    <hr class="header">
+
+    switch(groupScoreboard.LabExecutionStatus)
     {
         case ScoreboardGroupStatus.Undefined:
-            <span class="badge badge-secondary">Nicht freigeschaltet</span>
+            <span class="badge bg-secondary">Nicht freigeschaltet</span>
             <p>
                 Dieses Praktikum ist bisher nicht freigeschaltet worden.
                 Es können weder Aufgaben bearbeitet noch Flags eingelöst werden.
             </p>
             break;
         case ScoreboardGroupStatus.BeforePreStart:
-            <span class="badge badge-warning">Noch nicht gestartet</span>
+            <span class="badge bg-warning">Noch nicht gestartet</span>
             <p>
                 Dieses Praktikum hat noch nicht begonnen.
                 Es können weder Aufgaben bearbeitet noch Flags eingelöst werden. <br>
@@ -46,7 +44,7 @@
             </p>
             break;
         case ScoreboardGroupStatus.PreStart:
-            <span class="badge badge-info">Vorbereitungsphase</span>
+            <span class="badge bg-info">Vorbereitungsphase</span>
             <p>
                 Dieses Praktikum ist in der Vorbereitungsphase.
                 Es können einige ausgewählte Aufgaben bearbeitet und alle Flags eingelöst werden. <br>
@@ -54,7 +52,7 @@
             </p>
             break;
         case ScoreboardGroupStatus.Start:
-            <span class="badge badge-success">Aktiv</span>
+            <span class="badge bg-success">Aktiv</span>
             <p>
                 Dieses Praktikum ist aktiv.
                 Es können alle Aufgaben bearbeitet und alle Flags eingelöst werden. <br>
@@ -62,7 +60,7 @@
             </p>
             break;
         case ScoreboardGroupStatus.End:
-            <span class="badge badge-dark">Beendet</span>
+            <span class="badge bg-dark">Beendet</span>
             <p>
                 Dieses Praktikum ist beendet.
                 Es können weiterhin Aufgaben bearbeitet und Flags eingelöst werden; diese werden in der Wertung und auf dem Scoreboard jedoch nicht mehr berücksichtigt.
@@ -70,41 +68,40 @@
             break;
     }
 
-    @if(groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
+    if(groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
     {
         <a class="btn btn-primary" asp-controller="Group" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
-            <span class="oi oi-external-link"></span>
+            <i class="bi bi-arrow-return-right"></i>
             Zum Praktikumsserver
-        </a>
-    }
+        </a>    }
 
-    <h5 class="text-primary mt-5">
+    <h5 class="header">
         Aufgaben
     </h5>
-    <hr class="bg-primary mb-2 mt-1" style="height: 2px;">
+    <hr class="header-secondary">
 
-    @foreach(var exercise in groupScoreboard.Exercises)
+    foreach(var exercise in groupScoreboard.Exercises)
     {
-        <div class="card">
-            <div class="card-header" id="exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-toggle="collapse" data-target="#exercise@(exercise.Exercise.Id)-card">
+        <div class="card mb-2">
+            <div class="card-header" id="exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card">
                 <div class="row">
-                    <div class="col-sm text-left">
+                    <div class="col-sm text-start">
                         @exercise.Exercise.Name
                         @if(exercise.Exercise.IsMandatory)
                         {
-                            <span class="badge badge-info">Pflicht</span>
+                            <span class="badge bg-info">Pflicht</span>
                         }
                     </div>
-                    <div class="col-sm text-right">
-                        <span class="badge badge-light">Versuche: @exercise.ValidTries gültig, @exercise.Tries insgesamt</span>
+                    <div class="col-sm text-end">
+                        <span class="badge bg-light">Versuche: @exercise.ValidTries gültig, @exercise.Tries insgesamt</span>
                         @if(exercise.Passed)
                         {
-                            <span class="badge badge-primary">@exercise.Points Punkte</span>
-                            <span class="oi oi-circle-check text-success" title="Gelöst"></span>
+                            <span class="badge bg-primary">@exercise.Points Punkte</span>
+                            <i class="bi bi-check-circle-fill  text-success" title="Gelöst"></i>
                         }
                         else
                         {
-                            <span class="oi oi-circle-x text-danger" title="Nicht gelöst"></span>
+                            <i class="bi bi-x-circle-fill  text-danger" title="Nicht gelöst"></i>
                         }
                     </div>
                 </div>
@@ -127,17 +124,17 @@
                                     @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
                                     @if(submission.SubmissionTime < (groupScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (groupScoreboard.LabExecution?.End ?? DateTime.MinValue))
                                     {
-                                        <span class="badge badge-warning" title="Dieser Lösungsversuch fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
+                                        <span class="badge bg-warning" title="Dieser Lösungsversuch fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
                                     }
                                 </td>
                                 <td>
                                     @if(submission.ExercisePassed)
                                     {
-                                        <span class="oi oi-circle-check text-success align-middle"></span>
+                                        <i class="bi bi-check-circle-fill  text-success align-middle"></i>
                                     }
                                     else
                                     {
-                                        <span class="oi oi-circle-x text-danger align-middle"></span>
+                                        <i class="bi bi-x-circle-fill  text-danger align-middle"></i>
                                     }
                                 </td>
                                 <td>
@@ -152,117 +149,47 @@
         </div>
     }
 
-    <div class="row align-items-center mt-5">
-        <div class="col text-left">
-            <h5 class="text-primary">
-                Flag einlösen
-            </h5>
+    <div>
+        <div class="float-end">
+            @if(!groupScoreboard.HasPassed)
+            {
+                @:Gefundene Flags: @groupScoreboard.ValidFoundFlagsCount gültig, @groupScoreboard.FoundFlagsCount insgesamt
+            }
         </div>
-        <div class="col text-right">
-            <span class="badge badge-light bg-white">Gefundene Flags: @groupScoreboard.ValidFoundFlagsCount gültig, @groupScoreboard.FoundFlagsCount insgesamt</span>
-        </div>
-    </div>
-    <hr class="bg-primary mb-2 mt-1" style="height: 2px">
 
-    <form>
-        <div class="form-group">
-            <label for="input-flag-code">Flag-Code</label>
+        <h5 class="header">
+            Flag einlösen
+        </h5>
+        <hr class="header-secondary">
+    </div>
+
+    <form asp-controller="Group" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId">
+        <div class="mb-3">
+            <label class="form-label" for="input-flag-code">Flag-Code</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <div class="input-group-text text-monospace">@(await ConfigurationService.GetFlagPrefixAsync())</div>
+                    <div class="input-group-text font-monospace">@(await ConfigurationService.GetFlagPrefixAsync())</div>
                 </div>
-                <input type="text" class="form-control text-monospace" id="input-flag-code" placeholder="1n5er7-f14g-c0de-here-37a12d">
+                <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="1n5er7-f14g-c0de-here-37a12d">
                 <div class="input-group-append">
-                    <div class="input-group-text text-monospace">@(await ConfigurationService.GetFlagSuffixAsync())</div>
+                    <div class="input-group-text font-monospace">@(await ConfigurationService.GetFlagSuffixAsync())</div>
                 </div>
             </div>
         </div>
 
-        <button type="button" class="btn btn-primary" onclick="submit_flag()">
-            <span class="oi oi-flag"></span>
+        <button type="submit" class="btn btn-primary">
+            <span class="bi bi-flag-fill"></span>
             Flag einlösen
         </button>
     </form>
-
-    <div class="modal fade" id="modal-flag-submission-success" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Flag einlösen</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        Die Flag wurde erfolgreich eingelöst!
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <a role="button" class="btn btn-primary" href="javascript:window.location.href = window.location.href">Seite neu laden</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal-flag-submission-failed" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Flag einlösen</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        Die Flag konnte nicht eingelöst werden.
-                    </p>
-                    <p>
-                        Mögliche Gründe sind:
-                        <ul>
-                            <li>Im Flag-Code ist ein Tippfehler.</li>
-                            <li>Sie haben diese Flag bereits eingelöst.</li>
-                            <li>Die Flag ist einem anderen Praktikum zugeordnet.</li>
-                        </ul>
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Schließen</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function submit_flag() {
-            $.ajax("@Url.Action("SubmitFlag", "Group", new { labId = groupScoreboard.LabId })",
-                {
-                    type: "POST",
-                    data: {
-                        flagCode: $("#input-flag-code").val()
-                    },
-                    success: function (data, status, xhr) {
-                        if(data.success)
-                            $("#modal-flag-submission-success").modal();
-                        else
-                            $("#modal-flag-submission-failed").modal();
-                    },
-                    error: function (xhr, status, errorMsg) {
-                        alert("Fehler beim Senden der AJAX-Anfrage: " + errorMsg);
-                    }
-                });
-        }
-    </script>
-
-    <h5 class="text-primary mt-5">
+    <h5 class="header">
         Zu anderem Praktikum wechseln
     </h5>
-    <hr class="bg-primary mb-2 mt-1" style="height: 2px">
+    <hr class="header-secondary">
 
     <form asp-controller="Group" asp-action="RenderLabPage" method="get">
-        <div class="form-group">
-            <label for="input-lab-id">Praktikum</label>
+        <div class="mb-3">
+            <label class="form-label" for="input-lab-id">Praktikum</label>
             <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">
                 @foreach(var lab in groupScoreboard.Labs)
                 {
@@ -272,14 +199,13 @@
                         {
                             @:(aktiv)
                         }
-                    </option>
-                }
+                    </option>                }
             </select>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            <span class="oi oi-reload"></span>
+            <i class="bi bi-arrow-return-right"></i>
             Zu ausgewähltem Praktikum wechseln
         </button>
-    </form>
-}
+    </form>}
+</div>

@@ -5,39 +5,39 @@
     var lab = (Lab)ViewData["Lab"];
 }
 
-<h3 class="text-primary">
+<h3 class="header">
     Aufgabe erstellen
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <form asp-controller="AdminExercises" asp-action="CreateExercise" method="post">
-    <div class="form-group">
-        <label asp-for="ExerciseNumber">Aufgabennummer</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="ExerciseNumber">Aufgabennummer</label>
         <input asp-for="ExerciseNumber" class="form-control">
         <span asp-validation-for="ExerciseNumber" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Name">Name</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Name">Name</label>
         <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="BasePoints">Basispunktzahl</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="BasePoints">Basispunktzahl</label>
         <input asp-for="BasePoints" class="form-control">
         <span asp-validation-for="BasePoints" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="PenaltyPoints">Strafpunkte pro Fehlversuch</label>
+    <div class="mb-3">
+        <label class="form-label" asp-for="PenaltyPoints">Strafpunkte pro Fehlversuch</label>
         <input asp-for="PenaltyPoints" class="form-control">
         <span asp-validation-for="PenaltyPoints" class="text-danger"></span>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsMandatory" class="form-check-input">
             <label asp-for="IsMandatory" class="form-check-label">Pflichtaufgabe</label>
         </div>
     </div>
-    <div class="form-group">
+    <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsPreStartAvailable" class="form-check-input">
             <label asp-for="IsPreStartAvailable" class="form-check-label">

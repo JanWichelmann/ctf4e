@@ -5,22 +5,24 @@
     var viewType = (AdminLabExecutionsController.ViewType)ViewData["ViewType"];
 }
 
-@if(viewType == AdminLabExecutionsController.ViewType.List)
-{
-    <partial name="AdminLabExecutions.List.cshtml" />
-}
-else if(viewType == AdminLabExecutionsController.ViewType.Edit)
-{
-    <partial name="AdminLabExecutions.Edit.cshtml" />
-}
-else if(viewType == AdminLabExecutionsController.ViewType.CreateForGroup)
-{
-    <partial name="AdminLabExecutions.CreateForGroup.cshtml" />
-}
-else if(viewType == AdminLabExecutionsController.ViewType.CreateForSlot)
-{
-    <partial name="AdminLabExecutions.CreateForSlot.cshtml" />
-}
+<div class="container">
+    @if(viewType == AdminLabExecutionsController.ViewType.List)
+    {
+        <partial name="AdminLabExecutions.List.cshtml" />
+    }
+    else if(viewType == AdminLabExecutionsController.ViewType.Edit)
+    {
+        <partial name="AdminLabExecutions.Edit.cshtml" />
+    }
+    else if(viewType == AdminLabExecutionsController.ViewType.CreateForGroup)
+    {
+        <partial name="AdminLabExecutions.CreateForGroup.cshtml" />
+    }
+    else if(viewType == AdminLabExecutionsController.ViewType.CreateForSlot)
+    {
+        <partial name="AdminLabExecutions.CreateForSlot.cshtml" />
+    }
+</div>
 
 @section ScriptsHead
 {

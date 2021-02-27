@@ -1,12 +1,12 @@
 @model List<Ctf4e.Server.Models.Slot>
 
-<h3 class="text-primary">
+<h3 class="header">
     Slots verwalten
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowCreateSlotForm">
-    <span class="oi oi-plus"></span>
+    <i class="bi bi-plus"></i>
     Slot erstellen
 </a>
 <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
@@ -27,13 +27,13 @@
             <td>@s.Groups.Count</td>
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowEditSlotForm" asp-route-id="@s.Id">
-                    <span class="oi oi-pencil"></span>
+                    <i class="bi bi-pencil"></i>
                     Bearbeiten
                 </a>
                 @if(!s.Groups.Any())
                 {
-                    <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-slot" data-slot-id="@s.Id" data-slot-name="@s.Name">
-                        <span class="oi oi-trash"></span>
+                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slotid="@s.Id" data-slotname="@s.Name">
+                        <i class="bi bi-trash"></i>
                         Löschen
                     </a>
                 }
@@ -48,9 +48,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Slot löschen</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -62,17 +60,16 @@
                     <input type="hidden" data-replace="slot-id" name="id" value="">
 
                     <button type="submit" class="btn btn-outline-danger">Slot löschen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 <script>
-        $('#modal-delete-slot').on('show.bs.modal', function (e) {
-            var slotId = $(e.relatedTarget).data('slot-id');
-            var slotName = $(e.relatedTarget).data('slot-name');
-            $(e.currentTarget).find('span[data-replace="slot-name"]').text(slotName);
-            $(e.currentTarget).find('input[data-replace="slot-id"]').val(slotId);
-        });
-    </script>
+document.getElementById("modal-delete-slot").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="slot-id"]').value = e.relatedTarget.dataset.slotid;
+    e.target.querySelector('span[data-replace="slot-name"]').innerText = e.relatedTarget.dataset.slotname;
+});
+</script>

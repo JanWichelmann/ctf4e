@@ -12,7 +12,9 @@ using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -23,13 +25,15 @@ namespace Ctf4e.Server.Controllers
         private readonly IUserService _userService;
         private readonly ISlotService _slotService;
         private readonly IConfigurationService _configurationService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IConfigurationService configurationService)
+        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment)
             : base("~/Views/Authentication.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+            _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         }
 
         private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
@@ -87,6 +91,10 @@ namespace Ctf4e.Server.Controllers
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         public async Task<IActionResult> AdminLoginAsUserAsync(int userId)
         {
+            // Only allow this in development mode
+            if(!_webHostEnvironment.IsDevelopment())
+                return Forbid();
+            
             // Try to retrieve user
             var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
             if(user == null)

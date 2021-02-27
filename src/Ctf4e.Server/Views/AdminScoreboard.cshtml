@@ -8,47 +8,45 @@
     var currentUser = (User)ViewData["CurrentUser"];
 }
 
-<div class="row align-items-center">
-    <div class="col text-left">
-        <h3 class="text-primary">
-            Admin-Scoreboard
-        </h3>
-    </div>
-    <div class="col text-right">
-        <a class="text-primary" href="#flags-table">
+<div class="container">
+    <div class="float-end">
+        <a class="btn btn-sm btn-outline-primary" href="#flags-table">
+            <i class="bi bi-chevron-down"></i>
             Flags
-            <span class="oi oi-caret-bottom" style="vertical-align: middle"></span>
         </a>
     </div>
+
+    <h3 class="header">
+        Admin-Scoreboard
+    </h3>
+
+    <hr class="header-secondary">
+
+    <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
+        <div class="mb-3">
+            <label class="form-label" for="input-lab-id">Praktikum</label>
+            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-control">
+                <option value="" disabled selected>Praktikum auswählen</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="input-slot-id">Terminslot</label>
+            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-control">
+                <option value="" disabled selected>Slot auswählen</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Scoreboard anzeigen</button>
+    </form>
+
+    <hr class="header-secondary">
+
+    <partial name="AdminScoreboard.Users.cshtml" />
+    <partial name="AdminScoreboard.Flags.cshtml" />
+
+    @if(currentUser.IsAdmin)
+    {
+        <partial name="AdminScoreboard.Sync.cshtml" />    }
 </div>
-<hr class="bg-primary mb-2 mt-2" style="height: 2px;">
-
-<form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
-    <div class="form-group">
-        <label for="input-lab-id">Praktikum</label>
-        <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-control">
-            <option value="" disabled selected>Praktikum auswählen</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="input-slot-id">Terminslot</label>
-        <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-control">
-            <option value="" disabled selected>Slot auswählen</option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Scoreboard anzeigen</button>
-</form>
-
-<hr class="bg-primary mt-2 mb-2" style="height: 2px">
-
-<partial name="AdminScoreboard.Users.cshtml" />
-<partial name="AdminScoreboard.Flags.cshtml" />
-
-@if(currentUser.IsAdmin)
-{
-    <partial name="AdminScoreboard.Sync.cshtml" />
-}
-
 
 <!-- Necessary includes -->
 
@@ -58,5 +56,3 @@
     <script src="~/lib/flatpickr/js/flatpickr.min.js"></script>
     <script src="~/lib/flatpickr/js/l10n/de.js"></script>
 }
-
-

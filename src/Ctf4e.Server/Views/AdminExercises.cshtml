@@ -5,15 +5,17 @@
     var viewType = (AdminExercisesController.ViewType)ViewData["ViewType"];
 }
 
-@if(viewType == AdminExercisesController.ViewType.List)
-{
-    <partial name="AdminExercises.List.cshtml" />
-}
-else if(viewType == AdminExercisesController.ViewType.Edit)
-{
-    <partial name="AdminExercises.Edit.cshtml" />
-}
-else if(viewType == AdminExercisesController.ViewType.Create)
-{
-    <partial name="AdminExercises.Create.cshtml" />
-}
+<div class="container">
+    @if(viewType == AdminExercisesController.ViewType.List)
+    {
+        <partial name="AdminExercises.List.cshtml" />
+    }
+    else if(viewType == AdminExercisesController.ViewType.Edit)
+    {
+        <partial name="AdminExercises.Edit.cshtml" />
+    }
+    else if(viewType == AdminExercisesController.ViewType.Create)
+    {
+        <partial name="AdminExercises.Create.cshtml" />
+    }
+</div>

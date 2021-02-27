@@ -4,13 +4,13 @@
     var lab = (Lab)ViewData["Lab"];
 }
 
-<h3 class="text-primary">
+<h3 class="header">
     Flags von Praktikum &quot;@lab.Name&quot; verwalten
 </h3>
-<hr class="bg-primary" style="height: 2px">
+<hr class="header">
 
 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowCreateFlagForm" asp-route-labId="@lab.Id">
-    <span class="oi oi-plus"></span>
+    <i class="bi bi-plus"></i>
     Flag erstellen
 </a>
 <table class="table table-sm table-bordered table-hover text-nowrap mt-2">
@@ -35,20 +35,20 @@
             <td>
                 @if(f.IsBounty)
                 {
-                    <span class="oi oi-check text-success"></span>
+                    <i class="bi bi-check-circle-fill text-success"></i>
                 }
                 else
                 {
-                    <span class="oi oi-x text-danger"></span>
+                    <i class="bi bi-x-circle-fill text-danger"></i>
                 }
             </td>
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowEditFlagForm" asp-route-id="@f.Id">
-                    <span class="oi oi-pencil"></span>
+                    <i class="bi bi-pencil"></i>
                     Bearbeiten
                 </a>
-                <a role="button" class="btn btn-sm btn-danger" href="#" data-toggle="modal" data-target="#modal-delete-flag" data-flag-id="@f.Id" data-flag-name="@f.Description">
-                    <span class="oi oi-trash"></span>
+                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-flag" data-flagid="@f.Id" data-flagname="@f.Description">
+                    <i class="bi bi-trash"></i>
                     Löschen
                 </a>
             </td>
@@ -62,9 +62,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Flag löschen</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
@@ -79,17 +77,16 @@
                     <input type="hidden" data-replace="flag-id" name="id" value="">
                     
                     <button type="submit" class="btn btn-outline-danger">Flag löschen</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 <script>
-        $('#modal-delete-flag').on('show.bs.modal', function (e) {
-            var flagId = $(e.relatedTarget).data('flag-id');
-            var flagName = $(e.relatedTarget).data('flag-name');
-            $(e.currentTarget).find('span[data-replace="flag-name"]').text(flagName);
-            $(e.currentTarget).find('input[data-replace="flag-id"]').val(flagId);
-        });
-    </script>
+document.getElementById("modal-delete-flag").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="flag-id"]').value = e.relatedTarget.dataset.flagid;
+    e.target.querySelector('span[data-replace="flag-name"]').innerText = e.relatedTarget.dataset.flagname;
+});
+</script>

@@ -103,7 +103,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Fehler: " + ex.Message, StatusMessageTypes.Error);
+                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
                 return await RenderAsync(configurationData);
             }
 

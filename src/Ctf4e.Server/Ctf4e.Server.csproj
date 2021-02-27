@@ -70,6 +70,17 @@
     <_ContentIncludedByDefault Remove="wwwroot\lib\tempusdominus\js\tempusdominus-bootstrap-4.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\js\jquery.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\popper\js\popper.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\js\bootstrap.bundle.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\chartjs\js\Chart.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\flatpickr\css\flatpickr.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\flatpickr\js\flatpickr.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\flatpickr\js\l10n\de.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\css\open-iconic-bootstrap.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.otf" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.woff" />
   </ItemGroup>
 
   <ItemGroup>
