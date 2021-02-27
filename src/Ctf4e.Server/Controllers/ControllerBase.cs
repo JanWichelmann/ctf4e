@@ -34,7 +34,7 @@ namespace Ctf4e.Server.Controllers
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _mainOptions = mainOptions ?? throw new ArgumentNullException(nameof(mainOptions));
 
-            if(mainOptions.Value.DevelopmentMode && _buildId == null)
+            if(_buildId == null)
             {
                 _buildId = Assembly.GetExecutingAssembly()
                     .GetCustomAttributes<AssemblyBuildVersionAttribute>()

@@ -160,9 +160,12 @@
     </ItemGroup>
     <MakeDir Directories="$(IntermediateOutputPath)" />
     <WriteCodeFragment AssemblyAttributes="@(AssemblyAttributes)" Language="C#" OutputDirectory="$(IntermediateOutputPath)" OutputFile="BuildVersionInfo.cs">
-      <Output TaskParameter="OutputFile" ItemName="Compile" />
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
     </WriteCodeFragment>
   </Target>
+  
+  <ItemGroup>
+    <Compile Include="$(IntermediateOutputPath)BuildVersionInfo.cs" />
+  </ItemGroup>
 
 </Project>
