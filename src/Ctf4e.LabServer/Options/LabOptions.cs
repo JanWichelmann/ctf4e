@@ -10,6 +10,8 @@ namespace Ctf4e.LabServer.Configuration
         
         public bool DevelopmentMode { get; set; }
         
+        public bool ProxySupport { get; set; }
+        
         public string UserStateDirectory { get; set; }
         
         public string LabConfigurationFile { get; set; }

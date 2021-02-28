@@ -15,7 +15,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Nito.AsyncEx;
 
 namespace Ctf4e.LabServer
@@ -94,6 +96,26 @@ namespace Ctf4e.LabServer
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Forward headers when used behind a proxy
+            // Must be the very first middleware
+            if(_labOptions.ProxySupport)
+            {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+                });
+                app.Use((context, next) =>
+                {
+                    if(context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var forwardedPrefix))
+                    {
+                        if(!StringValues.IsNullOrEmpty(forwardedPrefix))
+                            context.Request.PathBase = PathString.FromUriComponent(forwardedPrefix.ToString());
+                    }
+
+                    return next();
+                });
+            }
+            
             // Verbose stack traces
             if(_labOptions.DevelopmentMode)
                 app.UseDeveloperExceptionPage();

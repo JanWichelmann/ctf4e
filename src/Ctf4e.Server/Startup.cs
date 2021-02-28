@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
+using Microsoft.Extensions.Primitives;
 using MoodleLti.Options;
 
 namespace Ctf4e.Server
@@ -160,6 +162,26 @@ namespace Ctf4e.Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Forward headers when used behind a proxy
+            // Must be the very first middleware
+            if(_mainOptions.ProxySupport)
+            {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+                });
+                app.Use((context, next) =>
+                {
+                    if(context.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var forwardedPrefix))
+                    {
+                        if(!StringValues.IsNullOrEmpty(forwardedPrefix))
+                            context.Request.PathBase = PathString.FromUriComponent(forwardedPrefix.ToString());
+                    }
+
+                    return next();
+                });
+            }
+
             // Verbose stack traces
             if(_mainOptions.DevelopmentMode)
                 app.UseDeveloperExceptionPage();
