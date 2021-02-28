@@ -20,6 +20,7 @@ namespace Ctf4e.LabServer.Models.State
             {
                 UserStateFileExerciseEntryType.String => new UserStateFileStringExerciseEntry(),
                 UserStateFileExerciseEntryType.MultipleChoice => new UserStateFileMultipleChoiceExerciseEntry(),
+                UserStateFileExerciseEntryType.Script => new UserStateFileScriptExerciseEntry(),
                 _ => throw new JsonSerializationException("Unknown exercise state type")
             };
 

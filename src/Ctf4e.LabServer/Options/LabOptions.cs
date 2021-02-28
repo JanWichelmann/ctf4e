@@ -13,5 +13,11 @@ namespace Ctf4e.LabServer.Configuration
         public string UserStateDirectory { get; set; }
         
         public string LabConfigurationFile { get; set; }
+        
+        public string DockerContainerName { get; set; }
+        
+        public string DockerContainerInitUserScriptPath { get; set; }
+        
+        public string DockerContainerGradeScriptPath { get; set; }
     }
 }

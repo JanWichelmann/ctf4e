@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Configuration.Exercises;
+using Ctf4e.LabServer.InputModels;
 using Ctf4e.LabServer.Models.State;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,7 +32,7 @@ namespace Ctf4e.LabServer.Services
         /// Checks whether the given user state object exists. If it does exist, the old user state is updated, else a new one is generated.
         /// </summary>
         /// <returns></returns>
-        Task ProcessLoginAsync(int userId, int? groupId);
+        Task ProcessLoginAsync(int userId, int? groupId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Checks whether the given input is correct and updates the user status.
@@ -39,8 +40,9 @@ namespace Ctf4e.LabServer.Services
         /// <param name="exerciseId">Exercise ID.</param>
         /// <param name="userId">User ID.</param>
         /// <param name="input">Input.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> CheckInputAsync(int exerciseId, int userId, object input);
+        Task<bool> CheckInputAsync(int exerciseId, int userId, object input, CancellationToken cancellationToken);
 
         /// <summary>
         /// Marks the given exercise as solved.
@@ -64,37 +66,41 @@ namespace Ctf4e.LabServer.Services
         /// <param name="userId">User ID.</param>
         /// <returns></returns>
         Task<UserScoreboard> GetUserScoreboardAsync(int userId);
-
-        void Dispose();
     }
 
     /// <summary>
     /// Contains and manages the lab state.
     /// </summary>
-    public class StateService : IDisposable, IStateService
+    public class StateService : IStateService, IDisposable
     {
-        private readonly IOptionsMonitor<LabOptions> _optionsMonitor;
+        private readonly IOptions<LabOptions> _options;
         private readonly ILabConfigurationService _labConfiguration;
+        private readonly IDockerService _dockerService;
 
         private ConcurrentDictionary<int, UserState> _userStates;
 
         private SortedDictionary<int, LabConfigurationExerciseEntry> _exercises;
 
+        private readonly bool _dockerSupportEnabled;
+
         /// <summary>
         /// Top level lock to prevent concurrent reading and writing of state objects.
         /// </summary>
-        private readonly AsyncReaderWriterLock _configLock = new AsyncReaderWriterLock();
+        private readonly AsyncReaderWriterLock _configLock = new();
 
         /// <summary>
         /// Helper lock to prevent a possible race condition when a user tries to login with two requests in parallel.
         /// </summary>
-        private readonly SemaphoreSlim _loginLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _loginLock = new(1, 1);
 
-        public StateService(IOptionsMonitor<LabOptions> optionsMonitor, ILabConfigurationService labConfiguration)
+        public StateService(IOptions<LabOptions> options, ILabConfigurationService labConfiguration, IDockerService dockerService)
         {
-            _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
+            _dockerService = dockerService ?? throw new ArgumentNullException(nameof(dockerService));
 
+            _dockerSupportEnabled = !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName);
+            
             // Load state
             Reload();
         }
@@ -114,7 +120,7 @@ namespace Ctf4e.LabServer.Services
             // Read user data
             _userStates = new ConcurrentDictionary<int, UserState>();
             Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
-            foreach(string userStateFileName in Directory.GetFiles(_optionsMonitor.CurrentValue.UserStateDirectory, "u*.json"))
+            foreach(string userStateFileName in Directory.GetFiles(_options.Value.UserStateDirectory, "u*.json"))
             {
                 // Read file
                 int userId = int.Parse(userIdRegex.Match(userStateFileName).Groups[1].Value);
@@ -165,6 +171,19 @@ namespace Ctf4e.LabServer.Services
 
                         userStateChanged = multipleChoiceExerciseState.Update(multipleChoiceExercise);
                     }
+                    else if(exercise.Value is LabConfigurationScriptExerciseEntry scriptExercise)
+                    {
+                        // TODO this is likely wrong, use TryAdd and TryUpdate
+                        if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileScriptExerciseEntry scriptExerciseState))
+                        {
+                            // Create empty state for this exercise
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileScriptExerciseEntry.CreateState(scriptExercise));
+                            userStateChanged = true;
+                            continue;
+                        }
+
+                        userStateChanged = scriptExerciseState.Update(scriptExercise);
+                    }
                 }
 
                 // Update user state file, if necessary
@@ -195,7 +214,7 @@ namespace Ctf4e.LabServer.Services
         private UserStateFile ReadUserStateFile(string userStateFileName)
         {
             // Read user state file
-            string path = Path.Combine(_optionsMonitor.CurrentValue.UserStateDirectory, userStateFileName);
+            string path = Path.Combine(_options.Value.UserStateDirectory, userStateFileName);
             if(!File.Exists(path))
                 return null;
             return JsonConvert.DeserializeObject<UserStateFile>(File.ReadAllText(path));
@@ -212,27 +231,29 @@ namespace Ctf4e.LabServer.Services
             var userStateFile = new UserStateFile
             {
                 GroupId = userState.GroupId,
+                UserName = userState.UserName,
+                Password = userState.Password,
                 Exercises = userState.Exercises.Values.ToList()
             };
-            File.WriteAllText(Path.Combine(_optionsMonitor.CurrentValue.UserStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
+            File.WriteAllText(Path.Combine(_options.Value.UserStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
         }
 
         /// <summary>
         /// Checks whether the given user state object exists. If it does exist, the old user state is updated, else a new one is generated.
         /// </summary>
         /// <returns></returns>
-        public async Task ProcessLoginAsync(int userId, int? groupId)
+        public async Task ProcessLoginAsync(int userId, int? groupId, CancellationToken cancellationToken)
         {
             // Ensure synchronized access
-            using var configReadLock = await _configLock.ReaderLockAsync();
-            await _loginLock.WaitAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
+            await _loginLock.WaitAsync(cancellationToken);
             try
             {
                 // Does the user exist?
                 if(_userStates.TryGetValue(userId, out var userState))
                 {
                     // Update user state if necessary
-                    await userState.Lock.WaitAsync();
+                    await userState.Lock.WaitAsync(cancellationToken);
                     try
                     {
                         if(userState.GroupId == groupId)
@@ -264,7 +285,13 @@ namespace Ctf4e.LabServer.Services
                             userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
                         else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
                             userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
+                        else if(exercise.Value is LabConfigurationScriptExerciseEntry scriptExercise)
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileScriptExerciseEntry.CreateState(scriptExercise));
                     }
+                    
+                    // Initialize Docker container account, if needed
+                    if(_dockerSupportEnabled && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
+                        await _dockerService.InitUserAsync(userId, userState.UserName, userState.UserName, cancellationToken);
 
                     // Store new user state
                     _userStates.TryAdd(userId, userState);
@@ -276,7 +303,7 @@ namespace Ctf4e.LabServer.Services
                 {
                     foreach(var groupMember in userState.GroupMembers)
                     {
-                        await groupMember.Lock.WaitAsync();
+                        await groupMember.Lock.WaitAsync(cancellationToken);
                         try
                         {
                             groupMember.GroupMembers.Remove(userState);
@@ -297,7 +324,7 @@ namespace Ctf4e.LabServer.Services
                 // Update lists of group members
                 foreach(var groupMember in userState.GroupMembers)
                 {
-                    await groupMember.Lock.WaitAsync();
+                    await groupMember.Lock.WaitAsync(cancellationToken);
                     try
                     {
                         groupMember.GroupMembers.Add(userState);
@@ -323,11 +350,12 @@ namespace Ctf4e.LabServer.Services
         /// <param name="exerciseId">Exercise ID.</param>
         /// <param name="userId">User ID.</param>
         /// <param name="input">Input.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<bool> CheckInputAsync(int exerciseId, int userId, object input)
+        public async Task<bool> CheckInputAsync(int exerciseId, int userId, object input, CancellationToken cancellationToken)
         {
             // Ensure synchronized access
-            using var configReadLock = await _configLock.ReaderLockAsync();
+            using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
 
             // Check input values
             if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
@@ -335,21 +363,33 @@ namespace Ctf4e.LabServer.Services
 
             // Get state object
             var userState = _userStates[userId];
-            await userState.Lock.WaitAsync();
+            await userState.Lock.WaitAsync(cancellationToken);
             try
             {
                 // Get exercise data
                 var exercise = _exercises[exerciseId];
                 var exerciseState = userState.Exercises[exerciseId];
 
-                // Update user
+                // Check correctness
                 bool correct = exerciseState switch
                 {
                     UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.ValidateInput(exercise, input),
                     UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.ValidateInput(exercise, input),
                     _ => false
                 };
+                if(exerciseState.Type == UserStateFileExerciseEntryType.Script)
+                {
+                    if(!_dockerSupportEnabled)
+                        throw new NotSupportedException("Docker support is not enabled, so script exercises cannot be graded.");
+                    
+                    // Run script
+                    string stderr;
+                    (correct, stderr) = await _dockerService.GradeAsync(userId, exerciseId, input as string, cancellationToken);
+                    
+                    // TODO store stderr somewhere. Maybe some buffer per user state, where a detailed log is kept for the last n actions?
+                }
 
+                // Update user, if state changed
                 if(!exerciseState.Solved && correct)
                 {
                     exerciseState.Solved = true;
@@ -466,6 +506,7 @@ namespace Ctf4e.LabServer.Services
                         {
                             UserStateFileStringExerciseEntry stringExerciseState => stringExerciseState.FormatDescriptionString(e.Value),
                             UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.FormatDescriptionString(e.Value),
+                            UserStateFileScriptExerciseEntry scriptExerciseState => scriptExerciseState.FormatDescriptionString(e.Value),
                             _ => null
                         };
 

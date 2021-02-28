@@ -14,6 +14,10 @@ namespace Ctf4e.LabServer.Models.State
         public int? GroupId { get; set; }
         
         public List<UserState> GroupMembers { get; set; }
+        
+        public string UserName { get; set; }
+        
+        public string Password { get; set; }
 
         public ConcurrentDictionary<int, UserStateFileExerciseEntry> Exercises { get; set; }
     }

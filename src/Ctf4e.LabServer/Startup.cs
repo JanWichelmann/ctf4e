@@ -56,6 +56,9 @@ namespace Ctf4e.LabServer
 
             // Lab state service
             services.AddSingleton<IStateService, StateService>();
+            
+            // Docker container support
+            services.AddSingleton<IDockerService, DockerService>();
 
             // Change name of antiforgery cookie
             services.AddAntiforgery(options =>

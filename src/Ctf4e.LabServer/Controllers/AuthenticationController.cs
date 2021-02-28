@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Api;
 using Ctf4e.Api.Models;
@@ -63,7 +64,9 @@ namespace Ctf4e.LabServer.Controllers
                 return Render(ViewType.Redirect);
 
             // Make sure user account exists
-            await _stateService.ProcessLoginAsync(userId, groupId);
+            // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            await _stateService.ProcessLoginAsync(userId, groupId, cts.Token);
 
             // Sign in user
             await DoLoginAsync(userId, userName, groupId, groupName, admin);
@@ -86,7 +89,9 @@ namespace Ctf4e.LabServer.Controllers
                 return Render(ViewType.Redirect);
 
             // Make sure user account exists
-            await _stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId);
+            // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            await _stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId, cts.Token);
 
             // Sign in user
             await DoLoginAsync(loginData.UserId, loginData.UserDisplayName, loginData.GroupId, loginData.GroupName, loginData.AdminMode);

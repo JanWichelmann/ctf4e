@@ -7,6 +7,7 @@ namespace Ctf4e.LabServer.Models.State
     public enum UserStateFileExerciseEntryType
     {
         String,
-        MultipleChoice
+        MultipleChoice,
+        Script
     }
 }

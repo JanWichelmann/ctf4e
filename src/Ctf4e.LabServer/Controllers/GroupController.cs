@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Api.Services;
 using Ctf4e.LabServer.Configuration;
@@ -56,11 +57,14 @@ namespace Ctf4e.LabServer.Controllers
 
         private async Task<bool> CheckInputAsync(int exerciseId, object input)
         {
+            // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            
             // Get current user
             int userId = GetCurrentUser().UserId;
 
             // Check input
-            bool correct = await _stateService.CheckInputAsync(exerciseId, userId, input);
+            bool correct = await _stateService.CheckInputAsync(exerciseId, userId, input, cts.Token);
 
             // Notify CTF system
             int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
@@ -73,7 +77,7 @@ namespace Ctf4e.LabServer.Controllers
                     ExercisePassed = correct,
                     Weight = 1,
                     SubmissionTime = DateTime.Now
-                });
+                }, cts.Token);
             }
 
             return correct;
@@ -106,7 +110,7 @@ namespace Ctf4e.LabServer.Controllers
             catch(Exception ex)
             {
                 AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
-                _logger.LogError(ex, "An error occured during evaluation of a solution attempt.");
+                _logger.LogError(ex, "An error occured during evaluation of a solution attempt");
                 return await RenderAsync();
             }
         }
@@ -138,7 +142,39 @@ namespace Ctf4e.LabServer.Controllers
             catch(Exception ex)
             {
                 AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
-                _logger.LogError(ex, "An error occured during evaluation of a solution attempt.");
+                _logger.LogError(ex, "An error occured during evaluation of a solution attempt");
+                return await RenderAsync();
+            }
+        }
+
+        [HttpPost("check/script")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckScriptInputAsync(ScriptExerciseInputData inputData)
+        {
+            try
+            {
+                ViewData["LastScriptInput"] = inputData;
+                
+                if(!ModelState.IsValid)
+                {
+                    AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                    return await RenderAsync();
+                }
+                
+                // Check input
+                if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
+                {
+                    AddStatusMessage("Diese Lösung ist nicht korrekt.", StatusMessageTypes.Error);
+                    return await RenderAsync();
+                }
+
+                AddStatusMessage("Die Aufgabe wurde korrekt gelöst!", StatusMessageTypes.Success);
+                return await RenderAsync();
+            }
+            catch(Exception ex)
+            {
+                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
+                _logger.LogError(ex, "An error occured during evaluation of a solution attempt");
                 return await RenderAsync();
             }
         }
@@ -181,7 +217,7 @@ namespace Ctf4e.LabServer.Controllers
             catch(Exception ex)
             {
                 AddStatusMessage("Ein Fehler ist aufgetreten: " + ex.Message, StatusMessageTypes.Error);
-                _logger.LogError(ex, "Could not mark exercise as solved.");
+                _logger.LogError(ex, "Could not mark exercise as solved");
                 return await RenderAsync();
             }
         }
@@ -210,7 +246,7 @@ namespace Ctf4e.LabServer.Controllers
             catch(Exception ex)
             {
                 AddStatusMessage("Ein Fehler ist aufgetreten: " + ex.Message, StatusMessageTypes.Error);
-                _logger.LogError(ex, "Could not reset exercise.");
+                _logger.LogError(ex, "Could not reset exercise");
                 return await RenderAsync();
             }
         }

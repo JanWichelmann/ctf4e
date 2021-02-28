@@ -7,6 +7,7 @@ namespace Ctf4e.LabServer.Configuration.Exercises
     public enum LabConfigurationExerciseEntryType
     {
         String,
-        MultipleChoice
+        MultipleChoice,
+        Script
     }
 }

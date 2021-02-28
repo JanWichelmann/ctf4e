@@ -143,6 +143,38 @@
                         </button>
                     </form>                    
                 }
+                else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.Script)
+                {
+                    var exerciseData = (LabConfigurationScriptExerciseEntry)exercise.Exercise;
+
+                    var lastInput = ViewData.ContainsKey("LastScriptInput") ? (ScriptExerciseInputData)ViewData["LastScriptInput"] : null;
+                    if(lastInput?.ExerciseId != exercise.Exercise.Id)
+                    {
+                        lastInput = null;
+                    }
+
+                    <form class="form" method="post" asp-controller="Group" asp-action="CheckScriptInput">
+                        @if(exerciseData.StringInput)
+                        {
+                            <div class="mb-3">
+                                @if(exerciseData.Multiline)
+                                {
+                                    <textarea class="form-control" name="input" placeholder="Lösung eingeben" rows="5">@(lastInput?.Input ?? "")</textarea>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control text-monospace" name="input" placeholder="Lösung eingeben" value="@(lastInput?.Input ?? "")">
+                                }
+                            </div>
+                        }
+
+                        <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
+
+                        <button type="submit" class="btn btn-primary">
+                            Überprüfen
+                        </button>
+                    </form>                    
+                }
             </div>
         </div>
     }

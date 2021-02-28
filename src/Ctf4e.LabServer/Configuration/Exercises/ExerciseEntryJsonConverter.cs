@@ -20,6 +20,7 @@ namespace Ctf4e.LabServer.Configuration.Exercises
             {
                 LabConfigurationExerciseEntryType.String => new LabConfigurationStringExerciseEntry(),
                 LabConfigurationExerciseEntryType.MultipleChoice => new LabConfigurationMultipleChoiceExerciseEntry(),
+                LabConfigurationExerciseEntryType.Script => new LabConfigurationScriptExerciseEntry(),
                 _ => throw new JsonSerializationException("Unknown exercise type")
             };
 
