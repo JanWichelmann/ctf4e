@@ -22,7 +22,7 @@
     <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.1" />
     <PackageReference Include="MiniProfiler.EntityFrameworkCore" Version="4.2.1" />
     
-    <PackageReference Include="MoodleLti.DependencyInjection" Version="0.2.2" />
+    <PackageReference Include="MoodleLti.DependencyInjection" Version="0.2.3" />
     
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
     
