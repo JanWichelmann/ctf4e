@@ -5,6 +5,8 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MoodleLti;
 using MoodleLti.Options;
@@ -26,7 +28,8 @@ namespace Ctf4e.Server.Controllers
             (
                 Request,
                 moodleLtiOptions.Value.OAuthConsumerKey,
-                moodleLtiOptions.Value.OAuthSharedSecret
+                moodleLtiOptions.Value.OAuthSharedSecret,
+                _serviceProvider.GetRequiredService<ILogger<MoodleAuthenticationTools>>()
             );
 
             // Does the user exist already?

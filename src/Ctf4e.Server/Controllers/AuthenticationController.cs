@@ -26,14 +26,16 @@ namespace Ctf4e.Server.Controllers
         private readonly ISlotService _slotService;
         private readonly IConfigurationService _configurationService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment)
+        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment, IServiceProvider serviceProvider)
             : base("~/Views/Authentication.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
