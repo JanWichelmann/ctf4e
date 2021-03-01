@@ -14,7 +14,7 @@ RUN npm install
 RUN npx grunt
 
 # Produce final image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim
 WORKDIR /app
 COPY --from=build /app/publish .
 COPY --from=build-static /src/src/Ctf4e.Server/wwwroot/lib ./wwwroot/lib
