@@ -168,6 +168,7 @@ namespace Ctf4e.Server
             {
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
+                    RequireHeaderSymmetry = true,
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
                 });
                 app.Use((context, next) =>
