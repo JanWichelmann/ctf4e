@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Security;
 using System.Threading.Tasks;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,13 +27,22 @@ namespace Ctf4e.Server.Controllers
                 return await RenderAsync(ViewType.Redirect);
 
             // Parse and check request
-            var authData = await MoodleAuthenticationTools.ParseAuthenticationRequestAsync
-            (
-                Request,
-                moodleLtiOptions.Value.OAuthConsumerKey,
-                moodleLtiOptions.Value.OAuthSharedSecret,
-                _serviceProvider.GetRequiredService<ILogger<MoodleAuthenticationTools>>()
-            );
+            MoodleAuthenticationMessageData authData;
+            try
+            {
+                authData = await MoodleAuthenticationTools.ParseAuthenticationRequestAsync
+                (
+                    Request,
+                    moodleLtiOptions.Value.OAuthConsumerKey,
+                    moodleLtiOptions.Value.OAuthSharedSecret,
+                    _serviceProvider.GetRequiredService<ILogger<MoodleAuthenticationTools>>()
+                );
+            }
+            catch(SecurityException)
+            {
+                AddStatusMessage("Ungültiger Login.", StatusMessageTypes.Error);
+                return await RenderAsync(ViewType.Blank);
+            }
 
             // Does the user exist already?
             var user = await _userService.FindUserByMoodleUserIdAsync(authData.UserId, HttpContext.RequestAborted);
