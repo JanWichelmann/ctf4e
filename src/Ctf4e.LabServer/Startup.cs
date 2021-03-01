@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Ctf4e.Api.DependencyInjection;
 using Ctf4e.Api.Options;
@@ -102,7 +103,9 @@ namespace Ctf4e.LabServer
             {
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+                    RequireHeaderSymmetry = true,
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto,
+                    KnownNetworks = { new IPNetwork(IPAddress.Parse(_labOptions.ProxyNetworkAddress), _labOptions.ProxyNetworkPrefix) }
                 });
                 app.Use((context, next) =>
                 {

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using AutoMapper;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Data;
@@ -169,7 +171,8 @@ namespace Ctf4e.Server
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
                     RequireHeaderSymmetry = true,
-                    ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto,
+                    KnownNetworks = { new IPNetwork(IPAddress.Parse(_mainOptions.ProxyNetworkAddress), _mainOptions.ProxyNetworkPrefix) }
                 });
                 app.Use((context, next) =>
                 {

@@ -11,6 +11,8 @@ namespace Ctf4e.LabServer.Configuration
         public bool DevelopmentMode { get; set; }
         
         public bool ProxySupport { get; set; }
+        public string ProxyNetworkAddress { get; set; }
+        public int ProxyNetworkPrefix { get; set; }
         
         public string UserStateDirectory { get; set; }
         
