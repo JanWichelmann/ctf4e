@@ -4,15 +4,17 @@
     var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
 }
 
-@if(viewType == AuthenticationController.ViewType.Blank)
-{
-    <!-- Status messages only -->
-}
-else if(viewType == AuthenticationController.ViewType.Redirect)
-{
-    <a asp-controller="Group" asp-action="RenderPage">Weiterleiten...</a>
-    @section ScriptsHead
+<div class="container">
+    @if(viewType == AuthenticationController.ViewType.Blank)
     {
-        <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderPage", "Group"))">
+        <!-- Status messages only -->
     }
+    else if(viewType == AuthenticationController.ViewType.Redirect)
+    {
+        <a asp-controller="Group" asp-action="RenderPage">Weiterleiten...</a>
+@section ScriptsHead
+{
+    <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderPage", "Group"))">
 }
+    }
+</div>
