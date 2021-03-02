@@ -12,7 +12,7 @@
 @if(groupScoreboard != null)
 {
     <div class="float-end">
-        @if(!groupScoreboard.HasPassed)
+        @if(groupScoreboard.HasPassed)
         {
             <span class="badge bg-success" style="font-size: 1rem;">
                 <i class="bi bi-check-circle"></i>
