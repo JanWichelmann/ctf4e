@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration.Exercises;
+using Ctf4e.LabServer.Models.State;
 
 namespace Ctf4e.LabServer.ViewModels
 {
     public class UserScoreboard
     {
         public UserScoreboardExerciseEntry[] Exercises { get; set; }
-    }
+        public UserStateLogContainer Log { get; set; }
+     }
 
     public class UserScoreboardExerciseEntry
     {

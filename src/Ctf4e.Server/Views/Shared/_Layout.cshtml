@@ -57,6 +57,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbar-content">
                 <a class="navbar-brand" asp-controller="Scoreboard" asp-action="RenderScoreboard">
+                    <i class="bi bi-flag"></i>
                     @ViewData["NavbarTitle"]
                 </a>
                 <ul class="navbar-nav me-auto">
@@ -242,7 +243,7 @@
                     @if(devMode && currentUser != null && currentUser.IsAdmin)
                     {
                         <a class="link-footer" href="~/dev/profiler/results-index" target="_blank">Profiler</a>
-                        <span class="font-weight-bold">&middot;</span>
+                        <span>&middot;</span>
                     }
                     <span>
                         Build #<a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
@@ -255,6 +256,5 @@
 
 <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 @await RenderSectionAsync("ScriptsBody", required: false)
-
 </body>
 </html>

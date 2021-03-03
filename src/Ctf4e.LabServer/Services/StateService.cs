@@ -100,7 +100,7 @@ namespace Ctf4e.LabServer.Services
             _dockerService = dockerService ?? throw new ArgumentNullException(nameof(dockerService));
 
             _dockerSupportEnabled = !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName);
-            
+
             // Load state
             Reload();
         }
@@ -136,7 +136,8 @@ namespace Ctf4e.LabServer.Services
                     Lock = new SemaphoreSlim(1, 1),
                     GroupId = userStateFile.GroupId,
                     GroupMembers = new List<UserState>(),
-                    Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId))
+                    Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId)),
+                    Log = new UserStateLogContainer(Math.Max(1, _options.Value.UserStateLogSize))
                 };
                 _userStates.TryAdd(userId, userState);
 
@@ -151,8 +152,8 @@ namespace Ctf4e.LabServer.Services
                     {
                         if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileStringExerciseEntry stringExerciseState))
                         {
-                            // Create empty state for this exercise
-                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
+                            // Set new empty state
+                            userState.Exercises[exercise.Value.Id] = UserStateFileStringExerciseEntry.CreateState(stringExercise);
                             userStateChanged = true;
                             continue;
                         }
@@ -163,8 +164,8 @@ namespace Ctf4e.LabServer.Services
                     {
                         if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState))
                         {
-                            // Create empty state for this exercise
-                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
+                            // Set new empty state
+                            userState.Exercises[exercise.Value.Id] = UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise);
                             userStateChanged = true;
                             continue;
                         }
@@ -173,11 +174,10 @@ namespace Ctf4e.LabServer.Services
                     }
                     else if(exercise.Value is LabConfigurationScriptExerciseEntry scriptExercise)
                     {
-                        // TODO this is likely wrong, use TryAdd and TryUpdate
                         if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileScriptExerciseEntry scriptExerciseState))
                         {
-                            // Create empty state for this exercise
-                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileScriptExerciseEntry.CreateState(scriptExercise));
+                            // Set new empty state
+                            userState.Exercises[exercise.Value.Id] = UserStateFileScriptExerciseEntry.CreateState(scriptExercise);
                             userStateChanged = true;
                             continue;
                         }
@@ -275,7 +275,8 @@ namespace Ctf4e.LabServer.Services
                         Lock = new SemaphoreSlim(1, 1),
                         GroupId = groupId,
                         GroupMembers = new List<UserState>(), // Will be filled later
-                        Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>()
+                        Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(),
+                        Log = new UserStateLogContainer(Math.Max(1, _options.Value.UserStateLogSize))
                     };
 
                     // Initialize exercises
@@ -288,7 +289,7 @@ namespace Ctf4e.LabServer.Services
                         else if(exercise.Value is LabConfigurationScriptExerciseEntry scriptExercise)
                             userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileScriptExerciseEntry.CreateState(scriptExercise));
                     }
-                    
+
                     // Initialize Docker container account, if needed
                     if(_dockerSupportEnabled && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
                         await _dockerService.InitUserAsync(userId, userState.UserName, userState.UserName, cancellationToken);
@@ -363,6 +364,11 @@ namespace Ctf4e.LabServer.Services
 
             // Get state object
             var userState = _userStates[userId];
+
+            // Log input
+            userState.Log.AddMessage($"Checking input for exercise #{exerciseId}", input.ToString());
+
+            // There can only be one grading operation per user at once
             await userState.Lock.WaitAsync(cancellationToken);
             try
             {
@@ -381,12 +387,12 @@ namespace Ctf4e.LabServer.Services
                 {
                     if(!_dockerSupportEnabled)
                         throw new NotSupportedException("Docker support is not enabled, so script exercises cannot be graded.");
-                    
+
                     // Run script
                     string stderr;
                     (correct, stderr) = await _dockerService.GradeAsync(userId, exerciseId, input as string, cancellationToken);
-                    
-                    // TODO store stderr somewhere. Maybe some buffer per user state, where a detailed log is kept for the last n actions?
+
+                    userState.Log.AddMessage("Docker stderr", stderr);
                 }
 
                 // Update user, if state changed
@@ -396,6 +402,7 @@ namespace Ctf4e.LabServer.Services
                     WriteUserStateFile(userId);
                 }
 
+                userState.Log.AddMessage($"Grade result: {(correct ? "Correct" : "Not correct")}", null);
                 return correct;
             }
             finally
@@ -415,7 +422,6 @@ namespace Ctf4e.LabServer.Services
             // Ensure synchronized access
             using var configReadLock = await _configLock.ReaderLockAsync();
 
-
             // Check input values
             if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
                 throw new ArgumentException();
@@ -434,6 +440,8 @@ namespace Ctf4e.LabServer.Services
                     userExercise.Solved = true;
                     WriteUserStateFile(userId);
                 }
+
+                userState.Log.AddMessage($"Exercise #{exerciseId} marked as \"solved\" by admin", null);
             }
             finally
             {
@@ -470,6 +478,8 @@ namespace Ctf4e.LabServer.Services
                     userExercise.Solved = false;
                     WriteUserStateFile(userId);
                 }
+
+                userState.Log.AddMessage($"Exercise #{exerciseId} state reset by admin", null);
             }
             finally
             {
@@ -517,7 +527,8 @@ namespace Ctf4e.LabServer.Services
                             SolvedByGroupMember = userState.GroupMembers.Any(g => g.Exercises[e.Key].Solved),
                             Description = description
                         };
-                    }).ToArray()
+                    }).ToArray(),
+                    Log = userState.Log
                 };
 
                 // Done

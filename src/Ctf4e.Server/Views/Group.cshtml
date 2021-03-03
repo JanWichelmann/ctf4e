@@ -72,8 +72,10 @@
     {
         <a class="btn btn-primary" asp-controller="Group" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
+            <i class="bi bi-hdd-network"></i>
             Zum Praktikumsserver
-        </a>    }
+        </a>        
+    }
 
     <h5 class="header">
         Aufgaben
@@ -85,14 +87,14 @@
         <div class="card mb-2">
             <div class="card-header" id="exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card">
                 <div class="row">
-                    <div class="col-sm text-start">
+                    <div class="col">
                         @exercise.Exercise.Name
                         @if(exercise.Exercise.IsMandatory)
                         {
                             <span class="badge bg-info">Pflicht</span>
                         }
                     </div>
-                    <div class="col-sm text-end">
+                    <div class="col col-auto ms-auto">
                         <span class="badge bg-light">Versuche: @exercise.ValidTries gültig, @exercise.Tries insgesamt</span>
                         @if(exercise.Passed)
                         {

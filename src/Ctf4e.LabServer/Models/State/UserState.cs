@@ -20,5 +20,7 @@ namespace Ctf4e.LabServer.Models.State
         public string Password { get; set; }
 
         public ConcurrentDictionary<int, UserStateFileExerciseEntry> Exercises { get; set; }
+        
+        public UserStateLogContainer Log { get; set; }
     }
 }
