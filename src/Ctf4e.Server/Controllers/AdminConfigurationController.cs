@@ -37,8 +37,6 @@ namespace Ctf4e.Server.Controllers
                 PassAsGroup = await _configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
                 PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
                 NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
-                FlagPrefix = await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted),
-                FlagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted),
                 GroupSizeMin = await _configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted),
                 GroupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted)
             };
@@ -88,9 +86,6 @@ namespace Ctf4e.Server.Controllers
                 
                 await _configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
                 await _configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
-                
-                await _configurationService.SetFlagPrefixAsync(configurationData.FlagPrefix, HttpContext.RequestAborted);
-                await _configurationService.SetFlagSuffixAsync(configurationData.FlagSuffix, HttpContext.RequestAborted);
 
                 if(configurationData.GroupSizeMin <= 0)
                     configurationData.GroupSizeMin = 1;

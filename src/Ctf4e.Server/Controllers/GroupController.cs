@@ -87,17 +87,8 @@ namespace Ctf4e.Server.Controllers
                 return await RenderLabPageAsync(labId);
             }
 
-            // Add prefix/suffix to flag code, if necessary
-            string flagPrefix = await _configurationService.GetFlagPrefixAsync(HttpContext.RequestAborted);
-            string flagSuffix = await _configurationService.GetFlagSuffixAsync(HttpContext.RequestAborted);
-            code ??= "";
-            string fullFlagString = code;
-            if(!code.StartsWith(flagPrefix))
-                fullFlagString = flagPrefix + code.Trim() + flagSuffix;
-            // TODO remove prefix/suffix handling and let users simply manually specify both? Probably better for usability, as users copy around entire flags anyway
-
             // Try to submit flag
-            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, fullFlagString, HttpContext.RequestAborted);
+            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
             if(success)
             {
                 AddStatusMessage("Einlösen der Flag erfolgreich!", StatusMessageTypes.Success);

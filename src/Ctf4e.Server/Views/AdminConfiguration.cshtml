@@ -36,20 +36,6 @@
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="FlagPrefix">Flag-Format</label>
-            <div class="input-group">
-                <input type="text" class="form-control font-monospace text-right" asp-for="FlagPrefix">
-                <div class="input-group-text font-monospace">1n5er7-f14g-c0de-here-37a12d</div>
-                <input type="text" class="form-control font-monospace" asp-for="FlagSuffix">
-            </div>
-            <span asp-validation-for="FlagPrefix" class="text-danger"></span>
-            <span asp-validation-for="FlagSuffix" class="text-danger"></span>
-            <small>
-                Das angegebene Präfix und Suffix wird bei jeder Flag vorausgesetzt.
-                Flags, die sich nicht an dieses Format halten, können nicht eingelöst werden.
-            </small>
-        </div>
-        <div class="mb-3">
             <label class="form-label" asp-for="FlagMinimumPointsDivisor">Teiler für Flag-Minimalpunktzahl</label>
             <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
             <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>

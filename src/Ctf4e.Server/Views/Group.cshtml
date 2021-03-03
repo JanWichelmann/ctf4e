@@ -161,15 +161,7 @@
     <form asp-controller="Group" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId" class="mb-3">
         <div class="mb-3">
             <label class="form-label" for="input-flag-code">Flag-Code</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <div class="input-group-text font-monospace">@(await ConfigurationService.GetFlagPrefixAsync())</div>
-                </div>
-                <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="1n5er7-f14g-c0de-here-37a12d">
-                <div class="input-group-append">
-                    <div class="input-group-text font-monospace">@(await ConfigurationService.GetFlagSuffixAsync())</div>
-                </div>
-            </div>
+            <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
         </div>
 
         <button type="submit" class="btn btn-primary">

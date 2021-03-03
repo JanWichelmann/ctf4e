@@ -24,10 +24,6 @@ namespace Ctf4e.Server.Services
         Task SetNavbarTitleAsync(string value, CancellationToken cancellationToken = default);
         Task<string> GetPageTitleAsync(CancellationToken cancellationToken = default);
         Task SetPageTitleAsync(string value, CancellationToken cancellationToken = default);
-        Task<string> GetFlagPrefixAsync(CancellationToken cancellationToken = default);
-        Task SetFlagPrefixAsync(string value, CancellationToken cancellationToken = default);
-        Task<string> GetFlagSuffixAsync(CancellationToken cancellationToken = default);
-        Task SetFlagSuffixAsync(string value, CancellationToken cancellationToken = default);
         Task SetGroupSizeMinAsync(int value, CancellationToken cancellationToken = default);
         Task<int> GetGroupSizeMinAsync(CancellationToken cancellationToken = default);
         Task SetGroupSizeMaxAsync(int value, CancellationToken cancellationToken = default);
@@ -39,6 +35,7 @@ namespace Ctf4e.Server.Services
         private readonly CtfDbContext _dbContext;
         private readonly IMemoryCache _cache;
 
+        // ReSharper disable InconsistentNaming
         private const string ConfigKeyFlagMinimumPointsDivisor = "FlagMinimumPointsDivisor";
         private const string ConfigKeyFlagHalfPointsSubmissionCount = "FlagHalfPointsSubmissionCount";
         private const string ConfigKeyScoreboardEntryCount = "ScoreboardEntryCount";
@@ -46,10 +43,9 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyPassAsGroup = "PassAsGroup";
         private const string ConfigKeyNavbarTitle = "NavbarTitle";
         private const string ConfigKeyPageTitle = "PageTitle";
-        private const string ConfigKeyFlagPrefix = "FlagPrefix";
-        private const string ConfigKeyFlagSuffix = "FlagSuffix";
         private const string ConfigKeyGroupSizeMin = "GroupSizeMin";
         private const string ConfigKeyGroupSizeMax = "GroupSizeMax";
+        // ReSharper restore InconsistentNaming
 
         public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
         {
@@ -98,18 +94,6 @@ namespace Ctf4e.Server.Services
 
         public Task SetPageTitleAsync(string value, CancellationToken cancellationToken = default)
             => AddOrUpdateConfigItem(ConfigKeyPageTitle, value, cancellationToken);
-
-        public Task<string> GetFlagPrefixAsync(CancellationToken cancellationToken = default)
-            => GetConfigItemAsync(ConfigKeyFlagPrefix, s => s ?? "CTF{", cancellationToken);
-
-        public Task SetFlagPrefixAsync(string value, CancellationToken cancellationToken = default)
-            => AddOrUpdateConfigItem(ConfigKeyFlagPrefix, value, cancellationToken);
-
-        public Task<string> GetFlagSuffixAsync(CancellationToken cancellationToken = default)
-            => GetConfigItemAsync(ConfigKeyFlagSuffix, s => s ?? "}", cancellationToken);
-
-        public Task SetFlagSuffixAsync(string value, CancellationToken cancellationToken = default)
-            => AddOrUpdateConfigItem(ConfigKeyFlagSuffix, value, cancellationToken);
 
         public Task SetGroupSizeMinAsync(int value, CancellationToken cancellationToken = default)
             => AddOrUpdateConfigItem(ConfigKeyGroupSizeMin, value, cancellationToken);
