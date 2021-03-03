@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Ctf4e.LabServer.Configuration.Exercises;
-
-namespace Ctf4e.LabServer.Configuration
+﻿namespace Ctf4e.LabServer.Options
 {
     public class LabOptions
     {

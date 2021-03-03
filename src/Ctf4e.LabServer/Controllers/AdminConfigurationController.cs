@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Ctf4e.Api.Options;
 using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Constants;
+using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;

@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Ctf4e.LabServer.Constants;
+using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;

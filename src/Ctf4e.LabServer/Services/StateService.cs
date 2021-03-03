@@ -12,6 +12,7 @@ using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Configuration.Exercises;
 using Ctf4e.LabServer.InputModels;
 using Ctf4e.LabServer.Models.State;
+using Ctf4e.LabServer.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -366,7 +367,7 @@ namespace Ctf4e.LabServer.Services
             var userState = _userStates[userId];
 
             // Log input
-            userState.Log.AddMessage($"Checking input for exercise #{exerciseId}", input.ToString());
+            userState.Log.AddMessage($"Checking input for exercise #{exerciseId}", input?.ToString());
 
             // There can only be one grading operation per user at once
             await userState.Lock.WaitAsync(cancellationToken);

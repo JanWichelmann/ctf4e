@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
+using Ctf4e.LabServer.Options;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Options;

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.InputModels;
+using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.Extensions.Logging;

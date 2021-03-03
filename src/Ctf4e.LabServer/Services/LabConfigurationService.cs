@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Configuration.Exercises;
+using Ctf4e.LabServer.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
