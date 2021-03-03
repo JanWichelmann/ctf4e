@@ -298,7 +298,7 @@ namespace Ctf4e.LabServer.Services
 
                     // Initialize Docker container account, if needed
                     if(_dockerSupportEnabled && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
-                        await _dockerService.InitUserAsync(userId, userState.UserName, userState.UserName, cancellationToken);
+                        await _dockerService.InitUserAsync(userId, userState.UserName, userState.Password, cancellationToken);
 
                     // Store new user state
                     _userStates.TryAdd(userId, userState);
