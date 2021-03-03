@@ -2,29 +2,31 @@
 
 <div class="mb-3">
     <label class="form-label" asp-for="LabExecution.PreStart">Vor-Beginn</label>
-    <input asp-for="LabExecution.PreStart" id="datetime-prestart" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control" />
+    <input asp-for="LabExecution.PreStart" id="datetime-prestart" type="text" asp-format="{0:dd.MM.yyyy HH:mm:ss}" value="@DateTime.Now" class="form-control" />
     <span asp-validation-for="LabExecution.PreStart" class="text-danger"></span>
 </div>
 <div class="mb-3">
     <label class="form-label" asp-for="LabExecution.Start">Beginn</label>
-    <input asp-for="LabExecution.Start" id="datetime-start" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control" />
+    <input asp-for="LabExecution.Start" id="datetime-start" type="text" asp-format="{0:dd.MM.yyyy HH:mm:ss}" value="@DateTime.Now" class="form-control" />
     <span asp-validation-for="LabExecution.Start" class="text-danger"></span>
 </div>
 <div class="mb-3">
     <label class="form-label" asp-for="LabExecution.End">Ende</label>
-    <input asp-for="LabExecution.End" id="datetime-end" type="text" asp-format="{0:dd.MM.yyyy HH:mm}" class="form-control" />
+    <input asp-for="LabExecution.End" id="datetime-end" type="text" asp-format="{0:dd.MM.yyyy HH:mm:ss}" value="@DateTime.Now" class="form-control" />
     <span asp-validation-for="LabExecution.End" class="text-danger"></span>
 </div>
 
-<script type="text/javascript">
-            flatpickr.localize(flatpickr.l10ns.de);
-            
-            options = {
-                          "dateFormat": "d.m.Y H:i",
-                          "enableTime": true,
-                          "allowInput": true
-                      };
-            flatpickr(document.getElementById("datetime-prestart"), options);
-            flatpickr(document.getElementById("datetime-start"), options);
-            flatpickr(document.getElementById("datetime-end"), options);
-        </script>
+<script>
+    flatpickr.localize(flatpickr.l10ns.de);
+    
+    options = {
+                 "dateFormat": "d.m.Y H:i:S",
+                 "enableTime": true,
+                 "enableSeconds": true,
+                 "allowInput": true,
+                 "minuteIncrement": 1
+             };
+    flatpickr(document.getElementById("datetime-prestart"), options);
+    flatpickr(document.getElementById("datetime-start"), options);
+    flatpickr(document.getElementById("datetime-end"), options);
+</script>

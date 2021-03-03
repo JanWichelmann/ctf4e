@@ -257,7 +257,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" for="input-add-exercise-submission-time">Einreichungszeitpunkt</label>
-                        <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" />
+                        <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="input-add-exercise-submission-weight">Gewichtung (nur für Fehlversuche)</label>
@@ -316,7 +316,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" for="input-add-flag-submission-time">Einreichungszeitpunkt</label>
-                        <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeMinutes)" />
+                        <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -335,9 +335,11 @@
 // Date time picker
 flatpickr.localize(flatpickr.l10ns.de);                               
 options = {
-             "dateFormat": "d.m.Y H:i",
+             "dateFormat": "d.m.Y H:i:S",
              "enableTime": true,
-             "allowInput": true
+             "enableSeconds": true,
+             "allowInput": true,
+             "minuteIncrement": 1
          };
 flatpickr(document.getElementById("input-add-exercise-submission-time"), options);
 flatpickr(document.getElementById("input-add-flag-submission-time"), options);
