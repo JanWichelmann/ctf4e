@@ -971,6 +971,7 @@ namespace Ctf4e.Server.Services
             if(currentLab == null)
                 return null;
 
+            // Get list of labs
             var labs = await _dbContext.Labs.AsNoTracking()
                 .OrderBy(l => l.Name)
                 .Select(l => new GroupScoreboardLabEntry
@@ -981,21 +982,26 @@ namespace Ctf4e.Server.Services
                     Active = l.Executions.Any(le => le.GroupId == groupId && le.PreStart <= now && now < le.End)
                 })
                 .ToListAsync(cancellationToken);
+
+            // Find active lab execution
             var labExecution = await _dbContext.LabExecutions.AsNoTracking()
                 .FirstOrDefaultAsync(le => le.GroupId == groupId && le.LabId == labId, cancellationToken);
 
+            // Get lookup of group members
             var groupMembers = await _dbContext.Users.AsNoTracking()
                 .Where(u => u.GroupId == groupId)
                 .OrderBy(u => u.DisplayName)
                 .Select(u => new { u.Id, u.DisplayName })
                 .ToDictionaryAsync(u => u.Id, u => u.DisplayName, cancellationToken);
 
+            // Get list of exercises for current lab
             var exercises = await _dbContext.Exercises.AsNoTracking()
                 .Where(e => e.LabId == labId)
                 .OrderBy(e => e.ExerciseNumber)
                 .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
+            // Retrieve all exercise submissions of this user/group
             var exerciseSubmissions = (await _dbConn.QueryAsync<ExerciseSubmissionEntity>($@"
                     SELECT es.*
                     FROM `ExerciseSubmissions` es
@@ -1010,17 +1016,32 @@ namespace Ctf4e.Server.Services
                 .GroupBy(es => es.ExerciseId)
                 .ToDictionary(es => es.Key, es => es.ToList());
 
-            var foundFlagsCounts = await _dbContext.FlagSubmissions.AsNoTracking()
+            // Retrieve all flag submissions of this group
+            var foundFlags = await _dbContext.FlagSubmissions.AsNoTracking()
                 .Where(fs => fs.User.GroupId == groupId && fs.Flag.LabId == labId)
-                .Select(fs => new
+                .OrderBy(fs => fs.SubmissionTime)
+                .Select(fs => new GroupScoreboardFlagEntry
                 {
                     Valid = fs.User.Group.LabExecutions
-                        .Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End)
+                        .Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End),
+                    FlagId = fs.FlagId,
+                    UserId = fs.UserId,
+                    SubmissionTime = fs.SubmissionTime
                 })
-                .GroupBy(fs => fs.Valid)
-                .Select(fs => new { Valid = fs.Key, Count = fs.Count() })
-                .ToDictionaryAsync(fs => fs.Valid, fs => fs.Count, cancellationToken);
+                .ToListAsync(cancellationToken);
+            var foundFlagsGrouped = foundFlags
+                .GroupBy(fs => fs.FlagId)
+                .ToList();
 
+            // Retrieve flag codes
+            var flags = await _dbContext.Flags.AsNoTracking()
+                .Where(f => f.LabId == labId)
+                .ProjectTo<Flag>(_mapper.ConfigurationProvider)
+                .ToDictionaryAsync(f => f.Id, cancellationToken);
+            foreach(var fs in foundFlags)
+                fs.FlagCode = flags[fs.FlagId].Code;
+
+            // Build scoreboard
             var scoreboard = new GroupScoreboard
             {
                 LabId = labId,
@@ -1028,10 +1049,11 @@ namespace Ctf4e.Server.Services
                 Labs = labs,
                 LabExecutionStatus = LabExecutionToStatus(now, labExecution),
                 LabExecution = _mapper.Map<LabExecution>(labExecution),
-                FoundFlagsCount = foundFlagsCounts.Sum(f => f.Value),
-                ValidFoundFlagsCount = foundFlagsCounts.FirstOrDefault(f => f.Key).Value,
+                FoundFlagsCount = foundFlagsGrouped.Count,
+                ValidFoundFlagsCount = foundFlagsGrouped.Count(ff => ff.Any(ffs => ffs.Valid)),
                 Exercises = new List<ScoreboardUserExerciseEntry>(),
-                GroupMembers = groupMembers
+                GroupMembers = groupMembers,
+                Flags = foundFlags
             };
 
             // Check exercise submissions

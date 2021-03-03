@@ -95,7 +95,7 @@
                         }
                     </div>
                     <div class="col col-auto ms-auto">
-                        <span class="badge bg-light">Versuche: @exercise.ValidTries gültig, @exercise.Tries insgesamt</span>
+                        <span class="badge bg-light text-dark">Versuche: @exercise.ValidTries gültig, @exercise.Tries insgesamt</span>
                         @if(exercise.Passed)
                         {
                             <span class="badge bg-primary">@exercise.Points Punkte</span>
@@ -152,20 +152,13 @@
     }
 
     <div>
-        <div class="float-end">
-            @if(!groupScoreboard.HasPassed)
-            {
-                @:Gefundene Flags: @groupScoreboard.ValidFoundFlagsCount gültig, @groupScoreboard.FoundFlagsCount insgesamt
-            }
-        </div>
-
         <h5 class="header">
-            Flag einlösen
+            Flags
         </h5>
         <hr class="header-secondary">
     </div>
-
-    <form asp-controller="Group" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId">
+    
+    <form asp-controller="Group" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId" class="mb-3">
         <div class="mb-3">
             <label class="form-label" for="input-flag-code">Flag-Code</label>
             <div class="input-group">
@@ -184,6 +177,56 @@
             Flag einlösen
         </button>
     </form>
+    
+    <div class="card mb-2">
+        <div class="card-header" id="flag-list-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#flag-list-card">
+            <div class="row">
+                <div class="col">
+                    Gefundene Flags
+                </div>
+                <div class="col col-auto ms-auto">
+                    <span class="badge bg-light text-dark">
+                        @groupScoreboard.ValidFoundFlagsCount gültig, @groupScoreboard.FoundFlagsCount insgesamt
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="flag-list-card" class="collapse">
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">Einreichungszeitpunkt</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Gruppenmitglied</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach(var flagSubmission in groupScoreboard.Flags)
+                    {
+                        <tr>
+                            <td>
+                                @flagSubmission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
+                                @if(!flagSubmission.Valid)
+                                {
+                                    <span class="badge bg-warning" title="Diese Einreichung fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
+                                }
+                            </td>
+                            <td>
+                                <code>@flagSubmission.FlagCode</code>
+                            </td>
+                            <td>
+                                @groupScoreboard.GroupMembers[flagSubmission.UserId]
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    
     <h5 class="header">
         Zu anderem Praktikum wechseln
     </h5>

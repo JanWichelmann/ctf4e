@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.ViewModels
@@ -28,6 +29,8 @@ namespace Ctf4e.Server.ViewModels
         public int ValidFoundFlagsCount { get; set; }
 
         public Dictionary<int, string> GroupMembers { get; set; }
+        
+        public List<GroupScoreboardFlagEntry> Flags { get; set; }
     }
 
     public class GroupScoreboardLabEntry
@@ -39,5 +42,18 @@ namespace Ctf4e.Server.ViewModels
         public string ServerBaseUrl { get; set; }
 
         public bool Active { get; set; }
+    }
+
+    public class GroupScoreboardFlagEntry
+    {
+        public int FlagId { get; set; }
+        
+        public string FlagCode { get; set; }
+        
+        public int UserId { get; set; }
+        
+        public DateTime SubmissionTime { get; set; }
+        
+        public bool Valid { get; set; }
     }
 }
