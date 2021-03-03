@@ -52,4 +52,5 @@
     <input asp-for="Id" type="hidden">
 
     <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@Model.LabId" class="btn btn-secondary">Abbrechen</a>
 </form>

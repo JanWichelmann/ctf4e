@@ -5,22 +5,24 @@
     var lab = (Lab)ViewData["Lab"];
 }
 
+<div class="float-end">
+    <a class="btn btn-sm btn-secondary" asp-controller="AdminLabs" asp-action="RenderLabList">
+        <i class="bi bi-arrow-left"></i>
+        Zurück
+    </a>
+    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowCreateExerciseForm" asp-route-labId="@lab.Id">
+        <i class="bi bi-plus"></i>
+        Aufgabe erstellen
+    </a>
+</div>
+
 <h3 class="header">
     Aufgaben von Praktikum &quot;@lab.Name&quot; verwalten
 </h3>
 <hr class="header">
 
-<p>
-    <a class="text-primary" asp-controller="AdminLabs" asp-action="RenderLabList">
-        <i class="bi bi-arrow-left"></i>
-        Zurück zur Praktikumsliste
-    </a>
-</p>
-<a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowCreateExerciseForm" asp-route-labId="@lab.Id">
-    <i class="bi bi-plus"></i>
-    Aufgabe erstellen
-</a>
-<table class="table table-sm table-bordered table-hover text-nowrap mt-2">
+
+<table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
         <th scope="col">ID</th>

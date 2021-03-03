@@ -41,4 +41,5 @@
     <input asp-for="LabId" type="hidden" value="@lab.Id">
 
     <button type="submit" class="btn btn-primary">Flag erstellen</button>
+    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@lab.Id" class="btn btn-secondary">Abbrechen</a>
 </form>
