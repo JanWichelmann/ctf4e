@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Ctf4e.LabServer.ViewModels;
+using Ctf4e.Utilities;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nito.AsyncEx;
 
@@ -137,6 +138,8 @@ namespace Ctf4e.LabServer.Services
                     Lock = new SemaphoreSlim(1, 1),
                     GroupId = userStateFile.GroupId,
                     GroupMembers = new List<UserState>(),
+                    UserName = userStateFile.UserName,
+                    Password = userStateFile.Password,
                     Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId)),
                     Log = new UserStateLogContainer(Math.Max(1, _options.Value.UserStateLogSize))
                 };
@@ -277,6 +280,8 @@ namespace Ctf4e.LabServer.Services
                         GroupId = groupId,
                         GroupMembers = new List<UserState>(), // Will be filled later
                         Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(),
+                        UserName = _dockerSupportEnabled ? $"user{userId}" : null,
+                        Password = _dockerSupportEnabled ? RandomStringGenerator.GetRandomString(10) : null,
                         Log = new UserStateLogContainer(Math.Max(1, _options.Value.UserStateLogSize))
                     };
 
@@ -510,6 +515,8 @@ namespace Ctf4e.LabServer.Services
                 // Output object
                 var scoreboard = new UserScoreboard
                 {
+                    DockerUserName = userState.UserName,
+                    DockerPassword = userState.Password,
                     Exercises = _exercises.Select(e =>
                     {
                         var exerciseState = userState.Exercises[e.Key];

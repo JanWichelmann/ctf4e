@@ -70,8 +70,14 @@ hr.header-secondary {
 
 /* Icons */
 
+// Add default margin to separate icons from text
+// In the rare cases of icon-only buttons, offer a class for overriding this behavior
 .bi {
   margin-right: .25rem;
+  
+  &-nomargin {
+    margin-right: 0 !important;
+  }
 }
 
 .bi::before {

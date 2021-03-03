@@ -206,6 +206,40 @@
     </div>
 }
 
+@if(userScoreboard.DockerUserName != null && userScoreboard.DockerPassword != null)
+{
+    <h5 class="header">Zugangsdaten</h5>
+    <hr class="header-secondary">
+
+    <div class="mb-3">
+        <label for="input-docker-username">Benutzername</label>
+        <div class="input-group">
+            <input id="input-docker-username" type="text" class="form-control font-monospace" readonly value="@userScoreboard.DockerUserName">
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-placement="bottom" title="Kopieren" data-clipboard-target="#input-docker-username">
+                <i class="bi bi-nomargin bi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="input-docker-password">Passwort</label>
+        <div class="input-group">
+            <input id="input-docker-password" type="text" class="form-control font-monospace" readonly value="@userScoreboard.DockerPassword">
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-placement="bottom" title="Kopieren" data-clipboard-target="#input-docker-password">
+                <i class="bi bi-nomargin bi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="~/lib/clipboard/js/clipboard.min.js"></script>
+    <script>
+        window.addEventListener("load", function()
+        {
+            // Setup clipboard buttons
+            new ClipboardJS(".btn");
+        });
+    </script>
+}
+
 @if(adminMode)
 {
     <h5 class="header">Log</h5>

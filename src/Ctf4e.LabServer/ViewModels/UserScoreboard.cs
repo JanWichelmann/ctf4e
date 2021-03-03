@@ -9,6 +9,8 @@ namespace Ctf4e.LabServer.ViewModels
 {
     public class UserScoreboard
     {
+        public string DockerUserName { get; set; }
+        public string DockerPassword { get; set; }
         public UserScoreboardExerciseEntry[] Exercises { get; set; }
         public UserStateLogContainer Log { get; set; }
      }
