@@ -45,6 +45,9 @@
     <link rel="stylesheet" href="~/css/ctf4e-server.min.css">
 
     <script src="~/lib/popper/js/popper.min.js"></script>
+    @if ( currentUser.IsAdmin ) {
+        <script src="~/js/common.js"></script>
+    }
 
     @await RenderSectionAsync("ScriptsHead", required: false)
 </head>

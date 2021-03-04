@@ -91,4 +91,6 @@ document.getElementById("modal-delete-group").addEventListener("show.bs.modal", 
     e.target.querySelector('input[data-replace="group-id"]').value = e.relatedTarget.dataset.groupid;
     e.target.querySelector('span[data-replace="group-name"]').innerText = e.relatedTarget.dataset.groupname;
 });
+
+window.onload = () => table_sorting();
 </script>
