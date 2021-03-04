@@ -13,24 +13,22 @@ using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
-    [Route("group")]
+    [Route("dashboard")]
     [Authorize(Policy = AuthenticationStrings.PolicyIsGroupMember)]
-    public class GroupController : ControllerBase
+    public class UserDashboardController : ControllerBase
     {
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabExecutionService _labExecutionService;
         private readonly IFlagService _flagService;
         private readonly ILabService _labService;
-        private readonly IConfigurationService _configurationService;
 
-        public GroupController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService, IConfigurationService configurationService)
-            : base("~/Views/Group.cshtml", userService, mainOptions)
+        public UserDashboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
+            : base("~/Views/UserDashboard.cshtml", userService, mainOptions)
         {
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
         private async Task<IActionResult> RenderAsync(int? labId)
@@ -57,10 +55,10 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Retrieve scoreboard
-            var scoreboard = await _scoreboardService.GetGroupScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
+            var scoreboard = await _scoreboardService.GetUserScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
             if(scoreboard == null)
             {
-                AddStatusMessage($"Das Gruppen-Scoreboard für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage($"Die Übersicht für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -130,7 +128,7 @@ namespace Ctf4e.Server.Controllers
             }
 
             // Build authentication string
-            var authData = new UserLoginRequest()
+            var authData = new UserLoginRequest
             {
                 UserId = currentUser.Id,
                 UserDisplayName = currentUser.DisplayName,

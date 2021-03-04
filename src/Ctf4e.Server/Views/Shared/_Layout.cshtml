@@ -71,8 +71,8 @@
                         @if(currentUser.Group != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Group" asp-action="RenderLabPage">
-                                    Gruppenstatus
+                                <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage">
+                                    Praktikumsübersicht
                                 </a>
                             </li>
                         }

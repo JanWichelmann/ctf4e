@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Aufgaben";
 
-    var groupScoreboard = (GroupScoreboard)ViewData["Scoreboard"];
+    var groupScoreboard = (UserScoreboard)ViewData["Scoreboard"];
 }
 
 <div class="container">
@@ -70,7 +70,7 @@
 
     if(groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
     {
-        <a class="btn btn-primary" asp-controller="Group" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
+        <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
             <i class="bi bi-hdd-network"></i>
             Zum Praktikumsserver
@@ -158,7 +158,7 @@
         <hr class="header-secondary">
     </div>
     
-    <form asp-controller="Group" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId" class="mb-3">
+    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId" class="mb-3">
         <div class="mb-3">
             <label class="form-label" for="input-flag-code">Flag-Code</label>
             <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
@@ -224,7 +224,7 @@
     </h5>
     <hr class="header-secondary">
 
-    <form asp-controller="Group" asp-action="RenderLabPage" method="get">
+    <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">Praktikum</label>
             <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">

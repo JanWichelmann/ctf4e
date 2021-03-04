@@ -4,13 +4,13 @@ using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.ViewModels
 {
-    public class GroupScoreboard
+    public class UserScoreboard
     {
         public int LabId { get; set; }
 
-        public GroupScoreboardLabEntry CurrentLab { get; set; }
+        public UserScoreboardLabEntry CurrentLab { get; set; }
 
-        public List<GroupScoreboardLabEntry> Labs { get; set; }
+        public List<UserScoreboardLabEntry> Labs { get; set; }
 
         public ScoreboardGroupStatus LabExecutionStatus { get; set; }
 
@@ -30,10 +30,10 @@ namespace Ctf4e.Server.ViewModels
 
         public Dictionary<int, string> GroupMembers { get; set; }
         
-        public List<GroupScoreboardFlagEntry> Flags { get; set; }
+        public List<UserScoreboardFlagEntry> Flags { get; set; }
     }
 
-    public class GroupScoreboardLabEntry
+    public class UserScoreboardLabEntry
     {
         public int LabId { get; set; }
 
@@ -44,7 +44,7 @@ namespace Ctf4e.Server.ViewModels
         public bool Active { get; set; }
     }
 
-    public class GroupScoreboardFlagEntry
+    public class UserScoreboardFlagEntry
     {
         public int FlagId { get; set; }
         
