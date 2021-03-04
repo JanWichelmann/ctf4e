@@ -161,6 +161,9 @@
     <Content Update="Views\AdminScoreboard.Flags.cshtml">
       <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
     </Content>
+    <Content Update="Views\Authentication.GroupSelection.cshtml">
+      <DependentUpon>Authentication.cshtml</DependentUpon>
+    </Content>
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />

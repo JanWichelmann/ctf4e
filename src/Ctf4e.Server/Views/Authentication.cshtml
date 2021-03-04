@@ -1,8 +1,6 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.Services
-@inject IConfigurationService ConfigurationService
-@inject IMarkdownService MarkdownService
 @{
     ViewData["Title"] = "Login";
 
@@ -21,78 +19,29 @@
         if(currentUser.IsAdmin)
         {
             <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Weiterleiten...</a>
-@section ScriptsHead
-{
-    <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderScoreboard", "AdminScoreboard"))">
-}        }
+        }
         else
         {
             <a asp-controller="Group" asp-action="RenderLabPage">Weiterleiten...</a>
-@section ScriptsHead
-{
-    <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderLabPage", "Group"))">
-}        }
+        }
     }
     else if(viewType == AuthenticationController.ViewType.GroupSelection)
     {
-        var slots = (List<Slot>)ViewData["Slots"];
-        
-        @model Ctf4e.Server.ViewModels.GroupSelection
-
-        <h3 class="header">
-            Gruppe gründen
-        </h3>
-        <hr class="header">
-        
-        @Html.Raw(MarkdownService.GetRenderedHtml(await ConfigurationService.GetGroupSelectionPageTextAsync(Context.RequestAborted)))
-        
-        <p>
-            Ihr Code lautet: <span class="fw-bold font-monospace">@currentUser.GroupFindingCode</span>
-        </p>
-    
-    <form asp-controller="Authentication" asp-action="HandleGroupSelection" method="post">
-            <div class="mb-3">
-                <label class="form-label" asp-for="OtherUserCodes">Codes Ihrer Gruppenpartner/Gruppenpartnerinnen</label>
-                <textarea asp-for="OtherUserCodes" class="form-control font-monospace" placeholder="Codes eingeben" rows="4" cols="40"></textarea>
-                <small class="form-text text-muted">
-                    Ein Code pro Zeile.
-                </small>
-                <span asp-validation-for="OtherUserCodes" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" asp-for="SlotId">Praktikumstermin</label>
-                <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control"></select>
-                <small class="form-text text-muted">
-                    Der Wert dieses Felds <span class="font-italic">muss</span> mit dem Ihnen während der Terminwahl zugewiesenen Termin übereinstimmen.
-                </small>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" asp-for="DisplayName">Name Ihrer Gruppe</label>
-                <input asp-for="DisplayName" class="form-control" placeholder="Gruppennamen eingeben">
-                <small class="form-text text-muted">
-                    Dieses Feld hat volle Unicode-Unterstützung, Ihrer Kreativität sind abgesehen von der Längenbeschränkung
-                    also keine Grenzen gesetzt. Der Gruppenname kann anschließend nicht mehr geändert werden.
-                </small>
-                <span asp-validation-for="DisplayName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="ShowInScoreboard" class="form-check-input">
-                    <label asp-for="ShowInScoreboard" class="form-check-label">Am CTF teilnehmen und Gruppe im Scoreboard anzeigen</label>
-                    <br>
-                    <small class="form-text text-muted">
-                        Mit Setzen dieses Feldes nehmen Sie am Praktikums-internen Capture-The-Flag teil, und Ihr Gruppenname wird im Scoreboard angezeigt.
-                        Die Teilnahme am CTF ist komplett freiwillig und hat keinerlei Nachteile. Das Scoreboard zeigt stets nur die oberen Plätze an.
-                    </small>
-                </div>
-            </div>
-            <p>
-                Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben.
-                Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut einloggen.
-                Im Anschluss haben Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe.
-            </p>
-
-            <button type="submit" class="btn btn-primary @(currentUser.Group != null ? "disabled" :"")">Gruppe erstellen</button>
-        </form>
+        <partial name="Authentication.GroupSelection.cshtml" />
     }
 </div>
+
+@section ScriptsHead
+{
+    @if(viewType == AuthenticationController.ViewType.Redirect)
+    {
+        if(currentUser.IsAdmin)
+        {
+            <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderScoreboard", "AdminScoreboard"))">
+        }
+        else
+        {
+            <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderLabPage", "Group"))">
+        }
+    }
+}
