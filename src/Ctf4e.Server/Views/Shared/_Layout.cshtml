@@ -45,7 +45,8 @@
     <link rel="stylesheet" href="~/css/ctf4e-server.min.css">
 
     <script src="~/lib/popper/js/popper.min.js"></script>
-    @if ( currentUser.IsAdmin ) {
+    @if(currentUser.IsAdmin)
+    {
         <script src="~/js/common.js"></script>
     }
 
@@ -175,7 +176,7 @@
                                     @currentUser.DisplayName
                                 </strong>
                             </a>
-                            
+
                             <ul class="dropdown-menu dropdown-menu-end mt-0">
                                 <li>
                                     <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">

@@ -92,5 +92,5 @@ document.getElementById("modal-delete-group").addEventListener("show.bs.modal", 
     e.target.querySelector('span[data-replace="group-name"]').innerText = e.relatedTarget.dataset.groupname;
 });
 
-window.onload = () => table_sorting();
+window.addEventListener("load", e => table_sorting());
 </script>
