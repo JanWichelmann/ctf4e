@@ -82,6 +82,9 @@ namespace Ctf4e.Server
             services.AddScoped<IFlagService, FlagService>();
             services.AddScoped<ILabExecutionService, LabExecutionService>();
             services.AddScoped<IScoreboardService, ScoreboardService>();
+            
+            // Markdown parser
+            services.AddSingleton<IMarkdownService, MarkdownService>();
 
             // Configuration service
             services.AddScoped<IConfigurationService, ConfigurationService>();

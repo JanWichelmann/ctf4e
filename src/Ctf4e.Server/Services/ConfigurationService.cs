@@ -28,6 +28,8 @@ namespace Ctf4e.Server.Services
         Task<int> GetGroupSizeMinAsync(CancellationToken cancellationToken = default);
         Task SetGroupSizeMaxAsync(int value, CancellationToken cancellationToken = default);
         Task<int> GetGroupSizeMaxAsync(CancellationToken cancellationToken = default);
+        Task<string> GetGroupSelectionPageTextAsync(CancellationToken cancellationToken = default);
+        Task SetGroupSelectionPageTextAsync(string value, CancellationToken cancellationToken = default);
     }
 
     public class ConfigurationService : IConfigurationService
@@ -45,6 +47,7 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyPageTitle = "PageTitle";
         private const string ConfigKeyGroupSizeMin = "GroupSizeMin";
         private const string ConfigKeyGroupSizeMax = "GroupSizeMax";
+        private const string ConfigKeyGroupSelectionPageText = "GroupSelectionPageText";
         // ReSharper restore InconsistentNaming
 
         public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
@@ -106,6 +109,12 @@ namespace Ctf4e.Server.Services
 
         public Task<int> GetGroupSizeMaxAsync(CancellationToken cancellationToken = default)
             => GetConfigItemAsync(ConfigKeyGroupSizeMax, s => s == null ? 2 : int.Parse(s), cancellationToken);
+        
+        public Task<string> GetGroupSelectionPageTextAsync(CancellationToken cancellationToken = default)
+            => GetConfigItemAsync(ConfigKeyGroupSelectionPageText, s => s ?? string.Empty, cancellationToken);
+
+        public Task SetGroupSelectionPageTextAsync(string value, CancellationToken cancellationToken = default)
+            => AddOrUpdateConfigItem(ConfigKeyGroupSelectionPageText, value, cancellationToken);
 
         private async Task<TValue> GetConfigItemAsync<TValue>(string key, Func<string, TValue> valueConverter, CancellationToken cancellationToken)
         {

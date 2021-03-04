@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ctf4e.Server.ViewModels
 {
@@ -25,18 +26,14 @@ namespace Ctf4e.Server.ViewModels
         [Required(AllowEmptyStrings = false)]
         public string NavbarTitle { get; set; }
 
-        [Required(AllowEmptyStrings = true)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string FlagPrefix { get; set; }
-
-        [Required(AllowEmptyStrings = true)]
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
-        public string FlagSuffix { get; set; }
-
         [Required]
         public int GroupSizeMin { get; set; }
 
         [Required]
         public int GroupSizeMax { get; set; }
+        
+        [Required(AllowEmptyStrings = true)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string GroupSelectionPageText { get; set; }
     }
 }

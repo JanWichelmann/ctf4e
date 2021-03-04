@@ -1,5 +1,8 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
+@using Ctf4e.Server.Services
+@inject IConfigurationService ConfigurationService
+@inject IMarkdownService MarkdownService
 @{
     ViewData["Title"] = "Login";
 
@@ -33,27 +36,24 @@
     else if(viewType == AuthenticationController.ViewType.GroupSelection)
     {
         var slots = (List<Slot>)ViewData["Slots"];
+        
+        @model Ctf4e.Server.ViewModels.GroupSelection
 
         <h3 class="header">
             Gruppe gründen
         </h3>
         <hr class="header">
+        
+        @Html.Raw(MarkdownService.GetRenderedHtml(await ConfigurationService.GetGroupSelectionPageTextAsync(Context.RequestAborted)))
+        
         <p>
-            An diesem Praktikum kann nur in Zweiergruppen teilgenommen werden. Bitte bearbeiten Sie hierzu nacheinander folgende Schritte:
-            <ul>
-                <li>Suchen Sie sich einen Gruppenpartner/eine Gruppenpartnerin, der/die am selben Praktikumstermin teilnimmt.</li>
-                <li>Überlegen Sie sich einen Gruppennamen, und ob Sie am Capture-The-Flag-Wettbewerb (CTF) teilnehmen möchten.</li>
-                <li>Tauschen Sie mit Ihrem Partner/Ihrer Partnerin die beim Login angezeigten Codes aus.</li>
-                <li>Füllen Sie das untenstehende Formular aus, um die Gruppe zu erstellen. Es genügt, wenn eine(r) von Ihnen diesen Schritt bearbeitet.</li>
-            </ul>
-            Ihr Code lautet: <span class="font-weight-bold">@currentUser.GroupFindingCode</span>
+            Ihr Code lautet: <span class="fw-bold font-monospace">@currentUser.GroupFindingCode</span>
         </p>
-        @model Ctf4e.Server.ViewModels.GroupSelection
     
     <form asp-controller="Authentication" asp-action="HandleGroupSelection" method="post">
             <div class="mb-3">
                 <label class="form-label" asp-for="OtherUserCodes">Codes Ihrer Gruppenpartner/Gruppenpartnerinnen</label>
-                <textarea asp-for="OtherUserCodes" class="form-control" placeholder="Codes eingeben" rows="4" cols="40"></textarea>
+                <textarea asp-for="OtherUserCodes" class="form-control font-monospace" placeholder="Codes eingeben" rows="4" cols="40"></textarea>
                 <small class="form-text text-muted">
                     Ein Code pro Zeile.
                 </small>
@@ -79,6 +79,7 @@
                 <div class="form-check">
                     <input asp-for="ShowInScoreboard" class="form-check-input">
                     <label asp-for="ShowInScoreboard" class="form-check-label">Am CTF teilnehmen und Gruppe im Scoreboard anzeigen</label>
+                    <br>
                     <small class="form-text text-muted">
                         Mit Setzen dieses Feldes nehmen Sie am Praktikums-internen Capture-The-Flag teil, und Ihr Gruppenname wird im Scoreboard angezeigt.
                         Die Teilnahme am CTF ist komplett freiwillig und hat keinerlei Nachteile. Das Scoreboard zeigt stets nur die oberen Plätze an.
@@ -91,7 +92,7 @@
                 Im Anschluss haben Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe.
             </p>
 
-            <button type="submit" class="btn btn-primary">Gruppe erstellen</button>
+            <button type="submit" class="btn btn-primary @(currentUser.Group != null ? "disabled" :"")">Gruppe erstellen</button>
         </form>
     }
 </div>

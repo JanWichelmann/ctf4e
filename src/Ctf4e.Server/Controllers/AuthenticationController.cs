@@ -160,11 +160,6 @@ namespace Ctf4e.Server.Controllers
 
         private async Task<IActionResult> ShowGroupFormAsync(GroupSelection groupSelection)
         {
-            // Does the user already have a group?
-            var currentUser = await GetCurrentUserAsync();
-            if(currentUser.Group != null)
-                return this.RedirectToAction("RenderScoreboard", "Scoreboard");
-
             // Pass slots
             ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
 
@@ -188,9 +183,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
                 return await ShowGroupFormAsync(groupSelection);
             }
+            
+            // Does the user already have a group?
+            var currentUser = await GetCurrentUserAsync();
+            if(currentUser.Group != null)
+                return RedirectToAction("RenderScoreboard", "Scoreboard");
 
             // Try to create group
-            var currentUser = await GetCurrentUserAsync();
             try
             {
                 // Filter group codes

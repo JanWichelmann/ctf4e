@@ -72,6 +72,20 @@
             </small>
         </div>
         <div class="mb-3">
+            <label class="form-label" asp-for="GroupSelectionPageText">Text auf Gruppenwahl-Seite</label>
+            <textarea asp-for="GroupSelectionPageText" class="form-control font-monospace" rows="5"></textarea>
+            <span asp-validation-for="GroupSelectionPageText" class="text-danger"></span>
+            <p class="small">
+                Dieser Text wird oben auf der Gruppenwahl-Seite angezeigt.
+                Hier stehen Informationen, wie Gruppen gebildet werden und wie diese sich im CTF-System registrieren können.
+                Dieses Textfeld unterstützt Markdown.
+            </p>
+            <a class="btn btn-outline-secondary" asp-controller="Authentication" asp-action="ShowGroupForm" target="_blank">
+                <i class="bi bi-arrow-return-right"></i>
+                Gruppenwahl-Seite anzeigen
+            </a>
+        </div>
+        <div class="mb-3">
             <label class="form-label" asp-for="GroupSizeMin">Minimale Gruppengröße</label>
             <input asp-for="GroupSizeMin" class="form-control">
             <span asp-validation-for="GroupSizeMin" class="text-danger"></span>

@@ -38,7 +38,8 @@ namespace Ctf4e.Server.Controllers
                 PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
                 NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
                 GroupSizeMin = await _configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted),
-                GroupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted)
+                GroupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted),
+                GroupSelectionPageText = await _configurationService.GetGroupSelectionPageTextAsync(HttpContext.RequestAborted)
             };
 
             int groupCount = await _userService.GetGroupsAsync().CountAsync(HttpContext.RequestAborted);
@@ -93,6 +94,8 @@ namespace Ctf4e.Server.Controllers
                     configurationData.GroupSizeMax = configurationData.GroupSizeMin + 1;
                 await _configurationService.SetGroupSizeMinAsync(configurationData.GroupSizeMin, HttpContext.RequestAborted);
                 await _configurationService.SetGroupSizeMaxAsync(configurationData.GroupSizeMax, HttpContext.RequestAborted);
+
+                await _configurationService.SetGroupSelectionPageTextAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Konfiguration wurde erfolgreich aktualisiert.", StatusMessageTypes.Success);
             }
