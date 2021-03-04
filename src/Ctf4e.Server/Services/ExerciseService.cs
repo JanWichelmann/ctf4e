@@ -22,6 +22,7 @@ namespace Ctf4e.Server.Services
         Task DeleteExerciseAsync(int id, CancellationToken cancellationToken = default);
         Task<ExerciseSubmission> CreateExerciseSubmissionAsync(ExerciseSubmission submission, CancellationToken cancellationToken = default);
         Task DeleteExerciseSubmissionAsync(int id, CancellationToken cancellationToken = default);
+        Task DeleteExerciseSubmissionsAsync(List<int> ids, CancellationToken cancellationToken = default);
         Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken = default);
     }
 
@@ -139,6 +140,22 @@ namespace Ctf4e.Server.Services
             {
                 // Delete entry
                 _dbContext.ExerciseSubmissions.Remove(new ExerciseSubmissionEntity { Id = id });
+                await _dbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
+            {
+                // Most likely a non-existent entry, just forward the exception
+                throw;
+            }
+        }
+
+        public async Task DeleteExerciseSubmissionsAsync(List<int> ids, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                // Delete entries
+                _dbContext.ExerciseSubmissions.RemoveRange(ids.Select(id => new ExerciseSubmissionEntity { Id = id }));
+
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
             catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)

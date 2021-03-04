@@ -82,70 +82,74 @@
                             </div>
                         </div>
                     </div>
-                        <div class="card-body">
-                            <table class="table table-sm">
-                                <thead>
+                    <div class="card-body">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" class="form-check-input" name="es-checkbox-select-all"></th>
+                                <th></th>
+                                <th scope="col">Gelöst</th>
+                                <th scope="col">Zeit</th>
+                                <th scope="col">Gewichtung</th>
+                                @if(Model.PassAsGroup)
+                                {
+                                    <th scope="col">Eingereicht von</th>
+                                }
+                                @if(currentUser.IsAdmin)
+                                {
+                                    <th>
+                                        <a role="button" class="btn btn-sm btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exerciseid="@exercise.Exercise.Id" data-userid="@user.UserId">
+                                            <i class="bi bi-plus"></i>
+                                            Hinzufügen
+                                        </a>
+                                    </th>
+                                }
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach(var submission in exercise.Submissions)
+                            {
                                 <tr>
-                                    <th></th>
-                                    <th scope="col">Gelöst</th>
-                                    <th scope="col">Zeit</th>
-                                    <th scope="col">Gewichtung</th>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" name="es-checkbox" value="@submission.Id">
+                                    </td>
+                                    <th scope="row">#@submission.Id</th>
+                                    <td>
+                                        @if(submission.ExercisePassed)
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-x-circle-fill text-danger"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
+                                    </td>
+                                    <td>
+                                        @submission.Weight
+                                    </td>
                                     @if(Model.PassAsGroup)
                                     {
-                                        <th scope="col">Eingereicht von</th>
+                                        <td>
+                                            @Model.UserNames[submission.UserId]
+                                        </td>
                                     }
                                     @if(currentUser.IsAdmin)
                                     {
-                                        <th>
-                                            <a role="button" class="btn btn-sm btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exerciseid="@exercise.Exercise.Id" data-userid="@user.UserId">
-                                                <i class="bi bi-plus"></i>
-                                                Hinzufügen
+                                        <td>
+                                            <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@user.UserName">
+                                                <i class="bi bi-trash"></i>
+                                                Löschen
                                             </a>
-                                        </th>
+                                        </td>
                                     }
                                 </tr>
-                                </thead>
-                                <tbody>
-                                @foreach(var submission in exercise.Submissions)
-                                {
-                                    <tr>
-                                        <th scope="row">#@submission.Id</th>
-                                        <td>
-                                            @if(submission.ExercisePassed)
-                                            {
-                                                <i class="bi bi-check-circle-fill text-success align-middle"></i>
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-x-circle-fill text-danger align-middle"></i>
-                                            }
-                                        </td>
-                                        <td>
-                                            @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
-                                        </td>
-                                        <td>
-                                            @submission.Weight
-                                        </td>
-                                        @if(Model.PassAsGroup)
-                                        {
-                                            <td>
-                                                @Model.UserNames[submission.UserId]
-                                            </td>
-                                        }
-                                        @if(currentUser.IsAdmin)
-                                        {
-                                            <td>
-                                                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@user.UserName">
-                                                    <i class="bi bi-trash"></i>
-                                                    Löschen
-                                                </a>
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                                </tbody>
-                            </table>
-                        </div>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             }
 
@@ -222,6 +226,11 @@
     </div>
 }
 
+<a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submissions">
+    <i class="bi bi-trash"></i>
+    Ausgewählte löschen
+</a>
+
 <!-- Exercise and Flag submission modals -->
 <div class="modal fade" id="modal-delete-exercise-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -240,6 +249,29 @@
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
                     <button type="submit" class="btn btn-outline-danger">Einreichung löschen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-delete-exercise-submissions" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Aufgabeneinreichungen löschen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Wollen Sie die ausgewählten Einreichungen wirklich löschen?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmissions" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
+                    <div id="modal-delete-exercise-submissions-inputlist"></div>
+
+                    <button type="submit" class="btn btn-outline-danger">Einreichungen löschen</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
                 </form>
             </div>
@@ -344,12 +376,40 @@ options = {
 flatpickr(document.getElementById("input-add-exercise-submission-time"), options);
 flatpickr(document.getElementById("input-add-flag-submission-time"), options);
 
+// "Select all" checkboxes
+let selectAllCheckboxes = document.querySelectorAll('input[name="es-checkbox-select-all"]');
+for(let selectAllCheckbox of selectAllCheckboxes)
+{
+    selectAllCheckbox.addEventListener("change", function(e) {
+         let localCheckboxes = selectAllCheckbox.closest("table").querySelectorAll('input[name="es-checkbox"]');
+         for(let checkbox of localCheckboxes)
+             checkbox.checked = selectAllCheckbox.checked;
+    });
+}
+
 // Modals
 document.getElementById("modal-delete-exercise-submission").addEventListener("show.bs.modal", function(e)
 {
     e.target.querySelector('input[data-replace="submission-id"]').value = e.relatedTarget.dataset.submissionid;
     e.target.querySelector('span[data-replace="user-name"]').innerText = e.relatedTarget.dataset.username;
     e.target.querySelector('span[data-replace="exercise-name"]').innerText = e.relatedTarget.dataset.exercisename;
+});
+document.getElementById("modal-delete-exercise-submissions").addEventListener("show.bs.modal", function(e)
+{
+    // Clear list of <input> elements
+    let inputDiv = document.getElementById("modal-delete-exercise-submissions-inputlist");
+    inputDiv.innerHTML = "";
+    
+    // Add <input> for each checked exercise submission checkbox
+    let checked = document.querySelectorAll('input[name=es-checkbox]:checked');
+    let inputPrototype = document.createElement("input");
+    inputPrototype.setAttribute("type", "hidden");
+    inputPrototype.setAttribute("name", "submissionIds");
+    for(let checkbox of checked)
+    {
+        inputPrototype.setAttribute("value", checkbox.value);
+        inputDiv.appendChild(inputPrototype.cloneNode(true));
+    }
 });
 document.getElementById("modal-add-exercise-submission").addEventListener("show.bs.modal", function(e)
 {

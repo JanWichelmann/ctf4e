@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Ctf4e.Api;
@@ -66,10 +67,11 @@ namespace Ctf4e.Server.Controllers
                     slotId = recentLabExecution.Group?.SlotId;
                 }
             }
+
             return await RenderAsync(labId ?? 0, slotId ?? 0);
         }
 
-        [HttpPost("exercisesubmission/delete/")]
+        [HttpPost("exercisesubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteExerciseSubmissionAsync(int labId, int slotId, int submissionId)
@@ -89,7 +91,27 @@ namespace Ctf4e.Server.Controllers
             return await RenderAsync(labId, slotId);
         }
 
-        [HttpPost("exercisesubmission/create/")]
+        [HttpPost("exercisesubmission/deletemultiple")]
+        [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteExerciseSubmissionsAsync(int labId, int slotId, List<int> submissionIds)
+        {
+            try
+            {
+                // Delete submissions
+                await _exerciseService.DeleteExerciseSubmissionsAsync(submissionIds, HttpContext.RequestAborted);
+
+                AddStatusMessage("Die Aufgabeneinreichungen wurden erfolgreich gelöscht.", StatusMessageTypes.Success);
+            }
+            catch(Exception ex)
+            {
+                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+            }
+
+            return await RenderAsync(labId, slotId);
+        }
+
+        [HttpPost("exercisesubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateExerciseSubmissionAsync(int labId, int slotId, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
@@ -117,7 +139,7 @@ namespace Ctf4e.Server.Controllers
             return await RenderAsync(labId, slotId);
         }
 
-        [HttpPost("flagsubmission/delete/")]
+        [HttpPost("flagsubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteFlagSubmissionAsync(int labId, int slotId, int userId, int flagId)
@@ -137,7 +159,7 @@ namespace Ctf4e.Server.Controllers
             return await RenderAsync(labId, slotId);
         }
 
-        [HttpPost("flagsubmission/create/")]
+        [HttpPost("flagsubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateFlagSubmissionAsync(int labId, int slotId, int userId, int flagId, DateTime submissionTime)
@@ -194,7 +216,7 @@ namespace Ctf4e.Server.Controllers
             return Redirect(url);
         }
 
-        [HttpPost("sync/moodle/")]
+        [HttpPost("sync/moodle")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadToMoodleAsync()
@@ -213,7 +235,7 @@ namespace Ctf4e.Server.Controllers
             return await RenderAsync(0, 0);
         }
 
-        [HttpGet("sync/csv/")]
+        [HttpGet("sync/csv")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         public async Task<IActionResult> DownloadAsCsvAsync()
         {
