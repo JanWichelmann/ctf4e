@@ -22,11 +22,11 @@
     </div>
 
     <h3 class="header">
-        Praktikum: @groupScoreboard.CurrentLab.Name
+        Praktikum: @groupScoreboard.CurrentLesson.Name
     </h3>
     <hr class="header">
 
-    switch(groupScoreboard.LabExecutionStatus)
+    switch(groupScoreboard.LessonExecutionStatus)
     {
         case ScoreboardGroupStatus.Undefined:
             <span class="badge bg-secondary">Nicht freigeschaltet</span>
@@ -40,7 +40,7 @@
             <p>
                 Dieses Praktikum hat noch nicht begonnen.
                 Es können weder Aufgaben bearbeitet noch Flags eingelöst werden. <br>
-                Startzeitpunkt: <strong>@groupScoreboard.LabExecution.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
+                Startzeitpunkt: <strong>@groupScoreboard.LessonExecution.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
             </p>
             break;
         case ScoreboardGroupStatus.PreStart:
@@ -48,7 +48,7 @@
             <p>
                 Dieses Praktikum ist in der Vorbereitungsphase.
                 Es können einige ausgewählte Aufgaben bearbeitet und alle Flags eingelöst werden. <br>
-                Beginn der Haupt-Bearbeitungsphase: <strong>@groupScoreboard.LabExecution.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
+                Beginn der Haupt-Bearbeitungsphase: <strong>@groupScoreboard.LessonExecution.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
             </p>
             break;
         case ScoreboardGroupStatus.Start:
@@ -56,7 +56,7 @@
             <p>
                 Dieses Praktikum ist aktiv.
                 Es können alle Aufgaben bearbeitet und alle Flags eingelöst werden. <br>
-                Ende des Praktikums: <strong>@groupScoreboard.LabExecution.End.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
+                Ende des Praktikums: <strong>@groupScoreboard.LessonExecution.End.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
             </p>
             break;
         case ScoreboardGroupStatus.End:
@@ -68,9 +68,9 @@
             break;
     }
 
-    if(groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
+    if(groupScoreboard.LessonExecutionStatus != ScoreboardGroupStatus.Undefined && groupScoreboard.LessonExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
     {
-        <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
+        <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLessonServer" asp-route-lessonId="@groupScoreboard.LessonId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
             <i class="bi bi-hdd-network"></i>
             Zum Praktikumsserver
@@ -124,7 +124,7 @@
                             <tr>
                                 <td>
                                     @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
-                                    @if(submission.SubmissionTime < (groupScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (groupScoreboard.LabExecution?.End ?? DateTime.MinValue))
+                                    @if(submission.SubmissionTime < (groupScoreboard.LessonExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (groupScoreboard.LessonExecution?.End ?? DateTime.MinValue))
                                     {
                                         <span class="badge bg-warning" title="Dieser Lösungsversuch fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
                                     }
@@ -158,7 +158,7 @@
         <hr class="header-secondary">
     </div>
     
-    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId" class="mb-3">
+    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-lessonId="@groupScoreboard.LessonId" class="mb-3">
         <div class="mb-3">
             <label class="form-label" for="input-flag-code">Flag-Code</label>
             <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
@@ -224,15 +224,15 @@
     </h5>
     <hr class="header-secondary">
 
-    <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
+    <form asp-controller="UserDashboard" asp-action="RenderLessonPage" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">Praktikum</label>
-            <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">
-                @foreach(var lab in groupScoreboard.Labs)
+            <label class="form-label" for="input-lesson-id">Praktikum</label>
+            <select id="input-lesson-id" name="lessonId" class="form-control" onchange="this.form.submit()">
+                @foreach(var lesson in groupScoreboard.Lessons)
                 {
-                    <option value="@lab.LabId" selected="@(groupScoreboard.LabId == lab.LabId)">
-                        @lab.Name
-                        @if(lab.Active)
+                    <option value="@lesson.LessonId" selected="@(groupScoreboard.LessonId == lesson.LessonId)">
+                        @lesson.Name
+                        @if(lesson.Active)
                         {
                             @:(aktiv)
                         }

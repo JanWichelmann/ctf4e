@@ -15,18 +15,18 @@ namespace Ctf4e.Server.Controllers
     [ApiController]
     public class ApiController : Controller
     {
-        private readonly ILabService _labService;
+        private readonly ILessonService _lessonService;
         private readonly IExerciseService _exerciseService;
         private readonly IUserService _userService;
-        private readonly ILabExecutionService _labExecutionService;
+        private readonly ILessonExecutionService _lessonExecutionService;
 
 
-        public ApiController(ILabService labService, IExerciseService exerciseService, IUserService userService, ILabExecutionService labExecutionService)
+        public ApiController(ILessonService lessonService, IExerciseService exerciseService, IUserService userService, ILessonExecutionService lessonExecutionService)
         {
-            _labService = labService ?? throw new ArgumentNullException(nameof(labService));
+            _lessonService = lessonService ?? throw new ArgumentNullException(nameof(lessonService));
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
+            _lessonExecutionService = lessonExecutionService ?? throw new ArgumentNullException(nameof(lessonExecutionService));
         }
 
         [HttpPost("exercisesubmission/create")]
@@ -34,28 +34,28 @@ namespace Ctf4e.Server.Controllers
         {
             try
             {
-                // Resolve lab
-                var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
-                if(lab == null)
+                // Resolve lesson
+                var lesson = await _lessonService.GetLessonAsync(request.LessonId, HttpContext.RequestAborted);
+                if(lesson == null)
                     return BadRequest();
 
                 // Decode request
-                var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lab.ApiCode));
+                var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lesson.ApiCode));
 
                 // Resolve exercise
-                var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+                var exercise = await _exerciseService.FindExerciseAsync(lesson.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
                 if(exercise == null)
                     return NotFound(new { error = "Exercise not found" });
 
-                // Check lab execution
+                // Check lesson execution
                 // This will also automatically check whether the given user exists
-                var labExecution = await _labExecutionService.GetLabExecutionForUserAsync(apiExerciseSubmission.UserId, lab.Id, HttpContext.RequestAborted);
+                var lessonExecution = await _lessonExecutionService.GetLessonExecutionForUserAsync(apiExerciseSubmission.UserId, lesson.Id, HttpContext.RequestAborted);
                 var now = DateTime.Now;
-                if(labExecution == null || now < labExecution.PreStart)
-                    return NotFound(new { error = "Lab is not active for this user" });
+                if(lessonExecution == null || now < lessonExecution.PreStart)
+                    return NotFound(new { error = "Lesson is not active for this user" });
 
                 // Some exercises may only be submitted after the pre-start phase has ended
-                if(!exercise.IsPreStartAvailable && now < labExecution.Start)
+                if(!exercise.IsPreStartAvailable && now < lessonExecution.Start)
                     return NotFound(new { error = "This exercise may not be submitted in the pre-start phase" });
 
                 // Create submission
@@ -86,16 +86,16 @@ namespace Ctf4e.Server.Controllers
         {
             try
             {
-                // Resolve lab
-                var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
-                if(lab == null)
+                // Resolve lesson
+                var lesson = await _lessonService.GetLessonAsync(request.LessonId, HttpContext.RequestAborted);
+                if(lesson == null)
                     return BadRequest();
 
                 // Decode request
-                var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lab.ApiCode));
+                var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lesson.ApiCode));
 
                 // Resolve exercise
-                var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+                var exercise = await _exerciseService.FindExerciseAsync(lesson.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
                 if(exercise == null)
                     return NotFound(new { error = "Exercise not found" });
 

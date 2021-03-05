@@ -14,14 +14,14 @@ namespace Ctf4e.Server.Services
 {
     public interface IFlagService
     {
-        IAsyncEnumerable<Flag> GetFlagsAsync(int labId);
+        IAsyncEnumerable<Flag> GetFlagsAsync(int lessonId);
         Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken = default);
         Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken = default);
         Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken = default);
         Task DeleteFlagAsync(int id, CancellationToken cancellationToken = default);
         Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken = default);
         Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken = default);
-        Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken = default);
+        Task<bool> SubmitFlagAsync(int userId, int lessonId, string flagCode, CancellationToken cancellationToken = default);
     }
 
     public class FlagService : IFlagService
@@ -35,10 +35,10 @@ namespace Ctf4e.Server.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public IAsyncEnumerable<Flag> GetFlagsAsync(int labId)
+        public IAsyncEnumerable<Flag> GetFlagsAsync(int lessonId)
         {
             return _dbContext.Flags.AsNoTracking()
-                .Where(f => f.LabId == labId)
+                .Where(f => f.LessonId == lessonId)
                 .OrderBy(f => f.Id)
                 .ProjectTo<Flag>(_mapper.ConfigurationProvider)
                 .AsAsyncEnumerable();
@@ -61,7 +61,7 @@ namespace Ctf4e.Server.Services
                 Description = flag.Description,
                 BasePoints = flag.BasePoints,
                 IsBounty = flag.IsBounty,
-                LabId = flag.LabId,
+                LessonId = flag.LessonId,
                 Submissions = new List<FlagSubmissionEntity>()
             }).Entity;
 
@@ -82,7 +82,7 @@ namespace Ctf4e.Server.Services
             flagEntity.Description = flag.Description;
             flagEntity.BasePoints = flag.BasePoints;
             flagEntity.IsBounty = flag.IsBounty;
-            flagEntity.LabId = flag.LabId;
+            flagEntity.LessonId = flag.LessonId;
 
             // Apply changes
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -133,11 +133,11 @@ namespace Ctf4e.Server.Services
             }
         }
 
-        public async Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken = default)
+        public async Task<bool> SubmitFlagAsync(int userId, int lessonId, string flagCode, CancellationToken cancellationToken = default)
         {
             // Try to find matching flag
             var flag = await _dbContext.Flags.AsNoTracking()
-                .FirstOrDefaultAsync(f => f.LabId == labId && f.Code == flagCode, cancellationToken);
+                .FirstOrDefaultAsync(f => f.LessonId == lessonId && f.Code == flagCode, cancellationToken);
             if(flag == null)
                 return false;
 

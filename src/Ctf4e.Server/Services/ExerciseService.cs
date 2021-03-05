@@ -14,9 +14,9 @@ namespace Ctf4e.Server.Services
 {
     public interface IExerciseService
     {
-        IAsyncEnumerable<Exercise> GetExercisesAsync(int labId);
+        IAsyncEnumerable<Exercise> GetExercisesAsync(int lessonId);
         Task<Exercise> GetExerciseAsync(int id, CancellationToken cancellationToken = default);
-        Task<Exercise> FindExerciseAsync(int labId, int exerciseNumber, CancellationToken cancellationToken = default);
+        Task<Exercise> FindExerciseAsync(int lessonId, int exerciseNumber, CancellationToken cancellationToken = default);
         Task<Exercise> CreateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default);
         Task UpdateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default);
         Task DeleteExerciseAsync(int id, CancellationToken cancellationToken = default);
@@ -37,10 +37,10 @@ namespace Ctf4e.Server.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public IAsyncEnumerable<Exercise> GetExercisesAsync(int labId)
+        public IAsyncEnumerable<Exercise> GetExercisesAsync(int lessonId)
         {
             return _dbContext.Exercises.AsNoTracking()
-                .Where(e => e.LabId == labId)
+                .Where(e => e.LessonId == lessonId)
                 .OrderBy(e => e.Id)
                 .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
                 .AsAsyncEnumerable();
@@ -54,10 +54,10 @@ namespace Ctf4e.Server.Services
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<Exercise> FindExerciseAsync(int labId, int exerciseNumber, CancellationToken cancellationToken = default)
+        public Task<Exercise> FindExerciseAsync(int lessonId, int exerciseNumber, CancellationToken cancellationToken = default)
         {
             return _dbContext.Exercises.AsNoTracking()
-                .Where(e => e.LabId == labId && e.ExerciseNumber == exerciseNumber)
+                .Where(e => e.LessonId == lessonId && e.ExerciseNumber == exerciseNumber)
                 .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(cancellationToken);
         }
@@ -67,7 +67,7 @@ namespace Ctf4e.Server.Services
             // Create new exercise
             var exerciseEntity = _dbContext.Exercises.Add(new ExerciseEntity
             {
-                LabId = exercise.LabId,
+                LessonId = exercise.LessonId,
                 ExerciseNumber = exercise.ExerciseNumber,
                 Name = exercise.Name,
                 IsMandatory = exercise.IsMandatory,
@@ -90,7 +90,7 @@ namespace Ctf4e.Server.Services
                 throw new InvalidOperationException("Diese Aufgabe existiert nicht");
 
             // Update entry
-            exerciseEntity.LabId = exercise.LabId;
+            exerciseEntity.LessonId = exercise.LessonId;
             exerciseEntity.ExerciseNumber = exercise.ExerciseNumber;
             exerciseEntity.Name = exercise.Name;
             exerciseEntity.IsMandatory = exercise.IsMandatory;

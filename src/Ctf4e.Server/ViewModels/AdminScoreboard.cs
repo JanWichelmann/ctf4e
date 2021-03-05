@@ -6,9 +6,9 @@ namespace Ctf4e.Server.ViewModels
 {
     public class AdminScoreboard
     {
-        public List<Lab> Labs { get; set; }
+        public List<Lesson> Lessons { get; set; }
 
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
         public List<Slot> Slots { get; set; }
 

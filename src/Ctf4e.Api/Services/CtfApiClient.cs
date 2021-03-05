@@ -37,7 +37,7 @@ namespace Ctf4e.Api.Services
             // Run request
             var client = new RestClient(_options.Value.CtfServerApiBaseUrl);
             var request = new RestRequest(resource, Method.POST);
-            request.AddJsonBody(CtfApiRequest.Create(_options.Value.LabId, _cryptoService, payload));
+            request.AddJsonBody(CtfApiRequest.Create(_options.Value.LessonId, _cryptoService, payload));
             var response = await client.ExecuteAsync(request, cancellationToken);
             
             // WORKAROUND: The current implementation of RestSharp silently swallows exceptions; check and throw possible exceptions manually

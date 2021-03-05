@@ -36,15 +36,15 @@ namespace Ctf4e.Api.Services
         private readonly byte[] _key;
 
         public CryptoService(IOptions<CtfApiOptions> options)
-            : this(options.Value.LabApiCode)
+            : this(options.Value.LessonApiCode)
         {
         }
 
-        public CryptoService(string labApiCode)
+        public CryptoService(string lessonApiCode)
         {
             // Derive key
             // We rely on the randomness of the API code here
-            using var keyGen = new Rfc2898DeriveBytes(labApiCode, new byte[8], 10);
+            using var keyGen = new Rfc2898DeriveBytes(lessonApiCode, new byte[8], 10);
             _key = keyGen.GetBytes(16);
         }
 

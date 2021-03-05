@@ -27,54 +27,54 @@ namespace Ctf4e.Server.Controllers
         private readonly IScoreboardService _scoreboardService;
         private readonly IExerciseService _exerciseService;
         private readonly IFlagService _flagService;
-        private readonly ILabService _labService;
+        private readonly ILessonService _lessonService;
         private readonly IMoodleService _moodleService;
         private readonly ICsvService _csvService;
-        private readonly ILabExecutionService _labExecutionService;
+        private readonly ILessonExecutionService _lessonExecutionService;
 
         public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, IExerciseService exerciseService,
-                                         IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService,
-                                         ILabExecutionService labExecutionService)
+                                         IFlagService flagService, ILessonService lessonService, IMoodleService moodleService, ICsvService csvService,
+                                         ILessonExecutionService lessonExecutionService)
             : base("~/Views/AdminScoreboard.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
-            _labService = labService ?? throw new ArgumentNullException(nameof(labService));
+            _lessonService = lessonService ?? throw new ArgumentNullException(nameof(lessonService));
             _moodleService = moodleService ?? throw new ArgumentNullException(nameof(moodleService));
             _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
-            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
+            _lessonExecutionService = lessonExecutionService ?? throw new ArgumentNullException(nameof(lessonExecutionService));
         }
 
-        private async Task<IActionResult> RenderAsync(int labId, int slotId)
+        private async Task<IActionResult> RenderAsync(int lessonId, int slotId)
         {
-            var scoreboard = await _scoreboardService.GetAdminScoreboardAsync(labId, slotId, HttpContext.RequestAborted);
+            var scoreboard = await _scoreboardService.GetAdminScoreboardAsync(lessonId, slotId, HttpContext.RequestAborted);
 
             return await RenderViewAsync(MenuItems.AdminScoreboard, scoreboard);
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenderScoreboardAsync(int? labId, int? slotId)
+        public async Task<IActionResult> RenderScoreboardAsync(int? lessonId, int? slotId)
         {
-            if(labId == null || slotId == null)
+            if(lessonId == null || slotId == null)
             {
-                // Show the most recently executed lab and slot as default
-                var recentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(HttpContext.RequestAborted);
-                if(recentLabExecution != null)
+                // Show the most recently executed lesson and slot as default
+                var recentLessonExecution = await _lessonExecutionService.GetMostRecentLessonExecutionAsync(HttpContext.RequestAborted);
+                if(recentLessonExecution != null)
                 {
-                    labId = recentLabExecution.LabId;
-                    slotId = recentLabExecution.Group?.SlotId;
+                    lessonId = recentLessonExecution.LessonId;
+                    slotId = recentLessonExecution.Group?.SlotId;
                 }
             }
 
-            return await RenderAsync(labId ?? 0, slotId ?? 0);
+            return await RenderAsync(lessonId ?? 0, slotId ?? 0);
         }
 
         [HttpPost("exercisesubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteExerciseSubmissionAsync(int labId, int slotId, int submissionId)
+        public async Task<IActionResult> DeleteExerciseSubmissionAsync(int lessonId, int slotId, int submissionId)
         {
             try
             {
@@ -88,13 +88,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId);
+            return await RenderAsync(lessonId, slotId);
         }
 
         [HttpPost("exercisesubmission/deletemultiple")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteExerciseSubmissionsAsync(int labId, int slotId, List<int> submissionIds)
+        public async Task<IActionResult> DeleteExerciseSubmissionsAsync(int lessonId, int slotId, List<int> submissionIds)
         {
             try
             {
@@ -108,13 +108,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId);
+            return await RenderAsync(lessonId, slotId);
         }
 
         [HttpPost("exercisesubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateExerciseSubmissionAsync(int labId, int slotId, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
+        public async Task<IActionResult> CreateExerciseSubmissionAsync(int lessonId, int slotId, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
         {
             try
             {
@@ -136,13 +136,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.Message, StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId);
+            return await RenderAsync(lessonId, slotId);
         }
 
         [HttpPost("flagsubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFlagSubmissionAsync(int labId, int slotId, int userId, int flagId)
+        public async Task<IActionResult> DeleteFlagSubmissionAsync(int lessonId, int slotId, int userId, int flagId)
         {
             try
             {
@@ -156,13 +156,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId);
+            return await RenderAsync(lessonId, slotId);
         }
 
         [HttpPost("flagsubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFlagSubmissionAsync(int labId, int slotId, int userId, int flagId, DateTime submissionTime)
+        public async Task<IActionResult> CreateFlagSubmissionAsync(int lessonId, int slotId, int userId, int flagId, DateTime submissionTime)
         {
             try
             {
@@ -182,15 +182,15 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.Message, StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId);
+            return await RenderAsync(lessonId, slotId);
         }
 
-        [HttpGet("labserver")]
-        public async Task<IActionResult> CallLabServerAsync(int labId, int userId)
+        [HttpGet("lessonserver")]
+        public async Task<IActionResult> CallLessonServerAsync(int lessonId, int userId)
         {
-            // Retrieve lab data
-            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
-            if(lab == null)
+            // Retrieve lesson data
+            var lesson = await _lessonService.GetLessonAsync(lessonId, HttpContext.RequestAborted);
+            if(lesson == null)
             {
                 AddStatusMessage("Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
@@ -207,10 +207,10 @@ namespace Ctf4e.Server.Controllers
                 GroupName = group?.DisplayName,
                 AdminMode = true
             };
-            string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());
+            string authString = new CryptoService(lesson.ApiCode).Encrypt(authData.Serialize());
 
             // Build final URL
-            string url = lab.ServerBaseUrl.TrimEnd().TrimEnd('/') + "/auth/login?code=" + authString;
+            string url = lesson.ServerBaseUrl.TrimEnd().TrimEnd('/') + "/auth/login?code=" + authString;
 
             // Forward to server
             return Redirect(url);
@@ -241,8 +241,8 @@ namespace Ctf4e.Server.Controllers
         {
             try
             {
-                string csv = await _csvService.GetLabStatesAsync(HttpContext.RequestAborted);
-                return File(Encoding.UTF8.GetBytes(csv), "text/csv", "labstates.csv");
+                string csv = await _csvService.GetLessonStatesAsync(HttpContext.RequestAborted);
+                return File(Encoding.UTF8.GetBytes(csv), "text/csv", "lessonstates.csv");
             }
             catch(InvalidOperationException ex)
             {

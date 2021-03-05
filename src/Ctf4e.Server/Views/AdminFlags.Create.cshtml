@@ -1,7 +1,7 @@
 @using Ctf4e.Server.Models
 @model Flag
 @{
-    var lab = (Lab)ViewData["Lab"];
+    var lesson = (Lesson)ViewData["Lesson"];
 }
 
 <h3 class="header">
@@ -38,8 +38,8 @@
         </div>
     </div>
 
-    <input asp-for="LabId" type="hidden" value="@lab.Id">
+    <input asp-for="LessonId" type="hidden" value="@lesson.Id">
 
     <button type="submit" class="btn btn-primary">Flag erstellen</button>
-    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@lab.Id" class="btn btn-secondary">Abbrechen</a>
+    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-lessonId="@lesson.Id" class="btn btn-secondary">Abbrechen</a>
 </form>

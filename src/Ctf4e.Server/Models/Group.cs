@@ -22,6 +22,6 @@ namespace Ctf4e.Server.Models
 
         public ICollection<User> Members { get; set; }
 
-        public ICollection<LabExecution> LabExecutions { get; set; }
+        public ICollection<LessonExecution> LessonExecutions { get; set; }
     }
 }

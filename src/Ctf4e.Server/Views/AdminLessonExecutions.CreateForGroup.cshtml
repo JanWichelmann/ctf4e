@@ -1,0 +1,41 @@
+@using Ctf4e.Server.Models
+@model Ctf4e.Server.ViewModels.AdminLessonExecution
+@{
+    var groups = (List<Group>)ViewData["Groups"];
+    var lessons = (List<Lesson>)ViewData["Lessons"];
+}
+
+<h3 class="header">
+    Praktikum für eine Gruppe starten
+</h3>
+<hr class="header">
+
+<form asp-controller="AdminLessonExecutions" asp-action="CreateLessonExecutionForGroup" method="post">
+    <div class="mb-3">
+        <label class="form-label" asp-for="LessonExecution.LessonId">Praktikum</label>
+        <select asp-for="LessonExecution.LessonId" asp-items="@(new SelectList(lessons, nameof(Lesson.Id), nameof(Lesson.Name)))" class="form-control">
+            <option value="" disabled selected>Praktikum auswählen</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="LessonExecution.GroupId">Gruppe</label>
+        <select asp-for="LessonExecution.GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
+            <option value="" disabled selected>Gruppe auswählen</option>
+        </select>
+    </div>
+
+    <partial name="AdminLessonExecutions._Form.cshtml" />
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input asp-for="OverrideExisting" class="form-check-input" checked>
+            <label asp-for="OverrideExisting" class="form-check-label">Existierende Konfiguration überschreiben</label>
+            <small>
+                Dies überschreibt eine eventuell bereits existierende Praktikumsausführung der Gruppe.
+            </small>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Praktikum starten</button>
+    <a asp-controller="AdminLessonExecutions" asp-action="RenderLessonExecutionList" class="btn btn-secondary">Abbrechen</a>
+</form>

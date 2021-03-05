@@ -23,8 +23,8 @@
 
     <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">Praktikum</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-control">
+            <label class="form-label" for="input-lesson-id">Praktikum</label>
+            <select id="input-lesson-id" name="lessonId" asp-items="@(new SelectList(Model.Lessons, nameof(Lesson.Id), nameof(Lesson.Name), Model.LessonId))" class="form-control">
                 <option value="" disabled selected>Praktikum auswählen</option>
             </select>
         </div>

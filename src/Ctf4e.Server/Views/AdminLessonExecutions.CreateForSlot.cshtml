@@ -1,0 +1,41 @@
+@using Ctf4e.Server.Models
+@model Ctf4e.Server.ViewModels.AdminLessonExecution
+@{
+    var slots = (List<Slot>)ViewData["Slots"];
+    var lessons = (List<Lesson>)ViewData["Lessons"];
+}
+
+<h3 class="header">
+    Praktikum für alle Gruppen eines Termins starten
+</h3>
+<hr class="header">
+
+<form asp-controller="AdminLessonExecutions" asp-action="CreateLessonExecutionForSlot" method="post">
+    <div class="mb-3">
+        <label class="form-label" asp-for="LessonExecution.LessonId">Praktikum</label>
+        <select asp-for="LessonExecution.LessonId" asp-items="@(new SelectList(lessons, nameof(Lesson.Id), nameof(Lesson.Name)))" class="form-control">
+            <option value="" disabled selected>Praktikum auswählen</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="SlotId">Terminslot</label>
+        <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control">
+            <option value="" disabled selected>Slot auswählen</option>
+        </select>
+    </div>
+    
+    <partial name="AdminLessonExecutions._Form.cshtml" />
+    
+    <div class="mb-3">
+        <div class="form-check">
+            <input asp-for="OverrideExisting" class="form-check-input">
+            <label asp-for="OverrideExisting" class="form-check-label">Für alle Gruppen erzwingen</label>
+            <small>
+                Dies überschreibt sämtliche manuellen Anpassungen, die eventuell bei einigen Gruppen in diesem Slot vorgenommen worden sind.
+            </small>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Praktikum starten</button>
+    <a asp-controller="AdminLessonExecutions" asp-action="RenderLessonExecutionList" class="btn btn-secondary">Abbrechen</a>
+</form>

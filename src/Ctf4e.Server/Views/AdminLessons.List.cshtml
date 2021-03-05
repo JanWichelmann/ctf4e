@@ -1,0 +1,102 @@
+@model List<Ctf4e.Server.Models.Lesson>
+
+<div class="float-end">
+    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLessons" asp-action="ShowCreateLessonForm">
+        <i class="bi bi-plus"></i>
+        Praktikum erstellen
+    </a>
+</div>
+
+<h3 class="header">
+    Praktika verwalten
+</h3>
+<hr class="header">
+
+<table class="table table-sm table-bordered align-middle table-hover text-nowrap mt-2">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Max. Flag-Punkte</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var l in Model)
+    {
+        <tr>
+            <td>@l.Id</td>
+            <td>@l.Name</td>
+            <td>@l.MaxFlagPoints</td>
+            <td>
+                <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-lessonId="@l.Id" class="btn btn-sm btn-outline-primary" title="Aufgabenliste öffnen">
+                    <i class="bi bi-arrow-right"></i>
+                    Aufgaben
+                    <span class="badge bg-primary">
+                        @l.Exercises.Count
+                    </span>
+                </a>
+            </td>
+            <td>
+                <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-lessonId="@l.Id" class="btn btn-sm btn-outline-primary" title="Flagliste öffnen">
+                    <i class="bi bi-arrow-right"></i>
+                    Flags
+                    <span class="badge bg-primary">
+                        @l.Flags.Count
+                    </span>
+                </a>
+            </td>
+            <td>
+
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLessons" asp-action="ShowEditLessonForm" asp-route-id="@l.Id">
+                    <i class="bi bi-pencil"></i>
+                    Bearbeiten
+                </a>
+                @if(!l.Executions.Any())
+                {
+                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lesson" data-lessonid="@l.Id" data-lessonname="@l.Name">
+                        <i class="bi bi-trash"></i>
+                        Löschen
+                    </a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modal-delete-lesson" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Praktikum löschen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Wollen Sie das Praktikum &quot;<span data-replace="lesson-name"></span>&quot; wirklich löschen?
+                </p>
+                <p>
+                    Beachten Sie, dass hierbei auch alle damit zusammenhängenden Aufgaben und Flags unwiderruflich gelöscht werden!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="AdminLessons" asp-action="DeleteLesson" method="post">
+                    <input type="hidden" data-replace="lesson-id" name="id" value="">
+
+                    <button type="submit" class="btn btn-outline-danger">Praktikum löschen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById("modal-delete-lesson").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="lesson-id"]').value = e.relatedTarget.dataset.lessonid;
+    e.target.querySelector('span[data-replace="lesson-name"]').innerText = e.relatedTarget.dataset.lessonname;
+});
+</script>

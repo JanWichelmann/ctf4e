@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Ctf4e.LessonServer.Constants
+{
+    public static class AuthenticationStrings
+    {
+        public const string PolicyAdminMode = "AdminMode";
+        
+        public const string ClaimUserId = "UserId";
+        public const string ClaimUserDisplayName = "UserName";
+        public const string ClaimGroupId = "GroupId";
+        public const string ClaimGroupName = "GroupName";
+        public const string ClaimAdminMode = "AdminMode";
+    }
+}

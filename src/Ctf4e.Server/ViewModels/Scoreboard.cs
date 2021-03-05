@@ -8,11 +8,11 @@ namespace Ctf4e.Server.ViewModels
     {
         public DateTime ValidUntil { get; set; }
 
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
-        public string CurrentLabName { get; set; }
+        public string CurrentLessonName { get; set; }
 
-        public bool AllLabs { get; set; }
+        public bool AllLessons { get; set; }
 
         public int MaximumEntryCount { get; set; }
 

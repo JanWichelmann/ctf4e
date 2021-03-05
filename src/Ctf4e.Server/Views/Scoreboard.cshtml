@@ -6,7 +6,7 @@
 
     var viewType = (ScoreboardController.ViewType)ViewData["ViewType"];
 
-    var labs = (List<Lab>)ViewData["Labs"];
+    var lessons = (List<Lesson>)ViewData["Lessons"];
 
     var scoreboard = ViewData.ContainsKey("Scoreboard") ? (Scoreboard)ViewData["Scoreboard"] : null;
     bool showAllEntries = ViewData.ContainsKey("ShowAllEntries") && (bool)ViewData["ShowAllEntries"];
@@ -23,13 +23,13 @@
     else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
     {
         <h3 class="header">
-            @if(scoreboard.AllLabs)
+            @if(scoreboard.AllLessons)
             {
                 @: Scoreboard: Gesamtwertung über alle Praktika
             }
             else
             {
-                @: Praktikums-Scoreboard: @scoreboard.CurrentLabName
+                @: Praktikums-Scoreboard: @scoreboard.CurrentLessonName
             }
         </h3>
         <hr class="header">
@@ -91,7 +91,7 @@
                                 }
                             </span>
                         }
-                        @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                        @if(entry.BugBountyPoints > 0 && !scoreboard.AllLessons)
                         {
                             <i class="bi bi-bug-fill text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></i>
                         }
@@ -127,7 +127,7 @@
                                     @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
                                 }
                             </span>
-                            @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                            @if(entry.BugBountyPoints > 0 && !scoreboard.AllLessons)
                             {
                                 <i class="bi bi-bug-fill text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></i>
                             }
@@ -149,8 +149,8 @@
 
     <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">Scoreboard auswählen</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
+            <label class="form-label" for="input-lesson-id">Scoreboard auswählen</label>
+            <select id="input-lesson-id" name="lessonId" asp-items="@(new SelectList(lessons, nameof(Lesson.Id), nameof(Lesson.Name), scoreboard?.LessonId))" class="form-control">
                 <option value="" selected>Gesamtwertung über alle Praktika</option>
             </select>
         </div>

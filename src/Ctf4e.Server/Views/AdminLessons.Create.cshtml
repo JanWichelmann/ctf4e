@@ -1,0 +1,32 @@
+@model Ctf4e.Server.Models.Lesson
+
+<h3 class="header">
+    Praktikum erstellen
+</h3>
+<hr class="header">
+
+<form asp-controller="AdminLessons" asp-action="CreateLesson" method="post">
+    <div class="mb-3">
+        <label class="form-label" asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="ServerBaseUrl">Basis-URL für Praktikumsserver</label>
+        <input asp-for="ServerBaseUrl" class="form-control" placeholder="URL eingeben">
+        <span asp-validation-for="ServerBaseUrl" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="ApiCode">API-Code</label>
+        <input asp-for="ApiCode" class="form-control" placeholder="Code eingeben" value="@RandomStringGenerator.GetRandomString(32)">
+        <span asp-validation-for="ApiCode" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="MaxFlagPoints">Maximale Flagpunkte</label>
+        <input asp-for="MaxFlagPoints" class="form-control">
+        <span asp-validation-for="MaxFlagPoints" class="text-danger"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Praktikum erstellen</button>
+    <a asp-controller="AdminLessons" asp-action="RenderLessonList" class="btn btn-secondary">Abbrechen</a>
+</form>

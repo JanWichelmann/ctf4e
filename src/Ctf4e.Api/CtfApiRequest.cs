@@ -5,7 +5,7 @@ namespace Ctf4e.Api
 {
     public class CtfApiRequest
     {
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
         public string Data { get; set; }
 
@@ -13,11 +13,11 @@ namespace Ctf4e.Api
         {
         }
 
-        public static CtfApiRequest Create<T>(int labId, ICryptoService cryptoService, T data) where T : class
+        public static CtfApiRequest Create<T>(int lessonId, ICryptoService cryptoService, T data) where T : class
         {
             return new CtfApiRequest
             {
-                LabId = labId,
+                LessonId = lessonId,
                 Data = cryptoService.Encrypt(JsonConvert.SerializeObject(data))
             };
         }

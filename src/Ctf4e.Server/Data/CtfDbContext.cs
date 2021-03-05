@@ -17,11 +17,11 @@ namespace Ctf4e.Server.Data
 
         public DbSet<GroupEntity> Groups { get; set; }
 
-        public DbSet<LabEntity> Labs { get; set; }
+        public DbSet<LessonEntity> Lessons { get; set; }
 
         public DbSet<SlotEntity> Slots { get; set; }
 
-        public DbSet<LabExecutionEntity> LabExecutions { get; set; }
+        public DbSet<LessonExecutionEntity> LessonExecutions { get; set; }
 
         public DbSet<ExerciseEntity> Exercises { get; set; }
 
@@ -36,8 +36,8 @@ namespace Ctf4e.Server.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Create keys for many-to-many relationship join tables lacking an own primary key
-            builder.Entity<LabExecutionEntity>()
-                .HasKey(lse => new { lse.GroupId, lse.LabId });
+            builder.Entity<LessonExecutionEntity>()
+                .HasKey(lse => new { lse.GroupId, lse.LessonId });
             builder.Entity<FlagSubmissionEntity>()
                 .HasKey(fs => new { fs.FlagId, fs.UserId });
 

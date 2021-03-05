@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ctf4e.Api", "src\Ctf4e.Api\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ctf4e.Utilities", "src\Ctf4e.Utilities\Ctf4e.Utilities.csproj", "{B1E12C91-B0DE-4F91-A105-EDDA13C5DD5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ctf4e.LabServer", "src\Ctf4e.LabServer\Ctf4e.LabServer.csproj", "{3494C45F-FEBA-432F-936F-FEF50DC3420C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ctf4e.LessonServer", "src\Ctf4e.LessonServer\Ctf4e.LessonServer.csproj", "{3494C45F-FEBA-432F-936F-FEF50DC3420C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

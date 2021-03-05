@@ -12,7 +12,7 @@ namespace Ctf4e.Server.Services.Sync
     public interface IMoodleService
     {
         /// <summary>
-        ///     Uploads the entire lab state into the associated Moodle course.
+        ///     Uploads the entire lesson state into the associated Moodle course.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
@@ -36,7 +36,7 @@ namespace Ctf4e.Server.Services.Sync
         }
 
         /// <summary>
-        ///     Uploads the entire lab state into the associated Moodle course.
+        ///     Uploads the entire lesson state into the associated Moodle course.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
@@ -47,13 +47,13 @@ namespace Ctf4e.Server.Services.Sync
 
             bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
 
-            // Query existing labs
-            var labs = await _dbContext.Labs.AsNoTracking()
+            // Query existing lessons
+            var lessons = await _dbContext.Lessons.AsNoTracking()
                 .OrderBy(l => l.Id)
                 .Select(l => new
                 {
-                    LabId = l.Id,
-                    LabName = l.Name,
+                    LessonId = l.Id,
+                    LessonName = l.Name,
                     MandatoryExerciseCount = l.Exercises.Count(e => e.IsMandatory)
                 })
                 .ToListAsync(cancellationToken);
@@ -71,35 +71,35 @@ namespace Ctf4e.Server.Services.Sync
             var passedExerciseSubmissions = await _dbContext.ExerciseSubmissions.AsNoTracking()
                 .Where(s => s.ExercisePassed
                             && s.Exercise.IsMandatory
-                            && s.User.Group.LabExecutions
-                                .Any(le => le.LabId == s.Exercise.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
+                            && s.User.Group.LessonExecutions
+                                .Any(le => le.LessonId == s.Exercise.LessonId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
                 .Select(s => new
                 {
                     s.ExerciseId,
-                    s.Exercise.LabId,
+                    s.Exercise.LessonId,
                     s.UserId
                 }).Distinct()
                 .ToListAsync(cancellationToken);
 
-            // Get passed exercise counts per student and lab
+            // Get passed exercise counts per student and lesson
             var students = users
                 .ToDictionary(u => u.Id, u => new
                 {
                     User = u,
-                    LabStates = passedExerciseSubmissions
+                    LessonStates = passedExerciseSubmissions
                         .Where(es => passAsGroup ? groupIdLookup[es.UserId] == u.GroupId : es.UserId == u.Id)
-                        .GroupBy(es => es.LabId)
-                        .ToDictionary(esg => esg.Key, esg => esg.Count() == labs.First(l => l.LabId == esg.Key).MandatoryExerciseCount)
+                        .GroupBy(es => es.LessonId)
+                        .ToDictionary(esg => esg.Key, esg => esg.Count() == lessons.First(l => l.LessonId == esg.Key).MandatoryExerciseCount)
                 });
 
             // Send data
-            foreach(var lab in labs)
+            foreach(var lesson in lessons)
             {
                 // Build column tag
-                string tag = "ctf-lab-" + lab.LabId;
+                string tag = "ctf-lesson-" + lesson.LessonId;
 
                 // Title
-                string title = lab.LabName;
+                string title = lesson.LessonName;
 
                 // Update or create column
                 MoodleGradebookColumn column;
@@ -123,8 +123,8 @@ namespace Ctf4e.Server.Services.Sync
                 // Insert grades
                 foreach(var student in students)
                 {
-                    // Lab passed?
-                    student.Value.LabStates.TryGetValue(lab.LabId, out var passed);
+                    // Lesson passed?
+                    student.Value.LessonStates.TryGetValue(lesson.LessonId, out var passed);
                     await _moodleGradebook.SetGradeAsync(column.Id, student.Value.User.MoodleUserId, new MoodleGradebookGrade
                     {
                         Score = passed ? 1 : 0,

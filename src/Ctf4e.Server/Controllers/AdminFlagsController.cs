@@ -17,32 +17,32 @@ namespace Ctf4e.Server.Controllers
     public class AdminFlagsController : ControllerBase
     {
         private readonly IFlagService _flagService;
-        private readonly ILabService _labService;
+        private readonly ILessonService _lessonService;
 
-        public AdminFlagsController(IUserService userService, IOptions<MainOptions> mainOptions, IFlagService flagService, ILabService labService)
+        public AdminFlagsController(IUserService userService, IOptions<MainOptions> mainOptions, IFlagService flagService, ILessonService lessonService)
             : base("~/Views/AdminFlags.cshtml", userService, mainOptions)
         {
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
-            _labService = labService ?? throw new ArgumentNullException(nameof(labService));
+            _lessonService = lessonService ?? throw new ArgumentNullException(nameof(lessonService));
         }
 
-        private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
+        private async Task<IActionResult> RenderAsync(ViewType viewType, int lessonId, object model)
         {
-            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
-            if(lab == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
-            ViewData["Lab"] = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+            var lesson = await _lessonService.GetLessonAsync(lessonId, HttpContext.RequestAborted);
+            if(lesson == null)
+                return this.RedirectToAction("RenderLessonList", "AdminLessons");
+            ViewData["Lesson"] = await _lessonService.GetLessonAsync(lessonId, HttpContext.RequestAborted);
 
             ViewData["ViewType"] = viewType;
             return await RenderViewAsync(MenuItems.AdminFlags, model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenderFlagListAsync(int labId)
+        public async Task<IActionResult> RenderFlagListAsync(int lessonId)
         {
-            var flags = await _flagService.GetFlagsAsync(labId).ToListAsync();
+            var flags = await _flagService.GetFlagsAsync(lessonId).ToListAsync();
 
-            return await RenderAsync(ViewType.List, labId, flags);
+            return await RenderAsync(ViewType.List, lessonId, flags);
         }
 
         private async Task<IActionResult> ShowEditFlagFormAsync(int? id, Flag flag = null)
@@ -52,13 +52,13 @@ namespace Ctf4e.Server.Controllers
             {
                 flag = await _flagService.GetFlagAsync(id.Value, HttpContext.RequestAborted);
                 if(flag == null)
-                    return this.RedirectToAction("RenderLabList", "AdminLabs");
+                    return this.RedirectToAction("RenderLessonList", "AdminLessons");
             }
 
             if(flag == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return this.RedirectToAction("RenderLessonList", "AdminLessons");
 
-            return await RenderAsync(ViewType.Edit, flag.LabId, flag);
+            return await RenderAsync(ViewType.Edit, flag.LessonId, flag);
         }
 
         [HttpGet("edit")]
@@ -89,7 +89,7 @@ namespace Ctf4e.Server.Controllers
                 await _flagService.UpdateFlagAsync(flag, HttpContext.RequestAborted);
 
                 AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
-                return await RenderFlagListAsync(flag.LabId);
+                return await RenderFlagListAsync(flag.LessonId);
             }
             catch(InvalidOperationException ex)
             {
@@ -99,9 +99,9 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet("create")]
-        public async Task<IActionResult> ShowCreateFlagFormAsync(int labId, Flag flag = null)
+        public async Task<IActionResult> ShowCreateFlagFormAsync(int lessonId, Flag flag = null)
         {
-            return await RenderAsync(ViewType.Create, labId, flag);
+            return await RenderAsync(ViewType.Create, lessonId, flag);
         }
 
         [HttpPost("create")]
@@ -112,7 +112,7 @@ namespace Ctf4e.Server.Controllers
             if(!ModelState.IsValid)
             {
                 AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
-                return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
+                return await ShowCreateFlagFormAsync(flagData.LessonId, flagData);
             }
 
             try
@@ -124,17 +124,17 @@ namespace Ctf4e.Server.Controllers
                     Description = flagData.Description,
                     BasePoints = flagData.BasePoints,
                     IsBounty = flagData.IsBounty,
-                    LabId = flagData.LabId
+                    LessonId = flagData.LessonId
                 };
                 await _flagService.CreateFlagAsync(flag, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Flag wurde erfolgreich erstellt.", StatusMessageTypes.Success);
-                return await RenderFlagListAsync(flagData.LabId);
+                return await RenderFlagListAsync(flagData.LessonId);
             }
             catch(InvalidOperationException ex)
             {
                 AddStatusMessage(ex.Message, StatusMessageTypes.Error);
-                return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
+                return await ShowCreateFlagFormAsync(flagData.LessonId, flagData);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Ctf4e.Server.Controllers
             // Input check
             var flag = await _flagService.GetFlagAsync(id, HttpContext.RequestAborted);
             if(flag == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return this.RedirectToAction("RenderLessonList", "AdminLessons");
 
             try
             {
@@ -159,7 +159,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
-            return await RenderFlagListAsync(flag.LabId);
+            return await RenderFlagListAsync(flag.LessonId);
         }
 
         public enum ViewType

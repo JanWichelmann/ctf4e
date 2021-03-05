@@ -16,9 +16,9 @@ namespace Ctf4e.Server.MappingProfiles
             CreateMap<GroupEntity, Group>()
                 .ForMember(g => g.Slot, opt => opt.ExplicitExpansion())
                 .ForMember(g => g.Members, opt => opt.ExplicitExpansion())
-                .ForMember(g => g.LabExecutions, opt => opt.ExplicitExpansion());
+                .ForMember(g => g.LessonExecutions, opt => opt.ExplicitExpansion());
 
-            CreateMap<LabEntity, Lab>()
+            CreateMap<LessonEntity, Lesson>()
                 .ForMember(l => l.Executions, opt => opt.ExplicitExpansion())
                 .ForMember(l => l.Flags, opt => opt.ExplicitExpansion())
                 .ForMember(l => l.Exercises, opt => opt.ExplicitExpansion());
@@ -26,12 +26,12 @@ namespace Ctf4e.Server.MappingProfiles
             CreateMap<SlotEntity, Slot>()
                 .ForMember(s => s.Groups, opt => opt.ExplicitExpansion());
 
-            CreateMap<LabExecutionEntity, LabExecution>()
+            CreateMap<LessonExecutionEntity, LessonExecution>()
                 .ForMember(l => l.Group, opt => opt.ExplicitExpansion())
-                .ForMember(l => l.Lab, opt => opt.ExplicitExpansion());
+                .ForMember(l => l.Lesson, opt => opt.ExplicitExpansion());
 
             CreateMap<FlagEntity, Flag>()
-                .ForMember(f => f.Lab, opt => opt.ExplicitExpansion())
+                .ForMember(f => f.Lesson, opt => opt.ExplicitExpansion())
                 .ForMember(f => f.Submissions, opt => opt.ExplicitExpansion());
 
             CreateMap<FlagSubmissionEntity, FlagSubmission>()
@@ -39,7 +39,7 @@ namespace Ctf4e.Server.MappingProfiles
                 .ForMember(f => f.Flag, opt => opt.ExplicitExpansion());
 
             CreateMap<ExerciseEntity, Exercise>()
-                .ForMember(e => e.Lab, opt => opt.ExplicitExpansion())
+                .ForMember(e => e.Lesson, opt => opt.ExplicitExpansion())
                 .ForMember(e => e.Submissions, opt => opt.ExplicitExpansion());
 
             CreateMap<ExerciseSubmissionEntity, ExerciseSubmission>()

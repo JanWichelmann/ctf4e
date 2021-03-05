@@ -113,28 +113,28 @@
     <Content Update="Views\AdminGroups.List.cshtml">
       <DependentUpon>AdminGroups.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabExecutions.List.cshtml">
+    <Content Update="Views\AdminLessonExecutions.List.cshtml">
       <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabExecutions.CreateForGroup.cshtml">
+    <Content Update="Views\AdminLessonExecutions.CreateForGroup.cshtml">
       <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabExecutions.Edit.cshtml">
+    <Content Update="Views\AdminLessonExecutions.Edit.cshtml">
       <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabExecutions.CreateForSlot.cshtml">
+    <Content Update="Views\AdminLessonExecutions.CreateForSlot.cshtml">
       <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabExecutions._Form.cshtml">
+    <Content Update="Views\AdminLessonExecutions._Form.cshtml">
       <DependentUpon>AdminLabExecutions.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabs.Create.cshtml">
+    <Content Update="Views\AdminLessons.Create.cshtml">
       <DependentUpon>AdminLabs.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabs.List.cshtml">
+    <Content Update="Views\AdminLessons.List.cshtml">
       <DependentUpon>AdminLabs.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminLabs.Edit.cshtml">
+    <Content Update="Views\AdminLessons.Edit.cshtml">
       <DependentUpon>AdminLabs.cshtml</DependentUpon>
     </Content>
     <Content Update="Views\AdminSlots.Create.cshtml">

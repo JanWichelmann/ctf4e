@@ -23,9 +23,9 @@ namespace Ctf4e.Server.Models
         public bool IsBounty { get; set; }
 
         [Required]
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
-        public Lab Lab { get; set; }
+        public Lesson Lesson { get; set; }
 
         public ICollection<FlagSubmission> Submissions { get; set; }
     }

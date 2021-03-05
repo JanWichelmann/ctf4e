@@ -1,0 +1,32 @@
+@model Ctf4e.Server.ViewModels.AdminLessonExecution
+
+<div class="mb-3">
+    <label class="form-label" asp-for="LessonExecution.PreStart">Vor-Beginn</label>
+    <input asp-for="LessonExecution.PreStart" id="datetime-prestart" type="text" asp-format="{0:dd.MM.yyyy HH:mm:ss}" value="@DateTime.Now" class="form-control" />
+    <span asp-validation-for="LessonExecution.PreStart" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="LessonExecution.Start">Beginn</label>
+    <input asp-for="LessonExecution.Start" id="datetime-start" type="text" asp-format="{0:dd.MM.yyyy HH:mm:ss}" value="@DateTime.Now" class="form-control" />
+    <span asp-validation-for="LessonExecution.Start" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="LessonExecution.End">Ende</label>
+    <input asp-for="LessonExecution.End" id="datetime-end" type="text" asp-format="{0:dd.MM.yyyy HH:mm:ss}" value="@DateTime.Now" class="form-control" />
+    <span asp-validation-for="LessonExecution.End" class="text-danger"></span>
+</div>
+
+<script>
+    flatpickr.localize(flatpickr.l10ns.de);
+    
+    options = {
+                 "dateFormat": "d.m.Y H:i:S",
+                 "enableTime": true,
+                 "enableSeconds": true,
+                 "allowInput": true,
+                 "minuteIncrement": 1
+             };
+    flatpickr(document.getElementById("datetime-prestart"), options);
+    flatpickr(document.getElementById("datetime-start"), options);
+    flatpickr(document.getElementById("datetime-end"), options);
+</script>

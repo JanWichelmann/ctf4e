@@ -50,7 +50,7 @@
     </div>
     <div id="user@(user.UserId)-card" class="collapse">
         <div class="card-body">
-            <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">
+            <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLessonServer" asp-route-lessonId="@Model.LessonId" asp-route-userId="@user.UserId" target="_blank">
                 <i class="bi bi-arrow-return-right"></i>
                 <i class="bi bi-hdd-network"></i>
                 Zum Praktikumsserver (Admin-Modus)
@@ -245,7 +245,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmission" asp-route-lessonId="@Model.LessonId" asp-route-slotId="@Model.SlotId" method="post">
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
                     <button type="submit" class="btn btn-outline-danger">Einreichung löschen</button>
@@ -268,7 +268,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmissions" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmissions" asp-route-lessonId="@Model.LessonId" asp-route-slotId="@Model.SlotId" method="post">
                     <div id="modal-delete-exercise-submissions-inputlist"></div>
 
                     <button type="submit" class="btn btn-outline-danger">Einreichungen löschen</button>
@@ -281,7 +281,7 @@
 <div class="modal fade" id="modal-add-exercise-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form asp-controller="AdminScoreboard" asp-action="CreateExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
+            <form asp-controller="AdminScoreboard" asp-action="CreateExerciseSubmission" asp-route-lessonId="@Model.LessonId" asp-route-slotId="@Model.SlotId" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Aufgabeneinreichung erstellen</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -326,7 +326,7 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <form asp-controller="AdminScoreboard" asp-action="DeleteFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteFlagSubmission" asp-route-lessonId="@Model.LessonId" asp-route-slotId="@Model.SlotId" method="post">
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
@@ -340,7 +340,7 @@
 <div class="modal fade" id="modal-add-flag-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form asp-controller="AdminScoreboard" asp-action="CreateFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" method="post">
+            <form asp-controller="AdminScoreboard" asp-action="CreateFlagSubmission" asp-route-lessonId="@Model.LessonId" asp-route-slotId="@Model.SlotId" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Flageinreichung erstellen</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

@@ -3,7 +3,7 @@
 namespace Ctf4e.Api.Models
 {
     /// <summary>
-    ///     Defines a login request to a lab server.
+    ///     Defines a login request to a lesson server.
     /// </summary>
     public class UserLoginRequest
     {

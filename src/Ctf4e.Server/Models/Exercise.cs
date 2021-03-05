@@ -9,9 +9,9 @@ namespace Ctf4e.Server.Models
         public int Id { get; set; }
 
         [Required]
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
-        public Lab Lab { get; set; }
+        public Lesson Lesson { get; set; }
 
         public int ExerciseNumber { get; set; }
 

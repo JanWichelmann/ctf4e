@@ -18,20 +18,20 @@ namespace Ctf4e.Server.Controllers
     public class UserDashboardController : ControllerBase
     {
         private readonly IScoreboardService _scoreboardService;
-        private readonly ILabExecutionService _labExecutionService;
+        private readonly ILessonExecutionService _lessonExecutionService;
         private readonly IFlagService _flagService;
-        private readonly ILabService _labService;
+        private readonly ILessonService _lessonService;
 
-        public UserDashboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
+        public UserDashboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILessonExecutionService lessonExecutionService, IFlagService flagService, ILessonService lessonService)
             : base("~/Views/UserDashboard.cshtml", userService, mainOptions)
         {
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
-            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
+            _lessonExecutionService = lessonExecutionService ?? throw new ArgumentNullException(nameof(lessonExecutionService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
-            _labService = labService ?? throw new ArgumentNullException(nameof(labService));
+            _lessonService = lessonService ?? throw new ArgumentNullException(nameof(lessonService));
         }
 
-        private async Task<IActionResult> RenderAsync(int? labId)
+        private async Task<IActionResult> RenderAsync(int? lessonId)
         {
             // Retrieve group ID
             var currentUser = await GetCurrentUserAsync();
@@ -41,24 +41,24 @@ namespace Ctf4e.Server.Controllers
                 return await RenderViewAsync();
             }
 
-            // Show group's most recent lab
-            if(labId == null)
+            // Show group's most recent lesson
+            if(lessonId == null)
             {
-                var currentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(currentUser.GroupId.Value);
-                if(currentLabExecution == null)
+                var currentLessonExecution = await _lessonExecutionService.GetMostRecentLessonExecutionAsync(currentUser.GroupId.Value);
+                if(currentLessonExecution == null)
                 {
                     AddStatusMessage("Aktuell ist kein Praktikum aktiv.", StatusMessageTypes.Info);
                     return await RenderViewAsync();
                 }
 
-                labId = currentLabExecution.LabId;
+                lessonId = currentLessonExecution.LessonId;
             }
 
             // Retrieve scoreboard
-            var scoreboard = await _scoreboardService.GetUserScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
+            var scoreboard = await _scoreboardService.GetUserScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, lessonId.Value, HttpContext.RequestAborted);
             if(scoreboard == null)
             {
-                AddStatusMessage($"Die Übersicht für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage($"Die Übersicht für Praktikum #{lessonId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -68,25 +68,25 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet("")]
-        public Task<IActionResult> RenderLabPageAsync(int? labId)
+        public Task<IActionResult> RenderLessonPageAsync(int? lessonId)
         {
-            return RenderAsync(labId);
+            return RenderAsync(lessonId);
         }
 
         [HttpPost("flag")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitFlagAsync(int labId, string code)
+        public async Task<IActionResult> SubmitFlagAsync(int lessonId, string code)
         {
             // Retrieve group ID
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
                 AddStatusMessage("Beim Abfragen der Gruppen-ID ist ein Fehler aufgetreten.", StatusMessageTypes.Error);
-                return await RenderLabPageAsync(labId);
+                return await RenderLessonPageAsync(lessonId);
             }
 
             // Try to submit flag
-            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
+            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, lessonId, code, HttpContext.RequestAborted);
             if(success)
             {
                 AddStatusMessage("Einlösen der Flag erfolgreich!", StatusMessageTypes.Success);
@@ -96,15 +96,15 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage("Die Flag konnte nicht eingelöst werden.", StatusMessageTypes.Error);
             }
 
-            return await RenderLabPageAsync(labId);
+            return await RenderLessonPageAsync(lessonId);
         }
 
-        [HttpGet("labserver")]
-        public async Task<IActionResult> CallLabServerAsync(int labId)
+        [HttpGet("lessonserver")]
+        public async Task<IActionResult> CallLessonServerAsync(int lessonId)
         {
-            // Retrieve lab data
-            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
-            if(lab == null)
+            // Retrieve lesson data
+            var lesson = await _lessonService.GetLessonAsync(lessonId, HttpContext.RequestAborted);
+            if(lesson == null)
             {
                 AddStatusMessage("Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
@@ -118,10 +118,10 @@ namespace Ctf4e.Server.Controllers
                 return await RenderViewAsync();
             }
 
-            // Check whether lab is accessible by given group
+            // Check whether lesson is accessible by given group
             DateTime now = DateTime.Now;
-            var labExecution = await _labExecutionService.GetLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
-            if(labExecution == null || now < labExecution.PreStart)
+            var lessonExecution = await _lessonExecutionService.GetLessonExecutionAsync(currentUser.GroupId.Value, lessonId, HttpContext.RequestAborted);
+            if(lessonExecution == null || now < lessonExecution.PreStart)
             {
                 AddStatusMessage("Dieses Praktikum ist nicht aktiv.", StatusMessageTypes.Error);
                 return await RenderViewAsync();
@@ -136,10 +136,10 @@ namespace Ctf4e.Server.Controllers
                 GroupName = currentUser.Group?.DisplayName,
                 AdminMode = false
             };
-            string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());
+            string authString = new CryptoService(lesson.ApiCode).Encrypt(authData.Serialize());
 
             // Build final URL
-            string url = lab.ServerBaseUrl.TrimEnd().TrimEnd('/') + "/auth/login?code=" + authString;
+            string url = lesson.ServerBaseUrl.TrimEnd().TrimEnd('/') + "/auth/login?code=" + authString;
 
             // Forward to server
             return Redirect(url);

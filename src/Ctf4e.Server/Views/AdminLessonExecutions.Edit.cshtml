@@ -1,0 +1,16 @@
+@model Ctf4e.Server.ViewModels.AdminLessonExecution
+
+<h3 class="header">
+    Ausführung bearbeiten
+</h3>
+<hr class="header">
+
+<form asp-controller="AdminLessonExecutions" asp-action="EditLessonExecution" method="post">
+    <partial name="AdminLessonExecutions._Form.cshtml" />
+    
+    <input asp-for="LessonExecution.GroupId" type="hidden">
+    <input asp-for="LessonExecution.LessonId" type="hidden">
+
+    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+    <a asp-controller="AdminLessonExecutions" asp-action="RenderLessonExecutionList" class="btn btn-secondary">Abbrechen</a>
+</form>

@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="~/css/ctf4e-server.min.css">
 
     <script src="~/lib/popper/js/popper.min.js"></script>
-    @if(currentUser.IsAdmin)
+    @if(currentUser?.IsAdmin ?? false)
     {
         <script src="~/js/common.js"></script>
     }
@@ -75,7 +75,7 @@
                         @if(currentUser.Group != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage">
+                                <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="UserDashboard" asp-action="RenderLessonPage">
                                     Praktikumsübersicht
                                 </a>
                             </li>
@@ -97,8 +97,8 @@
                                            || activeMenuItem == MenuItems.AdminExercises
                                            || activeMenuItem == MenuItems.AdminFlags
                                            || activeMenuItem == MenuItems.AdminGroups
-                                           || activeMenuItem == MenuItems.AdminLabExecutions
-                                           || activeMenuItem == MenuItems.AdminLabs
+                                           || activeMenuItem == MenuItems.AdminLessonExecutions
+                                           || activeMenuItem == MenuItems.AdminLessons
                                            || activeMenuItem == MenuItems.AdminScoreboard
                                            || activeMenuItem == MenuItems.AdminSlots
                                            || activeMenuItem == MenuItems.AdminUsers;
@@ -139,7 +139,7 @@
                                             <hr class="dropdown-divider" />
                                         </li>
                                         <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLessons || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLessons" asp-action="RenderLessonList">
                                                 Praktika
                                             </a>
                                         </li>
@@ -152,7 +152,7 @@
                                             <hr class="dropdown-divider" />
                                         </li>
                                         <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLessonExecutions ? "text-primary" : "")" asp-controller="AdminLessonExecutions" asp-action="RenderLessonExecutionList">
                                                 Aktive Praktika
                                             </a>
                                         </li>

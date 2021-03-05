@@ -34,9 +34,9 @@
         </div>
     </div>
 
-    <input asp-for="LabId" type="hidden">
+    <input asp-for="LessonId" type="hidden">
     <input asp-for="Id" type="hidden">
 
     <button type="submit" class="btn btn-primary">Änderungen speichern</button>
-    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@Model.LabId" class="btn btn-secondary">Abbrechen</a>
+    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-lessonId="@Model.LessonId" class="btn btn-secondary">Abbrechen</a>
 </form>

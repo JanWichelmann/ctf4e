@@ -2,7 +2,7 @@
 @using Ctf4e.Server.Models
 @model Ctf4e.Server.Models.Exercise
 @{
-    var lab = (Lab)ViewData["Lab"];
+    var lesson = (Lesson)ViewData["Lesson"];
 }
 
 <h3 class="header">
@@ -50,8 +50,8 @@
         </div>
     </div>
 
-    <input asp-for="LabId" type="hidden" value="@lab.Id">
+    <input asp-for="LessonId" type="hidden" value="@lesson.Id">
 
     <button type="submit" class="btn btn-primary">Aufgabe erstellen</button>
-    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@lab.Id" class="btn btn-secondary">Abbrechen</a>
+    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-lessonId="@lesson.Id" class="btn btn-secondary">Abbrechen</a>
 </form>

@@ -77,10 +77,10 @@ namespace Ctf4e.Server
             // Model/database services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISlotService, SlotService>();
-            services.AddScoped<ILabService, LabService>();
+            services.AddScoped<ILessonService, LessonService>();
             services.AddScoped<IExerciseService, ExerciseService>();
             services.AddScoped<IFlagService, FlagService>();
-            services.AddScoped<ILabExecutionService, LabExecutionService>();
+            services.AddScoped<ILessonExecutionService, LessonExecutionService>();
             services.AddScoped<IScoreboardService, ScoreboardService>();
             
             // Markdown parser

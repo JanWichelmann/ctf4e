@@ -10,8 +10,8 @@
         AdminExercises,
         AdminFlags,
         AdminGroups,
-        AdminLabExecutions,
-        AdminLabs,
+        AdminLessonExecutions,
+        AdminLessons,
         AdminScoreboard,
         AdminSlots,
         AdminUsers

@@ -11,9 +11,9 @@ namespace Ctf4e.Server.Data.Entities
         public int Id { get; set; }
 
         [Required]
-        public LabEntity Lab { get; set; }
+        public LessonEntity Lesson { get; set; }
 
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
         public int ExerciseNumber { get; set; }
 

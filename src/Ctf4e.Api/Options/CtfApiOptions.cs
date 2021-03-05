@@ -3,7 +3,7 @@
     public class CtfApiOptions
     {
         public string CtfServerApiBaseUrl { get; set; }
-        public int LabId { get; set; }
-        public string LabApiCode { get; set; }
+        public int LessonId { get; set; }
+        public string LessonApiCode { get; set; }
     }
 }

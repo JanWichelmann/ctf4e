@@ -1,22 +1,22 @@
 @using Ctf4e.Server.Models
 @model List<Flag>
 @{
-    var lab = (Lab)ViewData["Lab"];
+    var lesson = (Lesson)ViewData["Lesson"];
 }
 
 <div class="float-end">
-    <a class="btn btn-sm btn-secondary" asp-controller="AdminLabs" asp-action="RenderLabList">
+    <a class="btn btn-sm btn-secondary" asp-controller="AdminLessons" asp-action="RenderLessonList">
         <i class="bi bi-arrow-left"></i>
         Zurück
     </a>
-    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowCreateFlagForm" asp-route-labId="@lab.Id">
+    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowCreateFlagForm" asp-route-lessonId="@lesson.Id">
         <i class="bi bi-plus"></i>
         Flag erstellen
     </a>
 </div>
 
 <h3 class="header">
-    Flags von Praktikum &quot;@lab.Name&quot; verwalten
+    Flags von Praktikum &quot;@lesson.Name&quot; verwalten
 </h3>
 <hr class="header">
 

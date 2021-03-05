@@ -1,0 +1,21 @@
+﻿@using Ctf4e.Server.Controllers
+@{
+    ViewData["Title"] = "Praktika verwalten";
+
+    var viewType = (AdminLessonsController.ViewType)ViewData["ViewType"];
+}
+
+<div class="container">
+    @if(viewType == AdminLessonsController.ViewType.List)
+    {
+        <partial name="AdminLessons.List.cshtml" />
+    }
+    else if(viewType == AdminLessonsController.ViewType.Edit)
+    {
+        <partial name="AdminLessons.Edit.cshtml" />
+    }
+    else if(viewType == AdminLessonsController.ViewType.Create)
+    {
+        <partial name="AdminLessons.Create.cshtml" />
+    }
+</div>

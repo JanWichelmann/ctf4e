@@ -6,15 +6,15 @@ namespace Ctf4e.Server.ViewModels
 {
     public class UserScoreboard
     {
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
-        public UserScoreboardLabEntry CurrentLab { get; set; }
+        public UserScoreboardLessonEntry CurrentLesson { get; set; }
 
-        public List<UserScoreboardLabEntry> Labs { get; set; }
+        public List<UserScoreboardLessonEntry> Lessons { get; set; }
 
-        public ScoreboardGroupStatus LabExecutionStatus { get; set; }
+        public ScoreboardGroupStatus LessonExecutionStatus { get; set; }
 
-        public LabExecution LabExecution { get; set; }
+        public LessonExecution LessonExecution { get; set; }
 
         public bool HasPassed { get; set; }
 
@@ -33,9 +33,9 @@ namespace Ctf4e.Server.ViewModels
         public List<UserScoreboardFlagEntry> Flags { get; set; }
     }
 
-    public class UserScoreboardLabEntry
+    public class UserScoreboardLessonEntry
     {
-        public int LabId { get; set; }
+        public int LessonId { get; set; }
 
         public string Name { get; set; }
 

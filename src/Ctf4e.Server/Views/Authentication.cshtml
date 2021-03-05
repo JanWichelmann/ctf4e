@@ -22,7 +22,7 @@
         }
         else
         {
-            <a asp-controller="UserDashboard" asp-action="RenderLabPage">Weiterleiten...</a>
+            <a asp-controller="UserDashboard" asp-action="RenderLessonPage">Weiterleiten...</a>
         }
     }
     else if(viewType == AuthenticationController.ViewType.GroupSelection)
@@ -41,7 +41,7 @@
         }
         else
         {
-            <meta http-equiv="refresh" content="1;url=@Url.Action("RenderLabPage", "UserDashboard")">
+            <meta http-equiv="refresh" content="1;url=@Url.Action("RenderLessonPage", "UserDashboard")">
         }
     }
 }

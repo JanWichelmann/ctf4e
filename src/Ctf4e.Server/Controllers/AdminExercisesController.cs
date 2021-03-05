@@ -17,32 +17,32 @@ namespace Ctf4e.Server.Controllers
     public class AdminExercisesController : ControllerBase
     {
         private readonly IExerciseService _exerciseService;
-        private readonly ILabService _labService;
+        private readonly ILessonService _lessonService;
 
-        public AdminExercisesController(IUserService userService, IOptions<MainOptions> mainOptions, IExerciseService exerciseService, ILabService labService)
+        public AdminExercisesController(IUserService userService, IOptions<MainOptions> mainOptions, IExerciseService exerciseService, ILessonService lessonService)
             : base("~/Views/AdminExercises.cshtml", userService, mainOptions)
         {
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
-            _labService = labService ?? throw new ArgumentNullException(nameof(labService));
+            _lessonService = lessonService ?? throw new ArgumentNullException(nameof(lessonService));
         }
 
-        private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
+        private async Task<IActionResult> RenderAsync(ViewType viewType, int lessonId, object model)
         {
-            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
-            if(lab == null)
-                return RedirectToAction("RenderLabList", "AdminLabs");
-            ViewData["Lab"] = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+            var lesson = await _lessonService.GetLessonAsync(lessonId, HttpContext.RequestAborted);
+            if(lesson == null)
+                return RedirectToAction("RenderLessonList", "AdminLessons");
+            ViewData["Lesson"] = await _lessonService.GetLessonAsync(lessonId, HttpContext.RequestAborted);
 
             ViewData["ViewType"] = viewType;
             return await RenderViewAsync(MenuItems.AdminExercises, model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenderExerciseListAsync(int labId)
+        public async Task<IActionResult> RenderExerciseListAsync(int lessonId)
         {
-            var exercises = await _exerciseService.GetExercisesAsync(labId).ToListAsync();
+            var exercises = await _exerciseService.GetExercisesAsync(lessonId).ToListAsync();
 
-            return await RenderAsync(ViewType.List, labId, exercises);
+            return await RenderAsync(ViewType.List, lessonId, exercises);
         }
 
         private async Task<IActionResult> ShowEditExerciseFormAsync(int? id, Exercise exercise = null)
@@ -52,13 +52,13 @@ namespace Ctf4e.Server.Controllers
             {
                 exercise = await _exerciseService.GetExerciseAsync(id.Value, HttpContext.RequestAborted);
                 if(exercise == null)
-                    return this.RedirectToAction("RenderLabList", "AdminLabs");
+                    return this.RedirectToAction("RenderLessonList", "AdminLessons");
             }
 
             if(exercise == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return this.RedirectToAction("RenderLessonList", "AdminLessons");
 
-            return await RenderAsync(ViewType.Edit, exercise.LabId, exercise);
+            return await RenderAsync(ViewType.Edit, exercise.LessonId, exercise);
         }
 
         [HttpGet("edit")]
@@ -91,7 +91,7 @@ namespace Ctf4e.Server.Controllers
                 await _exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
 
                 AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
-                return await RenderExerciseListAsync(exercise.LabId);
+                return await RenderExerciseListAsync(exercise.LessonId);
             }
             catch(InvalidOperationException ex)
             {
@@ -101,9 +101,9 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet("create")]
-        public async Task<IActionResult> ShowCreateExerciseFormAsync(int labId, Exercise exercise = null)
+        public async Task<IActionResult> ShowCreateExerciseFormAsync(int lessonId, Exercise exercise = null)
         {
-            return await RenderAsync(ViewType.Create, labId, exercise);
+            return await RenderAsync(ViewType.Create, lessonId, exercise);
         }
 
         [HttpPost("create")]
@@ -114,7 +114,7 @@ namespace Ctf4e.Server.Controllers
             if(!ModelState.IsValid)
             {
                 AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
-                return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
+                return await ShowCreateExerciseFormAsync(exerciseData.LessonId, exerciseData);
             }
 
             try
@@ -122,7 +122,7 @@ namespace Ctf4e.Server.Controllers
                 // Create exercise
                 var exercise = new Exercise
                 {
-                    LabId = exerciseData.LabId,
+                    LessonId = exerciseData.LessonId,
                     ExerciseNumber = exerciseData.ExerciseNumber,
                     Name = exerciseData.Name,
                     IsMandatory = exerciseData.IsMandatory,
@@ -133,12 +133,12 @@ namespace Ctf4e.Server.Controllers
                 await _exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
 
                 AddStatusMessage("Die Aufgabe wurde erfolgreich erstellt.", StatusMessageTypes.Success);
-                return await RenderExerciseListAsync(exerciseData.LabId);
+                return await RenderExerciseListAsync(exerciseData.LessonId);
             }
             catch(InvalidOperationException ex)
             {
                 AddStatusMessage(ex.Message, StatusMessageTypes.Error);
-                return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
+                return await ShowCreateExerciseFormAsync(exerciseData.LessonId, exerciseData);
             }
         }
 
@@ -149,7 +149,7 @@ namespace Ctf4e.Server.Controllers
             // Input check
             var exercise = await _exerciseService.GetExerciseAsync(id, HttpContext.RequestAborted);
             if(exercise == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return this.RedirectToAction("RenderLessonList", "AdminLessons");
 
             try
             {
@@ -163,7 +163,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
             }
 
-            return await RenderExerciseListAsync(exercise.LabId);
+            return await RenderExerciseListAsync(exercise.LessonId);
         }
 
         public enum ViewType

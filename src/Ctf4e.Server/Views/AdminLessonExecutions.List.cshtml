@@ -1,0 +1,143 @@
+@using Ctf4e.Server.Models
+@model List<LessonExecution>
+@{
+    var slots = (List<Slot>)ViewData["Slots"];
+    var lessons = (List<Lesson>)ViewData["Lessons"];
+}
+
+<h3 class="header">
+    Ausführungen verwalten
+</h3>
+<hr class="header">
+
+<p>
+    Praktikumsausführungen steuern, wann ein Praktikumstermin startet und endet. Hierfür gibt es folgende Regeln:
+</p>
+<ul>
+    <li><strong>Vor-Beginn:</strong> Ab diesem Zeitpunkt können bestimmte Aufgaben bearbeitet und sämtliche Flags eingelöst werden.</li>
+    <li><strong>Beginn:</strong> Ab diesem Zeitpunkt sind sämtliche Aufgaben freigeschaltet. Die Gruppen können in diesem Zeitraum das Praktikum bestehen.</li>
+    <li><strong>Ende:</strong> Nach diesem Zeitpunkt können zwar noch Aufgaben bearbeitet werden, diese werden jedoch nicht mehr im Scoreboard gewertet. Flags können nicht mehr eingelöst werden.</li>
+</ul>
+<p>
+    Die einzelnen Zeitpunkte müssen immer die gegebene Reihenfolge (Vor-Beginn, Beginn, Ende) haben und dürfen nicht exakt gleich sein!
+</p>
+<p>
+    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLessonExecutions" asp-action="ShowCreateLessonExecutionForGroupForm">
+        <i class="bi bi-plus"></i>
+        Praktikum für eine Gruppe starten
+    </a>
+</p>
+<p>
+    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLessonExecutions" asp-action="ShowCreateLessonExecutionForSlotForm">
+        <i class="bi bi-plus"></i>
+        Praktikum für alle Gruppen eines Termins starten / anpassen
+    </a>
+    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lesson-execution-slot">
+        <i class="bi bi-trash"></i>
+        Praktikum für alle Gruppen eines Termins abbrechen
+    </a>
+</p>
+<table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
+    <thead>
+    <tr>
+        <th scope="col">Gruppe</th>
+        <th scope="col">Praktikum</th>
+        <th scope="col">Vor-Beginn</th>
+        <th scope="col">Beginn</th>
+        <th scope="col">Ende</th>
+        <th scope="col">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var l in Model)
+    {
+        <tr>
+            <td>#@l.GroupId: @l.Group.DisplayName</td>
+            <td>@l.Lesson.Name</td>
+            <td>@l.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+            <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+            <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
+            <td>
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLessonExecutions" asp-action="ShowEditLessonExecutionForm" asp-route-groupId="@l.GroupId" asp-route-lessonId="@l.LessonId">
+                    <i class="bi bi-pencil"></i>
+                    Bearbeiten
+                </a>
+                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lesson-execution-group" data-groupid="@l.GroupId" data-lessonid="@l.LessonId" data-groupname="@l.Group.DisplayName" data-lessonname="@l.Lesson.Name">
+                    <i class="bi bi-trash"></i>
+                    Löschen
+                </a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="modal fade" id="modal-delete-lesson-execution-group" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ausführung für Gruppe löschen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Wollen Sie die Ausführung des Praktikums &quot;<span data-replace="lesson-name"></span>&quot; für Gruppe &quot;<span data-replace="group-name"></span>&quot; wirklich löschen?
+                </p>
+                <p>
+                    Die Gruppe kann dann keine Aufgaben mehr bearbeiten, und der &quot;Bestanden&quot;-Status wird zurückgesetzt.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="AdminLessonExecutions" asp-action="DeleteLessonExecutionForGroup" method="post">
+                    <input type="hidden" data-replace="group-id" name="groupId" value="">
+                    <input type="hidden" data-replace="lesson-id" name="lessonId" value="">
+                    
+                    <button type="submit" class="btn btn-outline-danger">Ausführung löschen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-delete-lesson-execution-slot" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-controller="AdminLessonExecutions" asp-action="DeleteLessonExecutionForSlot" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alle Ausführungen für Terminslot löschen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Hinweis: Die betroffenen Gruppen können dann keine Aufgaben mehr bearbeiten, und der &quot;Bestanden&quot;-Status wird zurückgesetzt.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label">Praktikum</label>
+                        <select name="lessonId" asp-items="@(new SelectList(lessons, nameof(Lesson.Id), nameof(Lesson.Name)))" class="form-control">
+                            <option value="" disabled selected>Praktikum auswählen</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Terminslot</label>
+                        <select name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control">
+                            <option value="" disabled selected>Slot auswählen</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-danger">Ausführungen löschen</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById("modal-delete-lesson-execution-group").addEventListener("show.bs.modal", function(e)
+{
+    e.target.querySelector('input[data-replace="group-id"]').value = e.relatedTarget.dataset.groupid;
+    e.target.querySelector('span[data-replace="group-name"]').innerText = e.relatedTarget.dataset.groupname;
+    e.target.querySelector('input[data-replace="lesson-id"]').value = e.relatedTarget.dataset.lessonid;
+    e.target.querySelector('span[data-replace="lesson-name"]').innerText = e.relatedTarget.dataset.lessonname;
+});
+</script>

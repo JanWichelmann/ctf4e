@@ -40,12 +40,12 @@ jobs:
         file: src/Ctf4e.Server/Dockerfile
         build-args: BUILD_VERSION=${{ steps.get_version.outputs.SHORT_HASH }}
     
-    - name: Build and push lab server docker image
+    - name: Build and push lesson server docker image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
         tags: |
-          ctf4e/ctf4e-labserver:latest
-          ctf4e/ctf4e-labserver:${{ steps.get_version.outputs.VERSION }}
-        file: src/Ctf4e.LabServer/Dockerfile
+          ctf4e/ctf4e-lessonserver:latest
+          ctf4e/ctf4e-lessonserver:${{ steps.get_version.outputs.VERSION }}
+        file: src/Ctf4e.LessonServer/Dockerfile
