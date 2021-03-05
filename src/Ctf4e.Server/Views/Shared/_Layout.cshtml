@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="~/css/ctf4e-server.min.css">
 
     <script src="~/lib/popper/js/popper.min.js"></script>
-    @if(currentUser.IsAdmin)
+    @if(currentUser != null && (currentUser.IsAdmin || currentUser.IsTutor))
     {
         <script src="~/js/common.js"></script>
     }
