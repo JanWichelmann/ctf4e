@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using AutoMapper;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +69,9 @@ namespace Ctf4e.Server
                         .EnableSensitiveDataLogging();
                 }
             });
+            
+            // Localization
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             // Entity/Model mapping
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -122,7 +127,7 @@ namespace Ctf4e.Server
             // Use MVC
             var mvcBuilder = services.AddControllersWithViews(options =>
             {
-            });
+            }).AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
             // Development tools
             if(_mainOptions.DevelopmentMode)
@@ -189,6 +194,14 @@ namespace Ctf4e.Server
                 });
             }
 
+            // Localization
+            var supportedCultures = new[] { "en", "de" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+            app.UseRequestLocalization(localizationOptions);
+            
             // Verbose stack traces
             if(_mainOptions.DevelopmentMode)
                 app.UseDeveloperExceptionPage();
