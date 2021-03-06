@@ -1,6 +1,8 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Scoreboard";
 
@@ -25,11 +27,11 @@
         <h3 class="header">
             @if(scoreboard.AllLabs)
             {
-                @: Scoreboard: Gesamtwertung über alle Praktika
+                @Localizer["Title:ScoreboardAll"]
             }
             else
             {
-                @: Praktikums-Scoreboard: @scoreboard.CurrentLabName
+                @Localizer["Title:ScoreboardLab", scoreboard.CurrentLabName]
             }
         </h3>
         <hr class="header">
@@ -38,9 +40,9 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Punkte</th>
-                <th scope="col">Flags</th>
-                <th scope="col">Gruppe</th>
+                <th scope="col">@Localizer["Scoreboard:Points"]</th>
+                <th scope="col">@Localizer["Scoreboard:Flags"]</th>
+                <th scope="col">@Localizer["Scoreboard:Group"]</th>
             </tr>
             </thead>
             <tbody>
@@ -76,24 +78,24 @@
                             }
                         }
                     </th>
-                    <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
+                    <td title="@Localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
                         @entry.TotalPoints
                         @if(isCurrentGroup || currentUser.IsAdmin || currentUser.IsTutor)
                         {
                             <span class="text-muted">
                                 @if(entry.BugBountyPoints == 0)
                                 {
-                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
+                                    @Localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
                                 }
                                 else
                                 {
-                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
+                                    @Localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
                                 }
                             </span>
                         }
                         @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                         {
-                            <i class="bi bi-bug-fill text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></i>
+                            <i class="bi bi-bug-fill text-primary" title="@Localizer["Scoreboard:GotBugBounty"]"></i>
                         }
                     </td>
                     <td>
@@ -115,21 +117,21 @@
                         <th scope="row">
                             @entry.Rank
                         </th>
-                        <td title="Letzte Einreichung: @entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)">
+                        <td title="@Localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
                             @entry.TotalPoints
                             <span class="text-muted">
                                 @if(entry.BugBountyPoints == 0)
                                 {
-                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints)
+                                    @Localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
                                 }
                                 else
                                 {
-                                    @:(Aufgaben: @entry.ExercisePoints, Flags: @entry.FlagPoints, Bugs: @entry.BugBountyPoints)
+                                    @Localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
                                 }
                             </span>
                             @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                             {
-                                <i class="bi bi-bug-fill text-primary" title="Diese Gruppe hat eine Bug-Bounty erhalten."></i>
+                                <i class="bi bi-bug-fill text-primary" title="@Localizer["Scoreboard:GotBugBounty"]"></i>
                             }
                         </td>
                         <td>
@@ -149,9 +151,9 @@
 
     <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">Scoreboard auswählen</label>
+            <label class="form-label" for="input-lab-id">@Localizer["SelectScoreboard"]</label>
             <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
-                <option value="" selected>Gesamtwertung über alle Praktika</option>
+                <option value="" selected>@Localizer["AllLabs"]</option>
             </select>
         </div>
         @if(currentUser.IsAdmin || currentUser.IsTutor)
@@ -160,8 +162,8 @@
                 <div class="form-check">
                     <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
                     <label for="input-showAllEntries" class="form-check-label">
-                        Alle Einträge anzeigen
-                        <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="Nur für Tutoren und Administratoren"></i>
+                        @Localizer["ShowAllEntries"]
+                        <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@Localizer["TutorsAndAdminsOnly"]"></i>
                     </label>
                 </div>
             </div>
@@ -172,23 +174,23 @@
                 <div class="form-check">
                     <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
                     <label for="input-resetCache" class="form-check-label">
-                        Cache umgehen und Scoreboard vollständig aus der Datenbank laden
-                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></i>
+                        @Localizer["ResetCache"]
+                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@Localizer["AdminsOnly"]"></i>
                     </label>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="input-reload">
-                    Automatisch neu laden nach (Sekunden)
-                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="Nur für Administratoren"></i>
+                    @Localizer["AutoReload"]
+                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@Localizer["AdminsOnly"]"></i>
                 </label>
                 <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
             </div>
         }
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-arrow-return-right"></i>
-            Gewähltes Scoreboard anzeigen
+            @Localizer["ShowSelectedScoreboard"]
         </button>
     </form>
 </div>

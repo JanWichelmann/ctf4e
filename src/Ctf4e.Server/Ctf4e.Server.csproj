@@ -53,6 +53,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>_Layout.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\Scoreboard.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Scoreboard.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Scoreboard.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Scoreboard.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -202,6 +212,14 @@
     <EmbeddedResource Update="Resources\Views\Shared\_Layout.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>_Layout.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Scoreboard.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Scoreboard.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Scoreboard.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Scoreboard.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

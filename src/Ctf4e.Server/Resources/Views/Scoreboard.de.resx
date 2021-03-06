@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Title:ScoreboardAll" xml:space="preserve">
+        <value>Scoreboard: Gesamtwertung über alle Praktika</value>
+        <comment>Title:ScoreboardAll</comment>
+    </data>
+    <data name="Title:ScoreboardLab" xml:space="preserve">
+        <value>Praktikums-Scoreboard: {0}</value>
+        <comment>Title:ScoreboardLab</comment>
+    </data>
+    <data name="Scoreboard:Points" xml:space="preserve">
+        <value>Punkte</value>
+        <comment>Scoreboard:Points</comment>
+    </data>
+    <data name="Scoreboard:Flags" xml:space="preserve">
+        <value>Flags</value>
+        <comment>Scoreboard:Flags</comment>
+    </data>
+    <data name="Scoreboard:Group" xml:space="preserve">
+        <value>Gruppe</value>
+        <comment>Scoreboard:Group</comment>
+    </data>
+    <data name="Scoreboard:LastSubmission" xml:space="preserve">
+        <value>Letzte Einreichung: {0}</value>
+        <comment>Scoreboard:LastSubmission</comment>
+    </data>
+    <data name="Scoreboard:DetailedPoints" xml:space="preserve">
+        <value>(Aufgaben: {0}, Flags: {1})</value>
+        <comment>Scoreboard:DetailedPoints</comment>
+    </data>
+    <data name="Scoreboard:DetailedPointsWithBugs" xml:space="preserve">
+        <value>(Aufgaben: {0}, Flags: {1}, Bugs: {2})</value>
+        <comment>Scoreboard:DetailedPointsWithBugs</comment>
+    </data>
+    <data name="Scoreboard:GotBugBounty" xml:space="preserve">
+        <value>Diese Gruppe hat eine Bug-Bounty erhalten.</value>
+        <comment>Scoreboard:GotBugBounty</comment>
+    </data>
+    <data name="SelectScoreboard" xml:space="preserve">
+        <value>Scoreboard auswählen</value>
+        <comment>SelectScoreboard</comment>
+    </data>
+    <data name="AllLabs" xml:space="preserve">
+        <value>Gesamtwertung über alle Praktika</value>
+        <comment>AllLabs</comment>
+    </data>
+    <data name="ShowAllEntries" xml:space="preserve">
+        <value>Alle Einträge anzeigen</value>
+        <comment>ShowAllEntries</comment>
+    </data>
+    <data name="TutorsAndAdminsOnly" xml:space="preserve">
+        <value>Nur für Tutoren und Administratoren</value>
+        <comment>TutorsAndAdminsOnly</comment>
+    </data>
+    <data name="AdminsOnly" xml:space="preserve">
+        <value>Nur für Administratoren</value>
+        <comment>AdminsOnly</comment>
+    </data>
+    <data name="ResetCache" xml:space="preserve">
+        <value>Cache umgehen und Scoreboard vollständig aus der Datenbank laden</value>
+        <comment>ResetCache</comment>
+    </data>
+    <data name="AutoReload" xml:space="preserve">
+        <value>Automatisch neu laden nach (Sekunden)</value>
+        <comment>AutoReload</comment>
+    </data>
+    <data name="ShowSelectedScoreboard" xml:space="preserve">
+        <value>Gewähltes Scoreboard anzeigen</value>
+        <comment>ShowSelectedScoreboard</comment>
+    </data>
+</root>
