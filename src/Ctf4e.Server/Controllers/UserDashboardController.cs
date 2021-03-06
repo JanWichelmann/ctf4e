@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Ctf4e.Api;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
 using Ctf4e.Server.Constants;

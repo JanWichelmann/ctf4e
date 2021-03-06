@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Ctf4e.Api;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
 using Ctf4e.Server.Constants;
@@ -10,7 +9,6 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
-using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

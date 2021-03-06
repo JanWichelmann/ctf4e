@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Ctf4e.Api.DependencyInjection;
 using Ctf4e.Api.Options;
-using Ctf4e.LabServer.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,14 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Nito.AsyncEx;
 
 namespace Ctf4e.LabServer
 {
@@ -85,7 +79,7 @@ namespace Ctf4e.LabServer
             });
 
             // Use MVC
-            var mvcBuilder = services.AddControllersWithViews(options =>
+            var mvcBuilder = services.AddControllersWithViews(_ =>
             {
             });
 

@@ -37,7 +37,6 @@ namespace Ctf4e.Server.Services
         private readonly CtfDbContext _dbContext;
         private readonly IMemoryCache _cache;
 
-        // ReSharper disable InconsistentNaming
         private const string ConfigKeyFlagMinimumPointsDivisor = "FlagMinimumPointsDivisor";
         private const string ConfigKeyFlagHalfPointsSubmissionCount = "FlagHalfPointsSubmissionCount";
         private const string ConfigKeyScoreboardEntryCount = "ScoreboardEntryCount";
@@ -48,7 +47,6 @@ namespace Ctf4e.Server.Services
         private const string ConfigKeyGroupSizeMin = "GroupSizeMin";
         private const string ConfigKeyGroupSizeMax = "GroupSizeMax";
         private const string ConfigKeyGroupSelectionPageText = "GroupSelectionPageText";
-        // ReSharper restore InconsistentNaming
 
         public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
         {

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Ctf4e.Api.Options;
 using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Options;

@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using Ctf4e.Server.Data;
 using Microsoft.AspNetCore.Hosting;

@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Ctf4e.LabServer.Configuration.Exercises;
 
 namespace Ctf4e.LabServer.Models.State

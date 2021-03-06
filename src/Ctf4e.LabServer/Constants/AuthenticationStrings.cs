@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Ctf4e.LabServer.Constants
+﻿namespace Ctf4e.LabServer.Constants
 {
     public static class AuthenticationStrings
     {

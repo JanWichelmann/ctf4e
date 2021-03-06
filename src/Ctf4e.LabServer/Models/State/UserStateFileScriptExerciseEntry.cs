@@ -1,6 +1,4 @@
 using System;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Ctf4e.LabServer.Configuration.Exercises;
 
 namespace Ctf4e.LabServer.Models.State
@@ -22,7 +20,7 @@ namespace Ctf4e.LabServer.Models.State
 
         public override bool Update(LabConfigurationExerciseEntry exercise)
         {
-            if(!(exercise is LabConfigurationScriptExerciseEntry scriptExercise))
+            if(!(exercise is LabConfigurationScriptExerciseEntry))
                 throw new ArgumentException("Invalid exercise type", nameof(exercise));
             
             // No changes required

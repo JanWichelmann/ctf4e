@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Api.Services;
-using Ctf4e.LabServer.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.InputModels;
@@ -25,7 +22,6 @@ namespace Ctf4e.LabServer.Controllers
     {
         private readonly IStateService _stateService;
         private readonly ICtfApiClient _ctfApiClient;
-        private readonly IOptionsSnapshot<LabOptions> _labOptions;
         private readonly ILabConfigurationService _labConfiguration;
         private readonly ILogger<GroupController> _logger;
 
@@ -34,7 +30,6 @@ namespace Ctf4e.LabServer.Controllers
         {
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
             _ctfApiClient = ctfApiClient ?? throw new ArgumentNullException(nameof(ctfApiClient));
-            _labOptions = labOptions ?? throw new ArgumentNullException(nameof(labOptions));
             _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }

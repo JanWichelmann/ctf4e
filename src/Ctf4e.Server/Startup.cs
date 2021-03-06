@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using AutoMapper;
@@ -60,7 +58,7 @@ namespace Ctf4e.Server
             // Database
             services.AddDbContextPool<CtfDbContext>(options =>
             {
-                options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};", mysqlOptions =>
+                options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};", _ =>
                 {
                 });
                 if(_environment.IsDevelopment())
@@ -125,7 +123,7 @@ namespace Ctf4e.Server
             });
 
             // Use MVC
-            var mvcBuilder = services.AddControllersWithViews(options =>
+            var mvcBuilder = services.AddControllersWithViews(_ =>
             {
             }).AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
@@ -154,6 +152,8 @@ namespace Ctf4e.Server
                     options.ShouldProfile = request =>
                     {
                         // Do not profile static files
+                        if(request.Path.Value == null)
+                            return true;
                         if(request.Path.Value.StartsWith("/lib")
                            || request.Path.Value.StartsWith("/css"))
                             return false;

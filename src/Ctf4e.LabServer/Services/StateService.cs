@@ -3,22 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Configuration.Exercises;
-using Ctf4e.LabServer.InputModels;
 using Ctf4e.LabServer.Models.State;
 using Ctf4e.LabServer.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Ctf4e.LabServer.ViewModels;
 using Ctf4e.Utilities;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nito.AsyncEx;
 
 namespace Ctf4e.LabServer.Services

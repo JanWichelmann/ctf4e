@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Ctf4e.Api;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
-using Ctf4e.LabServer.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +14,6 @@ using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Http;
 
 namespace Ctf4e.LabServer.Controllers
 {

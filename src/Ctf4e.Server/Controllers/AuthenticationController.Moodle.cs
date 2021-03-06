@@ -1,13 +1,8 @@
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Security;
 using System.Threading.Tasks;
 using Ctf4e.Server.Models;
-using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

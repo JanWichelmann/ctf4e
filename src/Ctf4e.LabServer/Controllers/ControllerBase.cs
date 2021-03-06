@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Models;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 

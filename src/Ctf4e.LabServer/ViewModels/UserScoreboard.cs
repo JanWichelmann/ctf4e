@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Ctf4e.LabServer.Configuration.Exercises;
+﻿using Ctf4e.LabServer.Configuration.Exercises;
 using Ctf4e.LabServer.Models.State;
 
 namespace Ctf4e.LabServer.ViewModels

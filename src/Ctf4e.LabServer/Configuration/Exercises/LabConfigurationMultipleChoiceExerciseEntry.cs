@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Ctf4e.LabServer.Configuration.Exercises

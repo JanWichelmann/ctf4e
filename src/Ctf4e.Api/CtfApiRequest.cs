@@ -9,10 +9,6 @@ namespace Ctf4e.Api
 
         public string Data { get; set; }
 
-        public CtfApiRequest()
-        {
-        }
-
         public static CtfApiRequest Create<T>(int labId, ICryptoService cryptoService, T data) where T : class
         {
             return new CtfApiRequest
