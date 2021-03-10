@@ -1,7 +1,9 @@
+@using Microsoft.AspNetCore.Mvc.Localization
 @model Ctf4e.Server.ViewModels.AdminScoreboard
+@inject IViewLocalizer Localizer
 
 <h3 class="header">
-    Flags (alle Terminslots)
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
@@ -9,9 +11,9 @@
     <thead>
     <tr>
         <th></th>
-        <th scope="col">Beschreibung</th>
-        <th scope="col">Funde</th>
-        <th scope="col">Punkte</th>
+        <th scope="col">@Localizer["Flags:Description"]</th>
+        <th scope="col">@Localizer["Flags:Submissions"]</th>
+        <th scope="col">@Localizer["Flags:Points"]</th>
     </tr>
     </thead>
     <tbody>
@@ -23,7 +25,7 @@
                 @flag.Flag.Description
                 @if(flag.Flag.IsBounty)
                 {
-                    <i class="bi bi-bug-fill text-primary" title="Bug-Bounty"></i>
+                    <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
                 }
             </td>
             <td>

@@ -93,6 +93,36 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AdminScoreboard.Users.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Flags.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.Flags.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Flags.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.Flags.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Sync.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.Sync.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Sync.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.Sync.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminConfiguration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfiguration.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminConfiguration.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfiguration.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -270,10 +300,40 @@
     <EmbeddedResource Update="Resources\Views\AdminScoreboard.Users.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AdminScoreboard.Users.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminScoreboard.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Views\AdminScoreboard.Users.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AdminScoreboard.Users.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminScoreboard.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Flags.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Flags.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminScoreboard.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Flags.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Flags.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminScoreboard.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Sync.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Sync.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminScoreboard.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Sync.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Sync.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminScoreboard.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminConfiguration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfiguration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminConfiguration.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfiguration.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

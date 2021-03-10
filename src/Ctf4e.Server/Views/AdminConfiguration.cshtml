@@ -1,5 +1,7 @@
 ﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
 @model Ctf4e.Server.ViewModels.AdminConfigurationData
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Konfiguration";
 
@@ -8,132 +10,115 @@
 
 <div class="container">
     <h3 class="header">
-        Konfiguration bearbeiten
+        @Localizer["Title"]
     </h3>
-    <hr class="header-secondary">
+    <hr class="header">
 
-    <p>Eingestellte Kultur: @CultureInfo.CurrentCulture.ToString()</p>
-    <p>Eingestellte Zeitzone: @TimeZoneInfo.Local.ToString()</p>
-    <p>Aktuelle Uhrzeit: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
-    <p>Aktuelle Uhrzeit (UTC): @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
-
-    <hr class="header-secondary">
     <form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
         <div class="mb-3">
-            <label class="form-label" asp-for="PageTitle">Seitentitel</label>
+            <label class="form-label" asp-for="PageTitle">@Localizer["Config:PageTitle"]</label>
             <input asp-for="PageTitle" class="form-control">
             <span asp-validation-for="PageTitle" class="text-danger"></span>
             <small>
-                Dieser Titel wird im HTML-<span class="text-monospace">&lt;title&gt;</span>-Element eingesetzt.
+                @Localizer["Config:PageTitle:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="NavbarTitle">Titel in Menüleiste</label>
+            <label class="form-label" asp-for="NavbarTitle">@Localizer["Config:NavbarTitle"]</label>
             <input asp-for="NavbarTitle" class="form-control">
             <span asp-validation-for="NavbarTitle" class="text-danger"></span>
             <small>
-                Dieser Titel wird oben links in der Menüleiste angezeigt.
+                @Localizer["Config:NavbarTitle:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="FlagMinimumPointsDivisor">Teiler für Flag-Minimalpunktzahl</label>
+            <label class="form-label" asp-for="FlagMinimumPointsDivisor">@Localizer["Config:FlagMinimumPointsDivisor"]</label>
             <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
             <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
             <small>
-                Die Flag-Basispunktzahl dividiert durch diese Zahl ergibt die Minimalpunktzahl, die für jede Flag garantiert gewährt wird.
+                @Localizer["Config:FlagMinimumPointsDivisor:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="FlagHalfPointsSubmissionCount">Anzahl der Flageinreichungen bis Mittelwert der Punkte</label>
+            <label class="form-label" asp-for="FlagHalfPointsSubmissionCount">@Localizer["Config:FlagHalfPointsSubmissionCount"]</label>
             <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
             <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
             <small>
-                Diese Zahl legt fest, bei wie vielen Flageinreichungen noch der Mittelwert zwischen Basispunktzahl und Minimalpunktzahl (<code>(basis+min)/2</code>) gewährt wird.
+                @Localizer["Config:FlagHalfPointsSubmissionCount:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="ScoreboardEntryCount">Anzahl der angezeigten Einträge im offenen Scoreboard</label>
+            <label class="form-label" asp-for="ScoreboardEntryCount">@Localizer["Config:ScoreboardEntryCount"]</label>
             <input asp-for="ScoreboardEntryCount" class="form-control">
             <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
             <small>
-                Diese Zahl legt fest, wie viele Einträge im für alle Gruppen einsehbaren Scoreboard gezeigt werden.
-                Diese Zahl kann unter bestimmten Umständen überschritten werden, wenn mehrere Gruppen auf demselben Platz sind,
-                und diese sonst nicht alle gleichberechtigt angezeigt werden könnten.
+                @Localizer["Config:ScoreboardEntryCount:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="ScoreboardCachedSeconds">Scoreboard-Gültigkeitsdauer in Sekunden</label>
+            <label class="form-label" asp-for="ScoreboardCachedSeconds">@Localizer["Config:ScoreboardCachedSeconds"]</label>
             <input asp-for="ScoreboardCachedSeconds" class="form-control">
             <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
             <small>
-                Diese Zahl legt fest, wie viele Sekunden ein gecachtes Scoreboard gültig ist, bevor ein neues erzeugt wird.
-                Ziel dieser Einstellung ist, die Datenbank zu entlasten, da hierfür mehrere große Queries ausgeführt werden müssen.
-                Der Wert sollte anfangs möglichst niedrig angesetzt sein, und erst bei Bedarf erhöht werden.
+                @Localizer["Config:ScoreboardCachedSeconds:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="GroupSelectionPageText">Text auf Gruppenwahl-Seite</label>
+            <label class="form-label" asp-for="GroupSelectionPageText">@Localizer["Config:GroupSelectionPageText"]</label>
             <textarea asp-for="GroupSelectionPageText" class="form-control font-monospace" rows="5"></textarea>
             <span asp-validation-for="GroupSelectionPageText" class="text-danger"></span>
             <p class="small">
-                Dieser Text wird oben auf der Gruppenwahl-Seite angezeigt.
-                Hier stehen Informationen, wie Gruppen gebildet werden und wie diese sich im CTF-System registrieren können.
-                Dieses Textfeld unterstützt Markdown.
+                @Localizer["Config:GroupSelectionPageText:Description"]
             </p>
             <a class="btn btn-sm btn-outline-secondary" asp-controller="Authentication" asp-action="ShowGroupForm" target="_blank">
                 <i class="bi bi-arrow-return-right"></i>
-                Gruppenwahl-Seite anzeigen
+                @Localizer["Config:GroupSelectionPageText:ShowPage"]
             </a>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="GroupSizeMin">Minimale Gruppengröße</label>
+            <label class="form-label" asp-for="GroupSizeMin">@Localizer["Config:GroupSizeMin"]</label>
             <input asp-for="GroupSizeMin" class="form-control">
             <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
             <small>
-                Diese Zahl legt fest, wie viele Mitglieder eine Gruppe mindestens haben muss.
-                So muss sich jeder Teilnehmer nach Registrierung zu einer entsprechend großen Gruppe finden.
-                Kleinere Gruppen können nur von Administratoren erstellt werden.
+                @Localizer["Config:GroupSizeMin:Description"]
             </small>
         </div>
         <div class="mb-3">
-            <label class="form-label" asp-for="GroupSizeMax">Maximale Gruppengröße</label>
+            <label class="form-label" asp-for="GroupSizeMax">@Localizer["Config:GroupSizeMax"]</label>
             <input asp-for="GroupSizeMax" class="form-control">
             <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
             <small>
-                Diese Zahl legt fest, wie viele Mitglieder eine Gruppe maximal haben darf.
-                Größere Gruppen können nur von Administratoren erstellt werden.
+                @Localizer["Config:GroupSizeMax:Description"]
             </small>
         </div>
         <div class="mb-3">
             <div class="form-check">
                 <input asp-for="PassAsGroup" class="form-check-input">
-                <label asp-for="PassAsGroup" class="form-check-label">Als Gruppe bestehen</label>
+                <label asp-for="PassAsGroup" class="form-check-label">@Localizer["Config:PassAsGroup"]</label>
                 <br>
                 <small>
-                    Wenn diese Einstellung aktiv ist, werden alle Einreichungen auf Gruppenebene gewertet.
-                    Somit ist es unerheblich, welcher Teilnehmer eine Aufgabe eingereicht hat.
-                    Diese Einstellung hat keinen Einfluss auf die Wertung im Scoreboard.
+                    @Localizer["Config:PassAsGroup:Description"]
                 </small>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+        <button type="submit" class="btn btn-primary">@Localizer["SaveChanges"]</button>
     </form>
 
     <h3 class="text-primary mt-5">
-        Visualisierung der Flagpunkte
+        @Localizer["Visualization:Title"]
     </h3>
     <hr class="header-secondary">
 
     <p>
-        Dies zeigt die Entwicklung der Flagpunktzahl abhängig von der Anzahl der Flag-Funde.
+        @Localizer["Visualization:Description"]
     </p>
     <div class="mb-3">
-        <label class="form-label" for="input-flag-base-points">Flag-Basispunktzahl</label>
+        <label class="form-label" for="input-flag-base-points">@Localizer["Visualization:BasePoints"]</label>
         <input type="number" min="1" id="input-flag-base-points" class="form-control" value="100">
     </div>
     <div class="mb-3">
-        <label class="form-label" for="input-group-count">Anzahl der Gruppen</label>
+        <label class="form-label" for="input-group-count">@Localizer["Visualization:GroupCount"]</label>
         <input type="number" min="1" id="input-group-count" class="form-control" value="@(Math.Max(groupCount, 2))">
     </div>
     <canvas id="canvas-flag-points"></canvas>
@@ -182,7 +167,7 @@
                 labels: [1, 2], // dummy
                 datasets: [
                     {
-                        label: "Flag-Punkte",
+                        label: "@Localizer["Visualization:FlagPoints"]",
                         data: new Array(2).fill(0), // dummy
                         borderColor: "#003e80",
                         fill: false,
@@ -206,7 +191,17 @@
     inputGroupCount.addEventListener("change", updateChart);
     inputFlagMinimumPointsDivisor.addEventListener("change", updateChart);
     inputFlagHalfPointsSubmissionCount.addEventListener("change", updateChart);
-</script>
+    </script>
+
+    <h3 class="header">
+        @Localizer["Status:Title"]
+    </h3>
+    <hr class="header-secondary">
+
+    <p>@Localizer["Status:CurrentCulture"]: @CultureInfo.CurrentCulture.ToString()</p>
+    <p>@Localizer["Status:Timezone"]: @TimeZoneInfo.Local.ToString()</p>
+    <p>@Localizer["Status:Now"]: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+    <p>@Localizer["Status:NowUtc"]: @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
 </div>
 
 <!-- Necessary includes -->
