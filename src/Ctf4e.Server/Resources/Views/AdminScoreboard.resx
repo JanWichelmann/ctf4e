@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Flags" xml:space="preserve">
+        <value>Flags</value>
+        <comment>Flags</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Admin Scoreboard</value>
+        <comment>AdminScoreboard</comment>
+    </data>
+    <data name="SwitchScoreboard:Lab" xml:space="preserve">
+        <value>Lab</value>
+        <comment>SwitchScoreboard:Lab</comment>
+    </data>
+    <data name="SwitchScoreboard:Slot:Placeholder" xml:space="preserve">
+        <value>Select slot</value>
+        <comment>SwitchScoreboard:Slot:Placeholder</comment>
+    </data>
+    <data name="SwitchScoreboard:Slot" xml:space="preserve">
+        <value>Slot</value>
+        <comment>SwitchScoreboard:Slot</comment>
+    </data>
+    <data name="SwitchScoreboard:Lab:Placeholder" xml:space="preserve">
+        <value>Select lab</value>
+        <comment>SwitchScoreboard:Lab:Placeholder</comment>
+    </data>
+    <data name="SwitchScoreboard:Submit" xml:space="preserve">
+        <value>Show scoreboard</value>
+        <comment>SwitchScoreboard:Submit</comment>
+    </data>
+</root>

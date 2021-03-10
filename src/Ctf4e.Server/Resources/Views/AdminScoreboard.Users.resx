@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Passed" xml:space="preserve">
+        <value>Passed</value>
+        <comment>Passed</comment>
+    </data>
+    <data name="NotPassed" xml:space="preserve">
+        <value>Not passed</value>
+        <comment>NotPassed</comment>
+    </data>
+    <data name="LabExecutionStatus:BeforePreStart:Text" xml:space="preserve">
+        <value>Waiting for preparatory phase</value>
+        <comment>LabExecutionStatus:BeforePreStart:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:BeforePreStart:Title" xml:space="preserve">
+        <value>Before preparatory</value>
+        <comment>LabExecutionStatus:BeforePreStart:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:PreStart:Text" xml:space="preserve">
+        <value>Preparatory Phase</value>
+        <comment>LabExecutionStatus:PreStart:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:Start:Title" xml:space="preserve">
+        <value>Lab active</value>
+        <comment>LabExecutionStatus:Start:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:End:Text" xml:space="preserve">
+        <value>Lab ended</value>
+        <comment>LabExecutionStatus:End:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:PreStart:Title" xml:space="preserve">
+        <value>Preparatory Phase</value>
+        <comment>LabExecutionStatus:PreStart:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:Start:Text" xml:space="preserve">
+        <value>Lab active</value>
+        <comment>LabExecutionStatus:Start:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:End:Title" xml:space="preserve">
+        <value>Lab ended</value>
+        <comment>LabExecutionStatus:End:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:Undefined:Title" xml:space="preserve">
+        <value>Not configured</value>
+        <comment>LabExecutionStatus:Undefined:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:Undefined:Text" xml:space="preserve">
+        <value>No lab execution configured</value>
+        <comment>LabExecutionStatus:Undefined:Text</comment>
+    </data>
+    <data name="Statistics:MandatoryExercises" xml:space="preserve">
+        <value>Mandatory exercises</value>
+        <comment>Statistics:MandatoryExercises</comment>
+    </data>
+    <data name="Statistics:OptionalExercises" xml:space="preserve">
+        <value>Optional exercises</value>
+        <comment>Statistics:OptionalExercises</comment>
+    </data>
+    <data name="Statistics:FoundFlags" xml:space="preserve">
+        <value>Found flags</value>
+        <comment>Statistics:FoundFlags</comment>
+    </data>
+    <data name="LabServerButtonText" xml:space="preserve">
+        <value>Go to lab server (admin mode)</value>
+        <comment>LabServerButtonText</comment>
+    </data>
+    <data name="Mandatory" xml:space="preserve">
+        <value>Mandatory</value>
+        <comment>Mandatory</comment>
+    </data>
+    <data name="Exercises:Tries:Text" xml:space="preserve">
+        <value>Valid tries (total)</value>
+        <comment>Exercises:Tries:Text</comment>
+    </data>
+    <data name="Exercises:Tries:Value" xml:space="preserve">
+        <value>{0} ({1}) tries</value>
+        <comment>Exercises:Tries:Value</comment>
+    </data>
+    <data name="Solved" xml:space="preserve">
+        <value>Solved</value>
+        <comment>Solved</comment>
+    </data>
+    <data name="NotSolved" xml:space="preserve">
+        <value>Not solved</value>
+        <comment>NotSolved</comment>
+    </data>
+    <data name="ExerciseSubmissions:Solved" xml:space="preserve">
+        <value>Solved</value>
+        <comment>ExerciseSubmissions:Solved</comment>
+    </data>
+    <data name="ExerciseSubmissions:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+        <comment>ExerciseSubmissions:Timestamp</comment>
+    </data>
+    <data name="ExerciseSubmissions:Weight" xml:space="preserve">
+        <value>Weight</value>
+        <comment>ExerciseSubmissions:Weight</comment>
+    </data>
+    <data name="ExerciseSubmissions:SubmittedBy" xml:space="preserve">
+        <value>Submitted by</value>
+        <comment>ExerciseSubmissions:SubmittedBy</comment>
+    </data>
+    <data name="Add" xml:space="preserve">
+        <value>Add</value>
+        <comment>Add</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+        <comment>Delete</comment>
+    </data>
+    <data name="Flags:Flag" xml:space="preserve">
+        <value>Flag</value>
+        <comment>Flags:Flag</comment>
+    </data>
+    <data name="Flags:Description" xml:space="preserve">
+        <value>Description</value>
+        <comment>Flags:Description</comment>
+    </data>
+    <data name="Flags:Submitted" xml:space="preserve">
+        <value>Submitted</value>
+        <comment>Flags:Submitted</comment>
+    </data>
+    <data name="Flags:Valid" xml:space="preserve">
+        <value>Valid</value>
+        <comment>Flags:Valid</comment>
+    </data>
+    <data name="Flags:Actions" xml:space="preserve">
+        <value>Actions</value>
+        <comment>Flags:Actions</comment>
+    </data>
+    <data name="BugBounty" xml:space="preserve">
+        <value>Bug bounty</value>
+        <comment>BugBounty</comment>
+    </data>
+    <data name="Points" xml:space="preserve">
+        <value>{0} Points</value>
+        <comment>Points</comment>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>Reset</value>
+        <comment>Reset</comment>
+    </data>
+    <data name="Submit" xml:space="preserve">
+        <value>Submit</value>
+        <comment>Submit</comment>
+    </data>
+    <data name="DeleteSelected" xml:space="preserve">
+        <value>Delete selected items</value>
+        <comment>DeleteSelected</comment>
+    </data>
+    <data name="Modal:DeleteExerciseSubmission:Title" xml:space="preserve">
+        <value>Delete exercise submission</value>
+        <comment>Modal:DeleteExerciseSubmission:Title</comment>
+    </data>
+    <data name="Modal:DeleteExerciseSubmission:Body" xml:space="preserve">
+        <value>Do you really want to delete the submission from &amp;quot;&lt;span data-replace="user-name"&gt;&lt;/span&gt;&amp;quot; for exercise &amp;quot;&lt;span data-replace="exercise-name"&gt;&lt;/span&gt;&amp;quot;?</value>
+        <comment>Modal:DeleteExerciseSubmission:Body</comment>
+    </data>
+    <data name="Modal:DeleteExerciseSubmission:Submit" xml:space="preserve">
+        <value>Delete submission</value>
+        <comment>Modal:DeleteExerciseSubmission:Submit</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Modal:DeleteExerciseSubmissions:Title" xml:space="preserve">
+        <value>Delete exercise submissions</value>
+        <comment>Modal:DeleteExerciseSubmissions:Title</comment>
+    </data>
+    <data name="Modal:DeleteExerciseSubmissions:Body" xml:space="preserve">
+        <value>Do you really want to delete the selected submissions?</value>
+        <comment>Modal:DeleteExerciseSubmissions:Body</comment>
+    </data>
+    <data name="Modal:DeleteExerciseSubmissions:Submit" xml:space="preserve">
+        <value>Delete submissions</value>
+        <comment>Modal:DeleteExerciseSubmissions:Submit</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+        <comment>Modal:CreateExerciseSubmission:Timestamp</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Weight" xml:space="preserve">
+        <value>Weight (only for failed attempts)</value>
+        <comment>Modal:CreateExerciseSubmission:Weight</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Title" xml:space="preserve">
+        <value>Create exercise submission</value>
+        <comment>Modal:CreateExerciseSubmission:Title</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Submit" xml:space="preserve">
+        <value>Create submission</value>
+        <comment>Modal:CreateExerciseSubmission:Submit</comment>
+    </data>
+    <data name="Modal:DeleteFlagSubmission:Title" xml:space="preserve">
+        <value>Delete flag submission</value>
+        <comment>Modal:DeleteFlagSubmission:Title</comment>
+    </data>
+    <data name="Modal:DeleteFlagSubmission:Body" xml:space="preserve">
+        <value>Do you really want to delete the flag submission from &amp;quot;&lt;span data-replace="user-name"&gt;&lt;/span&gt;&amp;quot;?</value>
+        <comment>Modal:DeleteFlagSubmission:Body</comment>
+    </data>
+    <data name="Modal:DeleteFlagSubmission:Submit" xml:space="preserve">
+        <value>Delete submission</value>
+        <comment>Modal:DeleteFlagSubmission:Submit</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Title" xml:space="preserve">
+        <value>Create flag submission</value>
+        <comment>Modal:CreateFlagSubmission:Title</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+        <comment>Modal:CreateFlagSubmission:Timestamp</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Submit" xml:space="preserve">
+        <value>Create submission</value>
+        <comment>Modal:CreateFlagSubmission:Submit</comment>
+    </data>
+</root>

@@ -73,6 +73,26 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UserDashboard.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Users.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.Users.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminScoreboard.Users.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboard.Users.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -238,6 +258,22 @@
     <EmbeddedResource Update="Resources\Views\UserDashboard.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UserDashboard.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Users.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Users.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Users.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboard.Users.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

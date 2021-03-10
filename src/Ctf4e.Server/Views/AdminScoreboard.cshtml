@@ -1,6 +1,8 @@
 ﻿@using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
 @model AdminScoreboard
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Admin-Scoreboard";
 
@@ -11,29 +13,29 @@
     <div class="float-end">
         <a class="btn btn-sm btn-outline-primary" href="#flags-table">
             <i class="bi bi-chevron-down"></i>
-            Flags
+            @Localizer["Flags"]
         </a>
     </div>
 
     <h3 class="header">
-        Admin-Scoreboard
+        @Localizer["Title"]
     </h3>
     <hr class="header">
 
     <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">Praktikum</label>
+            <label class="form-label" for="input-lab-id">@Localizer["SwitchScoreboard:Lab"]</label>
             <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-control">
-                <option value="" disabled selected>Praktikum auswählen</option>
+                <option value="" disabled selected>@Localizer["SwitchScoreboard:Lab:Placeholder"]</option>
             </select>
         </div>
         <div class="mb-3">
-            <label class="form-label" for="input-slot-id">Terminslot</label>
+            <label class="form-label" for="input-slot-id">@Localizer["SwitchScoreboard:Slot"]</label>
             <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-control">
-                <option value="" disabled selected>Slot auswählen</option>
+                <option value="" disabled selected>@Localizer["SwitchScoreboard:Slot:Placeholder"]</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Scoreboard anzeigen</button>
+        <button type="submit" class="btn btn-primary">@Localizer["SwitchScoreboard:Submit"]</button>
     </form>
 
     <hr class="header-secondary">

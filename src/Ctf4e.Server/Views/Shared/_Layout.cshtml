@@ -256,6 +256,10 @@
                         };
                         
                         string currentLanguage = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture?.UICulture.Name ?? "en-US";
+                        if(!supportedLanguages.ContainsKey(currentLanguage))
+                        {
+                            currentLanguage = "en-US";
+                        }
                     }
                     <a class="link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
                     <ul class="dropdown-menu" aria-labelledby="language-menu-button">

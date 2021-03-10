@@ -102,10 +102,6 @@
         <value>Correct solution?</value>
         <comment>ExerciseSubmissions:Correct</comment>
     </data>
-    <data name="ExerciseSubmissions:Correct" xml:space="preserve">
-        <value>ExerciseSubmissions:Correct</value>
-        <comment>ExerciseSubmissions:Correct</comment>
-    </data>
     <data name="ExerciseSubmissions:GroupMember" xml:space="preserve">
         <value>Group member</value>
         <comment>ExerciseSubmissions:GroupMember</comment>
