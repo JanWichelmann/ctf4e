@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Lab" xml:space="preserve">
+        <value>Lab</value>
+        <comment>Lab</comment>
+    </data>
+    <data name="Passed" xml:space="preserve">
+        <value>Passed</value>
+        <comment>Passed</comment>
+    </data>
+    <data name="LabExecutionStatus:Undefined:Title" xml:space="preserve">
+        <value>Not enabled</value>
+        <comment>LabExecutionStatus:Undefined</comment>
+    </data>
+    <data name="LabExecutionStatus:Undefined:Text" xml:space="preserve">
+        <value>This lab is not yet enabled. You can neither work on exercises nor submit flags.</value>
+        <comment>LabExecutionStatus:Undefined:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:BeforePreStart:Title" xml:space="preserve">
+        <value>Waiting for start</value>
+        <comment>LabExecutionStatus:BeforePreStart:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:BeforePreStart:Text" xml:space="preserve">
+        <value>This lab has not yet started. You can neither work on exercises nor submit flags.&lt;br&gt;The lab is scheduled to start at &lt;strong&gt;{0:g}&lt;/strong&gt;.</value>
+        <comment>LabExecutionStatus:BeforePreStart:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:PreStart:Title" xml:space="preserve">
+        <value>Preparatory phase</value>
+        <comment>LabExecutionStatus:PreStart:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:PreStart:Text" xml:space="preserve">
+        <value>This lab is in the preparatory phase. You can work on certain selected exercises and submit all flags.&lt;br&gt;Begin of main working time: &lt;strong&gt;{0:g}&lt;/strong&gt;.</value>
+        <comment>LabExecutionStatus:PreStart:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:Start:Title" xml:space="preserve">
+        <value>Active</value>
+        <comment>LabExecutionStatus:Start:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:Start:Text" xml:space="preserve">
+        <value>This lab is active. You can work on all exercises and submit all flags.&lt;br&gt;End of working time: &lt;strong&gt;{0:g}&lt;/strong&gt;.</value>
+        <comment>LabExecutionStatus:Start:Text</comment>
+    </data>
+    <data name="LabExecutionStatus:End:Title" xml:space="preserve">
+        <value>Ended</value>
+        <comment>LabExecutionStatus:End:Title</comment>
+    </data>
+    <data name="LabExecutionStatus:End:Text" xml:space="preserve">
+        <value>This lab has ended. You can still work an exercises and submit flags; however, those won't be considered for grading and won't be reflected in the scoreboard.</value>
+        <comment>LabExecutionStatus:End:Text</comment>
+    </data>
+    <data name="LabServer" xml:space="preserve">
+        <value>Lab server</value>
+        <comment>LabServer</comment>
+    </data>
+    <data name="Exercises" xml:space="preserve">
+        <value>Exercises</value>
+        <comment>Exercises</comment>
+    </data>
+    <data name="Mandatory" xml:space="preserve">
+        <value>Mandatory</value>
+        <comment>Mandatory</comment>
+    </data>
+    <data name="Exercises:SubmissionStatistic" xml:space="preserve">
+        <value>Tries: {0} valid, {1} total</value>
+        <comment>ExerciseSubmissionStatistic</comment>
+    </data>
+    <data name="Points" xml:space="preserve">
+        <value>Points</value>
+        <comment>Points</comment>
+    </data>
+    <data name="Solved" xml:space="preserve">
+        <value>Solved</value>
+        <comment>Solved</comment>
+    </data>
+    <data name="NotSolved" xml:space="preserve">
+        <value>NotSolved</value>
+        <comment>NotSolved</comment>
+    </data>
+    <data name="ExerciseSubmissions:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+        <comment>ExerciseSubmissions:Timestamp</comment>
+    </data>
+    <data name="ExerciseSubmissions:Correct" xml:space="preserve">
+        <value>Correct solution?</value>
+        <comment>ExerciseSubmissions:Correct</comment>
+    </data>
+    <data name="ExerciseSubmissions:Correct" xml:space="preserve">
+        <value>ExerciseSubmissions:Correct</value>
+        <comment>ExerciseSubmissions:Correct</comment>
+    </data>
+    <data name="ExerciseSubmissions:GroupMember" xml:space="preserve">
+        <value>Group member</value>
+        <comment>ExerciseSubmissions:GroupMember</comment>
+    </data>
+    <data name="Invalid" xml:space="preserve">
+        <value>invalid</value>
+        <comment>Invalid</comment>
+    </data>
+    <data name="ExerciseSubmissions:Invalid" xml:space="preserve">
+        <value>This solution attempt was submitted outside of the lab time.</value>
+        <comment>ExerciseSubmissions:Invalid</comment>
+    </data>
+    <data name="Flags" xml:space="preserve">
+        <value>Flags</value>
+        <comment>Flags</comment>
+    </data>
+    <data name="Flags:FlagCode" xml:space="preserve">
+        <value>Flag code</value>
+        <comment>FlagCode</comment>
+    </data>
+    <data name="Flags:SubmitFlag" xml:space="preserve">
+        <value>Submit flag</value>
+        <comment>SubmitFlag</comment>
+    </data>
+    <data name="Flags:FoundFlags" xml:space="preserve">
+        <value>Found flags</value>
+        <comment>FoundFlags</comment>
+    </data>
+    <data name="Flags:SubmissionStatistic" xml:space="preserve">
+        <value>{0} valid, {1} total</value>
+        <comment>FlagSubmissionStatistic</comment>
+    </data>
+    <data name="FlagSubmissions:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+        <comment>FlagSubmissions:Timestamp</comment>
+    </data>
+    <data name="FlagSubmissions:Code" xml:space="preserve">
+        <value>Code</value>
+        <comment>FlagSubmissions:Code</comment>
+    </data>
+    <data name="FlagSubmissions:GroupMember" xml:space="preserve">
+        <value>Group member</value>
+        <comment>FlagSubmissions:GroupMember</comment>
+    </data>
+    <data name="FlagSubmissions:Invalid" xml:space="preserve">
+        <value>This flag was submitted outside of the lab time.</value>
+        <comment>FlagSubmissions:Invalid</comment>
+    </data>
+    <data name="SwitchLab:Title" xml:space="preserve">
+        <value>Switch lab</value>
+        <comment>SwitchLab</comment>
+    </data>
+    <data name="SwitchLab:Active" xml:space="preserve">
+        <value>active</value>
+        <comment>SwitchLab:Active</comment>
+    </data>
+    <data name="SwitchLab:Submit" xml:space="preserve">
+        <value>Go to selected lab</value>
+        <comment>SwitchLab:Submit</comment>
+    </data>
+</root>

@@ -61,6 +61,15 @@ namespace Ctf4e.Server.Resources.Views.Shared {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sprache wechseln.
+        /// </summary>
+        internal static string ChangeLanguage {
+            get {
+                return ResourceManager.GetString("ChangeLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Admin.
         /// </summary>
         internal static string MenuItems_Admin {

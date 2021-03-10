@@ -63,6 +63,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Scoreboard.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\UserDashboard.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserDashboard.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\UserDashboard.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserDashboard.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -220,6 +230,14 @@
     <EmbeddedResource Update="Resources\Views\Scoreboard.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Scoreboard.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UserDashboard.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UserDashboard.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UserDashboard.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UserDashboard.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

@@ -1,5 +1,6 @@
 ﻿@using Ctf4e.Server.Constants
 @using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
@@ -47,9 +48,10 @@
     <link rel="stylesheet" href="~/css/ctf4e-server.min.css">
 
     <script src="~/lib/popper/js/popper.min.js"></script>
+    <script src="~/js/main.js"></script>
     @if(currentUser != null && (currentUser.IsAdmin || currentUser.IsTutor))
     {
-        <script src="~/js/common.js"></script>
+        <script src="~/js/util.js"></script>
     }
 
     @await RenderSectionAsync("ScriptsHead", required: false)
@@ -245,6 +247,29 @@
                 Powered by <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
             </div>
             <div class="col d-flex align-items-center justify-content-end">
+                <div class="dropdown me-1">
+                    @{
+                        var supportedLanguages = new Dictionary<string, string>
+                        {
+                            ["en-US"] = "English",
+                            ["de-DE"] = "Deutsch"
+                        };
+                        
+                        string currentLanguage = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture?.UICulture.Name ?? "en-US";
+                    }
+                    <a class="link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
+                    <ul class="dropdown-menu" aria-labelledby="language-menu-button">
+                        @foreach(var language in supportedLanguages)
+                        {
+                            if(language.Key != currentLanguage)
+                            {
+                                <li><a class="dropdown-item" href="#" onclick="switchLanguage(this)" data-language-id="@language.Key">@language.Value</a></li>
+                            }
+                        }
+                    </ul>
+                    <input type="hidden" id="language-cookie-name" value="@CookieRequestCultureProvider.DefaultCookieName">
+                    <span>&middot;</span>
+                </div>
                 <div>
                     @if(devMode && currentUser != null && currentUser.IsAdmin)
                     {

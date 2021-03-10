@@ -195,7 +195,8 @@ namespace Ctf4e.Server
             }
 
             // Localization
-            var supportedCultures = new[] { "en", "de" };
+            // We keep the default cookie name, so the setting automatically translates to potential other server under the current domain
+            var supportedCultures = new[] { "en-US", "de-DE" };
             var localizationOptions = new RequestLocalizationOptions()
                 .SetDefaultCulture(supportedCultures[0])
                 .AddSupportedCultures(supportedCultures)

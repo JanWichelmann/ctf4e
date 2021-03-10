@@ -54,4 +54,8 @@
     <data name="MenuItems:Logout" xml:space="preserve">
         <value>Logout</value>
     </data>
+    <data name="ChangeLanguage" xml:space="preserve">
+        <value>Sprache wechseln</value>
+        <comment>ChangeLanguage</comment>
+    </data>
 </root>

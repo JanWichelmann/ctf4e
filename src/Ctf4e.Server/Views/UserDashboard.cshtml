@@ -1,6 +1,8 @@
 ﻿@using Ctf4e.Server.Services
 @using Ctf4e.Server.ViewModels
+@using Microsoft.AspNetCore.Mvc.Localization
 @inject IConfigurationService ConfigurationService
+@inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = "Aufgaben";
 
@@ -15,55 +17,37 @@
         {
             <span class="badge bg-success" style="font-size: 1rem;">
                 <i class="bi bi-check-circle"></i>
-                Bestanden
+                @Localizer["Passed"]
             </span>
         }
     </div>
 
     <h3 class="header">
-        Praktikum: @groupScoreboard.CurrentLab.Name
+        @Localizer["Lab"]: @groupScoreboard.CurrentLab.Name
     </h3>
     <hr class="header">
 
     switch(groupScoreboard.LabExecutionStatus)
     {
         case ScoreboardGroupStatus.Undefined:
-            <span class="badge bg-secondary">Nicht freigeschaltet</span>
-            <p>
-                Dieses Praktikum ist bisher nicht freigeschaltet worden.
-                Es können weder Aufgaben bearbeitet noch Flags eingelöst werden.
-            </p>
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:Undefined:Text"]</p>
             break;
         case ScoreboardGroupStatus.BeforePreStart:
-            <span class="badge bg-warning">Noch nicht gestartet</span>
-            <p>
-                Dieses Praktikum hat noch nicht begonnen.
-                Es können weder Aufgaben bearbeitet noch Flags eingelöst werden. <br>
-                Startzeitpunkt: <strong>@groupScoreboard.LabExecution.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
-            </p>
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:BeforePreStart:Text", groupScoreboard.LabExecution.PreStart]</p>
             break;
         case ScoreboardGroupStatus.PreStart:
-            <span class="badge bg-info">Vorbereitungsphase</span>
-            <p>
-                Dieses Praktikum ist in der Vorbereitungsphase.
-                Es können einige ausgewählte Aufgaben bearbeitet und alle Flags eingelöst werden. <br>
-                Beginn der Haupt-Bearbeitungsphase: <strong>@groupScoreboard.LabExecution.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
-            </p>
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:PreStart:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:PreStart:Text", groupScoreboard.LabExecution.Start]</p>
             break;
         case ScoreboardGroupStatus.Start:
-            <span class="badge bg-success">Aktiv</span>
-            <p>
-                Dieses Praktikum ist aktiv.
-                Es können alle Aufgaben bearbeitet und alle Flags eingelöst werden. <br>
-                Ende des Praktikums: <strong>@groupScoreboard.LabExecution.End.ToString(DateTimeFormats.DateAndTimeMinutes)</strong>
-            </p>
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Start:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:Start:Text", groupScoreboard.LabExecution.End]</p>
             break;
         case ScoreboardGroupStatus.End:
-            <span class="badge bg-dark">Beendet</span>
-            <p>
-                Dieses Praktikum ist beendet.
-                Es können weiterhin Aufgaben bearbeitet und Flags eingelöst werden; diese werden in der Wertung und auf dem Scoreboard jedoch nicht mehr berücksichtigt.
-            </p>
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:End:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:End:Text"]</p>
             break;
     }
 
@@ -72,12 +56,11 @@
         <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@groupScoreboard.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
             <i class="bi bi-hdd-network"></i>
-            Zum Praktikumsserver
-        </a>        
-    }
+            @Localizer["LabServer"]
+        </a>    }
 
     <h5 class="header">
-        Aufgaben
+        @Localizer["Exercises"]
     </h5>
     <hr class="header-secondary">
 
@@ -90,19 +73,19 @@
                         @exercise.Exercise.Name
                         @if(exercise.Exercise.IsMandatory)
                         {
-                            <span class="badge bg-info">Pflicht</span>
+                            <span class="badge bg-info">@Localizer["Mandatory"]</span>
                         }
                     </div>
                     <div class="col col-auto ms-auto">
-                        <span class="badge bg-light text-dark">Versuche: @exercise.ValidTries gültig, @exercise.Tries insgesamt</span>
+                        <span class="badge bg-light text-dark">@Localizer["Exercises:SubmissionStatistic", exercise.ValidTries, exercise.Tries]</span>
                         @if(exercise.Passed)
                         {
-                            <span class="badge bg-primary">@exercise.Points Punkte</span>
-                            <i class="bi bi-check-circle-fill  text-success" title="Gelöst"></i>
+                            <span class="badge bg-primary">@exercise.Points @Localizer["Points"]</span>
+                            <i class="bi bi-check-circle-fill  text-success" title="@Localizer["Solved"]"></i>
                         }
                         else
                         {
-                            <i class="bi bi-x-circle-fill  text-danger" title="Nicht gelöst"></i>
+                            <i class="bi bi-x-circle-fill  text-danger" title="@Localizer["NotSolved"]"></i>
                         }
                     </div>
                 </div>
@@ -112,9 +95,9 @@
                     <table class="table table-sm">
                         <thead>
                         <tr>
-                            <th scope="col">Zeitpunkt des Lösungsversuchs</th>
-                            <th scope="col">Korrekte Lösung?</th>
-                            <th scope="col">Gruppenmitglied</th>
+                            <th scope="col">@Localizer["ExerciseSubmissions:Timestamp"]</th>
+                            <th scope="col">@Localizer["ExerciseSubmissions:Correct"]</th>
+                            <th scope="col">@Localizer["ExerciseSubmissions:GroupMember"]</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -122,10 +105,10 @@
                         {
                             <tr>
                                 <td>
-                                    @submission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
+                                    @submission.SubmissionTime.ToString("G")
                                     @if(submission.SubmissionTime < (groupScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (groupScoreboard.LabExecution?.End ?? DateTime.MinValue))
                                     {
-                                        <span class="badge bg-warning" title="Dieser Lösungsversuch fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
+                                        <span class="badge bg-warning" title="@Localizer["ExerciseSubmissions:Invalid"]">@Localizer["Invalid"]</span>
                                     }
                                 </td>
                                 <td>
@@ -152,32 +135,31 @@
 
     <div>
         <h5 class="header">
-            Flags
+            @Localizer["Flags"]
         </h5>
         <hr class="header-secondary">
     </div>
-    
+
     <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@groupScoreboard.LabId" class="mb-3">
         <div class="mb-3">
-            <label class="form-label" for="input-flag-code">Flag-Code</label>
+            <label class="form-label" for="input-flag-code">@Localizer["Flags:FlagCode"]</label>
             <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
         </div>
 
         <button type="submit" class="btn btn-primary">
             <span class="bi bi-flag-fill"></span>
-            Flag einlösen
+            @Localizer["Flags:SubmitFlag"]
         </button>
     </form>
-    
     <div class="card mb-2">
         <div class="card-header" id="flag-list-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#flag-list-card">
             <div class="row">
                 <div class="col">
-                    Gefundene Flags
+                    @Localizer["Flags:FoundFlags"]
                 </div>
                 <div class="col col-auto ms-auto">
                     <span class="badge bg-light text-dark">
-                        @groupScoreboard.ValidFoundFlagsCount gültig, @groupScoreboard.FoundFlagsCount insgesamt
+                        @Localizer["Flags:SubmissionStatistic", groupScoreboard.ValidFoundFlagsCount, groupScoreboard.FoundFlagsCount]
                     </span>
                 </div>
             </div>
@@ -187,9 +169,9 @@
                 <table class="table table-sm">
                     <thead>
                     <tr>
-                        <th scope="col">Einreichungszeitpunkt</th>
-                        <th scope="col">Code</th>
-                        <th scope="col">Gruppenmitglied</th>
+                        <th scope="col">@Localizer["FlagSubmissions:Timestamp"]</th>
+                        <th scope="col">@Localizer["FlagSubmissions:Code"]</th>
+                        <th scope="col">@Localizer["FlagSubmissions:GroupMember"]</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -197,10 +179,10 @@
                     {
                         <tr>
                             <td>
-                                @flagSubmission.SubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)
+                                @flagSubmission.SubmissionTime.ToString("G")
                                 @if(!flagSubmission.Valid)
                                 {
-                                    <span class="badge bg-warning" title="Diese Einreichung fand außerhalb der vorgegebenen Praktikumszeit statt.">ungültig</span>
+                                    <span class="badge bg-warning" title="@Localizer["FlagSubmissions:Invalid"]">@Localizer["Invalid"]</span>
                                 }
                             </td>
                             <td>
@@ -217,15 +199,15 @@
         </div>
     </div>
 
-    
+
     <h5 class="header">
-        Zu anderem Praktikum wechseln
+        @Localizer["SwitchLab:Title"]
     </h5>
     <hr class="header-secondary">
 
     <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">Praktikum</label>
+            <label class="form-label" for="input-lab-id">@Localizer["Lab"]</label>
             <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">
                 @foreach(var lab in groupScoreboard.Labs)
                 {
@@ -233,7 +215,7 @@
                         @lab.Name
                         @if(lab.Active)
                         {
-                            @:(aktiv)
+                            @:(@Localizer["SwitchLab:Active"])
                         }
                     </option>                }
             </select>
@@ -241,7 +223,7 @@
 
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-arrow-return-right"></i>
-            Zu ausgewähltem Praktikum wechseln
+            @Localizer["SwitchLab:Submit"]
         </button>
     </form>}
 </div>
