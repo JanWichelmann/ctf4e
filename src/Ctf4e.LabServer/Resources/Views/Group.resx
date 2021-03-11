@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Submit solutions</value>
+        <comment>HtmlTitle</comment>
+    </data>
+    <data name="Log" xml:space="preserve">
+        <value>Log</value>
+        <comment>Log</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Submit solutions</value>
+        <comment>Title</comment>
+    </data>
+    <data name="Exercises:Solved" xml:space="preserve">
+        <value>Exercise solved</value>
+        <comment>Exercises:Solved</comment>
+    </data>
+    <data name="Exercises:SolvedByGroupMemberAndPassed" xml:space="preserve">
+        <value>Exercise solved by group member (sufficient for passing the lab)</value>
+        <comment>Exercises:SolvedByGroupMemberAndPassed</comment>
+    </data>
+    <data name="Exercises:SolvedByGroupMemberAndNotPassed" xml:space="preserve">
+        <value>Exercise solved by group member (still needs to be solved by you)</value>
+        <comment>Exercises:SolvedByGroupMemberAndNotPassed</comment>
+    </data>
+    <data name="Exercises:Pending" xml:space="preserve">
+        <value>Exercise pending</value>
+        <comment>Exercises:Pending</comment>
+    </data>
+    <data name="Exercises:TitleIsLink" xml:space="preserve">
+        <value>The exercise title is a link</value>
+        <comment>Exercises:TitleIsLink</comment>
+    </data>
+    <data name="Exercises:Admin:Pass:Text" xml:space="preserve">
+        <value>(Admin) Mark as solved</value>
+        <comment>Exercises:Admin:Pass:Text</comment>
+    </data>
+    <data name="Exercises:Admin:Reset:Text" xml:space="preserve">
+        <value>(Admin) Reset</value>
+        <comment>Exercises:Admin:Reset:Text</comment>
+    </data>
+    <data name="Exercises:Admin:Pass" xml:space="preserve">
+        <value>Pass</value>
+        <comment>Exercises:Admin:Pass</comment>
+    </data>
+    <data name="Exercises:Admin:Reset" xml:space="preserve">
+        <value>Reset</value>
+        <comment>Exercises:Admin:Reset</comment>
+    </data>
+    <data name="Exercises:Form:Input:Placeholder" xml:space="preserve">
+        <value>Insert solution</value>
+        <comment>Exercises:Form:Input:Placeholder</comment>
+    </data>
+    <data name="Exercises:Form:Submit" xml:space="preserve">
+        <value>Check</value>
+        <comment>Exercises:Form:Submit</comment>
+    </data>
+    <data name="Docker:Title" xml:space="preserve">
+        <value>Credentials</value>
+        <comment>Docker:Title</comment>
+    </data>
+    <data name="Docker:Username" xml:space="preserve">
+        <value>User name</value>
+        <comment>Docker:Username</comment>
+    </data>
+    <data name="Copy" xml:space="preserve">
+        <value>Copy</value>
+        <comment>Copy</comment>
+    </data>
+    <data name="Docker:Password" xml:space="preserve">
+        <value>Password</value>
+        <comment>Docker:Password</comment>
+    </data>
+    <data name="Log:Title" xml:space="preserve">
+        <value>Log</value>
+        <comment>Log:Title</comment>
+    </data>
+    <data name="Log:InfoText" xml:space="preserve">
+        <value>The log is limited to &lt;strong&gt;{0}&lt;/strong&gt; entries.</value>
+        <comment>Log:InfoText</comment>
+    </data>
+    <data name="Log:Entries:Timestamp" xml:space="preserve">
+        <value>Timestamp</value>
+        <comment>Log:Entries:Timestamp</comment>
+    </data>
+    <data name="Log:Entries:Message" xml:space="preserve">
+        <value>Message</value>
+        <comment>Log:Entries:Message</comment>
+    </data>
+    <data name="Modal:MarkExerciseSolved:Title" xml:space="preserve">
+        <value>Mark exercise as solved</value>
+        <comment>Modal:MarkExerciseSolved:Title</comment>
+    </data>
+    <data name="Modal:MarkExerciseSolved:Body" xml:space="preserve">
+        <value>&lt;p&gt;Do you really want to mark the exercise &lt;span class="font-weight-bold" data-replace="exercise-name"&gt;&lt;/span&gt; as solved?&lt;/p&gt;&lt;p&gt;Note: This will trigger a message to the CTF system.&lt;/p&gt;</value>
+        <comment>Modal:MarkExerciseSolved:Body</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Modal:MarkExerciseSolved:Submit" xml:space="preserve">
+        <value>Mark as solved</value>
+        <comment>Modal:MarkExerciseSolved:Submit</comment>
+    </data>
+    <data name="Modal:ResetExercise:Title" xml:space="preserve">
+        <value>Reset exercise</value>
+        <comment>Modal:ResetExercise:Title</comment>
+    </data>
+    <data name="Modal:ResetExercise:Body" xml:space="preserve">
+        <value>&lt;p&gt;Do you really want to reset the exercise &lt;span class="font-weight-bold" data-replace="exercise-name"&gt;&lt;/span&gt;?&lt;/p&gt;&lt;p&gt;Note: This only resets the exercise state on this server; existing submissions in the CTF system will remain untouched and need to be deleted manually.&lt;/p&gt;</value>
+        <comment>Modal:ResetExercise:Body</comment>
+    </data>
+    <data name="Modal:ResetExercise:Submit" xml:space="preserve">
+        <value>Reset</value>
+        <comment>Modal:ResetExercise:Submit</comment>
+    </data>
+</root>

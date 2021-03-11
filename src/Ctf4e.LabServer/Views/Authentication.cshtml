@@ -1,5 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Login";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
 }
@@ -11,10 +13,14 @@
     }
     else if(viewType == AuthenticationController.ViewType.Redirect)
     {
-        <a asp-controller="Group" asp-action="RenderPage">Weiterleiten...</a>
-@section ScriptsHead
-{
-    <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderPage", "Group"))">
-}
+        <a asp-controller="Group" asp-action="RenderPage">@Localizer["Redirecting"]</a>
     }
 </div>
+
+@section ScriptsHead
+{
+    @if(viewType == AuthenticationController.ViewType.Redirect)
+    {
+        <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderPage", "Group"))">
+    }
+}

@@ -13,6 +13,7 @@ using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -37,6 +38,9 @@ namespace Ctf4e.LabServer
             _labOptions = _configuration.GetSection(nameof(LabOptions)).Get<LabOptions>();
             services.AddOptions<LabOptions>().Bind(_configuration.GetSection(nameof(LabOptions)));
 
+            // Localization
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            
             // CTF API services
             services.AddCtfApiCryptoService();
             services.AddCtfApiClient();
@@ -81,7 +85,7 @@ namespace Ctf4e.LabServer
             // Use MVC
             var mvcBuilder = services.AddControllersWithViews(_ =>
             {
-            });
+            }).AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
             // IDE-only tools
             if(_environment.IsDevelopment())
@@ -113,6 +117,15 @@ namespace Ctf4e.LabServer
                     return next();
                 });
             }
+            
+            // Localization
+            // We keep the default cookie name, so the setting automatically translates to/from potential other server under the current domain
+            var supportedCultures = new[] { "en-US", "de-DE" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+            app.UseRequestLocalization(localizationOptions);
             
             // Verbose stack traces
             if(_labOptions.DevelopmentMode)

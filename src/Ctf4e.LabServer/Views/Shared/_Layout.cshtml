@@ -2,6 +2,9 @@
 @using Ctf4e.LabServer.Constants
 @using Ctf4e.LabServer.Configuration
 @using Ctf4e.LabServer.Options
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
     // Retrieve status messages
     var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
@@ -45,6 +48,7 @@
     <link rel="stylesheet" href="~/css/ctf4e-labserver.min.css">
 
     <script src="~/lib/popper/js/popper.min.js"></script>
+    <script src="~/js/main.js"></script>
 
     @await RenderSectionAsync("ScriptsHead", required: false)
 </head>
@@ -63,19 +67,19 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "scoreboard"))">
-                            Scoreboard
+                            @Localizer["MenuItems:Scoreboard"]
                         </a>
                     </li>
                     @if(currentUser != null)
                     {
                         <li class="nav-item">
                             <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "dashboard"))">
-                                Praktikumsübersicht
+                                @Localizer["MenuItems:Dashboard"]
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Group" asp-action="RenderPage">
-                                Aufgaben
+                                @Localizer["MenuItems:Exercises"]
                             </a>
                         </li>
                     }
@@ -89,11 +93,11 @@
                             bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration;
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown">
-                                    Admin
+                                    @Localizer["MenuItems:Admin"]
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end mt-0">
                                     <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">
-                                        Konfiguration
+                                        @Localizer["MenuItems:Admin:Configuration"]
                                     </a>
                                 </ul>
                             </li>
@@ -111,7 +115,7 @@
                                 <li>
                                     <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
                                         <i class="bi bi-door-closed"></i>
-                                        Logout
+                                        @Localizer["MenuItems:Logout"]
                                     </a>
                                 </li>
                             </ul>
@@ -152,7 +156,7 @@
                                 </span>
 
                                 @statusMessage.Message
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Schließen"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </div>
                     </div>
@@ -171,6 +175,36 @@
         <div class="row mt-2 pb-2">
             <div class="col">
                 Powered by <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center justify-content-end">
+            <div class="dropdown me-1">
+                @{
+                    var supportedLanguages = new Dictionary<string, string>
+                    {
+                        ["en-US"] = "English",
+                        ["de-DE"] = "Deutsch"
+                    };
+
+                    string currentLanguage = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture?.UICulture.Name ?? "en-US";
+                    if(!supportedLanguages.ContainsKey(currentLanguage))
+                    {
+                        currentLanguage = "en-US";
+                    }
+                }
+                <a class="link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
+                <ul class="dropdown-menu" aria-labelledby="language-menu-button">
+                    @foreach(var language in supportedLanguages)
+                    {
+                        if(language.Key != currentLanguage)
+                        {
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="switchLanguage(this)" data-language-id="@language.Key">@language.Value</a>
+                            </li>
+                        }
+                    }
+                </ul>
+                <input type="hidden" id="language-cookie-name" value="@CookieRequestCultureProvider.DefaultCookieName">
             </div>
         </div>
     </div>

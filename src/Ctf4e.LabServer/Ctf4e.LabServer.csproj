@@ -33,5 +33,83 @@
     <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.ttf" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.woff" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Layout.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Layout.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminConfiguration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfiguration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminConfiguration.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfiguration.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Group.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Group.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Group.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Group.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Resources\Views\Shared\_Layout.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_Layout.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\_Layout.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_Layout.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Authentication.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Authentication.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminConfiguration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfiguration.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminConfiguration.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfiguration.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Group.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Group.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Group.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Group.de.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
 </Project>

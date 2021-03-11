@@ -1,5 +1,7 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Konfiguration bearbeiten";
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     string configuration = ViewData.ContainsKey("Configuration") ? (string)ViewData["Configuration"] : null;
     bool writable = ViewData.ContainsKey("Writable") && (bool)ViewData["Writable"];
@@ -9,13 +11,12 @@
     @if(configuration != null)
     {
         <h3 class="header">
-            Konfiguration bearbeiten
+            @Localizer["Title"]
         </h3>
         <hr class="header">
 
         <p class="text-danger font-weight-bold">
-            ACHTUNG: Das Verändern der Konfiguration nach Freischaltung des Praktikums kann unter Umständen zu Fehlern und Datenverlust führen.
-            Es wird dringend empfohlen, vorher ein Backup der alten Konfiguration und der Benutzerdateien zu erstellen.
+            @Localizer["WarningText"]
         </p>
 
         <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
@@ -26,7 +27,7 @@
             @if(writable)
             {
                 <button type="submit" class="btn btn-outline-danger">
-                    Änderungen speichern
+                    @Localizer["Form:Submit"]
                 </button>
             }
         </form>
