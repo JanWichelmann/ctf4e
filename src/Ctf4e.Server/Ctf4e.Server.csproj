@@ -413,6 +413,26 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AdminLabExecutions.CreateForSlot.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\Authentication.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Authentication.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Authentication.GroupSelection.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.GroupSelection.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Authentication.GroupSelection.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.GroupSelection.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -894,6 +914,22 @@
     <EmbeddedResource Update="Resources\Views\AdminLabExecutions.CreateForSlot.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AdminLabExecutions.CreateForSlot.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.GroupSelection.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.GroupSelection.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.GroupSelection.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.GroupSelection.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

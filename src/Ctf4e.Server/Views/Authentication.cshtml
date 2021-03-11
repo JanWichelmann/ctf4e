@@ -1,7 +1,9 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
 
@@ -17,11 +19,11 @@
     {
         if(currentUser.IsAdmin)
         {
-            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">Weiterleiten...</a>
+            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">@Localizer["Redirecting"]</a>
         }
         else
         {
-            <a asp-controller="UserDashboard" asp-action="RenderLabPage">Weiterleiten...</a>
+            <a asp-controller="UserDashboard" asp-action="RenderLabPage">@Localizer["Redirecting"]</a>
         }
     }
     else if(viewType == AuthenticationController.ViewType.GroupSelection)
