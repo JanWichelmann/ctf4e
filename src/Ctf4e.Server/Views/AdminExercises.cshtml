@@ -1,6 +1,8 @@
 ﻿@using Ctf4e.Server.Controllers
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Aufgaben verwalten";
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var viewType = (AdminExercisesController.ViewType)ViewData["ViewType"];
 }

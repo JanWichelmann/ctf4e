@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Actions" xml:space="preserve">
+        <value>Aktionen</value>
+        <comment>Actions</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Abbrechen</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>Delete</comment>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Bearbeiten</value>
+        <comment>Edit</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Slots verwalten</value>
+        <comment>Title</comment>
+    </data>
+    <data name="CreateSlot" xml:space="preserve">
+        <value>Slot erstellen</value>
+        <comment>CreateSlot</comment>
+    </data>
+    <data name="Slots:ID" xml:space="preserve">
+        <value>ID</value>
+        <comment>Slots:ID</comment>
+    </data>
+    <data name="Slots:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Slots:Name</comment>
+    </data>
+    <data name="Slots:Groups" xml:space="preserve">
+        <value>Gruppen</value>
+        <comment>Slots:Groups</comment>
+    </data>
+    <data name="Modal:DeleteSlot:Title" xml:space="preserve">
+        <value>Slot löschen</value>
+        <comment>Modal:DeleteSlot:Title</comment>
+    </data>
+    <data name="Modal:DeleteSlot:Body" xml:space="preserve">
+        <value>&lt;p&gt;Wollen Sie den Slot &amp;quot;&lt;span data-replace="slot-name"&gt;&lt;/span&gt;&amp;quot; wirklich löschen?&lt;/p&gt;</value>
+        <comment>Modal:DeleteSlot:Body</comment>
+    </data>
+    <data name="Modal:DeleteSlot:Submit" xml:space="preserve">
+        <value>Slot löschen</value>
+        <comment>Modal:DeleteSlot:Submit</comment>
+    </data>
+</root>

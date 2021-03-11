@@ -123,6 +123,296 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AdminConfiguration.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\AdminUsers.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsers.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminUsers.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsers.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminUsers.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsers.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminUsers.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsers.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminUsers.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsers.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminUsers.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsers.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.Create.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.Create.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminSlots.Create.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlots.Create.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.Create.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.Create.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabs.Create.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabs.Create.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.Create.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.Create.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminExercises.Create.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercises.Create.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.Create.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.Create.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminFlags.Create.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlags.Create.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.Create.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.Create.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminGroups.Create.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroups.Create.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.List.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.List.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.List.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.List.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.Edit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.Edit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.Edit.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.Edit.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions._Form.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions._Form.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions._Form.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions._Form.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.CreateForGroup.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.CreateForGroup.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.CreateForGroup.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.CreateForGroup.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.CreateForSlot.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.CreateForSlot.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\AdminLabExecutions.CreateForSlot.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutions.CreateForSlot.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -334,6 +624,276 @@
     <EmbeddedResource Update="Resources\Views\AdminConfiguration.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AdminConfiguration.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminUsers.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsers.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminUsers.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsers.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminUsers.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsers.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminUsers.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminUsers.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsers.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminUsers.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminUsers.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsers.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminUsers.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminUsers.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsers.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminUsers.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminSlots.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminSlots.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminSlots.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminSlots.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.Create.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.Create.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminSlots.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminSlots.Create.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlots.Create.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminSlots.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabs.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabs.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabs.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabs.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.Create.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.Create.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabs.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabs.Create.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabs.Create.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabs.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminExercises.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminExercises.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminExercises.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminExercises.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.Create.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.Create.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminExercises.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminExercises.Create.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercises.Create.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminExercises.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminFlags.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminFlags.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminFlags.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminFlags.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.Create.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.Create.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminFlags.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminFlags.Create.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlags.Create.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminFlags.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminGroups.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminGroups.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminGroups.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminGroups.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.Create.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.Create.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminGroups.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminGroups.Create.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroups.Create.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminGroups.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.List.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.List.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabExecutions.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.List.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.List.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabExecutions.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.Edit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.Edit.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabExecutions.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.Edit.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.Edit.de.Designer.cs</LastGenOutput>
+      <DependentUpon>AdminLabExecutions.de.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions._Form.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions._Form.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions._Form.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions._Form.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.CreateForGroup.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.CreateForGroup.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.CreateForGroup.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.CreateForGroup.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.CreateForSlot.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.CreateForSlot.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminLabExecutions.CreateForSlot.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutions.CreateForSlot.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

@@ -1,26 +1,28 @@
 @model List<Ctf4e.Server.Models.Group>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <div class="float-end">
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowCreateGroupForm">
         <i class="bi bi-plus"></i>
-        Gruppe erstellen
+        @Localizer["CreateGroup"]
     </a>
 </div>
 
 <h3 class="header">
-    Gruppen verwalten
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Slot</th>
-        <th scope="col">Name</th>
-        <th scope="col">Mitglieder</th>
-        <th scope="col">Scoreboard?</th>
-        <th scope="col">Aktionen</th>
+        <th scope="col">@Localizer["Groups:ID"]</th>
+        <th scope="col">@Localizer["Groups:Slot"]</th>
+        <th scope="col">@Localizer["Groups:Name"]</th>
+        <th scope="col">@Localizer["Groups:Members"]</th>
+        <th scope="col">@Localizer["Groups:ShowInScoreboard"]</th>
+        <th scope="col">@Localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -44,13 +46,13 @@
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@g.Id">
                     <i class="bi bi-pencil"></i>
-                    Bearbeiten
+                    @Localizer["Edit"]
                 </a>
                 @if(!g.Members.Any())
                 {
                     <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-group" data-groupid="@g.Id" data-groupname="@g.DisplayName">
                         <i class="bi bi-trash"></i>
-                        Löschen
+                        @Localizer["Delete"]
                     </a>
                 }
             </td>
@@ -63,23 +65,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Gruppe löschen</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteGroup:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>
-                    Wollen Sie die Gruppe &quot;<span data-replace="group-name"></span>&quot; wirklich löschen?
-                </p>
-                <p>
-                    Alle mit dieser Gruppe verbundenen Aufgaben- und Flag-Einreichungen werden unwiderruflich gelöscht.
-                </p>
+                @Localizer["Modal:DeleteGroup:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminGroups" asp-action="DeleteGroup" method="post">
                     <input type="hidden" data-replace="group-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">Gruppe löschen</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteGroup:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]Abbrechen</button>
                 </form>
             </div>
         </div>

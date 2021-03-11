@@ -1,14 +1,16 @@
 @model List<Ctf4e.Server.Models.Slot>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <div class="float-end">
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowCreateSlotForm">
         <i class="bi bi-plus"></i>
-        Slot erstellen
+        @Localizer["CreateSlot"]
     </a>
 </div>
 
 <h3 class="header">
-    Slots verwalten
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
@@ -16,10 +18,10 @@
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Gruppen</th>
-        <th scope="col">Aktionen</th>
+        <th scope="col">@Localizer["Slots:ID"]</th>
+        <th scope="col">@Localizer["Slots:Name"]</th>
+        <th scope="col">@Localizer["Slots:Groups"]</th>
+        <th scope="col">@Localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -32,13 +34,13 @@
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowEditSlotForm" asp-route-id="@s.Id">
                     <i class="bi bi-pencil"></i>
-                    Bearbeiten
+                    @Localizer["Edit"]
                 </a>
                 @if(!s.Groups.Any())
                 {
                     <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slotid="@s.Id" data-slotname="@s.Name">
                         <i class="bi bi-trash"></i>
-                        Löschen
+                        @Localizer["Delete"]
                     </a>
                 }
             </td>
@@ -51,20 +53,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Slot löschen</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteSlot:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>
-                    Wollen Sie den Slot &quot;<span data-replace="slot-name"></span>&quot; wirklich löschen?
-                </p>
+                @Localizer["Modal:DeleteSlot:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminSlots" asp-action="DeleteSlot" method="post">
                     <input type="hidden" data-replace="slot-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">Slot löschen</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteSlot:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>

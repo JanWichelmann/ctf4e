@@ -1,50 +1,52 @@
 @using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model User
 @{
     var groups = (List<Group>)ViewData["Groups"];
 }
 
 <h3 class="header">
-    Benutzer bearbeiten
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminUsers" asp-action="EditUser" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="DisplayName">Name</label>
-        <input asp-for="DisplayName" class="form-control" placeholder="Namen eingeben">
+        <label class="form-label" asp-for="DisplayName">@Localizer["Form:DisplayName"]</label>
+        <input asp-for="DisplayName" class="form-control">
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label">Moodle-Account</label>
+        <label class="form-label">@Localizer["Form:MoodleName"]</label>
         <input asp-for="MoodleName" class="form-control" readonly="readonly">
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsAdmin" class="form-check-input">
-            <label asp-for="IsAdmin" class="form-check-label">Administratorrechte</label>
+            <label asp-for="IsAdmin" class="form-check-label">@Localizer["Form:IsAdmin"]</label>
         </div>
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsTutor" class="form-check-input">
-            <label asp-for="IsTutor" class="form-check-label">Tutorrechte</label>
+            <label asp-for="IsTutor" class="form-check-label">@Localizer["Form:IsTutor"]</label>
         </div>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="GroupFindingCode">Gruppencode</label>
-        <input asp-for="GroupFindingCode" class="form-control" placeholder="Code zur Gruppengründung eingeben">
+        <label class="form-label" asp-for="GroupFindingCode">@Localizer["Form:GroupFindingCode"]</label>
+        <input asp-for="GroupFindingCode" class="form-control">
         <span asp-validation-for="GroupFindingCode" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="GroupId">Gruppe</label>
+        <label class="form-label" asp-for="GroupId">@Localizer["Form:GroupId"]</label>
         <select asp-for="GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
-            <option value="" selected>(keine)</option>
+            <option value="" selected>@Localizer["Form:GroupId:None"]</option>
         </select>
     </div>
 
     <input asp-for="Id" type="hidden">
 
-    <button type="submit" class="btn btn-primary">Änderungen speichern</button>
-    <a asp-controller="AdminUsers" asp-action="RenderUserList" class="btn btn-secondary">Abbrechen</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <a asp-controller="AdminUsers" asp-action="RenderUserList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

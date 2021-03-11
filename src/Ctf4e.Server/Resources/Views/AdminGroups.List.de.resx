@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Actions" xml:space="preserve">
+        <value>Aktionen</value>
+        <comment>Actions</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Abbrechen</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>Delete</comment>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Bearbeiten</value>
+        <comment>Edit</comment>
+    </data>
+    <data name="Groups:ID" xml:space="preserve">
+        <value>ID</value>
+        <comment>ID</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Gruppen verwalten</value>
+        <comment>Title</comment>
+    </data>
+    <data name="CreateGroup" xml:space="preserve">
+        <value>Gruppe erstellen</value>
+        <comment>CreateGroup</comment>
+    </data>
+    <data name="Groups:Slot" xml:space="preserve">
+        <value>Slot</value>
+        <comment>Groups:Slot</comment>
+    </data>
+    <data name="Groups:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Groups:Name</comment>
+    </data>
+    <data name="Groups:Members" xml:space="preserve">
+        <value>Mitglieder</value>
+        <comment>Groups:Members</comment>
+    </data>
+    <data name="Groups:ShowInScoreboard" xml:space="preserve">
+        <value>Scoreboard?</value>
+        <comment>Groups:ShowInScoreboard</comment>
+    </data>
+    <data name="Modal:DeleteGroup:Title" xml:space="preserve">
+        <value>Gruppe löschen</value>
+        <comment>Modal:DeleteGroup:Title</comment>
+    </data>
+    <data name="Modal:DeleteGroup:Body" xml:space="preserve">
+        <value>&lt;p&gt;Wollen Sie die Gruppe &amp;quot;&lt;span data-replace="group-name"&gt;&lt;/span&gt;&amp;quot; wirklich löschen?&lt;/p&gt;</value>
+        <comment>Modal:DeleteGroup:Body</comment>
+    </data>
+    <data name="Modal:DeleteGroup:Submit" xml:space="preserve">
+        <value>Gruppe löschen</value>
+        <comment>Modal:DeleteGroup:Submit</comment>
+    </data>
+</root>

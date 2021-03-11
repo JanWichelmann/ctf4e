@@ -1,32 +1,34 @@
 @model Ctf4e.Server.Models.Lab
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <h3 class="header">
-    Praktikum erstellen
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminLabs" asp-action="CreateLab" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="Name">Name</label>
-        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
+        <input asp-for="Name" class="form-control">
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="ServerBaseUrl">Basis-URL für Praktikumsserver</label>
-        <input asp-for="ServerBaseUrl" class="form-control" placeholder="URL eingeben">
+        <label class="form-label" asp-for="ServerBaseUrl">@Localizer["Form:ServerBaseUrl"]</label>
+        <input asp-for="ServerBaseUrl" class="form-control">
         <span asp-validation-for="ServerBaseUrl" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="ApiCode">API-Code</label>
-        <input asp-for="ApiCode" class="form-control" placeholder="Code eingeben" value="@RandomStringGenerator.GetRandomString(32)">
+        <label class="form-label" asp-for="ApiCode">@Localizer["Form:ApiCode"]</label>
+        <input asp-for="ApiCode" class="form-control" value="@RandomStringGenerator.GetRandomString(32)">
         <span asp-validation-for="ApiCode" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="MaxFlagPoints">Maximale Flagpunkte</label>
+        <label class="form-label" asp-for="MaxFlagPoints">@Localizer["Form:MaxFlagPoints"]</label>
         <input asp-for="MaxFlagPoints" class="form-control">
         <span asp-validation-for="MaxFlagPoints" class="text-danger"></span>
     </div>
     
-    <button type="submit" class="btn btn-primary">Praktikum erstellen</button>
-    <a asp-controller="AdminLabs" asp-action="RenderLabList" class="btn btn-secondary">Abbrechen</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <a asp-controller="AdminLabs" asp-action="RenderLabList" class="btn btn-secondary">@Localizer["Form:Cancel"]Abbrechen</a>
 </form>

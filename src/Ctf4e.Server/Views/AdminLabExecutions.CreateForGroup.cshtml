@@ -1,4 +1,6 @@
 @using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model Ctf4e.Server.ViewModels.AdminLabExecution
 @{
     var groups = (List<Group>)ViewData["Groups"];
@@ -6,21 +8,21 @@
 }
 
 <h3 class="header">
-    Praktikum für eine Gruppe starten
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminLabExecutions" asp-action="CreateLabExecutionForGroup" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="LabExecution.LabId">Praktikum</label>
+        <label class="form-label" asp-for="LabExecution.LabId">@Localizer["Form:LabId"]</label>
         <select asp-for="LabExecution.LabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-control">
-            <option value="" disabled selected>Praktikum auswählen</option>
+            <option value="" disabled selected>@Localizer["Form:LabId:Placeholder"]</option>
         </select>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="LabExecution.GroupId">Gruppe</label>
+        <label class="form-label" asp-for="LabExecution.GroupId">@Localizer["Form:GroupId"]</label>
         <select asp-for="LabExecution.GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
-            <option value="" disabled selected>Gruppe auswählen</option>
+            <option value="" disabled selected>@Localizer["Form:GroupId:Placeholder"]</option>
         </select>
     </div>
 
@@ -29,13 +31,13 @@
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="OverrideExisting" class="form-check-input" checked>
-            <label asp-for="OverrideExisting" class="form-check-label">Existierende Konfiguration überschreiben</label>
+            <label asp-for="OverrideExisting" class="form-check-label">@Localizer["Form:OverrideExisting"]</label>
             <small>
-                Dies überschreibt eine eventuell bereits existierende Praktikumsausführung der Gruppe.
+                @Localizer["Form:OverrideExisting:Description"]
             </small>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Praktikum starten</button>
-    <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">Abbrechen</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

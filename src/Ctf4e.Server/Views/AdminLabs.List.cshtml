@@ -1,26 +1,28 @@
 @model List<Ctf4e.Server.Models.Lab>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <div class="float-end">
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowCreateLabForm">
         <i class="bi bi-plus"></i>
-        Praktikum erstellen
+        @Localizer["CreateLab"]
     </a>
 </div>
 
 <h3 class="header">
-    Praktika verwalten
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <table class="table table-sm table-bordered align-middle table-hover text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Max. Flag-Punkte</th>
+        <th scope="col">@Localizer["Labs:ID"]</th>
+        <th scope="col">@Localizer["Labs:Name"]</th>
+        <th scope="col">@Localizer["Labs:MaximumFlagPoints"]</th>
         <th scope="col"></th>
         <th scope="col"></th>
-        <th scope="col">Aktionen</th>
+        <th scope="col">@Localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -31,18 +33,18 @@
             <td>@l.Name</td>
             <td>@l.MaxFlagPoints</td>
             <td>
-                <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="Aufgabenliste öffnen">
+                <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="@Localizer["Labs:Exercises:Text"]">
                     <i class="bi bi-arrow-right"></i>
-                    Aufgaben
+                    @Localizer["Labs:Exercises"]
                     <span class="badge bg-primary">
                         @l.Exercises.Count
                     </span>
                 </a>
             </td>
             <td>
-                <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="Flagliste öffnen">
+                <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="@Localizer["Labs:Flags:Text"]">
                     <i class="bi bi-arrow-right"></i>
-                    Flags
+                    @Localizer["Labs:Flags"]
                     <span class="badge bg-primary">
                         @l.Flags.Count
                     </span>
@@ -52,13 +54,13 @@
 
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowEditLabForm" asp-route-id="@l.Id">
                     <i class="bi bi-pencil"></i>
-                    Bearbeiten
+                    @Localizer["Edit"]
                 </a>
                 @if(!l.Executions.Any())
                 {
                     <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab" data-labid="@l.Id" data-labname="@l.Name">
                         <i class="bi bi-trash"></i>
-                        Löschen
+                        @Localizer["Delete"]
                     </a>
                 }
             </td>
@@ -71,23 +73,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Praktikum löschen</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteLab:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>
-                    Wollen Sie das Praktikum &quot;<span data-replace="lab-name"></span>&quot; wirklich löschen?
-                </p>
-                <p>
-                    Beachten Sie, dass hierbei auch alle damit zusammenhängenden Aufgaben und Flags unwiderruflich gelöscht werden!
-                </p>
+                @Localizer["Modal:DeleteLab:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminLabs" asp-action="DeleteLab" method="post">
                     <input type="hidden" data-replace="lab-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">Praktikum löschen</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteLab:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>

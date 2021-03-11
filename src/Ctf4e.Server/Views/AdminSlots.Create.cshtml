@@ -1,17 +1,19 @@
 @model Ctf4e.Server.Models.Slot
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <h3 class="header">
-    Slot erstellen
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminSlots" asp-action="CreateSlot" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="Name">Name</label>
-        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
+        <input asp-for="Name" class="form-control">
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Slot erstellen</button>
-    <a asp-controller="AdminSlots" asp-action="RenderSlotList" class="btn btn-secondary">Abbrechen</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <a asp-controller="AdminSlots" asp-action="RenderSlotList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

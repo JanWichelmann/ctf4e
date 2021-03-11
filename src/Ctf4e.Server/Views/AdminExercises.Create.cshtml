@@ -1,56 +1,54 @@
 @using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model Ctf4e.Server.Models.Exercise
 @{
     var lab = (Lab)ViewData["Lab"];
 }
 
 <h3 class="header">
-    Aufgabe erstellen
+    @Localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminExercises" asp-action="CreateExercise" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="ExerciseNumber">Aufgabennummer</label>
+        <label class="form-label" asp-for="ExerciseNumber">@Localizer["Form:ExerciseNumber"]</label>
         <input asp-for="ExerciseNumber" class="form-control">
         <span asp-validation-for="ExerciseNumber" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="Name">Name</label>
-        <input asp-for="Name" class="form-control" placeholder="Namen eingeben">
+        <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
+        <input asp-for="Name" class="form-control">
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="BasePoints">Basispunktzahl</label>
+        <label class="form-label" asp-for="BasePoints">@Localizer["Form:BasePoints"]</label>
         <input asp-for="BasePoints" class="form-control">
         <span asp-validation-for="BasePoints" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="PenaltyPoints">Strafpunkte pro Fehlversuch</label>
+        <label class="form-label" asp-for="PenaltyPoints">@Localizer["Form:PenaltyPoints"]</label>
         <input asp-for="PenaltyPoints" class="form-control">
         <span asp-validation-for="PenaltyPoints" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsMandatory" class="form-check-input">
-            <label asp-for="IsMandatory" class="form-check-label">Pflichtaufgabe</label>
+            <label asp-for="IsMandatory" class="form-check-label">@Localizer["Form:IsMandatory"]</label>
         </div>
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsPreStartAvailable" class="form-check-input">
             <label asp-for="IsPreStartAvailable" class="form-check-label">
-                In Vor-Beginn-Phase einreichbar<br />
-                <small>
-                    Dies steuert lediglich, ob diese Aufgabe in der Vor-Beginn-Phase eingereicht werden kann.
-                    Bereits bestehende Einreichungen bleiben unangetastet und werden immer gewertet, sofern sie zwischen Vor-Beginn und Ende liegen.
-                </small>
+                @Localizer["Form:IsPreStartAvailable"]
             </label>
         </div>
     </div>
 
     <input asp-for="LabId" type="hidden" value="@lab.Id">
 
-    <button type="submit" class="btn btn-primary">Aufgabe erstellen</button>
-    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@lab.Id" class="btn btn-secondary">Abbrechen</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@lab.Id" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

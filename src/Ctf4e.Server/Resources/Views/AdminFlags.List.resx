@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Back" xml:space="preserve">
+        <value>Back</value>
+        <comment>Back</comment>
+    </data>
+    <data name="Flags:ID" xml:space="preserve">
+        <value>ID</value>
+        <comment>ID</comment>
+    </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Actions</value>
+        <comment>Actions</comment>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Edit</value>
+        <comment>Edit</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+        <comment>Delete</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Manage flags of lab &amp;quot;{0}&amp;quot;</value>
+        <comment>Title</comment>
+    </data>
+    <data name="Flags:Code" xml:space="preserve">
+        <value>Code</value>
+        <comment>Flags:Code</comment>
+    </data>
+    <data name="Flags:Description" xml:space="preserve">
+        <value>Description</value>
+        <comment>Flags:Description</comment>
+    </data>
+    <data name="Flags:BasePoints" xml:space="preserve">
+        <value>Base points</value>
+        <comment>Flags:BasePoints</comment>
+    </data>
+    <data name="Flags:BugBounty" xml:space="preserve">
+        <value>Bug bounty?</value>
+        <comment>Flags:BugBounty</comment>
+    </data>
+    <data name="CreateFlag" xml:space="preserve">
+        <value>CreateFlag</value>
+        <comment>CreateFlag</comment>
+    </data>
+    <data name="Modal:DeleteFlag:Submit" xml:space="preserve">
+        <value>Delete flag</value>
+        <comment>Modal:DeleteFlag:Submit</comment>
+    </data>
+    <data name="Modal:DeleteFlag:Body" xml:space="preserve">
+        <value>&lt;p&gt;Do you really want to delete the flag with description &amp;quot;&lt;span data-replace="flag-name"&gt;&lt;/span&gt;&amp;quot;?&lt;/p&gt;&lt;p&gt;Note that this will also delete all associated flag submissions!&lt;/p&gt;</value>
+        <comment>Modal:DeleteFlag:Body</comment>
+    </data>
+    <data name="Modal:DeleteFlag:Title" xml:space="preserve">
+        <value>Delete flag</value>
+        <comment>Modal:DeleteFlag:Title</comment>
+    </data>
+</root>

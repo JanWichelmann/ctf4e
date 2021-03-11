@@ -1,4 +1,6 @@
 @using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model List<Exercise>
 @{
     var lab = (Lab)ViewData["Lab"];
@@ -7,16 +9,16 @@
 <div class="float-end">
     <a class="btn btn-sm btn-secondary" asp-controller="AdminLabs" asp-action="RenderLabList">
         <i class="bi bi-arrow-left"></i>
-        Zurück
+        @Localizer["Back"]
     </a>
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowCreateExerciseForm" asp-route-labId="@lab.Id">
         <i class="bi bi-plus"></i>
-        Aufgabe erstellen
+        @Localizer["CreateExercise"]
     </a>
 </div>
 
 <h3 class="header">
-    Aufgaben von Praktikum &quot;@lab.Name&quot; verwalten
+    @Localizer["Title", lab.Id]
 </h3>
 <hr class="header">
 
@@ -24,14 +26,14 @@
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Nr.</th>
-        <th scope="col">Name</th>
-        <th scope="col">Basispunktzahl</th>
-        <th scope="col">Strafpunkte</th>
-        <th scope="col">Pflicht</th>
-        <th scope="col">Vor-Beginn</th>
-        <th scope="col">Aktionen</th>
+        <th scope="col">@Localizer["Exercises:ID"]</th>
+        <th scope="col">@Localizer["Exercises:Number"]</th>
+        <th scope="col">@Localizer["Exercises:Name"]</th>
+        <th scope="col">@Localizer["Exercises:BasePoints"]</th>
+        <th scope="col">@Localizer["Exercises:PenaltyPoints"]</th>
+        <th scope="col">@Localizer["Exercises:Mandatory"]</th>
+        <th scope="col">@Localizer["Exercises:PreStart"]</th>
+        <th scope="col">@Localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -66,11 +68,11 @@
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowEditExerciseForm" asp-route-id="@e.Id">
                     <i class="bi bi-pencil"></i>
-                    Bearbeiten
+                    @Localizer["Edit"]
                 </a>
                 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise" data-exerciseid="@e.Id" data-exercisename="@e.Name">
                     <i class="bi bi-trash"></i>
-                    Löschen
+                    @Localizer["Delete"]
                 </a>
             </td>
         </tr>
@@ -82,23 +84,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Aufgabe löschen</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteExercise:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>
-                    Wollen Sie die Aufgabe &quot;<span data-replace="exercise-name"></span>&quot; wirklich löschen?
-                </p>
-                <p>
-                    Beachten Sie, dass hierbei auch alle bereits abgeschickten Lösungsversuche unwiderruflich gelöscht werden!
-                </p>
+                @Localizer["Modal:DeleteExercise:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminExercises" asp-action="DeleteExercise" method="post">
                     <input type="hidden" data-replace="exercise-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">Aufgabe löschen</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteExercise:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>
