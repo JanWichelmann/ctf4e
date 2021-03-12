@@ -1,6 +1,9 @@
 {
   "MainOptions": {
-    "DevelopmentMode": false
+    "DevelopmentMode": false,
+    "ProxySupport": false,
+    "ProxyNetworkAddress": "",
+    "ProxyNetworkPrefix": 24
   },
   "CtfDbOptions": {
     "Server": "ctf4e-database",

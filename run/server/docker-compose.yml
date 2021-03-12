@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.5"
 
 services:
   ctf4e-server:
@@ -9,8 +9,9 @@ services:
         target: /config
     environment:
       - CTF4E_CONFIG_FILE=/config/${CONFIG_FILE_NAME}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/config/${CERT_FILE_NAME}
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
+      # Enable these for HTTPS support
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/config/${CERT_FILE_NAME}
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
     ports:
       - "80:80"
     depends_on:
