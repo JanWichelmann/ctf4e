@@ -149,7 +149,6 @@ namespace Ctf4e.Server.Controllers
             try
             {
                 // Start lab for each of the groups
-                // TODO properly check overrides: right now we throw a warning for all groups with existing executions
                 foreach(var group in await _userService.GetGroupsInSlotAsync(labExecutionData.SlotId).ToListAsync())
                 {
                     try

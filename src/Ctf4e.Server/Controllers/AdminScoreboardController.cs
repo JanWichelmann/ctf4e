@@ -16,7 +16,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-// TODO cleanup dependencies (too many rarely used services)
 namespace Ctf4e.Server.Controllers
 {
     [Route("admin/scoreboard")]
@@ -27,28 +26,14 @@ namespace Ctf4e.Server.Controllers
         private readonly IStringLocalizer<AdminScoreboardController> _localizer;
         private readonly ILogger<AdminScoreboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
-        private readonly IExerciseService _exerciseService;
-        private readonly IFlagService _flagService;
-        private readonly ILabService _labService;
-        private readonly IMoodleService _moodleService;
-        private readonly ICsvService _csvService;
-        private readonly ILabExecutionService _labExecutionService;
 
-        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminScoreboardController> localizer, ILogger<AdminScoreboardController> logger, IScoreboardService scoreboardService, IExerciseService exerciseService,
-                                         IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService,
-                                         ILabExecutionService labExecutionService)
+        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminScoreboardController> localizer, ILogger<AdminScoreboardController> logger, IScoreboardService scoreboardService)
             : base("~/Views/AdminScoreboard.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
-            _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
-            _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
-            _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-            _moodleService = moodleService ?? throw new ArgumentNullException(nameof(moodleService));
-            _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
-            _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
         }
 
         private async Task<IActionResult> RenderAsync(int labId, int slotId)
@@ -59,12 +44,12 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenderScoreboardAsync(int? labId, int? slotId)
+        public async Task<IActionResult> RenderScoreboardAsync([FromServices] ILabExecutionService labExecutionService, int? labId, int? slotId)
         {
             if(labId == null || slotId == null)
             {
                 // Show the most recently executed lab and slot as default
-                var recentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(HttpContext.RequestAborted);
+                var recentLabExecution = await labExecutionService.GetMostRecentLabExecutionAsync(HttpContext.RequestAborted);
                 if(recentLabExecution != null)
                 {
                     labId = recentLabExecution.LabId;
@@ -78,12 +63,12 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("exercisesubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteExerciseSubmissionAsync(int labId, int slotId, int submissionId)
+        public async Task<IActionResult> DeleteExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, int submissionId)
         {
             try
             {
                 // Delete submission
-                await _exerciseService.DeleteExerciseSubmissionAsync(submissionId, HttpContext.RequestAborted);
+                await exerciseService.DeleteExerciseSubmissionAsync(submissionId, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["DeleteExerciseSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
@@ -99,12 +84,12 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("exercisesubmission/deletemultiple")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteExerciseSubmissionsAsync(int labId, int slotId, List<int> submissionIds)
+        public async Task<IActionResult> DeleteExerciseSubmissionsAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, List<int> submissionIds)
         {
             try
             {
                 // Delete submissions
-                await _exerciseService.DeleteExerciseSubmissionsAsync(submissionIds, HttpContext.RequestAborted);
+                await exerciseService.DeleteExerciseSubmissionsAsync(submissionIds, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["DeleteExerciseSubmissionsAsync:Success"], StatusMessageTypes.Success);
             }
@@ -120,7 +105,7 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("exercisesubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateExerciseSubmissionAsync(int labId, int slotId, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
+        public async Task<IActionResult> CreateExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
         {
             try
             {
@@ -133,7 +118,7 @@ namespace Ctf4e.Server.Controllers
                     SubmissionTime = submissionTime,
                     Weight = passed ? 1 : weight
                 };
-                await _exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
+                await exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["CreateExerciseSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
@@ -149,12 +134,12 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("flagsubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFlagSubmissionAsync(int labId, int slotId, int userId, int flagId)
+        public async Task<IActionResult> DeleteFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, int userId, int flagId)
         {
             try
             {
                 // Delete submission
-                await _flagService.DeleteFlagSubmissionAsync(userId, flagId, HttpContext.RequestAborted);
+                await flagService.DeleteFlagSubmissionAsync(userId, flagId, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["DeleteFlagSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
@@ -170,7 +155,7 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("flagsubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFlagSubmissionAsync(int labId, int slotId, int userId, int flagId, DateTime submissionTime)
+        public async Task<IActionResult> CreateFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, int userId, int flagId, DateTime submissionTime)
         {
             try
             {
@@ -181,7 +166,7 @@ namespace Ctf4e.Server.Controllers
                     FlagId = flagId,
                     SubmissionTime = submissionTime
                 };
-                await _flagService.CreateFlagSubmissionAsync(submission, HttpContext.RequestAborted);
+                await flagService.CreateFlagSubmissionAsync(submission, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["CreateFlagSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
@@ -195,10 +180,10 @@ namespace Ctf4e.Server.Controllers
         }
 
         [HttpGet("labserver")]
-        public async Task<IActionResult> CallLabServerAsync(int labId, int userId)
+        public async Task<IActionResult> CallLabServerAsync([FromServices] ILabService labService, int labId, int userId)
         {
             // Retrieve lab data
-            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+            var lab = await labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
             {
                 AddStatusMessage(_localizer["CallLabServerAsync:NotFound"], StatusMessageTypes.Error);
@@ -228,11 +213,11 @@ namespace Ctf4e.Server.Controllers
         [HttpPost("sync/moodle")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadToMoodleAsync()
+        public async Task<IActionResult> UploadToMoodleAsync([FromServices] IMoodleService moodleService)
         {
             try
             {
-                await _moodleService.UploadStateToMoodleAsync(HttpContext.RequestAborted);
+                await moodleService.UploadStateToMoodleAsync(HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["UploadToMoodleAsync:Success"], StatusMessageTypes.Success);
             }
@@ -247,11 +232,11 @@ namespace Ctf4e.Server.Controllers
 
         [HttpGet("sync/csv")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
-        public async Task<IActionResult> DownloadAsCsvAsync()
+        public async Task<IActionResult> DownloadAsCsvAsync([FromServices] ICsvService csvService)
         {
             try
             {
-                string csv = await _csvService.GetLabStatesAsync(HttpContext.RequestAborted);
+                string csv = await csvService.GetLabStatesAsync(HttpContext.RequestAborted);
                 return File(Encoding.UTF8.GetBytes(csv), "text/csv", "labstates.csv");
             }
             catch(InvalidOperationException ex)
