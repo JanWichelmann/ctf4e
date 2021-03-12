@@ -3,17 +3,17 @@
 
 # CTF4E: Capture the Flag for Education
 
-CTF4E is a framework for practical courses, combining learning goals with gamification. It is being developed in the context of the [IT security courses at the University of Lübeck](https://www.its.uni-luebeck.de/en/).
+CTF4E is a framework for practical courses, which combines learning goals with gamification. It is being developed in the context of the [IT security courses at the University of Lübeck](https://www.its.uni-luebeck.de/en/).
 
 Features:
-- A practical course is represented by a number of _labs_, which each consist of a set of _exercises_ and _flags_
-- Mandatory and optional exercises per course
+- Division of a course into a number of _labs_, which each consist of a set of _exercises_ and _flags_
+- Mandatory and optional exercises per lab
 - Solving an exercise grants points; wrong submissions may impose penalty points
 - Flags are special strings, designed to be hidden and/or hard to acquire; flag points scale with the amount of finds
-- Division of students into groups, which share points and, if desired, grades
+- Partitioning of students into groups, which share points and, if desired, grades
 - Fine-granular control over working times, exercise and flag points
 - Scoreboard with rankings per lab and for the entire course
-- API for connecting specific _lab servers_
+- API for connecting to _lab servers_
 
 ## Ctf4e.Server
 [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ctf4e/ctf4e-server?label=docker&sort=date)](https://hub.docker.com/r/ctf4e/ctf4e-server/tags)
@@ -32,15 +32,17 @@ Finally, open a browser and navigate to the specified host/port.
 ## Ctf4e.LabServer
 [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ctf4e/ctf4e-labserver?label=docker&sort=date)](https://hub.docker.com/r/ctf4e/ctf4e-labserver/tags)
 
-This is a generic lab server implementation, suitable for most common tasks.
+This is a generic lab server implementation, suitable for most common tasks. A lab server offers an interface for entering exercise solutions, and sends its verdicts ("passed"/"not passed") to the CTF server.
 
 Features:
 - Integrates with the CTF server
 - Keeps track of lab exercises
 - Each exercise is either connected to a corresponding exercise entry on the CTF server, or produces a flag code
 - Each exercise has a title, a description (optional) and a link (optional)
-- List of possible solution strings for each exercise, in key/value format
-- Exercises may either require a specific solution (fixed, random key for each user) or an arbitrary one
+- String exercises: List of possible solution strings for each exercise, in key/value format
+	- Exercises may either require a specific solution (fixed, random key for each user) or an arbitrary one
+- Multiple choice exercises: List of correct and wrong solutions, where one or all correct solutions need to be selected
+- Script exercises: Triggers a script in an associated Docker container, allowing for arbitrary checks; also supports optional string input
 
 ### Quick start
 
