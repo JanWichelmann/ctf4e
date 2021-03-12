@@ -7,10 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-/*
- * TODO Make Favicon/CSS configurable
- */
-
 namespace Ctf4e.Server
 {
     public static class Program
