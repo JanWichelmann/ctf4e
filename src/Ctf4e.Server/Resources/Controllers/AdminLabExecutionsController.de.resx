@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ShowEditLabExecutionFormAsync:NotFound" xml:space="preserve">
+        <value>Diese Praktikumsausführung existiert nicht.</value>
+        <comment>ShowEditLabExecutionFormAsync:NotFound</comment>
+    </data>
+    <data name="ShowEditLabExecutionFormAsync:MissingParameter" xml:space="preserve">
+        <value>Es wurde keine Praktikumsausführung angegeben.</value>
+        <comment>ShowEditLabExecutionFormAsync:MissingParameter</comment>
+    </data>
+    <data name="EditLabExecutionAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>EditLabExecutionAsync:InvalidInput</comment>
+    </data>
+    <data name="EditLabExecutionAsync:Success" xml:space="preserve">
+        <value>Die Praktikumsausführung wurde erfolgreich aktualisiert.</value>
+        <comment>EditLabExecutionAsync:Success</comment>
+    </data>
+    <data name="EditLabExecutionAsync:UnknownError" xml:space="preserve">
+        <value>Beim Aktualisieren der Praktikumsausführung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>EditLabExecutionAsync:UnknownError</comment>
+    </data>
+    <data name="CreateLabExecutionForSlotAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>CreateLabExecutionForSlotAsync:InvalidInput</comment>
+    </data>
+    <data name="CreateLabExecutionForSlotAsync:Success" xml:space="preserve">
+        <value>Die Praktikumsausführung(en) wurde(n) erfolgreich erstellt.</value>
+        <comment>CreateLabExecutionForSlotAsync:Success</comment>
+    </data>
+    <data name="CreateLabExecutionForSlotAsync:UnknownError" xml:space="preserve">
+        <value>Beim Erstellen der Praktikumsausführung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>CreateLabExecutionForSlotAsync:UnknownError</comment>
+    </data>
+    <data name="CreateLabExecutionForGroupAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>CreateLabExecutionForGroupAsync:InvalidInput</comment>
+    </data>
+    <data name="CreateLabExecutionForGroupAsync:Success" xml:space="preserve">
+        <value>Die Praktikumsausführung wurde erfolgreich erstellt.</value>
+        <comment>CreateLabExecutionForGroupAsync:Success</comment>
+    </data>
+    <data name="DeleteLabExecutionForGroupAsync:NotFound" xml:space="preserve">
+        <value>Diese Praktikumsausführung existiert nicht.</value>
+        <comment>DeleteLabExecutionForGroupAsync:NotFound</comment>
+    </data>
+    <data name="DeleteLabExecutionForGroupAsync:Success" xml:space="preserve">
+        <value>Die Praktikumsausführung wurde erfolgreich gelöscht.</value>
+        <comment>DeleteLabExecutionForGroupAsync:Success</comment>
+    </data>
+    <data name="DeleteLabExecutionForGroupAsync:UnknownError" xml:space="preserve">
+        <value>Beim Löschen der Praktikumsausführung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DeleteLabExecutionForGroupAsync:UnknownError</comment>
+    </data>
+    <data name="DeleteLabExecutionForSlotAsync:Success" xml:space="preserve">
+        <value>Die Praktikumsausführung(en) wurde(n) erfolgreich gelöscht.</value>
+        <comment>DeleteLabExecutionForSlotAsync:Success</comment>
+    </data>
+    <data name="DeleteLabExecutionForSlotAsync:UnknownError" xml:space="preserve">
+        <value>Beim Löschen der Praktikumsausführung(en) ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DeleteLabExecutionForSlotAsync:UnknownError</comment>
+    </data>
+    <data name="CreateLabExecutionForGroupAsync:UnknownError" xml:space="preserve">
+        <value>Beim Erstellen der Praktikumsausführung ist ein Fehler aufgetreten. Existiert bereits eine Praktikumsausführung für diese Gruppe und dieses Praktikum? Weitere Details finden sich im Log.</value>
+        <comment>CreateLabExecutionForGroupAsync:UnknownError</comment>
+    </data>
+    <data name="ShowEditLabExecutionFormAsync:Warning" xml:space="preserve">
+        <value>Achtung: Das Bearbeiten einer bereits aktiven Praktikumsausführung kann zu Änderungen des "Bestanden"-Status und Verschiebungen im Scoreboard führen. Aufgaben- und Flag-Einreichungen werden nicht gelöscht, auch wenn diese bezüglich der neuen Beginn- und Endzeiten nicht möglich gewesen wären.</value>
+        <comment>ShowEditLabExecutionFormAsync:Warning</comment>
+    </data>
+    <data name="CreateLabExecutionForSlotAsync:ErrorGroup" xml:space="preserve">
+        <value>Konnte Praktikum für Gruppe #{0} ({1}) nicht starten. Ist es für diese Gruppe bereits gestartet?</value>
+        <comment>CreateLabExecutionForSlotAsync:ErrorGroup</comment>
+    </data>
+</root>

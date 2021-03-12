@@ -433,6 +433,126 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Authentication.GroupSelection.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Controllers\AdminConfigurationController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfigurationController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminConfigurationController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfigurationController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminExercisesController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercisesController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminExercisesController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminExercisesController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminFlagsController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlagsController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminFlagsController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminFlagsController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminGroupsController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroupsController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminGroupsController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminGroupsController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminLabExecutionsController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutionsController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminLabExecutionsController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabExecutionsController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminLabsController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabsController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminLabsController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminLabsController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminScoreboardController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboardController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminScoreboardController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminScoreboardController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminSlotsController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlotsController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminSlotsController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminSlotsController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminUsersController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsersController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminUsersController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminUsersController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AuthenticationController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuthenticationController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AuthenticationController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuthenticationController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\ScoreboardController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ScoreboardController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\ScoreboardController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ScoreboardController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\UserDashboardController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserDashboardController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\UserDashboardController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UserDashboardController.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -930,6 +1050,102 @@
     <EmbeddedResource Update="Resources\Views\Authentication.GroupSelection.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Authentication.GroupSelection.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfigurationController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfigurationController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminExercisesController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercisesController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminExercisesController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminExercisesController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminFlagsController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlagsController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminFlagsController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminFlagsController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminGroupsController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroupsController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminGroupsController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminGroupsController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminLabExecutionsController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutionsController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminLabExecutionsController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabExecutionsController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminLabsController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabsController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminLabsController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminLabsController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminScoreboardController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboardController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminScoreboardController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminScoreboardController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminSlotsController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlotsController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminSlotsController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminSlotsController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminUsersController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsersController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminUsersController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminUsersController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\ScoreboardController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ScoreboardController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\ScoreboardController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ScoreboardController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\UserDashboardController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UserDashboardController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\UserDashboardController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UserDashboardController.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

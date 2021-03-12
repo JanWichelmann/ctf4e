@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -16,14 +18,18 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsGroupMember)]
     public class UserDashboardController : ControllerBase
     {
+        private readonly IStringLocalizer<UserDashboardController> _localizer;
+        private readonly ILogger<UserDashboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabExecutionService _labExecutionService;
         private readonly IFlagService _flagService;
         private readonly ILabService _labService;
 
-        public UserDashboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
+        public UserDashboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<UserDashboardController> localizer, ILogger<UserDashboardController> logger, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
             : base("~/Views/UserDashboard.cshtml", userService, mainOptions)
         {
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
@@ -36,7 +42,7 @@ namespace Ctf4e.Server.Controllers
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
-                AddStatusMessage("Sie sind nicht eingeloggt oder keiner Gruppe zugewiesen.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["RenderAsync:NoGroup"], StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -46,7 +52,7 @@ namespace Ctf4e.Server.Controllers
                 var currentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(currentUser.GroupId.Value);
                 if(currentLabExecution == null)
                 {
-                    AddStatusMessage("Aktuell ist kein Praktikum aktiv.", StatusMessageTypes.Info);
+                    AddStatusMessage(_localizer["RenderAsync:NoActiveLab"], StatusMessageTypes.Info);
                     return await RenderViewAsync();
                 }
 
@@ -57,7 +63,7 @@ namespace Ctf4e.Server.Controllers
             var scoreboard = await _scoreboardService.GetUserScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
             if(scoreboard == null)
             {
-                AddStatusMessage($"Die Übersicht für Praktikum #{labId} konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["RenderAsync:EmptyScoreboard", labId], StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -80,7 +86,7 @@ namespace Ctf4e.Server.Controllers
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
-                AddStatusMessage("Beim Abfragen der Gruppen-ID ist ein Fehler aufgetreten.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["SubmitFlagAsync:NoGroup"], StatusMessageTypes.Error);
                 return await RenderLabPageAsync(labId);
             }
 
@@ -88,11 +94,11 @@ namespace Ctf4e.Server.Controllers
             bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
             if(success)
             {
-                AddStatusMessage("Einlösen der Flag erfolgreich!", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["SubmitFlagAsync:Success"], StatusMessageTypes.Success);
             }
             else
             {
-                AddStatusMessage("Die Flag konnte nicht eingelöst werden.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["SubmitFlagAsync:Error"], StatusMessageTypes.Error);
             }
 
             return await RenderLabPageAsync(labId);
@@ -101,19 +107,19 @@ namespace Ctf4e.Server.Controllers
         [HttpGet("labserver")]
         public async Task<IActionResult> CallLabServerAsync(int labId)
         {
-            // Retrieve lab data
-            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
-            if(lab == null)
-            {
-                AddStatusMessage("Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
-                return await RenderViewAsync();
-            }
-
             // Retrieve group ID
             var currentUser = await GetCurrentUserAsync();
             if(currentUser?.GroupId == null)
             {
-                AddStatusMessage("Sie sind nicht eingeloggt oder keiner Gruppe zugewiesen.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CallLabServerAsync:NoGroup"], StatusMessageTypes.Error);
+                return await RenderViewAsync();
+            }
+            
+            // Retrieve lab data
+            var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+            if(lab == null)
+            {
+                AddStatusMessage(_localizer["CallLabServerAsync:LabNotFound"], StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -122,7 +128,7 @@ namespace Ctf4e.Server.Controllers
             var labExecution = await _labExecutionService.GetLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
             if(labExecution == null || now < labExecution.PreStart)
             {
-                AddStatusMessage("Dieses Praktikum ist nicht aktiv.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CallLabServerAsync:LabNotActive"], StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 

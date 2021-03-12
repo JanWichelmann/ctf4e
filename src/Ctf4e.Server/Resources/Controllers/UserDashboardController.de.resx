@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="RenderAsync:NoGroup" xml:space="preserve">
+        <value>Sie sind nicht angemeldet oder keiner Gruppe zugewiesen.</value>
+        <comment>RenderAsync:NoGroup</comment>
+    </data>
+    <data name="RenderAsync:NoActiveLab" xml:space="preserve">
+        <value>Aktuell ist kein Praktikum aktiv.</value>
+        <comment>RenderAsync:NoActiveLab</comment>
+    </data>
+    <data name="RenderAsync:EmptyScoreboard" xml:space="preserve">
+        <value>Die Übersicht für Praktikum #{0} konnte nicht abgerufen werden.</value>
+        <comment>RenderAsync:EmptyScoreboard</comment>
+    </data>
+    <data name="SubmitFlagAsync:NoGroup" xml:space="preserve">
+        <value>Sie sind nicht angemeldet oder keiner Gruppe zugewiesen.</value>
+        <comment>SubmitFlagAsync:NoGroup</comment>
+    </data>
+    <data name="SubmitFlagAsync:Success" xml:space="preserve">
+        <value>Einlösen der Flag erfolgreich!</value>
+        <comment>SubmitFlagAsync:Success</comment>
+    </data>
+    <data name="SubmitFlagAsync:Error" xml:space="preserve">
+        <value>Die Flag konnte nicht eingelöst werden.</value>
+        <comment>SubmitFlagAsync:Error</comment>
+    </data>
+    <data name="CallLabServerAsync:LabNotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+        <comment>CallLabServerAsync:LabNotFound</comment>
+    </data>
+    <data name="CallLabServerAsync:LabNotActive" xml:space="preserve">
+        <value>Dieses Praktikum ist nicht aktiv.</value>
+        <comment>CallLabServerAsync:LabNotActive</comment>
+    </data>
+    <data name="CallLabServerAsync:NoGroup" xml:space="preserve">
+        <value>Sie sind nicht angemeldet oder keiner Gruppe zugewiesen.</value>
+        <comment>CallLabServerAsync:NoGroup</comment>
+    </data>
+</root>

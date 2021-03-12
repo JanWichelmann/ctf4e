@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -16,12 +18,16 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     public class AdminExercisesController : ControllerBase
     {
+        private readonly IStringLocalizer<AdminExercisesController> _localizer;
+        private readonly ILogger<AdminExercisesController> _logger;
         private readonly IExerciseService _exerciseService;
         private readonly ILabService _labService;
 
-        public AdminExercisesController(IUserService userService, IOptions<MainOptions> mainOptions, IExerciseService exerciseService, ILabService labService)
+        public AdminExercisesController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminExercisesController> localizer, ILogger<AdminExercisesController> logger, IExerciseService exerciseService, ILabService labService)
             : base("~/Views/AdminExercises.cshtml", userService, mainOptions)
         {
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
@@ -52,11 +58,11 @@ namespace Ctf4e.Server.Controllers
             {
                 exercise = await _exerciseService.GetExerciseAsync(id.Value, HttpContext.RequestAborted);
                 if(exercise == null)
-                    return this.RedirectToAction("RenderLabList", "AdminLabs");
+                    return RedirectToAction("RenderLabList", "AdminLabs");
             }
 
             if(exercise == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return RedirectToAction("RenderLabList", "AdminLabs");
 
             return await RenderAsync(ViewType.Edit, exercise.LabId, exercise);
         }
@@ -74,7 +80,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditExerciseAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditExerciseFormAsync(null, exerciseData);
             }
 
@@ -90,12 +96,13 @@ namespace Ctf4e.Server.Controllers
                 exercise.PenaltyPoints = exerciseData.PenaltyPoints;
                 await _exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditExerciseAsync:Success"], StatusMessageTypes.Success);
                 return await RenderExerciseListAsync(exercise.LabId);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit exercise");
+                AddStatusMessage(_localizer["EditExerciseAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditExerciseFormAsync(null, exerciseData);
             }
         }
@@ -113,7 +120,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateExerciseAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
             }
 
@@ -132,12 +139,13 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Aufgabe wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateExerciseAsync:Success"], StatusMessageTypes.Success);
                 return await RenderExerciseListAsync(exerciseData.LabId);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create exercise");
+                AddStatusMessage(_localizer["CreateExerciseAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
             }
         }
@@ -149,18 +157,19 @@ namespace Ctf4e.Server.Controllers
             // Input check
             var exercise = await _exerciseService.GetExerciseAsync(id, HttpContext.RequestAborted);
             if(exercise == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return RedirectToAction("RenderLabList", "AdminLabs");
 
             try
             {
                 // Delete exercise
                 await _exerciseService.DeleteExerciseAsync(id, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Aufgabe wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteExerciseAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete exercise");
+                AddStatusMessage(_localizer["DeleteExerciseAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderExerciseListAsync(exercise.LabId);

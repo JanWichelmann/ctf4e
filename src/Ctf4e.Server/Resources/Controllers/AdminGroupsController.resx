@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ShowEditGroupFormAsync:NotFound" xml:space="preserve">
+        <value>This group does not exist.</value>
+        <comment>ShowEditGroupFormAsync:NotFound</comment>
+    </data>
+    <data name="ShowEditGroupFormAsync:MissingParameter" xml:space="preserve">
+        <value>No group specified.</value>
+        <comment>ShowEditGroupFormAsync:MissingParameter</comment>
+    </data>
+    <data name="EditGroupAsync:InvalidInput" xml:space="preserve">
+        <value>Invalid input.</value>
+        <comment>EditGroupAsync:InvalidInput</comment>
+    </data>
+    <data name="EditGroupAsync:Success" xml:space="preserve">
+        <value>The group was updated successfully.</value>
+        <comment>EditGroupAsync:Success</comment>
+    </data>
+    <data name="EditGroupAsync:UnknownError" xml:space="preserve">
+        <value>An error occured when updating the group. Check the log for more details.</value>
+        <comment>EditGroupAsync:UnknownError</comment>
+    </data>
+    <data name="CreateGroupAsync:InvalidInput" xml:space="preserve">
+        <value>Invalid input.</value>
+        <comment>CreateGroupAsync:InvalidInput</comment>
+    </data>
+    <data name="CreateGroupAsync:UnknownError" xml:space="preserve">
+        <value>An error occured when creating the group. Check the log for more details.</value>
+        <comment>CreateGroupAsync:UnknownError</comment>
+    </data>
+    <data name="DeleteGroupAsync:NotFound" xml:space="preserve">
+        <value>This group does not exist.</value>
+        <comment>DeleteGroupAsync:NotFound</comment>
+    </data>
+    <data name="DeleteGroupAsync:UnknownError" xml:space="preserve">
+        <value>An error occured when deleting the group. Check the log for more details.</value>
+        <comment>DeleteGroupAsync:UnknownError</comment>
+    </data>
+    <data name="CreateGroupAsync:Success" xml:space="preserve">
+        <value>The group was created successfully.</value>
+        <comment>CreateGroupAsync:Success</comment>
+    </data>
+    <data name="DeleteGroupAsync:Success" xml:space="preserve">
+        <value>The group was deleted successfully.</value>
+        <comment>DeleteGroupAsync:Success</comment>
+    </data>
+    <data name="DeleteGroupAsync:GroupNotEmpty" xml:space="preserve">
+        <value>The group needs to be empty before it can be deleted.</value>
+        <comment>DeleteGroupAsync:GroupNotEmpty</comment>
+    </data>
+</root>

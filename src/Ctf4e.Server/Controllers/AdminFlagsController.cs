@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -16,12 +18,16 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     public class AdminFlagsController : ControllerBase
     {
+        private readonly IStringLocalizer<AdminFlagsController> _localizer;
+        private readonly ILogger<AdminFlagsController> _logger;
         private readonly IFlagService _flagService;
         private readonly ILabService _labService;
 
-        public AdminFlagsController(IUserService userService, IOptions<MainOptions> mainOptions, IFlagService flagService, ILabService labService)
+        public AdminFlagsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminFlagsController> localizer, ILogger<AdminFlagsController> logger, IFlagService flagService, ILabService labService)
             : base("~/Views/AdminFlags.cshtml", userService, mainOptions)
         {
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
@@ -30,7 +36,7 @@ namespace Ctf4e.Server.Controllers
         {
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return RedirectToAction("RenderLabList", "AdminLabs");
             ViewData["Lab"] = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
 
             ViewData["ViewType"] = viewType;
@@ -52,11 +58,11 @@ namespace Ctf4e.Server.Controllers
             {
                 flag = await _flagService.GetFlagAsync(id.Value, HttpContext.RequestAborted);
                 if(flag == null)
-                    return this.RedirectToAction("RenderLabList", "AdminLabs");
+                    return RedirectToAction("RenderLabList", "AdminLabs");
             }
 
             if(flag == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return RedirectToAction("RenderLabList", "AdminLabs");
 
             return await RenderAsync(ViewType.Edit, flag.LabId, flag);
         }
@@ -74,7 +80,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditFlagAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditFlagFormAsync(null, flagData);
             }
 
@@ -88,12 +94,13 @@ namespace Ctf4e.Server.Controllers
                 flag.IsBounty = flagData.IsBounty;
                 await _flagService.UpdateFlagAsync(flag, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditFlagAsync:Success"], StatusMessageTypes.Success);
                 return await RenderFlagListAsync(flag.LabId);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit flag");
+                AddStatusMessage(_localizer["EditFlagAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditFlagFormAsync(null, flagData);
             }
         }
@@ -111,7 +118,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateFlagAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
             }
 
@@ -128,12 +135,13 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _flagService.CreateFlagAsync(flag, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Flag wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateFlagAsync:Success"], StatusMessageTypes.Success);
                 return await RenderFlagListAsync(flagData.LabId);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create flag");
+                AddStatusMessage(_localizer["CreateFlagAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
             }
         }
@@ -145,18 +153,19 @@ namespace Ctf4e.Server.Controllers
             // Input check
             var flag = await _flagService.GetFlagAsync(id, HttpContext.RequestAborted);
             if(flag == null)
-                return this.RedirectToAction("RenderLabList", "AdminLabs");
+                return RedirectToAction("RenderLabList", "AdminLabs");
 
             try
             {
                 // Delete flag
                 await _flagService.DeleteFlagAsync(id, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Flag wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteFlagAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete flag");
+                AddStatusMessage(_localizer["DeleteFlagAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderFlagListAsync(flag.LabId);

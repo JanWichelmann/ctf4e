@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -23,15 +25,19 @@ namespace Ctf4e.Server.Controllers
     public partial class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<AuthenticationController> _localizer;
+        private readonly ILogger<AuthenticationController> _logger;
         private readonly ISlotService _slotService;
         private readonly IConfigurationService _configurationService;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IServiceProvider _serviceProvider;
 
-        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment, IServiceProvider serviceProvider)
+        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AuthenticationController> localizer, ILogger<AuthenticationController> logger, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment, IServiceProvider serviceProvider)
             : base("~/Views/Authentication.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
@@ -51,7 +57,7 @@ namespace Ctf4e.Server.Controllers
             var currentUser = await GetCurrentUserAsync();
             if(currentUser == null)
             {
-                AddStatusMessage("Ein Login ist nur über den Moodlekurs möglich.", StatusMessageTypes.Info);
+                AddStatusMessage(_localizer["RenderAsync:MoodleOnly"], StatusMessageTypes.Info);
                 return await RenderAsync(ViewType.Blank);
             }
 
@@ -74,7 +80,7 @@ namespace Ctf4e.Server.Controllers
             var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
             if(user == null)
             {
-                AddStatusMessage("Dieser Benutzer existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DevLoginAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderAsync(ViewType.Blank);
             }
 
@@ -82,7 +88,7 @@ namespace Ctf4e.Server.Controllers
             await DoLoginAsync(user);
 
             // Done
-            AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["DevLoginAsync:Success"], StatusMessageTypes.Success);
             if(user.Group == null)
                 return await ShowGroupFormAsync();
             return await RenderAsync(ViewType.Redirect);
@@ -101,7 +107,7 @@ namespace Ctf4e.Server.Controllers
             var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
             if(user == null)
             {
-                AddStatusMessage("Dieser Benutzer existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["AdminLoginAsUserAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderAsync(ViewType.Blank);
             }
 
@@ -109,7 +115,7 @@ namespace Ctf4e.Server.Controllers
             await DoLoginAsync(user);
 
             // Done
-            AddStatusMessage($"Login als {user.DisplayName} erfolgreich!", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["AdminLoginAsUserAsync:Success", user.DisplayName], StatusMessageTypes.Success);
             if(user.Group == null)
                 return await ShowGroupFormAsync();
             return await RenderAsync(ViewType.Redirect);
@@ -154,7 +160,7 @@ namespace Ctf4e.Server.Controllers
             HandleUserLogout();
 
             // Done
-            AddStatusMessage("Logout erfolgreich.", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["LogoutAsync:Success"], StatusMessageTypes.Success);
             return await RenderAsync(ViewType.Blank);
         }
 
@@ -180,7 +186,7 @@ namespace Ctf4e.Server.Controllers
             // Some input validation
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["HandleGroupSelectionAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowGroupFormAsync(groupSelection);
             }
             
@@ -204,12 +210,12 @@ namespace Ctf4e.Server.Controllers
                     .ToList();
                 if(codes.Count < groupSizeMin)
                 {
-                    AddStatusMessage($"Es wurden zu wenig Codes eingegeben. Die minimale Gruppengröße beträgt {groupSizeMin}.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["HandleGroupSelectionAsync:TooFewCodes", groupSizeMin], StatusMessageTypes.Error);
                     return await ShowGroupFormAsync(groupSelection);
                 }
                 if(codes.Count > groupSizeMax)
                 {
-                    AddStatusMessage($"Es wurden zu viele Codes eingegeben. Die maximale Gruppengröße beträgt {groupSizeMax}.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["HandleGroupSelectionAsync:TooManyCodes", groupSizeMax], StatusMessageTypes.Error);
                     return await ShowGroupFormAsync(groupSelection);
                 }
                 
@@ -225,24 +231,25 @@ namespace Ctf4e.Server.Controllers
             }
             catch(ArgumentException)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["HandleGroupSelectionAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowGroupFormAsync(groupSelection);
             }
             catch(InvalidOperationException)
             {
-                AddStatusMessage("Mindestens ein eingegebener Code ist bereits einer Gruppe zugewiesen.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["HandleGroupSelectionAsync:CodeAlreadyAssigned"], StatusMessageTypes.Error);
                 return await ShowGroupFormAsync(groupSelection);
             }
-            catch
+            catch(Exception ex)
             {
                 // Should only happen on larger database failures or when users mess around with the input model
-                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create group");
+                AddStatusMessage(_localizer["HandleGroupSelectionAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowGroupFormAsync(groupSelection);
             }
 
             // Success
-            AddStatusMessage("Gruppeneintragung erfolgreich.", StatusMessageTypes.Success);
-            AddStatusMessage("Bitte loggen Sie sich erneut über den Moodlekurs ein, um die Registrierung abzuschließen.", StatusMessageTypes.Info);
+            AddStatusMessage(_localizer["HandleGroupSelectionAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["HandleGroupSelectionAsync:SuccessInfo"], StatusMessageTypes.Info);
             return await LogoutAsync();
         }
 

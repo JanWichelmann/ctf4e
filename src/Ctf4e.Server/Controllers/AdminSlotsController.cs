@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -16,11 +18,15 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     public class AdminSlotsController : ControllerBase
     {
+        private readonly IStringLocalizer<AdminSlotsController> _localizer;
+        private readonly ILogger<AdminSlotsController> _logger;
         private readonly ISlotService _slotService;
 
-        public AdminSlotsController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
+        public AdminSlotsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminSlotsController> localizer, ILogger<AdminSlotsController> logger, ISlotService slotService)
             : base("~/Views/AdminSlots.cshtml", userService, mainOptions)
         {
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
         }
 
@@ -47,14 +53,14 @@ namespace Ctf4e.Server.Controllers
                 slot = await _slotService.GetSlotAsync(id.Value, HttpContext.RequestAborted);
                 if(slot == null)
                 {
-                    AddStatusMessage("Dieser Slot existiert nicht.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["ShowEditSlotFormAsync:NotFound"], StatusMessageTypes.Error);
                     return await RenderSlotListAsync();
                 }
             }
 
             if(slot == null)
             {
-                AddStatusMessage("Kein Slot übergeben.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["ShowEditSlotFormAsync:MissingParameter"], StatusMessageTypes.Error);
                 return await RenderSlotListAsync();
             }
 
@@ -74,7 +80,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditSlotAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditSlotFormAsync(null, slotData);
             }
 
@@ -85,11 +91,12 @@ namespace Ctf4e.Server.Controllers
                 slot.Name = slotData.Name;
                 await _slotService.UpdateSlotAsync(slot, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditSlotAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit slot");
+                AddStatusMessage(_localizer["EditSlotAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditSlotFormAsync(null, slotData);
             }
 
@@ -109,7 +116,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateSlotAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateSlotFormAsync(slotData);
             }
 
@@ -122,11 +129,12 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _slotService.CreateSlotAsync(slot, HttpContext.RequestAborted);
 
-                AddStatusMessage("Der Slot wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateSlotAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create slot");
+                AddStatusMessage(_localizer["CreateSlotAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateSlotFormAsync(slotData);
             }
 
@@ -141,13 +149,13 @@ namespace Ctf4e.Server.Controllers
             var slot = await _slotService.GetSlotAsync(id, HttpContext.RequestAborted);
             if(slot == null)
             {
-                AddStatusMessage("Dieser Slot existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteSlotAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderSlotListAsync();
             }
 
             if(slot.Groups.Any())
             {
-                AddStatusMessage("Der Slot darf keine Gruppen enthalten.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteSlotAsync:HasGroups"], StatusMessageTypes.Error);
                 return await RenderSlotListAsync();
             }
 
@@ -156,11 +164,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete slot
                 await _slotService.DeleteSlotAsync(id, HttpContext.RequestAborted);
 
-                AddStatusMessage("Der Slot wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteSlotAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete slot");
+                AddStatusMessage(_localizer["DeleteSlotAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderSlotListAsync();

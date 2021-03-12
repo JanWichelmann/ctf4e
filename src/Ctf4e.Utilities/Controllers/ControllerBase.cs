@@ -33,7 +33,7 @@ namespace Ctf4e.Utilities.Controllers
         /// <param name="model">The model being shown/edited in this view.</param>
         protected virtual IActionResult RenderView(object model = null)
         {
-            // Pass statuts messages
+            // Pass status messages
             ViewData["StatusMessages"] = _statusMessages;
 
             // Render view

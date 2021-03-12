@@ -35,7 +35,7 @@ namespace Ctf4e.Server.Controllers
             }
             catch(SecurityException)
             {
-                AddStatusMessage("Ungültiger Login.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["LoginMoodleAsync:InvalidLogin"], StatusMessageTypes.Error);
                 return await RenderAsync(ViewType.Blank);
             }
 
@@ -53,14 +53,14 @@ namespace Ctf4e.Server.Controllers
                     IsAdmin = firstUser
                 };
                 user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
-                AddStatusMessage("Account erfolgreich erstellt!", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["LoginMoodleAsync:AccountCreationSuccess"], StatusMessageTypes.Success);
             }
 
             // Sign in user
             await DoLoginAsync(user);
 
             // Done
-            AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["LoginMoodleAsync:Success"], StatusMessageTypes.Success);
             if(user.Group == null)
                 return await ShowGroupFormAsync();
             return await RenderAsync(ViewType.Redirect);

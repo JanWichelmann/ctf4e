@@ -8,6 +8,8 @@ using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Profiling;
 
@@ -18,12 +20,16 @@ namespace Ctf4e.Server.Controllers
     [Authorize]
     public class ScoreboardController : ControllerBase
     {
+        private readonly IStringLocalizer<ScoreboardController> _localizer;
+        private readonly ILogger<ScoreboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabService _labService;
 
-        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, ILabService labService)
+        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<ScoreboardController> localizer, ILogger<ScoreboardController> logger, IScoreboardService scoreboardService, ILabService labService)
             : base("~/Views/Scoreboard.cshtml", userService, mainOptions)
         {
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
@@ -53,7 +59,7 @@ namespace Ctf4e.Server.Controllers
                     scoreboard = await _scoreboardService.GetLabScoreboardAsync(labId ?? 0, HttpContext.RequestAborted, resetCache);
                     if(scoreboard == null)
                     {
-                        AddStatusMessage("Dieses Praktikum existiert nicht oder enthält keine Aufgaben.", StatusMessageTypes.Warning);
+                        AddStatusMessage(_localizer["RenderScoreboardAsync:EmptyScoreboard"], StatusMessageTypes.Warning);
                         return await RenderAsync(ViewType.Blank);
                     }
                 }

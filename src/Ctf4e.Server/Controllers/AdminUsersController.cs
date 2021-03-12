@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -17,11 +19,15 @@ namespace Ctf4e.Server.Controllers
     public class AdminUsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<AdminUsersController> _localizer;
+        private readonly ILogger<AdminUsersController> _logger;
 
-        public AdminUsersController(IUserService userService, IOptions<MainOptions> mainOptions)
+        public AdminUsersController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminUsersController> localizer, ILogger<AdminUsersController> logger)
             : base("~/Views/AdminUsers.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private Task<IActionResult> RenderAsync(ViewType viewType, object model)
@@ -47,14 +53,14 @@ namespace Ctf4e.Server.Controllers
                 user = await _userService.GetUserAsync(id.Value, HttpContext.RequestAborted);
                 if(user == null)
                 {
-                    AddStatusMessage("Dieser Benutzer existiert nicht.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["ShowEditUserFormAsync:NotFound"], StatusMessageTypes.Error);
                     return await RenderUserListAsync();
                 }
             }
 
             if(user == null)
             {
-                AddStatusMessage("Kein Benutzer übergeben.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["ShowEditUserFormAsync:MissingParameter"], StatusMessageTypes.Error);
                 return await RenderUserListAsync();
             }
 
@@ -77,7 +83,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditUserAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditUserFormAsync(null, userData);
             }
 
@@ -93,11 +99,12 @@ namespace Ctf4e.Server.Controllers
                 user.IsTutor = userData.IsTutor;
                 await _userService.UpdateUserAsync(user, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditUserAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit user");
+                AddStatusMessage(_localizer["EditUserAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditUserFormAsync(null, userData);
             }
 

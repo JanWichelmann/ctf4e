@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -16,18 +18,22 @@ namespace Ctf4e.Server.Controllers
     [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     public class AdminLabsController : ControllerBase
     {
+        private readonly IStringLocalizer<AdminLabsController> _localizer;
+        private readonly ILogger<AdminLabsController> _logger;
         private readonly ILabService _labService;
 
-        public AdminLabsController(IUserService userService, IOptions<MainOptions> mainOptions, ILabService labService)
+        public AdminLabsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminLabsController> localizer, ILogger<AdminLabsController> logger, ILabService labService)
             : base("~/Views/AdminLabs.cshtml", userService, mainOptions)
         {
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }
 
         private Task<IActionResult> RenderAsync(ViewType viewType, object model)
         {
             ViewData["ViewType"] = viewType;
-            
+
             return RenderViewAsync(MenuItems.AdminLabs, model);
         }
 
@@ -48,14 +54,14 @@ namespace Ctf4e.Server.Controllers
                 lab = await _labService.GetLabAsync(id.Value, HttpContext.RequestAborted);
                 if(lab == null)
                 {
-                    AddStatusMessage("Dieses Praktikum existiert nicht.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["ShowEditLabFormAsync:NotFound"], StatusMessageTypes.Error);
                     return await RenderLabListAsync();
                 }
             }
 
             if(lab == null)
             {
-                AddStatusMessage("Kein Praktikum übergeben.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["ShowEditLabFormAsync:MissingParameter"], StatusMessageTypes.Error);
                 return await RenderLabListAsync();
             }
 
@@ -75,7 +81,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditLabAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditLabFormAsync(null, labData);
             }
 
@@ -89,11 +95,12 @@ namespace Ctf4e.Server.Controllers
                 lab.MaxFlagPoints = labData.MaxFlagPoints;
                 await _labService.UpdateLabAsync(lab, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditLabAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit lab");
+                AddStatusMessage(_localizer["EditLabAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditLabFormAsync(null, labData);
             }
 
@@ -113,7 +120,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateLabAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateLabFormAsync(labData);
             }
 
@@ -129,11 +136,12 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _labService.CreateLabAsync(lab, HttpContext.RequestAborted);
 
-                AddStatusMessage("Das Praktikum wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateLabAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create lab");
+                AddStatusMessage(_localizer["CreateLabAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateLabFormAsync(labData);
             }
 
@@ -148,13 +156,13 @@ namespace Ctf4e.Server.Controllers
             var lab = await _labService.GetLabAsync(id, HttpContext.RequestAborted);
             if(lab == null)
             {
-                AddStatusMessage("Dieses Praktikum existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteLabAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderLabListAsync();
             }
 
             if(lab.Executions.Any())
             {
-                AddStatusMessage("Das Praktikum hat bereits einmal stattgefunden und kann somit nicht mehr gelöscht werden.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteLabAsync:HasExecutions"], StatusMessageTypes.Error);
                 return await RenderLabListAsync();
             }
 
@@ -163,11 +171,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete lab
                 await _labService.DeleteLabAsync(id, HttpContext.RequestAborted);
 
-                AddStatusMessage("Das Praktikum wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteLabAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete lab");
+                AddStatusMessage(_localizer["DeleteLabAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderLabListAsync();

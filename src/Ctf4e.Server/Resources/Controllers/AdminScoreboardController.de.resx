@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="DeleteExerciseSubmissionAsync:Success" xml:space="preserve">
+        <value>Die Aufgabeneinreichung wurde erfolgreich gelöscht.</value>
+        <comment>DeleteExerciseSubmissionAsync:Success</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionAsync:UnknownError" xml:space="preserve">
+        <value>Beim Löschen der Aufgabeneinreichung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DeleteExerciseSubmissionAsync:UnknownError</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionsAsync:Success" xml:space="preserve">
+        <value>Die Aufgabeneinreichungen wurden erfolgreich gelöscht.</value>
+        <comment>DeleteExerciseSubmissionsAsync:Success</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionsAsync:UnknownError" xml:space="preserve">
+        <value>Beim Löschen der Aufgabeneinreichungen ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DeleteExerciseSubmissionsAsync:UnknownError</comment>
+    </data>
+    <data name="CreateExerciseSubmissionAsync:Success" xml:space="preserve">
+        <value>Die Aufgabeneinreichung wurde erfolgreich erstellt.</value>
+        <comment>CreateExerciseSubmissionAsync:Success</comment>
+    </data>
+    <data name="CreateExerciseSubmissionAsync:UnknownError" xml:space="preserve">
+        <value>Beim Erstellen der Aufgabeneinreichung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>CreateExerciseSubmissionAsync:UnknownError</comment>
+    </data>
+    <data name="DeleteFlagSubmissionAsync:Success" xml:space="preserve">
+        <value>Die Flageinreichung wurde erfolgreich gelöscht.</value>
+        <comment>DeleteFlagSubmissionAsync:Success</comment>
+    </data>
+    <data name="DeleteFlagSubmissionAsync:UnknownError" xml:space="preserve">
+        <value>Beim Löschen der Flageinreichung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DeleteFlagSubmissionAsync:UnknownError</comment>
+    </data>
+    <data name="CreateFlagSubmissionAsync:Success" xml:space="preserve">
+        <value>Die Flageinreichung wurde erfolgreich erstellt.</value>
+        <comment>CreateFlagSubmissionAsync:Success</comment>
+    </data>
+    <data name="CreateFlagSubmissionAsync:UnknownError" xml:space="preserve">
+        <value>Beim Erstellen der Flageinreichung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>CreateFlagSubmissionAsync:UnknownError</comment>
+    </data>
+    <data name="UploadToMoodleAsync:Success" xml:space="preserve">
+        <value>Der Moodle-Upload wurde erfolgreich durchgeführt.</value>
+        <comment>UploadToMoodleAsync:Success</comment>
+    </data>
+    <data name="UploadToMoodleAsync:UnknownError" xml:space="preserve">
+        <value>Beim Sammeln und Hochladen der Daten ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>UploadToMoodleAsync:UnknownError</comment>
+    </data>
+    <data name="DownloadAsCsvAsync:UnknownError" xml:space="preserve">
+        <value>Beim Generieren der CSV-Datei ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DownloadAsCsvAsync:UnknownError</comment>
+    </data>
+    <data name="CallLabServerAsync:NotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+        <comment>CallLabServerAsync:NotFound</comment>
+    </data>
+</root>

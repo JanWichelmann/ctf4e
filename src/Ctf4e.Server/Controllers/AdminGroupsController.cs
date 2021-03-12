@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
@@ -8,6 +8,8 @@ using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -17,12 +19,16 @@ namespace Ctf4e.Server.Controllers
     public class AdminGroupsController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<AdminGroupsController> _localizer;
+        private readonly ILogger<AdminGroupsController> _logger;
         private readonly ISlotService _slotService;
 
-        public AdminGroupsController(IUserService userService, IOptions<MainOptions> mainOptions, ISlotService slotService)
+        public AdminGroupsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminGroupsController> localizer, ILogger<AdminGroupsController> logger, ISlotService slotService)
             : base("~/Views/AdminGroups.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
         }
 
@@ -49,14 +55,14 @@ namespace Ctf4e.Server.Controllers
                 group = await _userService.GetGroupAsync(id.Value, HttpContext.RequestAborted);
                 if(group == null)
                 {
-                    AddStatusMessage("Diese Gruppe existiert nicht.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["ShowEditGroupFormAsync:NotFound"], StatusMessageTypes.Error);
                     return await RenderGroupListAsync();
                 }
             }
 
             if(group == null)
             {
-                AddStatusMessage("Keine Gruppe übergeben.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["ShowEditGroupFormAsync:MissingParameter"], StatusMessageTypes.Error);
                 return await RenderGroupListAsync();
             }
 
@@ -79,7 +85,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditGroupAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditGroupFormAsync(null, groupData);
             }
 
@@ -92,11 +98,12 @@ namespace Ctf4e.Server.Controllers
                 group.ShowInScoreboard = groupData.ShowInScoreboard;
                 await _userService.UpdateGroupAsync(group, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditGroupAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit group");
+                AddStatusMessage(_localizer["EditGroupAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditGroupFormAsync(null, groupData);
             }
 
@@ -119,7 +126,7 @@ namespace Ctf4e.Server.Controllers
             // Check input
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateGroupAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateGroupFormAsync(groupData);
             }
 
@@ -134,11 +141,12 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _userService.CreateGroupAsync(group, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Gruppe wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateGroupAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create group");
+                AddStatusMessage(_localizer["CreateGroupAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateGroupFormAsync(groupData);
             }
 
@@ -153,13 +161,13 @@ namespace Ctf4e.Server.Controllers
             var group = await _userService.GetGroupAsync(id, HttpContext.RequestAborted);
             if(group == null)
             {
-                AddStatusMessage("Diese Gruppe existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteGroupAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderGroupListAsync();
             }
 
             if(group.Members.Any())
             {
-                AddStatusMessage("Die Gruppe muss leer sein, bevor sie gelöscht werden kann.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteGroupAsync:GroupNotEmpty"], StatusMessageTypes.Error);
                 return await RenderGroupListAsync();
             }
 
@@ -168,11 +176,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete group
                 await _userService.DeleteGroupAsync(id, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Gruppe wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteGroupAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete group");
+                AddStatusMessage(_localizer["DeleteGroupAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderGroupListAsync();

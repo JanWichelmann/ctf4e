@@ -43,8 +43,8 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        ///     Updates the internal current user variable.
-        ///     Internal method, only to be called on login due to the still unset session variable.
+        /// Updates the internal current user variable.
+        /// Internal method, only to be called on login due to the still unset session variable.
         /// </summary>
         /// <param name="userId">The ID of the currently logged in user.</param>
         /// <returns></returns>
@@ -54,8 +54,8 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        ///     Clears the internal current user variable.
-        ///     Internal method, only to be called on logout due to the still set session variable.
+        /// Clears the internal current user variable.
+        /// Internal method, only to be called on logout due to the still set session variable.
         /// </summary>
         /// <returns></returns>
         protected void HandleUserLogout()
@@ -65,7 +65,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        ///     Updates the internal current user variable.
+        /// Updates the internal current user variable.
         /// </summary>
         /// <returns></returns>
         private async Task ReadCurrentUserFromSessionAsync()
@@ -81,7 +81,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        ///     Returns the user data of the currently authenticated user.
+        /// Returns the user data of the currently authenticated user.
         /// </summary>
         /// <returns></returns>
         protected async Task<User> GetCurrentUserAsync()
@@ -95,7 +95,7 @@ namespace Ctf4e.Server.Controllers
         }
 
         /// <summary>
-        ///     Passes some global variables to the template engine and renders the previously specified view.
+        /// Passes some global variables to the template engine and renders the previously specified view.
         /// </summary>
         /// <param name="activeMenuItem">The page to be shown as "active" in the menu.</param>
         /// <param name="model">The model being shown/edited in this view.</param>

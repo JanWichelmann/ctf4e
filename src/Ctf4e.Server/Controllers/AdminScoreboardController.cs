@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 // TODO cleanup dependencies (too many rarely used services)
@@ -22,6 +24,8 @@ namespace Ctf4e.Server.Controllers
     public class AdminScoreboardController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<AdminScoreboardController> _localizer;
+        private readonly ILogger<AdminScoreboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
         private readonly IExerciseService _exerciseService;
         private readonly IFlagService _flagService;
@@ -30,12 +34,14 @@ namespace Ctf4e.Server.Controllers
         private readonly ICsvService _csvService;
         private readonly ILabExecutionService _labExecutionService;
 
-        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IScoreboardService scoreboardService, IExerciseService exerciseService,
+        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminScoreboardController> localizer, ILogger<AdminScoreboardController> logger, IScoreboardService scoreboardService, IExerciseService exerciseService,
                                          IFlagService flagService, ILabService labService, IMoodleService moodleService, ICsvService csvService,
                                          ILabExecutionService labExecutionService)
             : base("~/Views/AdminScoreboard.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
@@ -79,11 +85,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete submission
                 await _exerciseService.DeleteExerciseSubmissionAsync(submissionId, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Aufgabeneinreichung wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteExerciseSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete exercise submission");
+                AddStatusMessage(_localizer["DeleteExerciseSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -99,11 +106,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete submissions
                 await _exerciseService.DeleteExerciseSubmissionsAsync(submissionIds, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Aufgabeneinreichungen wurden erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteExerciseSubmissionsAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete exercise submissions");
+                AddStatusMessage(_localizer["DeleteExerciseSubmissionsAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -127,11 +135,12 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Aufgabeneinreichung wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateExerciseSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create exercise submission");
+                AddStatusMessage(_localizer["CreateExerciseSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -147,11 +156,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete submission
                 await _flagService.DeleteFlagSubmissionAsync(userId, flagId, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Flageinreichung wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteFlagSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete flag submission");
+                AddStatusMessage(_localizer["DeleteFlagSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -173,11 +183,12 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _flagService.CreateFlagSubmissionAsync(submission, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Flageinreichung wurde erfolgreich erstellt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateFlagSubmissionAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create flag submission");
+                AddStatusMessage(_localizer["CreateFlagSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(labId, slotId);
@@ -190,7 +201,7 @@ namespace Ctf4e.Server.Controllers
             var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
             if(lab == null)
             {
-                AddStatusMessage("Das angegebene Praktikum konnte nicht abgerufen werden.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CallLabServerAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderViewAsync();
             }
 
@@ -223,11 +234,12 @@ namespace Ctf4e.Server.Controllers
             {
                 await _moodleService.UploadStateToMoodleAsync(HttpContext.RequestAborted);
 
-                AddStatusMessage("Hochladen der Ergebnisse in den Moodle-Kurs erfolgreich.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["UploadToMoodleAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Upload to Moodle");
+                AddStatusMessage(_localizer["UploadToMoodleAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(0, 0);
@@ -244,7 +256,8 @@ namespace Ctf4e.Server.Controllers
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Download as CSV");
+                AddStatusMessage(_localizer["DownloadAsCsvAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderAsync(0, 0);

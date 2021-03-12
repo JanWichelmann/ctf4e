@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ShowEditLabFormAsync:NotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+        <comment>ShowEditLabFormAsync:NotFound</comment>
+    </data>
+    <data name="ShowEditLabFormAsync:MissingParameter" xml:space="preserve">
+        <value>Es wurde kein Praktikum angegeben.</value>
+        <comment>ShowEditLabFormAsync:MissingParameter</comment>
+    </data>
+    <data name="EditLabAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>EditLabAsync:InvalidInput</comment>
+    </data>
+    <data name="EditLabAsync:Success" xml:space="preserve">
+        <value>Das Praktikum wurde erfolgreich aktualisiert.</value>
+        <comment>EditLabAsync:Success</comment>
+    </data>
+    <data name="EditLabAsync:UnknownError" xml:space="preserve">
+        <value>Beim Aktualisieren des Praktikums ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>EditLabAsync:UnknownError</comment>
+    </data>
+    <data name="CreateLabAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>CreateLabAsync:InvalidInput</comment>
+    </data>
+    <data name="CreateLabAsync:Success" xml:space="preserve">
+        <value>Das Praktikum wurde erfolgreich erstellt.</value>
+        <comment>CreateLabAsync:Success</comment>
+    </data>
+    <data name="CreateLabAsync:UnknownError" xml:space="preserve">
+        <value>Beim Erstellen des Praktikums ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>CreateLabAsync:UnknownError</comment>
+    </data>
+    <data name="DeleteLabAsync:NotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+        <comment>DeleteLabAsync:NotFound</comment>
+    </data>
+    <data name="DeleteLabAsync:Success" xml:space="preserve">
+        <value>Das Praktikum wurde erfolgreich gelöscht.</value>
+        <comment>DeleteLabAsync:Success</comment>
+    </data>
+    <data name="DeleteLabAsync:UnknownError" xml:space="preserve">
+        <value>Beim Löschen des Praktikums ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DeleteLabAsync:UnknownError</comment>
+    </data>
+    <data name="DeleteLabAsync:HasExecutions" xml:space="preserve">
+        <value>Das Praktikum hat bereits einmal stattgefunden und kann somit nicht mehr gelöscht werden.</value>
+        <comment>DeleteLabAsync:HasExecutions</comment>
+    </data>
+</root>

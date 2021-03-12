@@ -8,6 +8,8 @@ using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -17,12 +19,16 @@ namespace Ctf4e.Server.Controllers
     public class AdminConfigurationController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<AdminConfigurationController> _localizer;
+        private readonly ILogger<AdminConfigurationController> _logger;
         private readonly IConfigurationService _configurationService;
 
-        public AdminConfigurationController(IUserService userService, IOptions<MainOptions> mainOptions, IConfigurationService configurationService)
+        public AdminConfigurationController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminConfigurationController> localizer, ILogger<AdminConfigurationController> logger, IConfigurationService configurationService)
             : base("~/Views/AdminConfiguration.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
         }
 
@@ -60,7 +66,7 @@ namespace Ctf4e.Server.Controllers
         {
             if(!ModelState.IsValid)
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["UpdateConfigAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await RenderAsync(configurationData);
             }
 
@@ -97,11 +103,12 @@ namespace Ctf4e.Server.Controllers
 
                 await _configurationService.SetGroupSelectionPageTextAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Konfiguration wurde erfolgreich aktualisiert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["UpdateConfigAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Update configuration");
+                AddStatusMessage(_localizer["UpdateConfigAsync:UnknownError"], StatusMessageTypes.Error);
                 return await RenderAsync(configurationData);
             }
 

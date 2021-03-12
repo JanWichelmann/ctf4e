@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
@@ -9,6 +9,8 @@ using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
@@ -18,14 +20,18 @@ namespace Ctf4e.Server.Controllers
     public class AdminLabExecutionsController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IStringLocalizer<AdminLabExecutionsController> _localizer;
+        private readonly ILogger<AdminLabExecutionsController> _logger;
         private readonly ILabExecutionService _labExecutionService;
         private readonly ISlotService _slotService;
         private readonly ILabService _labService;
 
-        public AdminLabExecutionsController(IUserService userService, IOptions<MainOptions> mainOptions, ILabExecutionService labExecutionService, ISlotService slotService, ILabService labService)
+        public AdminLabExecutionsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminLabExecutionsController> localizer, ILogger<AdminLabExecutionsController> logger, ILabExecutionService labExecutionService, ISlotService slotService, ILabService labService)
             : base("~/Views/AdminLabExecutions.cshtml", userService, mainOptions)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
             _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
@@ -59,14 +65,14 @@ namespace Ctf4e.Server.Controllers
                 };
                 if(labExecutionData.LabExecution == null)
                 {
-                    AddStatusMessage("Diese Ausführung existiert nicht.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["ShowEditLabExecutionFormAsync:NotFound"], StatusMessageTypes.Error);
                     return await RenderLabExecutionListAsync();
                 }
             }
 
             if(labExecutionData?.LabExecution == null)
             {
-                AddStatusMessage("Keine Ausführung übergeben.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["ShowEditLabExecutionFormAsync:MissingParameter"], StatusMessageTypes.Error);
                 return await RenderLabExecutionListAsync();
             }
 
@@ -77,9 +83,7 @@ namespace Ctf4e.Server.Controllers
         public Task<IActionResult> ShowEditLabExecutionFormAsync(int groupId, int labId)
         {
             // Always show warning
-            AddStatusMessage("Achtung: Das Bearbeiten einer bereits aktiven Praktikumsausführung kann zu Änderungen des \"Bestanden\"-Status und Verschiebungen im Scoreboard führen. "
-                             + "Aufgaben- und Flag-Einreichungen werden nicht gelöscht, auch wenn diese bezüglich der neuen Beginn- und Endzeiten nicht möglich gewesen wären.",
-                             StatusMessageTypes.Warning);
+            AddStatusMessage(_localizer["ShowEditLabExecutionFormAsync:Warning"], StatusMessageTypes.Warning);
 
             return ShowEditLabExecutionFormAsync(groupId, labId, null);
         }
@@ -92,7 +96,7 @@ namespace Ctf4e.Server.Controllers
             if(!ModelState.IsValid || !(labExecutionData.LabExecution.PreStart < labExecutionData.LabExecution.Start &&
                                         labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["EditLabExecutionAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowEditLabExecutionFormAsync(null, null, labExecutionData);
             }
 
@@ -105,11 +109,12 @@ namespace Ctf4e.Server.Controllers
                 labExecution.End = labExecutionData.LabExecution.End;
                 await _labExecutionService.UpdateLabExecutionAsync(labExecution, HttpContext.RequestAborted);
 
-                AddStatusMessage("Änderungen gespeichert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["EditLabExecutionAsync:Success"], StatusMessageTypes.Success);
             }
             catch(InvalidOperationException ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Edit lab execution");
+                AddStatusMessage(_localizer["EditLabExecutionAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowEditLabExecutionFormAsync(null, null, labExecutionData);
             }
 
@@ -137,13 +142,14 @@ namespace Ctf4e.Server.Controllers
                || !(labExecutionData.LabExecution.PreStart < labExecutionData.LabExecution.Start &&
                     labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateLabExecutionForSlotFormAsync(labExecutionData);
             }
 
             try
             {
                 // Start lab for each of the groups
+                // TODO properly check overrides: right now we throw a warning for all groups with existing executions
                 foreach(var group in await _userService.GetGroupsInSlotAsync(labExecutionData.SlotId).ToListAsync())
                 {
                     try
@@ -158,17 +164,19 @@ namespace Ctf4e.Server.Controllers
                         };
                         await _labExecutionService.CreateLabExecutionAsync(labExecution, labExecutionData.OverrideExisting, HttpContext.RequestAborted);
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        AddStatusMessage($"Konnte Praktikum für Gruppe #{group.Id} ({group.DisplayName}) nicht starten. Ist es für diese Gruppe bereits gestartet?", StatusMessageTypes.Warning);
+                        _logger.LogError(ex, "Create lab execution for group in slot");
+                        AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:ErrorGroup", group.Id, group.DisplayName], StatusMessageTypes.Warning);
                     }
                 }
 
-                AddStatusMessage("Das Praktikum wurde erfolgreich für alle Gruppen im angegebenen Slot gestartet.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:Success"], StatusMessageTypes.Success);
             }
-            catch(InvalidOperationException ex)
+            catch(Exception ex)
             {
-                AddStatusMessage(ex.Message, StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create lab execution for slot");
+                AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateLabExecutionForSlotFormAsync(labExecutionData);
             }
 
@@ -196,7 +204,7 @@ namespace Ctf4e.Server.Controllers
                || !(labExecutionData.LabExecution.PreStart < labExecutionData.LabExecution.Start &&
                     labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
             {
-                AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await ShowCreateLabExecutionForGroupFormAsync(labExecutionData);
             }
 
@@ -213,11 +221,12 @@ namespace Ctf4e.Server.Controllers
                 };
                 await _labExecutionService.CreateLabExecutionAsync(labExecution, labExecutionData.OverrideExisting, HttpContext.RequestAborted);
 
-                AddStatusMessage("Das Praktikum wurde erfolgreich für die angegebene Gruppe gestartet.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:Success"], StatusMessageTypes.Success);
             }
-            catch
+            catch(Exception ex)
             {
-                AddStatusMessage($"Konnte Praktikum für Gruppe #{labExecutionData.LabExecution.GroupId} nicht starten. Ist es für diese Gruppe bereits gestartet?", StatusMessageTypes.Error);
+                _logger.LogError(ex, "Create lab execution for group");
+                AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:UnknownError"], StatusMessageTypes.Error);
                 return await ShowCreateLabExecutionForGroupFormAsync(labExecutionData);
             }
 
@@ -232,7 +241,7 @@ namespace Ctf4e.Server.Controllers
             var labExecution = await _labExecutionService.GetLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
             if(labExecution == null)
             {
-                AddStatusMessage("Diese Ausführung existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderLabExecutionListAsync();
             }
 
@@ -241,11 +250,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete execution
                 await _labExecutionService.DeleteLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Ausführung wurde erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete lab execution for group");
+                AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderLabExecutionListAsync();
@@ -260,11 +270,12 @@ namespace Ctf4e.Server.Controllers
                 // Delete all executions for the given slot
                 await _labExecutionService.DeleteLabExecutionsForSlotAsync(slotId, labId, HttpContext.RequestAborted);
 
-                AddStatusMessage("Die Ausführungen wurden erfolgreich gelöscht.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["DeleteLabExecutionForSlotAsync:Success"], StatusMessageTypes.Success);
             }
             catch(Exception ex)
             {
-                AddStatusMessage(ex.ToString(), StatusMessageTypes.Error);
+                _logger.LogError(ex, "Delete lab execution for slot");
+                AddStatusMessage(_localizer["DeleteLabExecutionForSlotAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
             return await RenderLabExecutionListAsync();
