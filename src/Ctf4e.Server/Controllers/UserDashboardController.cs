@@ -3,14 +3,11 @@ using System.Threading.Tasks;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
 using Ctf4e.Server.Constants;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -19,17 +16,15 @@ namespace Ctf4e.Server.Controllers
     public class UserDashboardController : ControllerBase
     {
         private readonly IStringLocalizer<UserDashboardController> _localizer;
-        private readonly ILogger<UserDashboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabExecutionService _labExecutionService;
         private readonly IFlagService _flagService;
         private readonly ILabService _labService;
 
-        public UserDashboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<UserDashboardController> localizer, ILogger<UserDashboardController> logger, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
-            : base("~/Views/UserDashboard.cshtml", userService, mainOptions)
+        public UserDashboardController(IUserService userService, IStringLocalizer<UserDashboardController> localizer, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
+            : base("~/Views/UserDashboard.cshtml", userService)
         {
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
             _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));

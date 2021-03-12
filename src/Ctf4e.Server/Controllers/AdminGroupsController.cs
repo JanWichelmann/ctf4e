@@ -3,14 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -23,8 +21,8 @@ namespace Ctf4e.Server.Controllers
         private readonly ILogger<AdminGroupsController> _logger;
         private readonly ISlotService _slotService;
 
-        public AdminGroupsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminGroupsController> localizer, ILogger<AdminGroupsController> logger, ISlotService slotService)
-            : base("~/Views/AdminGroups.cshtml", userService, mainOptions)
+        public AdminGroupsController(IUserService userService, IStringLocalizer<AdminGroupsController> localizer, ILogger<AdminGroupsController> logger, ISlotService slotService)
+            : base("~/Views/AdminGroups.cshtml", userService)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));

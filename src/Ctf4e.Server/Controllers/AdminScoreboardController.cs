@@ -6,7 +6,6 @@ using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
@@ -14,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -27,8 +25,8 @@ namespace Ctf4e.Server.Controllers
         private readonly ILogger<AdminScoreboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
 
-        public AdminScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminScoreboardController> localizer, ILogger<AdminScoreboardController> logger, IScoreboardService scoreboardService)
-            : base("~/Views/AdminScoreboard.cshtml", userService, mainOptions)
+        public AdminScoreboardController(IUserService userService, IStringLocalizer<AdminScoreboardController> localizer, ILogger<AdminScoreboardController> logger, IScoreboardService scoreboardService)
+            : base("~/Views/AdminScoreboard.cshtml", userService)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));

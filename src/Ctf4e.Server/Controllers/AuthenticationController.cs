@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
@@ -17,7 +16,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -32,8 +30,8 @@ namespace Ctf4e.Server.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IServiceProvider _serviceProvider;
 
-        public AuthenticationController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AuthenticationController> localizer, ILogger<AuthenticationController> logger, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment, IServiceProvider serviceProvider)
-            : base("~/Views/Authentication.cshtml", userService, mainOptions)
+        public AuthenticationController(IUserService userService, IStringLocalizer<AuthenticationController> localizer, ILogger<AuthenticationController> logger, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment, IServiceProvider serviceProvider)
+            : base("~/Views/Authentication.cshtml", userService)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));

@@ -2,15 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using StackExchange.Profiling;
 
 namespace Ctf4e.Server.Controllers
@@ -21,15 +18,13 @@ namespace Ctf4e.Server.Controllers
     public class ScoreboardController : ControllerBase
     {
         private readonly IStringLocalizer<ScoreboardController> _localizer;
-        private readonly ILogger<ScoreboardController> _logger;
         private readonly IScoreboardService _scoreboardService;
         private readonly ILabService _labService;
 
-        public ScoreboardController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<ScoreboardController> localizer, ILogger<ScoreboardController> logger, IScoreboardService scoreboardService, ILabService labService)
-            : base("~/Views/Scoreboard.cshtml", userService, mainOptions)
+        public ScoreboardController(IUserService userService, IStringLocalizer<ScoreboardController> localizer, IScoreboardService scoreboardService, ILabService labService)
+            : base("~/Views/Scoreboard.cshtml", userService)
         {
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
             _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         }

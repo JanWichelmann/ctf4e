@@ -3,14 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -23,8 +21,8 @@ namespace Ctf4e.Server.Controllers
         private readonly IFlagService _flagService;
         private readonly ILabService _labService;
 
-        public AdminFlagsController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminFlagsController> localizer, ILogger<AdminFlagsController> logger, IFlagService flagService, ILabService labService)
-            : base("~/Views/AdminFlags.cshtml", userService, mainOptions)
+        public AdminFlagsController(IUserService userService, IStringLocalizer<AdminFlagsController> localizer, ILogger<AdminFlagsController> logger, IFlagService flagService, ILabService labService)
+            : base("~/Views/AdminFlags.cshtml", userService)
         {
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

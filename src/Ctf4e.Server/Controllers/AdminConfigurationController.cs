@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -23,8 +21,8 @@ namespace Ctf4e.Server.Controllers
         private readonly ILogger<AdminConfigurationController> _logger;
         private readonly IConfigurationService _configurationService;
 
-        public AdminConfigurationController(IUserService userService, IOptions<MainOptions> mainOptions, IStringLocalizer<AdminConfigurationController> localizer, ILogger<AdminConfigurationController> logger, IConfigurationService configurationService)
-            : base("~/Views/AdminConfiguration.cshtml", userService, mainOptions)
+        public AdminConfigurationController(IUserService userService, IStringLocalizer<AdminConfigurationController> localizer, ILogger<AdminConfigurationController> logger, IConfigurationService configurationService)
+            : base("~/Views/AdminConfiguration.cshtml", userService)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));

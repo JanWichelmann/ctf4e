@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using Ctf4e.Server.Attributes;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
-using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.Server.Controllers
 {
@@ -24,15 +22,13 @@ namespace Ctf4e.Server.Controllers
         private static string _buildId = null;
 
         private readonly IUserService _userService;
-        private readonly IOptions<MainOptions> _mainOptions;
         private User _currentUser = null;
         private bool _currentUserHasLoggedOut = false;
 
-        protected ControllerBase(string viewPath, IUserService userService, IOptions<MainOptions> mainOptions)
+        protected ControllerBase(string viewPath, IUserService userService)
             : base(viewPath)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-            _mainOptions = mainOptions ?? throw new ArgumentNullException(nameof(mainOptions));
 
             if(_buildId == null)
             {
@@ -109,13 +105,12 @@ namespace Ctf4e.Server.Controllers
             ViewData["ActiveMenuItem"] = activeMenuItem;
 
             // Page title
-            // TODO use dependency injection?
-            var configService = HttpContext.RequestServices.GetService<IConfigurationService>();
+            // Request service manually, to avoid injecting too many services in constructors of derived classes
+            var configService = HttpContext.RequestServices.GetService<IConfigurationService>() ?? throw new Exception("Could not retrieve configuration service.");
             ViewData["PageTitle"] = await configService.GetPageTitleAsync();
             ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync();
 
             // Other render data
-            ViewData["DevelopmentMode"] = _mainOptions.Value.DevelopmentMode;
             ViewData["BuildId"] = _buildId;
 
             // Render view

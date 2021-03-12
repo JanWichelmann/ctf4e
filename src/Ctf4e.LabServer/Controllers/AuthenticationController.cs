@@ -15,7 +15,6 @@ using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.LabServer.Controllers
 {
@@ -25,16 +24,14 @@ namespace Ctf4e.LabServer.Controllers
         private readonly ICryptoService _cryptoService;
         private readonly IStateService _stateService;
         private readonly IStringLocalizer<AuthenticationController> _localizer;
-        private readonly ILogger<AuthenticationController> _logger;
 
         public AuthenticationController(ICryptoService cryptoService, IStateService stateService, IOptionsSnapshot<LabOptions> labOptions,
-                                        ILabConfigurationService labConfiguration, IStringLocalizer<AuthenticationController> localizer, ILogger<AuthenticationController> logger)
+                                        ILabConfigurationService labConfiguration, IStringLocalizer<AuthenticationController> localizer)
             : base("~/Views/Authentication.cshtml", labOptions, labConfiguration)
         {
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
             _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private IActionResult Render(ViewType viewType, object model = null)

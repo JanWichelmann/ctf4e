@@ -1,8 +1,11 @@
 ﻿@using Ctf4e.Server.Constants
 @using Ctf4e.Server.Models
+@using Ctf4e.Server.Options
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
 @inject IViewLocalizer Localizer
+@inject IOptionsSnapshot<MainOptions> MainOptions
 @{
     // Retrieve status messages
     var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
@@ -31,9 +34,6 @@
 
     // Build ID
     var buildId = (string)ViewData["BuildId"];
-
-    // Development mode
-    var devMode = (bool)ViewData["DevelopmentMode"];
 }
 <!DOCTYPE html>
 <html lang="de">
@@ -275,7 +275,7 @@
                     <span>&middot;</span>
                 </div>
                 <div>
-                    @if(devMode && currentUser != null && currentUser.IsAdmin)
+                    @if(MainOptions.Value.DevelopmentMode && currentUser != null && currentUser.IsAdmin)
                     {
                         <a class="link-footer" href="~/dev/profiler/results-index" target="_blank">Profiler</a>
                         <span>&middot;</span>
