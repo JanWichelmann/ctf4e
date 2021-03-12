@@ -131,6 +131,9 @@ namespace Ctf4e.LabServer
             if(_labOptions.DevelopmentMode)
                 app.UseDeveloperExceptionPage();
             
+            // Simple status code pages
+            app.UseStatusCodePages();
+            
             // Serve static files from wwwroot/
             app.UseStaticFiles();
 

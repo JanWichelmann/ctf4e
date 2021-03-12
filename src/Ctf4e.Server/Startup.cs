@@ -206,6 +206,9 @@ namespace Ctf4e.Server
             // Verbose stack traces
             if(_mainOptions.DevelopmentMode)
                 app.UseDeveloperExceptionPage();
+            
+            // Simple status code pages
+            app.UseStatusCodePages();
 
             // Serve static files from wwwroot/
             app.UseStaticFiles();
