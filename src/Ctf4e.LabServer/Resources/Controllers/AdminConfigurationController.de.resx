@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="RenderAsync:ConfigNonWritable" xml:space="preserve">
+        <value>Für die Konfigurationsdatei sind keine Schreibrechte gesetzt. Diese kann daher nur gelesen, aber nicht verändert werden.</value>
+        <comment>RenderAsync:ConfigNonWritable</comment>
+    </data>
+    <data name="RenderAsync:UnknownError" xml:space="preserve">
+        <value>Beim Lesen der Konfigurationsdatei ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>RenderAsync:UnknownError</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:DuplicateExerciseId" xml:space="preserve">
+        <value>Doppelte Aufgabe-ID: {0}</value>
+        <comment>UpdateConfigurationAsync:DuplicateExerciseId</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:ErrorParsingNewConfig" xml:space="preserve">
+        <value>Konnte neue Konfiguration nicht parsen. Ist das JSON gültig? Weitere Details finden sich im Log.</value>
+        <comment>UpdateConfigurationAsync:ErrorParsingNewConfig</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:Error" xml:space="preserve">
+        <value>Bei der Validierung sind Fehler aufgetreten. Die neue Konfiguration wurde nicht gespeichert.</value>
+        <comment>UpdateConfigurationAsync:Error</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:Success" xml:space="preserve">
+        <value>Die Konfiguration wurde erfolgreich aktualisiert.</value>
+        <comment>UpdateConfigurationAsync:Success</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:UnknownError" xml:space="preserve">
+        <value>Beim Aktualisieren der Konfiguration ist ein Fehler aufgetreten. Möglicherweise ist das System jetzt in einem inkonsistenten Zustand. Es wird empfohlen, die aktuelle Konfiguration zu prüfen und einen Neustart durchzuführen. Weitere Details finden sich im Log.</value>
+        <comment>UpdateConfigurationAsync:UnknownError</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:ValidationError" xml:space="preserve">
+        <value>Bei der Validierung wurde ein Fehler erkannt: {0}</value>
+        <comment>UpdateConfigurationAsync:ValidationError</comment>
+    </data>
+</root>

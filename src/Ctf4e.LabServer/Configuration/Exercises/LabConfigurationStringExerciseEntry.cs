@@ -31,7 +31,7 @@ namespace Ctf4e.LabServer.Configuration.Exercises
             // There must be at least one solution
             if(!ValidSolutions.Any())
             {
-                error = $"Für die Aufgabe \"{Title}\" (#{Id}) existieren keine Lösungen.";
+                error = $"Exercise \"{Title}\" (#{Id}): There are no solutions.";
                 return false;
             }
 
@@ -43,13 +43,13 @@ namespace Ctf4e.LabServer.Configuration.Exercises
                 {
                     if(solution.Name == null)
                     {
-                        error = $"Für die Lösung \"{solution.Value}\" in Aufgabe \"{Title}\" (#{Id}) wurde kein Name festgelegt.";
+                        error = $"Solution \"{solution.Value}\" for exercise \"{Title}\" (#{Id}): Missing name.";
                         return false;
                     }
 
                     if(solutionNames.Contains(solution.Name))
                     {
-                        error = $"Der Name der Lösung \"{solution.Value}\" in Aufgabe \"{Title}\" (#{Id}) ist nicht eindeutig.";
+                        error = $"Exercise \"{Title}\" (#{Id}): The solution name \"{solution.Value}\" is ambiguous.";
                         return false;
                     }
 

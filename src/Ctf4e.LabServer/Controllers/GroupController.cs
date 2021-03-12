@@ -11,6 +11,7 @@ using Ctf4e.LabServer.InputModels;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.LabServer.Controllers
@@ -23,14 +24,16 @@ namespace Ctf4e.LabServer.Controllers
         private readonly IStateService _stateService;
         private readonly ICtfApiClient _ctfApiClient;
         private readonly ILabConfigurationService _labConfiguration;
+        private readonly IStringLocalizer<GroupController> _localizer;
         private readonly ILogger<GroupController> _logger;
 
-        public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, ILogger<GroupController> logger)
+        public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, IStringLocalizer<GroupController> localizer, ILogger<GroupController> logger)
             : base("~/Views/Group.cshtml", labOptions, labConfiguration)
         {
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
             _ctfApiClient = ctfApiClient ?? throw new ArgumentNullException(nameof(ctfApiClient));
             _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -89,24 +92,24 @@ namespace Ctf4e.LabServer.Controllers
                 
                 if(!ModelState.IsValid)
                 {
-                    AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["CheckStringInputAsync:InvalidInput"], StatusMessageTypes.Error);
                     return await RenderAsync();
                 }
                 
                 // Check input
                 if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
                 {
-                    AddStatusMessage("Diese Lösung ist nicht korrekt.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["CheckStringInputAsync:Wrong"], StatusMessageTypes.Error);
                     return await RenderAsync();
                 }
 
-                AddStatusMessage("Die Aufgabe wurde korrekt gelöst!", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CheckStringInputAsync:Success"], StatusMessageTypes.Success);
                 return await RenderAsync();
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
-                _logger.LogError(ex, "An error occured during evaluation of a solution attempt");
+                _logger.LogError(ex, "Check string input");
+                AddStatusMessage(_localizer["CheckStringInputAsync:UnknownError"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
         }
@@ -121,24 +124,24 @@ namespace Ctf4e.LabServer.Controllers
                 
                 if(!ModelState.IsValid)
                 {
-                    AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:InvalidInput"], StatusMessageTypes.Error);
                     return await RenderAsync();
                 }
                 
                 // Check input
                 if(!await CheckInputAsync(inputData.ExerciseId, inputData.SelectedOptions))
                 {
-                    AddStatusMessage("Diese Lösung ist nicht korrekt.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:Wrong"], StatusMessageTypes.Error);
                     return await RenderAsync();
                 }
 
-                AddStatusMessage("Die Aufgabe wurde korrekt gelöst!", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:Success"], StatusMessageTypes.Success);
                 return await RenderAsync();
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
-                _logger.LogError(ex, "An error occured during evaluation of a solution attempt");
+                _logger.LogError(ex, "Check multiple choice input");
+                AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:UnknownError"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
         }
@@ -153,24 +156,24 @@ namespace Ctf4e.LabServer.Controllers
                 
                 if(!ModelState.IsValid)
                 {
-                    AddStatusMessage("Ungültige Eingabe.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["CheckScriptInputAsync:InvalidInput"], StatusMessageTypes.Error);
                     return await RenderAsync();
                 }
                 
                 // Check input
                 if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
                 {
-                    AddStatusMessage("Diese Lösung ist nicht korrekt.", StatusMessageTypes.Error);
+                    AddStatusMessage(_localizer["CheckScriptInputAsync:Wrong"], StatusMessageTypes.Error);
                     return await RenderAsync();
                 }
 
-                AddStatusMessage("Die Aufgabe wurde korrekt gelöst!", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["CheckScriptInputAsync:Success"], StatusMessageTypes.Success);
                 return await RenderAsync();
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Ein Fehler ist aufgetreten.", StatusMessageTypes.Error);
-                _logger.LogError(ex, "An error occured during evaluation of a solution attempt");
+                _logger.LogError(ex, "Check script input");
+                AddStatusMessage(_localizer["CheckScriptInputAsync:UnknownError"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
         }
@@ -202,18 +205,18 @@ namespace Ctf4e.LabServer.Controllers
                     });
                 }
 
-                AddStatusMessage("Die Aufgabe wurde erfolgreich als gelöst markiert.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:Success"], StatusMessageTypes.Success);
                 return await RenderAsync();
             }
             catch(ArgumentException)
             {
-                AddStatusMessage("Diese Aufgabe existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Ein Fehler ist aufgetreten: " + ex.Message, StatusMessageTypes.Error);
-                _logger.LogError(ex, "Could not mark exercise as solved");
+                _logger.LogError(ex, "Mark exercise as solved");
+                AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:UnknownError"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
         }
@@ -231,18 +234,18 @@ namespace Ctf4e.LabServer.Controllers
                 // Reset status
                 await _stateService.ResetExerciseStatusAsync(exerciseId, userId);
 
-                AddStatusMessage("Die Aufgabe wurde erfolgreich zurückgesetzt.", StatusMessageTypes.Success);
+                AddStatusMessage(_localizer["ResetExerciseStatusAsync:Success"], StatusMessageTypes.Success);
                 return await RenderAsync();
             }
             catch(ArgumentException)
             {
-                AddStatusMessage("Diese Aufgabe existiert nicht.", StatusMessageTypes.Error);
+                AddStatusMessage(_localizer["ResetExerciseStatusAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
             catch(Exception ex)
             {
-                AddStatusMessage("Ein Fehler ist aufgetreten: " + ex.Message, StatusMessageTypes.Error);
-                _logger.LogError(ex, "Could not reset exercise");
+                _logger.LogError(ex, "Reset exercise");
+                AddStatusMessage(_localizer["ResetExerciseStatusAsync:UnknownError"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
         }

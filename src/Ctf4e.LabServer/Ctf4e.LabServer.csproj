@@ -67,6 +67,30 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Group.de.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfigurationController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfigurationController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\GroupController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GroupController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\GroupController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GroupController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -109,6 +133,36 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Group.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminConfigurationController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfigurationController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AdminConfigurationController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AdminConfigurationController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AuthenticationController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuthenticationController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\AuthenticationController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AuthenticationController.de.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\GroupController.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GroupController.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Controllers\GroupController.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>GroupController.de.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

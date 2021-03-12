@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CheckStringInputAsync:UnknownError" xml:space="preserve">
+        <value>Ein Fehler ist aufgetreten.</value>
+        <comment>CheckStringInputAsync:UnknownError</comment>
+    </data>
+    <data name="CheckMultipleChoiceInputAsync:UnknownError" xml:space="preserve">
+        <value>Ein Fehler ist aufgetreten.</value>
+        <comment>CheckMultipleChoiceInputAsync:UnknownError</comment>
+    </data>
+    <data name="CheckScriptInputAsync:UnknownError" xml:space="preserve">
+        <value>Ein Fehler ist aufgetreten.</value>
+        <comment>CheckScriptInputAsync:UnknownError</comment>
+    </data>
+    <data name="MarkExerciseAsSolvedAsync:UnknownError" xml:space="preserve">
+        <value>Ein Fehler ist aufgetreten. Weitere Details finden sich im Server-Log.</value>
+        <comment>MarkExerciseAsSolvedAsync:UnknownError</comment>
+    </data>
+    <data name="ResetExerciseStatusAsync:UnknownError" xml:space="preserve">
+        <value>Ein Fehler ist aufgetreten. Weitere Details finden sich im Server-Log.</value>
+        <comment>ResetExerciseStatusAsync:UnknownError</comment>
+    </data>
+    <data name="CheckStringInputAsync:Success" xml:space="preserve">
+        <value>Die Lösung ist korrekt!</value>
+        <comment>CheckStringInputAsync:Success</comment>
+    </data>
+    <data name="CheckMultipleChoiceInputAsync:Success" xml:space="preserve">
+        <value>Die Lösung ist korrekt!</value>
+        <comment>CheckMultipleChoiceInputAsync:Success</comment>
+    </data>
+    <data name="CheckScriptInputAsync:Success" xml:space="preserve">
+        <value>Die Lösung ist korrekt!</value>
+        <comment>CheckScriptInputAsync:Success</comment>
+    </data>
+    <data name="CheckStringInputAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>CheckStringInputAsync:InvalidInput</comment>
+    </data>
+    <data name="CheckScriptInputAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>CheckScriptInputAsync:InvalidInput</comment>
+    </data>
+    <data name="CheckMultipleChoiceInputAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>CheckMultipleChoiceInputAsync:InvalidInput</comment>
+    </data>
+    <data name="CheckStringInputAsync:Wrong" xml:space="preserve">
+        <value>Diese Lösung ist nicht korrekt.</value>
+        <comment>CheckStringInputAsync:Wrong</comment>
+    </data>
+    <data name="CheckMultipleChoiceInputAsync:Wrong" xml:space="preserve">
+        <value>Diese Lösung ist nicht korrekt.</value>
+        <comment>CheckMultipleChoiceInputAsync:Wrong</comment>
+    </data>
+    <data name="CheckScriptInputAsync:Wrong" xml:space="preserve">
+        <value>Diese Lösung ist nicht korrekt.</value>
+        <comment>CheckScriptInputAsync:Wrong</comment>
+    </data>
+    <data name="MarkExerciseAsSolvedAsync:NotFound" xml:space="preserve">
+        <value>Diese Aufgabe existiert nicht.</value>
+        <comment>MarkExerciseAsSolvedAsync:NotFound</comment>
+    </data>
+    <data name="ResetExerciseStatusAsync:NotFound" xml:space="preserve">
+        <value>Diese Aufgabe existiert nicht.</value>
+        <comment>ResetExerciseStatusAsync:NotFound</comment>
+    </data>
+    <data name="ResetExerciseStatusAsync:Success" xml:space="preserve">
+        <value>Die Aufgabe wurde erfolgreich zurückgesetzt.</value>
+        <comment>ResetExerciseStatusAsync:Success</comment>
+    </data>
+    <data name="MarkExerciseAsSolvedAsync:Success" xml:space="preserve">
+        <value>Die Aufgabe wurde erfolgreich als gelöst markiert.</value>
+        <comment>MarkExerciseAsSolvedAsync:Success</comment>
+    </data>
+</root>

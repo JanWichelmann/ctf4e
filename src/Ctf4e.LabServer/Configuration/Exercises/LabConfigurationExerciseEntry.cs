@@ -50,7 +50,7 @@ namespace Ctf4e.LabServer.Configuration.Exercises
             // Exercises should either point to a CTF exercise or a flag code
             if(CtfExerciseNumber == null && FlagCode == null)
             {
-                error = $"Für die Aufgabe \"{Title}\" (#{Id}) sind weder CTF-Aufgabennummer noch Flag-Code gesetzt.";
+                error = $"Exercise \"{Title}\" (#{Id}): There is neither a CTF exercise number nor a flag code.";
                 return false;
             }
 

@@ -14,6 +14,8 @@ using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.LabServer.Controllers
 {
@@ -22,12 +24,17 @@ namespace Ctf4e.LabServer.Controllers
     {
         private readonly ICryptoService _cryptoService;
         private readonly IStateService _stateService;
+        private readonly IStringLocalizer<AuthenticationController> _localizer;
+        private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController(ICryptoService cryptoService, IStateService stateService, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration)
+        public AuthenticationController(ICryptoService cryptoService, IStateService stateService, IOptionsSnapshot<LabOptions> labOptions,
+                                        ILabConfigurationService labConfiguration, IStringLocalizer<AuthenticationController> localizer, ILogger<AuthenticationController> logger)
             : base("~/Views/Authentication.cshtml", labOptions, labConfiguration)
         {
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
             _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
+            _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private IActionResult Render(ViewType viewType, object model = null)
@@ -43,7 +50,7 @@ namespace Ctf4e.LabServer.Controllers
             var currentUser = GetCurrentUser();
             if(currentUser == null)
             {
-                AddStatusMessage("Der Zugriff ist nur über das CTF-System möglich.", StatusMessageTypes.Info);
+                AddStatusMessage(_localizer["Render:AccessDenied"], StatusMessageTypes.Info);
                 return Render(ViewType.Blank);
             }
 
@@ -68,7 +75,7 @@ namespace Ctf4e.LabServer.Controllers
             await DoLoginAsync(userId, userName, groupId, groupName, admin);
 
             // Done
-            AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["DevLoginAsync:Success"], StatusMessageTypes.Success);
             return Render(ViewType.Redirect);
         }
 #endif
@@ -93,7 +100,7 @@ namespace Ctf4e.LabServer.Controllers
             await DoLoginAsync(loginData.UserId, loginData.UserDisplayName, loginData.GroupId, loginData.GroupName, loginData.AdminMode);
 
             // Done
-            AddStatusMessage("Login erfolgreich!", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["LoginAsync:Success"], StatusMessageTypes.Success);
             return Render(ViewType.Redirect);
         }
 
@@ -102,8 +109,8 @@ namespace Ctf4e.LabServer.Controllers
             // Prepare session data to identify user
             var claims = new List<Claim>
             {
-                new Claim(AuthenticationStrings.ClaimUserId, userId.ToString()),
-                new Claim(AuthenticationStrings.ClaimUserDisplayName, userDisplayName ?? "")
+                new (AuthenticationStrings.ClaimUserId, userId.ToString()),
+                new (AuthenticationStrings.ClaimUserDisplayName, userDisplayName ?? "")
             };
             if(groupId != null)
             {
@@ -138,7 +145,7 @@ namespace Ctf4e.LabServer.Controllers
             HandleUserLogout();
 
             // Done
-            AddStatusMessage("Logout erfolgreich.", StatusMessageTypes.Success);
+            AddStatusMessage(_localizer["LogoutAsync:Success"], StatusMessageTypes.Success);
             return Render(ViewType.Blank);
         }
 

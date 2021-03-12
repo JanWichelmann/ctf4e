@@ -16,14 +16,14 @@ namespace Ctf4e.LabServer.Configuration.Exercises
             // There must be at least one option
             if(!Options.Any())
             {
-                error = $"Für die Aufgabe \"{Title}\" (#{Id}) existieren keine Optionen.";
+                error = $"Exercise \"{Title}\" (#{Id}): There are no options.";
                 return false;
             }
 
             // Make sure that there is at least one correct option
             if(!Options.Any(o => o.Correct))
             {
-                error = $"Für die Aufgabe \"{Title}\" (#{Id}) existiert keine korrekte Option.";
+                error = $"Exercise \"{Title}\" (#{Id}): There is no correct option.";
                 return false;
             }
 
