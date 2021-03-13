@@ -79,6 +79,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (alle).
+        /// </summary>
+        internal static string AllSlots {
+            get {
+                return ResourceManager.GetString("AllSlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Automatisch neu laden nach (Sekunden).
         /// </summary>
         internal static string AutoReload {
@@ -169,6 +178,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Terminslot auswählen.
+        /// </summary>
+        internal static string SelectSlot {
+            get {
+                return ResourceManager.GetString("SelectSlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Alle Einträge anzeigen.
         /// </summary>
         internal static string ShowAllEntries {
@@ -187,6 +205,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alle Terminslots.
+        /// </summary>
+        internal static string Title_AllSlots {
+            get {
+                return ResourceManager.GetString("Title:AllSlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scoreboard: Gesamtwertung über alle Praktika.
         /// </summary>
         internal static string Title_ScoreboardAll {
@@ -201,6 +228,15 @@ namespace Ctf4e.Server.Resources.Views {
         internal static string Title_ScoreboardLab {
             get {
                 return ResourceManager.GetString("Title:ScoreboardLab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminslot: {0}.
+        /// </summary>
+        internal static string Title_Slot {
+            get {
+                return ResourceManager.GetString("Title:Slot", resourceCulture);
             }
         }
         

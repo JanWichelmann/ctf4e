@@ -21,8 +21,8 @@ namespace Ctf4e.Server.Services
     public interface IScoreboardService
     {
         Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default);
-        Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default, bool forceUncached = false);
-        Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default, bool forceUncached = false);
+        Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
+        Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
         Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default);
     }
 
@@ -396,10 +396,10 @@ namespace Ctf4e.Server.Services
             return points > flag.BasePoints ? flag.BasePoints : (int)Math.Round(points);
         }
 
-        public async Task<Scoreboard> GetFullScoreboardAsync(CancellationToken cancellationToken = default, bool forceUncached = false)
+        public async Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false)
         {
             // Is there a cached scoreboard?
-            const string fullScoreboardCacheKey = "scoreboard-full";
+            string fullScoreboardCacheKey = "scoreboard-full-" + (slotId?.ToString() ?? "all");
             if(!forceUncached && _cache.TryGetValue(fullScoreboardCacheKey, out Scoreboard scoreboard))
                 return scoreboard;
 
@@ -606,6 +606,14 @@ namespace Ctf4e.Server.Services
                 }
             }
 
+            if(slotId != null)
+            {
+                using(MiniProfiler.Current.Step("Filter slot"))
+                {
+                    scoreboardEntries.RemoveAll(entry => entry.SlotId != slotId);
+                }
+            }
+
             using(MiniProfiler.Current.Step("Sort scoreboard entries"))
             {
                 // Sort list to get ranking
@@ -654,6 +662,7 @@ namespace Ctf4e.Server.Services
                 scoreboard = new Scoreboard
                 {
                     AllLabs = true,
+                    SlotId = slotId,
                     MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
                     Entries = scoreboardEntries,
                     Flags = flags,
@@ -669,10 +678,10 @@ namespace Ctf4e.Server.Services
             return scoreboard;
         }
 
-        public async Task<Scoreboard> GetLabScoreboardAsync(int labId, CancellationToken cancellationToken = default, bool forceUncached = false)
+        public async Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false)
         {
             // Is there a cached scoreboard?
-            string scoreboardCacheKey = "scoreboard-" + labId;
+            string scoreboardCacheKey = "scoreboard-" + labId + "-" + (slotId?.ToString() ?? "all");
             if(!forceUncached && _cache.TryGetValue(scoreboardCacheKey, out Scoreboard scoreboard))
                 return scoreboard;
 
@@ -889,6 +898,14 @@ namespace Ctf4e.Server.Services
                 }
             }
 
+            if(slotId != null)
+            {
+                using(MiniProfiler.Current.Step("Filter slot"))
+                {
+                    scoreboardEntries.RemoveAll(entry => entry.SlotId != slotId);
+                }
+            }
+
             using(MiniProfiler.Current.Step("Sort scoreboard entries"))
             {
                 // Sort list to get ranking
@@ -931,18 +948,12 @@ namespace Ctf4e.Server.Services
                     entry.Rank = lastRank;
                 }
             }
-
-            string labName = await _dbContext.Labs.AsNoTracking()
-                .Where(l => l.Id == labId)
-                .Select(l => l.Name)
-                .FirstAsync(cancellationToken);
-
             using(MiniProfiler.Current.Step("Create final scoreboard object"))
             {
                 scoreboard = new Scoreboard
                 {
                     LabId = labId,
-                    CurrentLabName = labName,
+                    SlotId = slotId,
                     AllLabs = false,
                     MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
                     Entries = scoreboardEntries,

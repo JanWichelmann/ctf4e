@@ -61,7 +61,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dieses Praktikum existiert nicht oder enthält keine Aufgaben..
+        ///   Looks up a localized string similar to Dieses Scoreboard existiert nicht oder ist leer..
         /// </summary>
         internal static string RenderScoreboardAsync_EmptyScoreboard {
             get {

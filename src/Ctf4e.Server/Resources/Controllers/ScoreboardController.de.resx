@@ -19,7 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="RenderScoreboardAsync:EmptyScoreboard" xml:space="preserve">
-        <value>Dieses Praktikum existiert nicht oder enthält keine Aufgaben.</value>
+        <value>Dieses Scoreboard existiert nicht oder ist leer.</value>
         <comment>RenderScoreboardAsync:EmptyScoreboard</comment>
     </data>
 </root>

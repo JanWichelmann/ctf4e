@@ -9,6 +9,7 @@
     var viewType = (ScoreboardController.ViewType)ViewData["ViewType"];
 
     var labs = (List<Lab>)ViewData["Labs"];
+    var slots = (List<Slot>)ViewData["Slots"];
 
     var scoreboard = ViewData.ContainsKey("Scoreboard") ? (Scoreboard)ViewData["Scoreboard"] : null;
     bool showAllEntries = ViewData.ContainsKey("ShowAllEntries") && (bool)ViewData["ShowAllEntries"];
@@ -31,9 +32,19 @@
             }
             else
             {
-                @Localizer["Title:ScoreboardLab", scoreboard.CurrentLabName]
+                @Localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
             }
         </h3>
+        <h5 class="subheader">
+            @if(scoreboard.SlotId == null)
+            {
+                @Localizer["Title:AllSlots"]
+            }
+            else
+            {
+                @Localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
+            }
+        </h5>
         <hr class="header">
 
         <table class="table table-sm" id="flags-table">
@@ -154,6 +165,12 @@
             <label class="form-label" for="input-lab-id">@Localizer["SelectScoreboard"]</label>
             <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
                 <option value="" selected>@Localizer["AllLabs"]</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="input-slot-id">@Localizer["SelectSlot"]</label>
+            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-control">
+                <option value="" selected>@Localizer["AllSlots"]</option>
             </select>
         </div>
         @if(currentUser.IsAdmin || currentUser.IsTutor)

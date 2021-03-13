@@ -86,4 +86,20 @@
         <value>Show selected scoreboard</value>
         <comment>ShowSelectedScoreboard</comment>
     </data>
+    <data name="SelectSlot" xml:space="preserve">
+        <value>Select slot</value>
+        <comment>SelectSlot</comment>
+    </data>
+    <data name="AllSlots" xml:space="preserve">
+        <value>(all)</value>
+        <comment>AllSlots</comment>
+    </data>
+    <data name="Title:AllSlots" xml:space="preserve">
+        <value>All slots</value>
+        <comment>Title:AllSlots</comment>
+    </data>
+    <data name="Title:Slot" xml:space="preserve">
+        <value>Slot: {0}</value>
+        <comment>Title:Slot</comment>
+    </data>
 </root>

@@ -61,7 +61,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This lab does not exist, or it does not contain exercises..
+        ///   Looks up a localized string similar to This scoreboard does not exist, or it is empty..
         /// </summary>
         internal static string RenderScoreboardAsync_EmptyScoreboard {
             get {

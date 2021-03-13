@@ -9,8 +9,8 @@ namespace Ctf4e.Server.ViewModels
         public DateTime ValidUntil { get; set; }
 
         public int LabId { get; set; }
-
-        public string CurrentLabName { get; set; }
+        
+        public int? SlotId { get; set; }
 
         public bool AllLabs { get; set; }
 
