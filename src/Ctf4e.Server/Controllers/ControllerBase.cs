@@ -19,7 +19,7 @@ namespace Ctf4e.Server.Controllers
         /// <summary>
         ///     Version of this assembly.
         /// </summary>
-        private static string _buildId = null;
+        private static string _buildVersion = null;
 
         private readonly IUserService _userService;
         private User _currentUser = null;
@@ -30,9 +30,9 @@ namespace Ctf4e.Server.Controllers
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
 
-            if(_buildId == null)
+            if(_buildVersion == null)
             {
-                _buildId = Assembly.GetExecutingAssembly()
+                _buildVersion = Assembly.GetExecutingAssembly()
                     .GetCustomAttributes<AssemblyBuildVersionAttribute>()
                     .FirstOrDefault()?.Version ?? "<empty>";
             }
@@ -111,7 +111,7 @@ namespace Ctf4e.Server.Controllers
             ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync();
 
             // Other render data
-            ViewData["BuildId"] = _buildId;
+            ViewData["BuildVersion"] = _buildVersion;
 
             // Render view
             return RenderView(model);

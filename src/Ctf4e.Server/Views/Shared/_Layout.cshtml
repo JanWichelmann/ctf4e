@@ -33,7 +33,7 @@
     var activeMenuItem = (MenuItems)ViewData["ActiveMenuItem"];
 
     // Build ID
-    var buildId = (string)ViewData["BuildId"];
+    var buildVersion = (string)ViewData["BuildVersion"];
 }
 <!DOCTYPE html>
 <html lang="de">
@@ -281,7 +281,7 @@
                         <span>&middot;</span>
                     }
                     <span>
-                        Build #<a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/tree/@buildId">@buildId</a>
+                        Version <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/releases/tag/server%2F@buildId">@buildVersion</a>
                     </span>
                 </div>
             </div>
