@@ -82,4 +82,8 @@
         <value>Delete lab</value>
         <comment>Modal:DeleteLab:Submit</comment>
     </data>
+    <data name="Labs:MaximumPoints" xml:space="preserve">
+        <value>Max. points</value>
+        <comment>Labs:MaximumPoints</comment>
+    </data>
 </root>

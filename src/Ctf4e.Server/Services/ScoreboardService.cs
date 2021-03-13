@@ -410,9 +410,9 @@ namespace Ctf4e.Server.Services
             DateTime now = DateTime.Now;
 
             // Get flag point limits
-            var flagPointLimits = await _dbContext.Labs.AsNoTracking()
-                .Select(l => new { l.Id, l.MaxFlagPoints })
-                .ToDictionaryAsync(l => l.Id, l => l.MaxFlagPoints, cancellationToken);
+            var pointLimits = await _dbContext.Labs.AsNoTracking()
+                .Select(l => new { l.Id, l.MaxPoints, l.MaxFlagPoints })
+                .ToDictionaryAsync(l => l.Id, cancellationToken);
 
             // Get list of exercises
             var exercises = await _dbContext.Exercises.AsNoTracking()
@@ -467,7 +467,7 @@ namespace Ctf4e.Server.Services
 
             // Get valid submission counts for passed exercises
             // A passed exercise always has Weight = 1
-            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum)>(@"
+            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int LabId, int WeightSum)>(@"
                     CREATE TEMPORARY TABLE MinPassedSubmissionTimes
                       (PRIMARY KEY primary_key (ExerciseId, GroupId))
                       SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS 'MinSubmissionTime'
@@ -486,7 +486,7 @@ namespace Ctf4e.Server.Services
                       GROUP BY s.ExerciseId, u.GroupId
                     ;
 
-                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`
+                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, e.`LabId` AS `LabId`, SUM(s.`Weight`) AS `WeightSum`
                     FROM `ExerciseSubmissions` s
                     INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
                     INNER JOIN `Users` u ON u.`Id` = s.`UserId`
@@ -568,19 +568,25 @@ namespace Ctf4e.Server.Services
                 // Compute group points
                 foreach(var entry in scoreboardEntries)
                 {
-                    // Exercise points
+                    // Compute exercise points per lab
                     validExerciseSubmissions.TryGetValue(entry.GroupId, out var groupExerciseSubmissions);
+                    var exercisePointsPerLab = new Dictionary<int, int>();
                     if(groupExerciseSubmissions != null)
                     {
                         foreach(var s in groupExerciseSubmissions)
-                            entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
+                        {
+                            if(!exercisePointsPerLab.TryGetValue(s.LabId, out var ex))
+                                ex = 0;
+                            
+                            exercisePointsPerLab[s.LabId] = ex + Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
+                        }
                     }
 
-                    // Flag points
+                    // Compute flag points per lab
                     validFlagSubmissions.TryGetValue(entry.GroupId, out var groupFlagSubmissions);
+                    var flagPointsPerLab = new Dictionary<int, (int FlagPoints, int BugBountyPoints, int FlagCount)>();
                     if(groupFlagSubmissions != null)
                     {
-                        var flagPointsPerLab = new Dictionary<int, (int FlagPoints, int BugBountyPoints, int FlagCount)>();
                         foreach(var s in groupFlagSubmissions)
                         {
                             if(!flagPointsPerLab.TryGetValue(s.LabId, out var fl))
@@ -592,16 +598,28 @@ namespace Ctf4e.Server.Services
                             else
                                 flagPointsPerLab[s.LabId] = (fl.FlagPoints + flags[s.FlagId].CurrentPoints, fl.BugBountyPoints, fl.FlagCount + 1);
                         }
-
-                        foreach(var fl in flagPointsPerLab)
-                        {
-                            entry.FlagPoints += Math.Min(fl.Value.FlagPoints, flagPointLimits[fl.Key]);
-                            entry.BugBountyPoints += fl.Value.BugBountyPoints;
-                            entry.FlagCount += fl.Value.FlagCount;
-                        }
                     }
 
-                    entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
+                    // Compute total points
+                    foreach(var lab in pointLimits)
+                    {
+                        if(!exercisePointsPerLab.TryGetValue(lab.Key, out int exercisePoints))
+                            exercisePoints = 0;
+
+                        if(!flagPointsPerLab.TryGetValue(lab.Key, out var flagPoints))
+                            flagPoints = (0, 0, 0);
+                        
+                        // In breakdown, always return theoretical total of points without "maximum lab points" cut-off, just as it is shown in the lab scoreboard
+                        entry.ExercisePoints += exercisePoints;
+                        int cutOffFlagPoints = Math.Min(lab.Value.MaxFlagPoints, flagPoints.FlagPoints);
+                        entry.FlagPoints += cutOffFlagPoints;
+                        entry.BugBountyPoints += flagPoints.BugBountyPoints;
+                        entry.FlagCount += flagPoints.FlagCount;
+                        
+                        // Respect cut-offs in total points
+                        entry.TotalPoints += Math.Min(lab.Value.MaxPoints, exercisePoints + cutOffFlagPoints) + flagPoints.BugBountyPoints;
+                    }
+                    
                     entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
                 }
             }
@@ -893,7 +911,7 @@ namespace Ctf4e.Server.Services
                             entry.FlagPoints = lab.MaxFlagPoints;
                     }
 
-                    entry.TotalPoints = entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints;
+                    entry.TotalPoints = Math.Min(entry.ExercisePoints + entry.FlagPoints, lab.MaxPoints) + entry.BugBountyPoints;
                     entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
                 }
             }
@@ -948,6 +966,7 @@ namespace Ctf4e.Server.Services
                     entry.Rank = lastRank;
                 }
             }
+
             using(MiniProfiler.Current.Step("Create final scoreboard object"))
             {
                 scoreboard = new Scoreboard

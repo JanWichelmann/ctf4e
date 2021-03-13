@@ -88,6 +88,33 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dies legt die maximale Punktzahl fest, die durch Flags erreicht werden kann. Bug-Bounties sind hiervon ausgenommen..
+        /// </summary>
+        internal static string Form_MaxFlagPoints_Description {
+            get {
+                return ResourceManager.GetString("Form:MaxFlagPoints:Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximalpunktzahl.
+        /// </summary>
+        internal static string Form_MaxPoints {
+            get {
+                return ResourceManager.GetString("Form:MaxPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dies legt die maximale Gesamtpunktzahl fest, die in diesem Praktikum erreicht werden kann. Diese Zahl entspricht der Summe aller Aufgaben- und Flag-Punkte. Bug-Bounties sind hiervon ausgenommen..
+        /// </summary>
+        internal static string Form_MaxPoints_Description {
+            get {
+                return ResourceManager.GetString("Form:MaxPoints:Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         internal static string Form_Name {

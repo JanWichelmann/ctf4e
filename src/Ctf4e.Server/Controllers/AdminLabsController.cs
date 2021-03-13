@@ -90,6 +90,7 @@ namespace Ctf4e.Server.Controllers
                 lab.Name = labData.Name;
                 lab.ApiCode = labData.ApiCode;
                 lab.ServerBaseUrl = labData.ServerBaseUrl;
+                lab.MaxPoints = labData.MaxPoints;
                 lab.MaxFlagPoints = labData.MaxFlagPoints;
                 await _labService.UpdateLabAsync(lab, HttpContext.RequestAborted);
 
@@ -130,6 +131,7 @@ namespace Ctf4e.Server.Controllers
                     Name = labData.Name,
                     ApiCode = labData.ApiCode,
                     ServerBaseUrl = labData.ServerBaseUrl,
+                    MaxPoints = labData.MaxPoints,
                     MaxFlagPoints = labData.MaxFlagPoints
                 };
                 await _labService.CreateLabAsync(lab, HttpContext.RequestAborted);

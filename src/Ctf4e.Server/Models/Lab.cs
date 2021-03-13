@@ -23,6 +23,8 @@ namespace Ctf4e.Server.Models
         [StringLength(100)]
         public string ApiCode { get; set; }
 
+        public int MaxPoints { get; set; }
+
         public int MaxFlagPoints { get; set; }
 
         public ICollection<LabExecution> Executions { get; set; }

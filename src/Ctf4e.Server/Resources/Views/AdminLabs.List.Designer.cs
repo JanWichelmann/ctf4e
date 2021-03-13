@@ -160,6 +160,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max. points.
+        /// </summary>
+        internal static string Labs_MaximumPoints {
+            get {
+                return ResourceManager.GetString("Labs:MaximumPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         internal static string Labs_Name {

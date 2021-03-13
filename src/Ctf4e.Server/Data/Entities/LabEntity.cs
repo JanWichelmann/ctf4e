@@ -23,6 +23,8 @@ namespace Ctf4e.Server.Data.Entities
         [StringLength(100)]
         public string ApiCode { get; set; }
 
+        public int MaxPoints { get; set; }
+
         public int MaxFlagPoints { get; set; }
 
         public ICollection<LabExecutionEntity> Executions { get; set; }

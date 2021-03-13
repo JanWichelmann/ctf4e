@@ -19,6 +19,7 @@
     <tr>
         <th scope="col">@Localizer["Labs:ID"]</th>
         <th scope="col">@Localizer["Labs:Name"]</th>
+        <th scope="col">@Localizer["Labs:MaximumPoints"]</th>
         <th scope="col">@Localizer["Labs:MaximumFlagPoints"]</th>
         <th scope="col"></th>
         <th scope="col"></th>
@@ -31,6 +32,7 @@
         <tr>
             <td>@l.Id</td>
             <td>@l.Name</td>
+            <td>@l.MaxPoints</td>
             <td>@l.MaxFlagPoints</td>
             <td>
                 <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="@Localizer["Labs:Exercises:Text"]">

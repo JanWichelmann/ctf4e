@@ -62,4 +62,16 @@
         <value>Edit</value>
         <comment>Flags:Edit</comment>
     </data>
+    <data name="Form:MaxPoints" xml:space="preserve">
+        <value>Maximum total points</value>
+        <comment>Form:MaxPoints</comment>
+    </data>
+    <data name="Form:MaxPoints:Description" xml:space="preserve">
+        <value>This controls the maximum total points which can be earned in this lab, i.e. the sum of all exercises and flag points. Bug bounties are exempt from this limit.</value>
+        <comment>Form:MaxPoints:Description</comment>
+    </data>
+    <data name="Form:MaxFlagPoints:Description" xml:space="preserve">
+        <value>This controls the maximum points which can be earned by flags. Bug bounties are exempt from this limit.</value>
+        <comment>Form:MaxFlagPoints:Description</comment>
+    </data>
 </root>

@@ -82,4 +82,8 @@
         <value>Praktikum löschen</value>
         <comment>Modal:DeleteLab:Submit</comment>
     </data>
+    <data name="Labs:MaximumPoints" xml:space="preserve">
+        <value>Max. Punkte</value>
+        <comment>Labs:MaximumPoints</comment>
+    </data>
 </root>

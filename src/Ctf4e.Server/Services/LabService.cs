@@ -77,6 +77,7 @@ namespace Ctf4e.Server.Services
                 Name = lab.Name,
                 ApiCode = lab.ApiCode,
                 ServerBaseUrl = lab.ServerBaseUrl,
+                MaxPoints = lab.MaxPoints,
                 MaxFlagPoints = lab.MaxFlagPoints,
                 Exercises = new List<ExerciseEntity>(),
                 Flags = new List<FlagEntity>(),
@@ -99,6 +100,7 @@ namespace Ctf4e.Server.Services
             labEntity.Name = lab.Name;
             labEntity.ApiCode = lab.ApiCode;
             labEntity.ServerBaseUrl = lab.ServerBaseUrl;
+            labEntity.MaxPoints = lab.MaxPoints;
             labEntity.MaxFlagPoints = lab.MaxFlagPoints;
 
             // Apply changes

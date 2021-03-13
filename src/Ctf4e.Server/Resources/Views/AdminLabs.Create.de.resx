@@ -46,4 +46,16 @@
         <value>Abbrechen</value>
         <comment>Form:Cancel</comment>
     </data>
+    <data name="Form:MaxPoints" xml:space="preserve">
+        <value>Maximalpunktzahl</value>
+        <comment>Form:MaxPoints</comment>
+    </data>
+    <data name="Form:MaxPoints:Description" xml:space="preserve">
+        <value>Dies legt die maximale Gesamtpunktzahl fest, die in diesem Praktikum erreicht werden kann. Diese Zahl entspricht der Summe aller Aufgaben- und Flag-Punkte. Bug-Bounties sind hiervon ausgenommen.</value>
+        <comment>Form:MaxPoints:Description</comment>
+    </data>
+    <data name="Form:MaxFlagPoints:Description" xml:space="preserve">
+        <value>Dies legt die maximale Punktzahl fest, die durch Flags erreicht werden kann. Bug-Bounties sind hiervon ausgenommen.</value>
+        <comment>Form:MaxFlagPoints:Description</comment>
+    </data>
 </root>
