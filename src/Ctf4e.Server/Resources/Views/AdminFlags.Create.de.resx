@@ -50,4 +50,8 @@
         <value>Bug-Bounty-Flags werden nicht skaliert, sondern ergeben unabhängig von der Anzahl der Einlösungen immer dieselbe Punktzahl.</value>
         <comment>Form:IsBounty:Description</comment>
     </data>
+    <data name="Form:SubmitAndContinue" xml:space="preserve">
+        <value>Flag erstellen und fortfahren</value>
+        <comment>Form:SubmitAndContinue</comment>
+    </data>
 </root>

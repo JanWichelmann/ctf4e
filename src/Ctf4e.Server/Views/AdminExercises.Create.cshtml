@@ -50,5 +50,6 @@
     <input asp-for="LabId" type="hidden" value="@lab.Id">
 
     <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <button type="submit" class="btn btn-primary" name="returnToForm" value="returnToForm">@Localizer["Form:SubmitAndContinue"]</button>
     <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@lab.Id" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

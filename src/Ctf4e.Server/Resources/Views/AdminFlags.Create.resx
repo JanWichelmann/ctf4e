@@ -50,4 +50,8 @@
         <value>Bug bounty flags are not scaled, but always yield the same amount of points, indepent from the number of submissions.</value>
         <comment>Form:IsBounty:Description</comment>
     </data>
+    <data name="Form:SubmitAndContinue" xml:space="preserve">
+        <value>Create flag and continue</value>
+        <comment>Form:SubmitAndContinue</comment>
+    </data>
 </root>

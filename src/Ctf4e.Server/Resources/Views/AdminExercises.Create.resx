@@ -54,4 +54,8 @@
         <value>Cancel</value>
         <comment>Form:Cancel</comment>
     </data>
+    <data name="Form:SubmitAndContinue" xml:space="preserve">
+        <value>Create exercise and continue</value>
+        <comment>Form:SubmitAndContinue</comment>
+    </data>
 </root>

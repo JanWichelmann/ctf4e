@@ -133,6 +133,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create exercise and continue.
+        /// </summary>
+        internal static string Form_SubmitAndContinue {
+            get {
+                return ResourceManager.GetString("Form:SubmitAndContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create exercise.
         /// </summary>
         internal static string Title {

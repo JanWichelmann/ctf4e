@@ -54,4 +54,8 @@
         <value>Abbrechen</value>
         <comment>Form:Cancel</comment>
     </data>
+    <data name="Form:SubmitAndContinue" xml:space="preserve">
+        <value>Aufgaben erstellen und fortfahren</value>
+        <comment>Form:SubmitAndContinue</comment>
+    </data>
 </root>

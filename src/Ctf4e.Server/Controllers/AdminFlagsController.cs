@@ -111,7 +111,7 @@ namespace Ctf4e.Server.Controllers
 
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFlagAsync(Flag flagData)
+        public async Task<IActionResult> CreateFlagAsync(Flag flagData, string returnToForm)
         {
             // Check input
             if(!ModelState.IsValid)
@@ -134,6 +134,9 @@ namespace Ctf4e.Server.Controllers
                 await _flagService.CreateFlagAsync(flag, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["CreateFlagAsync:Success"], StatusMessageTypes.Success);
+                
+                if(!string.IsNullOrEmpty(returnToForm))
+                    return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
                 return await RenderFlagListAsync(flagData.LabId);
             }
             catch(InvalidOperationException ex)

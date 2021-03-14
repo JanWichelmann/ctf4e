@@ -113,7 +113,7 @@ namespace Ctf4e.Server.Controllers
 
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateExerciseAsync(Exercise exerciseData)
+        public async Task<IActionResult> CreateExerciseAsync(Exercise exerciseData, string returnToForm)
         {
             // Check input
             if(!ModelState.IsValid)
@@ -138,6 +138,9 @@ namespace Ctf4e.Server.Controllers
                 await _exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["CreateExerciseAsync:Success"], StatusMessageTypes.Success);
+                
+                if(!string.IsNullOrEmpty(returnToForm))
+                    return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
                 return await RenderExerciseListAsync(exerciseData.LabId);
             }
             catch(InvalidOperationException ex)

@@ -133,6 +133,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Aufgaben erstellen und fortfahren.
+        /// </summary>
+        internal static string Form_SubmitAndContinue {
+            get {
+                return ResourceManager.GetString("Form:SubmitAndContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Aufgabe erstellen.
         /// </summary>
         internal static string Title {
