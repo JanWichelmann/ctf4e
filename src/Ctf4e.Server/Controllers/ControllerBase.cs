@@ -34,7 +34,9 @@ namespace Ctf4e.Server.Controllers
             {
                 _buildVersion = Assembly.GetExecutingAssembly()
                     .GetCustomAttributes<AssemblyBuildVersionAttribute>()
-                    .FirstOrDefault()?.Version ?? "<empty>";
+                    .FirstOrDefault()?.Version;
+                if(string.IsNullOrWhiteSpace(_buildVersion))
+                    _buildVersion = "DEV";
             }
         }
 

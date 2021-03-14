@@ -245,9 +245,18 @@
         <div class="row mt-2 pb-2">
             <div class="col">
                 Powered by <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
+                <span>&middot;</span>
+                <span>
+                    <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/releases/tag/server%2F@(buildVersion)">v@(buildVersion)</a>
+                </span>
+                @if(MainOptions.Value.DevelopmentMode && currentUser != null && currentUser.IsAdmin)
+                {
+                    <span>&middot;</span>
+                    <a class="link-footer" href="~/dev/profiler/results-index" target="_blank">Profiler</a>
+                }
             </div>
             <div class="col d-flex align-items-center justify-content-end">
-                <div class="dropdown me-1">
+                <div class="dropdown">
                     @{
                         var supportedLanguages = new Dictionary<string, string>
                         {
@@ -261,7 +270,7 @@
                             currentLanguage = "en-US";
                         }
                     }
-                    <a class="link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
+                    <a class="dropdown-toggle link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
                     <ul class="dropdown-menu" aria-labelledby="language-menu-button">
                         @foreach(var language in supportedLanguages)
                         {
@@ -272,17 +281,6 @@
                         }
                     </ul>
                     <input type="hidden" id="language-cookie-name" value="@CookieRequestCultureProvider.DefaultCookieName">
-                    <span>&middot;</span>
-                </div>
-                <div>
-                    @if(MainOptions.Value.DevelopmentMode && currentUser != null && currentUser.IsAdmin)
-                    {
-                        <a class="link-footer" href="~/dev/profiler/results-index" target="_blank">Profiler</a>
-                        <span>&middot;</span>
-                    }
-                    <span>
-                        Version <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/releases/tag/server%2F@(buildVersion)">@buildVersion</a>
-                    </span>
                 </div>
             </div>
         </div>
