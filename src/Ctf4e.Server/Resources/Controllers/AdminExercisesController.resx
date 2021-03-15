@@ -35,11 +35,11 @@
         <comment>CreateExerciseAsync:Success</comment>
     </data>
     <data name="CreateExerciseAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when creating the exercise. Check the log for more details.</value>
+        <value>An error occured while creating the exercise. Check the log for more details.</value>
         <comment>CreateExerciseAsync:UnknownError</comment>
     </data>
     <data name="DeleteExerciseAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the exercise. Check the log for more details.</value>
+        <value>An error occured while deleting the exercise. Check the log for more details.</value>
         <comment>DeleteExerciseAsync:UnknownError</comment>
     </data>
     <data name="DeleteExerciseAsync:Success" xml:space="preserve">
@@ -47,7 +47,7 @@
         <comment>DeleteExerciseAsync:Success</comment>
     </data>
     <data name="EditExerciseAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the exercise. Check the log for more details.</value>
+        <value>An error occured while updating the exercise. Check the log for more details.</value>
         <comment>EditExerciseAsync:UnknownError</comment>
     </data>
 </root>

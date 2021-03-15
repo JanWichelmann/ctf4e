@@ -178,7 +178,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select slot.
+        ///   Looks up a localized string similar to Select time slot.
         /// </summary>
         internal static string SelectSlot {
             get {
@@ -205,7 +205,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All slots.
+        ///   Looks up a localized string similar to All time slots.
         /// </summary>
         internal static string Title_AllSlots {
             get {
@@ -232,7 +232,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slot: {0}.
+        ///   Looks up a localized string similar to Time slot: {0}.
         /// </summary>
         internal static string Title_Slot {
             get {

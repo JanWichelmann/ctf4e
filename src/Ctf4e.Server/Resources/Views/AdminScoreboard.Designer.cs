@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select slot.
+        ///   Looks up a localized string similar to Select time slot.
         /// </summary>
         internal static string SwitchScoreboard_Slot_Placeholder {
             get {

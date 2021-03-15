@@ -31,11 +31,11 @@
         <comment>Form:LabId:Placeholder</comment>
     </data>
     <data name="Form:SlotId" xml:space="preserve">
-        <value>Slot</value>
+        <value>Time slot</value>
         <comment>Form:SlotId</comment>
     </data>
     <data name="Form:SlotId:Placeholder" xml:space="preserve">
-        <value>Select slot</value>
+        <value>Select time slot</value>
         <comment>Form:SlotId:Placeholder</comment>
     </data>
     <data name="Form:OverrideExisting" xml:space="preserve">
@@ -43,7 +43,7 @@
         <comment>Form:OverrideExisting</comment>
     </data>
     <data name="Form:OverrideExisting:Description" xml:space="preserve">
-        <value>This overrides all lab executions that may already exist for certain groups in the selected slot.</value>
+        <value>This overrides all lab executions that may already exist for certain groups in the selected time slot.</value>
         <comment>Form:OverrideExisting:Description</comment>
     </data>
     <data name="Form:Cancel" xml:space="preserve">

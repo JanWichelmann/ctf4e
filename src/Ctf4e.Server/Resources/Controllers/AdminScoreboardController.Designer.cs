@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the exercise submission. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the exercise submission. Check the log for more details..
         /// </summary>
         internal static string CreateExerciseSubmissionAsync_UnknownError {
             get {
@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the flag submission. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the flag submission. Check the log for more details..
         /// </summary>
         internal static string CreateFlagSubmissionAsync_UnknownError {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the exercise submission. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the exercise submission. Check the log for more details..
         /// </summary>
         internal static string DeleteExerciseSubmissionAsync_UnknownError {
             get {
@@ -133,7 +133,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the exercise submissions. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the exercise submissions. Check the log for more details..
         /// </summary>
         internal static string DeleteExerciseSubmissionsAsync_UnknownError {
             get {
@@ -151,7 +151,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the flag submission. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the flag submission. Check the log for more details..
         /// </summary>
         internal static string DeleteFlagSubmissionAsync_UnknownError {
             get {
@@ -160,7 +160,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when generating the CSV file. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while generating the CSV file. Check the log for more details..
         /// </summary>
         internal static string DownloadAsCsvAsync_UnknownError {
             get {
@@ -169,7 +169,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Moodle upload was completed successfully..
+        ///   Looks up a localized string similar to The Moodle upload has completed successfully..
         /// </summary>
         internal static string UploadToMoodleAsync_Success {
             get {
@@ -178,7 +178,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when collecting and uploading the data. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while collecting and uploading the data. Check the log for more details..
         /// </summary>
         internal static string UploadToMoodleAsync_UnknownError {
             get {

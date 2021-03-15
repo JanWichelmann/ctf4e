@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;p&gt;This command uploads all results via the API into the linked Moodle course.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Achtung:&lt;/strong&gt; This may take a while, and should not be cancelled.&lt;/p&gt;.
+        ///   Looks up a localized string similar to &lt;p&gt;This command uploads all results via the API into the linked Moodle course.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Attention:&lt;/strong&gt; This may take a while, and should not be cancelled.&lt;/p&gt;.
         /// </summary>
         internal static string Modal_SyncMoodle_Body {
             get {

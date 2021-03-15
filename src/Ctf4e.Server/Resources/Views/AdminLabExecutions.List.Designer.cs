@@ -212,7 +212,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slot.
+        ///   Looks up a localized string similar to Time slot.
         /// </summary>
         internal static string Modal_DeleteLabExecutionsSlot_Form_Slot {
             get {
@@ -221,7 +221,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select slot.
+        ///   Looks up a localized string similar to Select time slot.
         /// </summary>
         internal static string Modal_DeleteLabExecutionsSlot_Form_Slot_Placeholder {
             get {
@@ -239,7 +239,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete all lab executions for slot.
+        ///   Looks up a localized string similar to Delete all lab executions for time slot.
         /// </summary>
         internal static string Modal_DeleteLabExecutionsSlot_Title {
             get {
@@ -257,7 +257,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start lab for all groups of a slot.
+        ///   Looks up a localized string similar to Start lab for all groups of a time slot.
         /// </summary>
         internal static string StartForSlot {
             get {
@@ -266,7 +266,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stop lab for all groups of a slot.
+        ///   Looks up a localized string similar to Stop lab for all groups of a time slot.
         /// </summary>
         internal static string StopForSlot {
             get {

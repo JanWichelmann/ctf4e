@@ -31,11 +31,11 @@
         <comment>CheckScriptInputAsync:UnknownError</comment>
     </data>
     <data name="MarkExerciseAsSolvedAsync:UnknownError" xml:space="preserve">
-        <value>An error occured. Check the server log for more details.</value>
+        <value>An error has occured. Check the server log for more details.</value>
         <comment>MarkExerciseAsSolvedAsync:UnknownError</comment>
     </data>
     <data name="ResetExerciseStatusAsync:UnknownError" xml:space="preserve">
-        <value>An error occured. Check the server log for more details.</value>
+        <value>An error has occured. Check the server log for more details.</value>
         <comment>ResetExerciseStatusAsync:UnknownError</comment>
     </data>
     <data name="CheckStringInputAsync:Success" xml:space="preserve">

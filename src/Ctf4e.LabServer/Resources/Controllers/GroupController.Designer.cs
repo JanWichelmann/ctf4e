@@ -187,7 +187,7 @@ namespace Ctf4e.LabServer.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured. Check the server log for more details..
+        ///   Looks up a localized string similar to An error has occured. Check the server log for more details..
         /// </summary>
         internal static string MarkExerciseAsSolvedAsync_UnknownError {
             get {
@@ -214,7 +214,7 @@ namespace Ctf4e.LabServer.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured. Check the server log for more details..
+        ///   Looks up a localized string similar to An error has occured. Check the server log for more details..
         /// </summary>
         internal static string ResetExerciseStatusAsync_UnknownError {
             get {

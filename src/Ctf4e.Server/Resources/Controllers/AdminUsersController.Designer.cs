@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the user. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the user. Check the log for more details..
         /// </summary>
         internal static string EditUserAsync_UnknownError {
             get {

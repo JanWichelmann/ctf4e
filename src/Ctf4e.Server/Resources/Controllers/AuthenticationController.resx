@@ -43,7 +43,7 @@
         <comment>HandleGroupSelectionAsync:Success</comment>
     </data>
     <data name="RenderAsync:MoodleOnly" xml:space="preserve">
-        <value>MoodleOnly</value>
+        <value>Login is only possible via the Moodle course.</value>
         <comment>MoodleOnly</comment>
     </data>
     <data name="AdminLoginAsUserAsync:Success" xml:space="preserve">
@@ -51,11 +51,11 @@
         <comment>AdminLoginAsUserAsync:Success</comment>
     </data>
     <data name="HandleGroupSelectionAsync:TooFewCodes" xml:space="preserve">
-        <value>You entered to few codes. The minimum group size is {0}.</value>
+        <value>You entered too few codes. The minimum group size is {0}.</value>
         <comment>HandleGroupSelectionAsync:TooFewCodes</comment>
     </data>
     <data name="HandleGroupSelectionAsync:TooManyCodes" xml:space="preserve">
-        <value>You entered to many codes. The maximum group size is {0}.</value>
+        <value>You entered too many codes. The maximum group size is {0}.</value>
         <comment>HandleGroupSelectionAsync:TooManyCodes</comment>
     </data>
     <data name="HandleGroupSelectionAsync:CodeAlreadyAssigned" xml:space="preserve">
@@ -63,7 +63,7 @@
         <comment>HandleGroupSelectionAsync:CodeAlreadyAssigned</comment>
     </data>
     <data name="HandleGroupSelectionAsync:UnknownError" xml:space="preserve">
-        <value>An error occured.</value>
+        <value>An error has occured.</value>
         <comment>HandleGroupSelectionAsync:UnknownError</comment>
     </data>
     <data name="HandleGroupSelectionAsync:SuccessInfo" xml:space="preserve">

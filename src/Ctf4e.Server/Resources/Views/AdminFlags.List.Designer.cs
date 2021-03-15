@@ -88,7 +88,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CreateFlag.
+        ///   Looks up a localized string similar to Create flag.
         /// </summary>
         internal static string CreateFlag {
             get {

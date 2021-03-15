@@ -19,7 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="ShowEditSlotFormAsync:NotFound" xml:space="preserve">
-        <value>This slot does not exist.</value>
+        <value>This time slot does not exist.</value>
         <comment>ShowEditSlotFormAsync:NotFound</comment>
     </data>
     <data name="ShowEditSlotFormAsync:MissingParameter" xml:space="preserve">
@@ -35,7 +35,7 @@
         <comment>EditSlotAsync:Success</comment>
     </data>
     <data name="EditSlotAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the slot. Check the log for more details.</value>
+        <value>An error occured while updating the time slot. Check the log for more details.</value>
         <comment>EditSlotAsync:UnknownError</comment>
     </data>
     <data name="CreateSlotAsync:InvalidInput" xml:space="preserve">
@@ -43,15 +43,15 @@
         <comment>CreateSlotAsync:InvalidInput</comment>
     </data>
     <data name="CreateSlotAsync:Success" xml:space="preserve">
-        <value>The slot was created successfully.</value>
+        <value>The time slot was created successfully.</value>
         <comment>CreateSlotAsync:Success</comment>
     </data>
     <data name="CreateSlotAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when creating the slot. Check the log for more details.</value>
+        <value>An error occured while creating the time slot. Check the log for more details.</value>
         <comment>CreateSlotAsync:UnknownError</comment>
     </data>
     <data name="DeleteSlotAsync:NotFound" xml:space="preserve">
-        <value>This slot does not exist.</value>
+        <value>This time slot does not exist.</value>
         <comment>DeleteSlotAsync:NotFound</comment>
     </data>
     <data name="DeleteSlotAsync:Success" xml:space="preserve">
@@ -59,11 +59,11 @@
         <comment>DeleteSlotAsync:Success</comment>
     </data>
     <data name="DeleteSlotAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the slot. Check the log for more details.</value>
+        <value>An error occured while deleting the time slot. Check the log for more details.</value>
         <comment>DeleteSlotAsync:UnknownError</comment>
     </data>
     <data name="DeleteSlotAsync:HasGroups" xml:space="preserve">
-        <value>The slot must not have groups.</value>
+        <value>The time slot must not have any groups.</value>
         <comment>DeleteSlotAsync:HasGroups</comment>
     </data>
 </root>

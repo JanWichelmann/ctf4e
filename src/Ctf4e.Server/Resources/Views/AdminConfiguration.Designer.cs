@@ -106,7 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This text is shown on top of the group selection page. It should contain information on how groups are formed and how they can register in the CTF system. This field supports Markdown styling..
+        ///   Looks up a localized string similar to This text is shown on top of the group selection page. It should contain information regarding how groups are formed and how they can register in the CTF system. This field supports Markdown styling..
         /// </summary>
         internal static string Config_GroupSelectionPageText_Description {
             get {
@@ -223,7 +223,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This number controls the amount of time where a cached scoreboard is valid, before a new one is generated. The cache is designed to reduce database load, as the necessary queries are quite expensive. This value should be set as low as possible, and should be only increased if necessary..
+        ///   Looks up a localized string similar to This number controls the amount of time where a cached scoreboard is valid, before a new one is generated. The cache is designed to reduce database load, as the necessary queries are quite expensive. This value should be set as low as possible, and should only be increased if necessary..
         /// </summary>
         internal static string Config_ScoreboardCachedSeconds_Description {
             get {

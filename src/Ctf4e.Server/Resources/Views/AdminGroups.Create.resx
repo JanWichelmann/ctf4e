@@ -27,7 +27,7 @@
         <comment>Form:DisplayName</comment>
     </data>
     <data name="Form:SlotId" xml:space="preserve">
-        <value>Slot</value>
+        <value>Time slot</value>
         <comment>Form:SlotId</comment>
     </data>
     <data name="Form:ShowInScoreboard" xml:space="preserve">
@@ -43,7 +43,7 @@
         <comment>Form:Cancel</comment>
     </data>
     <data name="Form:SlotId:Placeholder" xml:space="preserve">
-        <value>Select slot</value>
+        <value>Select time slot</value>
         <comment>Form:SlotId:Placeholder</comment>
     </data>
 </root>

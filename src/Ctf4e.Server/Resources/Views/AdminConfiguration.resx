@@ -79,7 +79,7 @@
         <comment>Config:ScoreboardEntryCount:Description</comment>
     </data>
     <data name="Config:ScoreboardCachedSeconds:Description" xml:space="preserve">
-        <value>This number controls the amount of time where a cached scoreboard is valid, before a new one is generated. The cache is designed to reduce database load, as the necessary queries are quite expensive. This value should be set as low as possible, and should be only increased if necessary.</value>
+        <value>This number controls the amount of time where a cached scoreboard is valid, before a new one is generated. The cache is designed to reduce database load, as the necessary queries are quite expensive. This value should be set as low as possible, and should only be increased if necessary.</value>
         <comment>Config:ScoreboardCachedSeconds:Description</comment>
     </data>
     <data name="Config:FlagMinimumPointsDivisor:Description" xml:space="preserve">
@@ -87,7 +87,7 @@
         <comment>Config:FlagMinimumPointsDivisor:Description</comment>
     </data>
     <data name="Config:GroupSelectionPageText:Description" xml:space="preserve">
-        <value>This text is shown on top of the group selection page. It should contain information on how groups are formed and how they can register in the CTF system. This field supports Markdown styling.</value>
+        <value>This text is shown on top of the group selection page. It should contain information regarding how groups are formed and how they can register in the CTF system. This field supports Markdown styling.</value>
         <comment>Config:GroupSelectionPageText:Description</comment>
     </data>
     <data name="Config:GroupSizeMin:Description" xml:space="preserve">

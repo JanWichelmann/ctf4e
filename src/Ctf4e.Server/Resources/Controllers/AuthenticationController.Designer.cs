@@ -133,7 +133,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You entered to few codes. The minimum group size is {0}..
+        ///   Looks up a localized string similar to You entered too few codes. The minimum group size is {0}..
         /// </summary>
         internal static string HandleGroupSelectionAsync_TooFewCodes {
             get {
@@ -142,7 +142,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You entered to many codes. The maximum group size is {0}..
+        ///   Looks up a localized string similar to You entered too many codes. The maximum group size is {0}..
         /// </summary>
         internal static string HandleGroupSelectionAsync_TooManyCodes {
             get {
@@ -151,7 +151,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured..
+        ///   Looks up a localized string similar to An error has occured..
         /// </summary>
         internal static string HandleGroupSelectionAsync_UnknownError {
             get {
@@ -196,7 +196,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MoodleOnly.
+        ///   Looks up a localized string similar to Login is only possible via the Moodle course..
         /// </summary>
         internal static string RenderAsync_MoodleOnly {
             get {

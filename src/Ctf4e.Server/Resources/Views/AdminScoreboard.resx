@@ -31,7 +31,7 @@
         <comment>SwitchScoreboard:Lab</comment>
     </data>
     <data name="SwitchScoreboard:Slot:Placeholder" xml:space="preserve">
-        <value>Select slot</value>
+        <value>Select time slot</value>
         <comment>SwitchScoreboard:Slot:Placeholder</comment>
     </data>
     <data name="SwitchScoreboard:Slot" xml:space="preserve">
