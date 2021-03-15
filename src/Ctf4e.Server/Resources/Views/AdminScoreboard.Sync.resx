@@ -39,7 +39,7 @@
         <comment>Modal:SyncMoodle:Submit</comment>
     </data>
     <data name="Modal:SyncMoodle:Body" xml:space="preserve">
-        <value>&lt;p&gt;This command uploads all results via the API into the linked Moodle course.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Achtung:&lt;/strong&gt; This may take a while, and should not be cancelled.&lt;/p&gt;</value>
+        <value>&lt;p&gt;This command uploads all results via the API into the linked Moodle course.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Attention:&lt;/strong&gt; This may take a while, and should not be cancelled.&lt;/p&gt;</value>
         <comment>Modal:SyncMoodle:Body</comment>
     </data>
     <data name="Modal:SyncMoodle:Title" xml:space="preserve">

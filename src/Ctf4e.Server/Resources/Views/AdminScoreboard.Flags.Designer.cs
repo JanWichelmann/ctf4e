@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Flags (all slots).
+        ///   Looks up a localized string similar to Flags (all time slots).
         /// </summary>
         internal static string Title {
             get {

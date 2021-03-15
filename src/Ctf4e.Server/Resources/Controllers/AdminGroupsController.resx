@@ -35,7 +35,7 @@
         <comment>EditGroupAsync:Success</comment>
     </data>
     <data name="EditGroupAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the group. Check the log for more details.</value>
+        <value>An error occured while updating the group. Check the log for more details.</value>
         <comment>EditGroupAsync:UnknownError</comment>
     </data>
     <data name="CreateGroupAsync:InvalidInput" xml:space="preserve">
@@ -43,7 +43,7 @@
         <comment>CreateGroupAsync:InvalidInput</comment>
     </data>
     <data name="CreateGroupAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when creating the group. Check the log for more details.</value>
+        <value>An error occured while creating the group. Check the log for more details.</value>
         <comment>CreateGroupAsync:UnknownError</comment>
     </data>
     <data name="DeleteGroupAsync:NotFound" xml:space="preserve">
@@ -51,7 +51,7 @@
         <comment>DeleteGroupAsync:NotFound</comment>
     </data>
     <data name="DeleteGroupAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the group. Check the log for more details.</value>
+        <value>An error occured while deleting the group. Check the log for more details.</value>
         <comment>DeleteGroupAsync:UnknownError</comment>
     </data>
     <data name="CreateGroupAsync:Success" xml:space="preserve">

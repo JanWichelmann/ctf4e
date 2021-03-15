@@ -106,7 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit slot.
+        ///   Looks up a localized string similar to Edit time slot.
         /// </summary>
         internal static string Title {
             get {

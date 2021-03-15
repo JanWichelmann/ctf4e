@@ -61,7 +61,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage slots.
+        ///   Looks up a localized string similar to Manage time slots.
         /// </summary>
         internal static string HtmlTitle {
             get {

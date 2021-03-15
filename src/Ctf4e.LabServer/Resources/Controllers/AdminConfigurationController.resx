@@ -23,7 +23,7 @@
         <comment>RenderAsync:ConfigNonWritable</comment>
     </data>
     <data name="RenderAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when reading the configuration file. Check the log for more details.</value>
+        <value>An error occured while reading the configuration file. Check the log for more details.</value>
         <comment>RenderAsync:UnknownError</comment>
     </data>
     <data name="UpdateConfigurationAsync:DuplicateExerciseId" xml:space="preserve">
@@ -43,11 +43,11 @@
         <comment>UpdateConfigurationAsync:Success</comment>
     </data>
     <data name="UpdateConfigurationAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the configuration. Possibly this left the system in an inconsistent state. It is recommend to check the current configuration and perform a restart. Check the log for more details.</value>
+        <value>An error occured while updating the configuration. Possibly this has left the system in an inconsistent state. It is recommend to check the current configuration and perform a restart. Check the log for more details.</value>
         <comment>UpdateConfigurationAsync:UnknownError</comment>
     </data>
     <data name="UpdateConfigurationAsync:ValidationError" xml:space="preserve">
-        <value>During validation an error was detected: {0}</value>
+        <value>An error was detected during validation : {0}</value>
         <comment>UpdateConfigurationAsync:ValidationError</comment>
     </data>
 </root>

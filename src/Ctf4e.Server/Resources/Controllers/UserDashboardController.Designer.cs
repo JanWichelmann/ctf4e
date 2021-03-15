@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are not authenticated or did not join a group yet..
+        ///   Looks up a localized string similar to You are not authenticated or have not joined a group yet..
         /// </summary>
         internal static string CallLabServerAsync_NoGroup {
             get {
@@ -106,7 +106,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are not authenticated or did not join a group yet..
+        ///   Looks up a localized string similar to You are not authenticated or have not joined a group yet..
         /// </summary>
         internal static string RenderAsync_NoGroup {
             get {
@@ -124,7 +124,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are not authenticated or did not join a group yet..
+        ///   Looks up a localized string similar to You are not authenticated or have not joined a group yet..
         /// </summary>
         internal static string SubmitFlagAsync_NoGroup {
             get {

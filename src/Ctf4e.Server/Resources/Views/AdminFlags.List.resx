@@ -63,7 +63,7 @@
         <comment>Flags:BugBounty</comment>
     </data>
     <data name="CreateFlag" xml:space="preserve">
-        <value>CreateFlag</value>
+        <value>Create flag</value>
         <comment>CreateFlag</comment>
     </data>
     <data name="Modal:DeleteFlag:Submit" xml:space="preserve">

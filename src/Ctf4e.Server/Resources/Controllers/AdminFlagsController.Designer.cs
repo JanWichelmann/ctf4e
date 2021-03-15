@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the flag. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the flag. Check the log for more details..
         /// </summary>
         internal static string CreateFlagAsync_UnknownError {
             get {
@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the flag. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the flag. Check the log for more details..
         /// </summary>
         internal static string DeleteFlagAsync_UnknownError {
             get {
@@ -124,7 +124,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the flag. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the flag. Check the log for more details..
         /// </summary>
         internal static string EditFlagAsync_UnknownError {
             get {

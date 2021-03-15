@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the lab. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the lab. Check the log for more details..
         /// </summary>
         internal static string CreateLabAsync_UnknownError {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the lab. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the lab. Check the log for more details..
         /// </summary>
         internal static string DeleteLabAsync_UnknownError {
             get {
@@ -142,7 +142,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the lab. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the lab. Check the log for more details..
         /// </summary>
         internal static string EditLabAsync_UnknownError {
             get {

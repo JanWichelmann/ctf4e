@@ -91,7 +91,7 @@
         <comment>Solved</comment>
     </data>
     <data name="NotSolved" xml:space="preserve">
-        <value>NotSolved</value>
+        <value>Not solved</value>
         <comment>NotSolved</comment>
     </data>
     <data name="ExerciseSubmissions:Timestamp" xml:space="preserve">

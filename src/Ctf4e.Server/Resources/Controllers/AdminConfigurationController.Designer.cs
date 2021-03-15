@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the configuration. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the configuration. Check the log for more details..
         /// </summary>
         internal static string UpdateConfigAsync_UnknownError {
             get {

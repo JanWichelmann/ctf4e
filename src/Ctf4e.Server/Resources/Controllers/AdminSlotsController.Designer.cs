@@ -70,7 +70,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The slot was created successfully..
+        ///   Looks up a localized string similar to The time slot was created successfully..
         /// </summary>
         internal static string CreateSlotAsync_Success {
             get {
@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the slot. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the time slot. Check the log for more details..
         /// </summary>
         internal static string CreateSlotAsync_UnknownError {
             get {
@@ -88,7 +88,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The slot must not have groups..
+        ///   Looks up a localized string similar to The time slot must not have any groups..
         /// </summary>
         internal static string DeleteSlotAsync_HasGroups {
             get {
@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This slot does not exist..
+        ///   Looks up a localized string similar to This time slot does not exist..
         /// </summary>
         internal static string DeleteSlotAsync_NotFound {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the slot. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the time slot. Check the log for more details..
         /// </summary>
         internal static string DeleteSlotAsync_UnknownError {
             get {
@@ -142,7 +142,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the slot. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the time slot. Check the log for more details..
         /// </summary>
         internal static string EditSlotAsync_UnknownError {
             get {
@@ -160,7 +160,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This slot does not exist..
+        ///   Looks up a localized string similar to This time slot does not exist..
         /// </summary>
         internal static string ShowEditSlotFormAsync_NotFound {
             get {

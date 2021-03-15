@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Done? Great! Please check all inputs once again. After the group was created, you will be logged out and need to login again. Then, you have access to your group dashboard..
+        ///   Looks up a localized string similar to Done? Great! Please check all inputs once again. After the group has been created, you will be logged out and need to login again. Then, you will have access to your group dashboard..
         /// </summary>
         internal static string Form_FinalText {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you check this field, you participate on the course&apos;s Capture-The-Flag competition, and the name of your group will be shown in the scoreboard. Participation in the CTF is optional and has no disadvantages. The scoreboard only shows the top scores..
+        ///   Looks up a localized string similar to If you check this field, you participate in the course&apos;s Capture-The-Flag competition, and the name of your group will be shown in the scoreboard. Participation in the CTF is optional and has no disadvantages. The scoreboard only shows the top scores..
         /// </summary>
         internal static string Form_ShowInScoreboard_Description {
             get {

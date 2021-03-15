@@ -27,7 +27,7 @@
         <comment>UpdateConfigAsync:Success</comment>
     </data>
     <data name="UpdateConfigAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the configuration. Check the log for more details.</value>
+        <value>An error occured while updating the configuration. Check the log for more details.</value>
         <comment>UpdateConfigAsync:UnknownError</comment>
     </data>
 </root>

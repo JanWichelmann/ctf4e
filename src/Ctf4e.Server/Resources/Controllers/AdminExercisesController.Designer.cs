@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the exercise. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the exercise. Check the log for more details..
         /// </summary>
         internal static string CreateExerciseAsync_UnknownError {
             get {
@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the exercise. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the exercise. Check the log for more details..
         /// </summary>
         internal static string DeleteExerciseAsync_UnknownError {
             get {
@@ -124,7 +124,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the exercise. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the exercise. Check the log for more details..
         /// </summary>
         internal static string EditExerciseAsync_UnknownError {
             get {

@@ -57,11 +57,11 @@
         <comment>StartForOneGroup</comment>
     </data>
     <data name="StartForSlot" xml:space="preserve">
-        <value>Start lab for all groups of a slot</value>
+        <value>Start lab for all groups of a time slot</value>
         <comment>StartForSlot</comment>
     </data>
     <data name="StopForSlot" xml:space="preserve">
-        <value>Stop lab for all groups of a slot</value>
+        <value>Stop lab for all groups of a time slot</value>
         <comment>StopForSlot</comment>
     </data>
     <data name="LabExecutions:Group" xml:space="preserve">
@@ -97,7 +97,7 @@
         <comment>Modal:DeleteLabExecutionGroup:Submit</comment>
     </data>
     <data name="Modal:DeleteLabExecutionsSlot:Title" xml:space="preserve">
-        <value>Delete all lab executions for slot</value>
+        <value>Delete all lab executions for time slot</value>
         <comment>Modal:DeleteLabExecutionsSlot:Title</comment>
     </data>
     <data name="Modal:DeleteLabExecutionsSlot:Body" xml:space="preserve">
@@ -113,11 +113,11 @@
         <comment>Modal:DeleteLabExecutionsSlot:Form:Lab:Placeholder</comment>
     </data>
     <data name="Modal:DeleteLabExecutionsSlot:Form:Slot" xml:space="preserve">
-        <value>Slot</value>
+        <value>Time slot</value>
         <comment>Modal:DeleteLabExecutionsSlot:Form:Slot</comment>
     </data>
     <data name="Modal:DeleteLabExecutionsSlot:Form:Slot:Placeholder" xml:space="preserve">
-        <value>Select slot</value>
+        <value>Select time slot</value>
         <comment>Modal:DeleteLabExecutionsSlot:Form:Slot:Placeholder</comment>
     </data>
     <data name="Modal:DeleteLabExecutionsSlot:Submit" xml:space="preserve">

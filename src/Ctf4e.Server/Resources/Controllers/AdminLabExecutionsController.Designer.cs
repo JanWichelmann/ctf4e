@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the lab execution. Maybe there is already a lab execution for the given group? Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the lab execution. Maybe there is already a lab execution for the given group? Check the log for more details..
         /// </summary>
         internal static string CreateLabExecutionForGroupAsync_UnknownError {
             get {
@@ -142,7 +142,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the lab execution. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the lab execution. Check the log for more details..
         /// </summary>
         internal static string DeleteLabExecutionForGroupAsync_UnknownError {
             get {
@@ -160,7 +160,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the lab execution(s). Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the lab execution(s). Check the log for more details..
         /// </summary>
         internal static string DeleteLabExecutionForSlotAsync_UnknownError {
             get {
@@ -187,7 +187,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the lab execution. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the lab execution. Check the log for more details..
         /// </summary>
         internal static string EditLabExecutionAsync_UnknownError {
             get {
@@ -214,7 +214,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Note: Editing an active lab execution may lead to changes of the &quot;passed&quot; status and shifts in the scoreboard. Exercise and flag submissions won&apos;t be deleted, even if those would not be possible under the new begin and end times..
+        ///   Looks up a localized string similar to Note: Editing an active lab execution may lead to changes of the &quot;passed&quot; status and shifts in the scoreboard. Exercise and flag submissions won&apos;t be deleted, even if they would not be possible within the new beginning and end times..
         /// </summary>
         internal static string ShowEditLabExecutionFormAsync_Warning {
             get {
