@@ -97,6 +97,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export group list as JSON.
+        /// </summary>
+        internal static string DownloadJson {
+            get {
+                return ResourceManager.GetString("DownloadJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         internal static string Edit {

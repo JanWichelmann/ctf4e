@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
+using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -183,6 +185,23 @@ namespace Ctf4e.Server.Controllers
             }
 
             return await RenderGroupListAsync();
+        }
+
+        [HttpGet("sync/json")]
+        public async Task<IActionResult> DownloadAsJsonAsync([FromServices] IDumpService dumpService)
+        {
+            try
+            {
+                string json = await dumpService.GetGroupDataAsync(HttpContext.RequestAborted);
+                return File(Encoding.UTF8.GetBytes(json), "text/json", "groups.json");
+            }
+            catch(InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Download as JSON");
+                AddStatusMessage(_localizer["DownloadAsJsonAsync:UnknownError"], StatusMessageTypes.Error);
+            }
+
+            return await RenderAsync(0, 0);
         }
 
         public enum ViewType

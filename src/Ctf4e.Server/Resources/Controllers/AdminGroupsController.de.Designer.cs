@@ -124,6 +124,15 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Beim Sammeln der Gruppendaten ist ein Fehler aufgetreten. Weitere Details finden sich im Log..
+        /// </summary>
+        internal static string DownloadAsJsonAsync_UnknownError {
+            get {
+                return ResourceManager.GetString("DownloadAsJsonAsync:UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ungültige Eingabe..
         /// </summary>
         internal static string EditGroupAsync_InvalidInput {

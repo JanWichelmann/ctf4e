@@ -91,3 +91,8 @@ document.getElementById("modal-delete-group").addEventListener("show.bs.modal", 
 
 window.addEventListener("load", e => table_sorting());
 </script>
+
+<a class="btn btn-primary mb-2" asp-controller="AdminGroups" asp-action="DownloadAsJson">
+    <i class="bi bi-download"></i>
+    @Localizer["DownloadJson"]
+</a>

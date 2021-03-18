@@ -66,4 +66,8 @@
         <value>Die Gruppe muss leer sein, bevor sie gelöscht werden kann.</value>
         <comment>DeleteGroupAsync:GroupNotEmpty</comment>
     </data>
+    <data name="DownloadAsJsonAsync:UnknownError" xml:space="preserve">
+        <value>Beim Sammeln der Gruppendaten ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
+        <comment>DownloadAsJsonAsync:UnknownError</comment>
+    </data>
 </root>

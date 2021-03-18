@@ -95,6 +95,7 @@ namespace Ctf4e.Server
             // Export/sync services
             services.AddScoped<IMoodleService, MoodleService>();
             services.AddScoped<ICsvService, CsvService>();
+            services.AddScoped<IDumpService, DumpService>();
 
             // Change name of antiforgery cookie
             services.AddAntiforgery(options =>

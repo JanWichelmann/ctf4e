@@ -74,4 +74,8 @@
         <value>Gruppe löschen</value>
         <comment>Modal:DeleteGroup:Submit</comment>
     </data>
+    <data name="DownloadJson" xml:space="preserve">
+        <value>Gruppenliste als JSON exportieren</value>
+        <comment>DownloadJson</comment>
+    </data>
 </root>

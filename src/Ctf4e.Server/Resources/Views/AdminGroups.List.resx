@@ -74,4 +74,8 @@
         <value>Delete group</value>
         <comment>Modal:DeleteGroup:Submit</comment>
     </data>
+    <data name="DownloadJson" xml:space="preserve">
+        <value>Export group list as JSON</value>
+        <comment>DownloadJson</comment>
+    </data>
 </root>
