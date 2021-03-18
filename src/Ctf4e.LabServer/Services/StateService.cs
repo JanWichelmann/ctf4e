@@ -113,14 +113,19 @@ namespace Ctf4e.LabServer.Services
             // Read exercises
             _exercises = new SortedDictionary<int, LabConfigurationExerciseEntry>(_labConfiguration.CurrentConfiguration.Exercises.ToDictionary(e => e.Id));
 
+            // Ensure that the user state directory exists
+            var userStateDirectory = new DirectoryInfo(_options.Value.UserStateDirectory);
+            if(!userStateDirectory.Exists)
+                userStateDirectory.Create();
+            
             // Read user data
             _userStates = new ConcurrentDictionary<int, UserState>();
             Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
-            foreach(string userStateFileName in Directory.GetFiles(_options.Value.UserStateDirectory, "u*.json"))
+            foreach(var userStateFileInfo in userStateDirectory.EnumerateFiles("u*.json"))
             {
                 // Read file
-                int userId = int.Parse(userIdRegex.Match(userStateFileName).Groups[1].Value);
-                var userStateFile = ReadUserStateFile(userStateFileName);
+                int userId = int.Parse(userIdRegex.Match(userStateFileInfo.Name).Groups[1].Value);
+                var userStateFile = ReadUserStateFile(userStateFileInfo.Name);
                 if(userStateFile == null)
                 {
                     throw new Exception($"Could not read state file for user #{userId}");
