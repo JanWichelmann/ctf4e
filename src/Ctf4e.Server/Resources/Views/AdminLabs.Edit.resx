@@ -74,4 +74,12 @@
         <value>This controls the maximum points which can be earned by flags. Bug bounties are exempt from this limit.</value>
         <comment>Form:MaxFlagPoints:Description</comment>
     </data>
+    <data name="Form:Visible" xml:space="preserve">
+        <value>Visible</value>
+        <comment>Form:Visible</comment>
+    </data>
+    <data name="Form:Visible:Description" xml:space="preserve">
+        <value>This controls whether the lab is listed in the scoreboard and the lab dashboard. It is still graded, and participants can access it if they guess the URL.</value>
+        <comment>Form:Visible:Description</comment>
+    </data>
 </root>

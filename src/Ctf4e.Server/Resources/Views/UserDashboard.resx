@@ -162,4 +162,8 @@
         <value>Go to selected lab</value>
         <comment>SwitchLab:Submit</comment>
     </data>
+    <data name="SwitchLab:Hidden" xml:space="preserve">
+        <value>hidden</value>
+        <comment>SwitchLab:Hidden</comment>
+    </data>
 </root>

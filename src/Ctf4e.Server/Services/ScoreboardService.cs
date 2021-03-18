@@ -1009,7 +1009,8 @@ namespace Ctf4e.Server.Services
                     LabId = l.Id,
                     Name = l.Name,
                     ServerBaseUrl = l.ServerBaseUrl,
-                    Active = l.Executions.Any(le => le.GroupId == groupId && le.PreStart <= now && now < le.End)
+                    Active = l.Executions.Any(le => le.GroupId == groupId && le.PreStart <= now && now < le.End),
+                    Visible = l.Visible
                 })
                 .ToListAsync(cancellationToken);
 

@@ -3,14 +3,16 @@ using System;
 using Ctf4e.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Ctf4e.Server.Migrations
 {
     [DbContext(typeof(CtfDbContext))]
-    partial class CtfDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210318164543_AddLabVisibleColumn")]
+    partial class AddLabVisibleColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

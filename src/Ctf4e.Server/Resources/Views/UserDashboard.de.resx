@@ -162,4 +162,8 @@
         <value>Zu ausgewähltem Praktikum wechseln</value>
         <comment>SwitchLab:Submit</comment>
     </data>
+    <data name="SwitchLab:Hidden" xml:space="preserve">
+        <value>versteckt</value>
+        <comment>SwitchLab:Hidden</comment>
+    </data>
 </root>

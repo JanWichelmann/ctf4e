@@ -367,6 +367,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to versteckt.
+        /// </summary>
+        internal static string SwitchLab_Hidden {
+            get {
+                return ResourceManager.GetString("SwitchLab:Hidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Zu ausgewähltem Praktikum wechseln.
         /// </summary>
         internal static string SwitchLab_Submit {

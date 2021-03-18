@@ -58,4 +58,12 @@
         <value>Dies legt die maximale Punktzahl fest, die durch Flags erreicht werden kann. Bug-Bounties sind hiervon ausgenommen.</value>
         <comment>Form:MaxFlagPoints:Description</comment>
     </data>
+    <data name="Form:Visible" xml:space="preserve">
+        <value>Sichtbar</value>
+        <comment>Form:Visible</comment>
+    </data>
+    <data name="Form:Visible:Description" xml:space="preserve">
+        <value>Dies legt fest, ob das Praktikum im Scoreboard und in der Praktikumsübersicht aufgelistet wird. Es wird weiterhin bewertet und ist auch für alle Teilnehmer zugreifbar, sofern diese die URL erraten.</value>
+        <comment>Form:Visible:Description</comment>
+    </data>
 </root>

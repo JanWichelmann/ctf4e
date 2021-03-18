@@ -26,6 +26,8 @@ namespace Ctf4e.Server.Data.Entities
         public int MaxPoints { get; set; }
 
         public int MaxFlagPoints { get; set; }
+        
+        public bool Visible { get; set; }
 
         public ICollection<LabExecutionEntity> Executions { get; set; }
 

@@ -42,6 +42,8 @@ namespace Ctf4e.Server.ViewModels
         public string ServerBaseUrl { get; set; }
 
         public bool Active { get; set; }
+        
+        public bool Visible { get; set; }
     }
 
     public class UserScoreboardFlagEntry

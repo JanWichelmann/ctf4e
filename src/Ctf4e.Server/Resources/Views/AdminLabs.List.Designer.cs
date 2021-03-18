@@ -178,6 +178,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Visible?.
+        /// </summary>
+        internal static string Labs_Visible {
+            get {
+                return ResourceManager.GetString("Labs:Visible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;p&gt;Do you really want to delete the lab &amp;quot;&lt;span data-replace=&quot;lab-name&quot;&gt;&lt;/span&gt;&amp;quot;?&lt;/p&gt;&lt;p&gt;Note that this will also delete all associated exercises and flags!&lt;/p&gt;.
         /// </summary>
         internal static string Modal_DeleteLab_Body {

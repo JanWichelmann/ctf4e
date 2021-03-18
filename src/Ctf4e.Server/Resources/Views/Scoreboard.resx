@@ -102,4 +102,8 @@
         <value>Time slot: {0}</value>
         <comment>Title:Slot</comment>
     </data>
+    <data name="SelectScoreboard:HiddenLab" xml:space="preserve">
+        <value>(hidden)</value>
+        <comment>SelectScoreboard:HiddenLab</comment>
+    </data>
 </root>

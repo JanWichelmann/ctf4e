@@ -178,6 +178,24 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sichtbar.
+        /// </summary>
+        internal static string Form_Visible {
+            get {
+                return ResourceManager.GetString("Form:Visible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dies legt fest, ob das Praktikum im Scoreboard und in der Praktikumsübersicht aufgelistet wird. Es wird weiterhin bewertet und ist auch für alle Teilnehmer zugreifbar, sofern diese die URL erraten..
+        /// </summary>
+        internal static string Form_Visible_Description {
+            get {
+                return ResourceManager.GetString("Form:Visible:Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Praktikum bearbeiten.
         /// </summary>
         internal static string Title {

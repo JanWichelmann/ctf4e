@@ -39,6 +39,16 @@
             @Localizer["Form:MaxFlagPoints:Description"]
         </small>
     </div>
+    <div class="mb-3">
+        <div class="form-check">
+            <input asp-for="Visible" class="form-check-input">
+            <label asp-for="Visible" class="form-check-label">@Localizer["Form:Visible"]</label>
+            <br>
+            <small class="form-text text-muted">
+                @Localizer["Form:Visible:Description"]
+            </small>
+        </div>
+    </div>
     
     <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
     <a asp-controller="AdminLabs" asp-action="RenderLabList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>

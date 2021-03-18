@@ -102,4 +102,8 @@
         <value>Terminslot: {0}</value>
         <comment>Title:Slot</comment>
     </data>
+    <data name="SelectScoreboard:HiddenLab" xml:space="preserve">
+        <value>(versteckt)</value>
+        <comment>SelectScoreboard:HiddenLab</comment>
+    </data>
 </root>

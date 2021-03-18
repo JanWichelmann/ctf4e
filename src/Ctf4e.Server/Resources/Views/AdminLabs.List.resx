@@ -86,4 +86,8 @@
         <value>Max. points</value>
         <comment>Labs:MaximumPoints</comment>
     </data>
+    <data name="Labs:Visible" xml:space="preserve">
+        <value>Visible?</value>
+        <comment>Labs:Visible</comment>
+    </data>
 </root>

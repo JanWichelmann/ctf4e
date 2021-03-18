@@ -79,6 +79,7 @@ namespace Ctf4e.Server.Services
                 ServerBaseUrl = lab.ServerBaseUrl,
                 MaxPoints = lab.MaxPoints,
                 MaxFlagPoints = lab.MaxFlagPoints,
+                Visible = lab.Visible,
                 Exercises = new List<ExerciseEntity>(),
                 Flags = new List<FlagEntity>(),
                 Executions = new List<LabExecutionEntity>()
@@ -102,6 +103,7 @@ namespace Ctf4e.Server.Services
             labEntity.ServerBaseUrl = lab.ServerBaseUrl;
             labEntity.MaxPoints = lab.MaxPoints;
             labEntity.MaxFlagPoints = lab.MaxFlagPoints;
+            labEntity.Visible = lab.Visible;
 
             // Apply changes
             await _dbContext.SaveChangesAsync(cancellationToken);

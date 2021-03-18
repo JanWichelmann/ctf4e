@@ -92,6 +92,7 @@ namespace Ctf4e.Server.Controllers
                 lab.ServerBaseUrl = labData.ServerBaseUrl;
                 lab.MaxPoints = labData.MaxPoints;
                 lab.MaxFlagPoints = labData.MaxFlagPoints;
+                lab.Visible = labData.Visible;
                 await _labService.UpdateLabAsync(lab, HttpContext.RequestAborted);
 
                 AddStatusMessage(_localizer["EditLabAsync:Success"], StatusMessageTypes.Success);
@@ -132,7 +133,8 @@ namespace Ctf4e.Server.Controllers
                     ApiCode = labData.ApiCode,
                     ServerBaseUrl = labData.ServerBaseUrl,
                     MaxPoints = labData.MaxPoints,
-                    MaxFlagPoints = labData.MaxFlagPoints
+                    MaxFlagPoints = labData.MaxFlagPoints,
+                    Visible = labData.Visible
                 };
                 await _labService.CreateLabAsync(lab, HttpContext.RequestAborted);
 

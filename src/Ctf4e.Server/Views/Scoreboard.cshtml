@@ -161,9 +161,28 @@
     <hr class="header-secondary">
 
     <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
+        @{
+            // Handle visible/hidden labs
+            IEnumerable<Lab> filteredLabs;
+            if(currentUser.IsAdmin || currentUser.IsTutor)
+            {
+                filteredLabs = labs;
+                foreach(var l in filteredLabs)
+                {
+                    if(!l.Visible)
+                    {
+                        l.Name += " " + Localizer.GetString("SelectScoreboard:HiddenLab");
+                    }
+                }
+            }
+            else
+            {
+                filteredLabs = labs.Where(l => l.Visible).ToList();
+            }
+        }
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">@Localizer["SelectScoreboard"]</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
+            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
                 <option value="" selected>@Localizer["AllLabs"]</option>
             </select>
         </div>

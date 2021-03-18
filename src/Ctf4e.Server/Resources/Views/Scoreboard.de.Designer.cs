@@ -178,6 +178,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (versteckt).
+        /// </summary>
+        internal static string SelectScoreboard_HiddenLab {
+            get {
+                return ResourceManager.GetString("SelectScoreboard:HiddenLab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Terminslot auswählen.
         /// </summary>
         internal static string SelectSlot {

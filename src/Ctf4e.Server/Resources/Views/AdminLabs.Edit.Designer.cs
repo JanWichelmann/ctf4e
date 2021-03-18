@@ -178,6 +178,24 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Visible.
+        /// </summary>
+        internal static string Form_Visible {
+            get {
+                return ResourceManager.GetString("Form:Visible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This controls whether the lab is listed in the scoreboard and the lab dashboard. It is still graded, and participants can access it if they guess the URL..
+        /// </summary>
+        internal static string Form_Visible_Description {
+            get {
+                return ResourceManager.GetString("Form:Visible:Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit lab.
         /// </summary>
         internal static string Title {
