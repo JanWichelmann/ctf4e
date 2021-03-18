@@ -19,7 +19,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="RenderAsync:NoGroup" xml:space="preserve">
-        <value>You are not authenticated or did not join a group yet.</value>
+        <value>You are not authenticated or have not joined a group yet.</value>
         <comment>RenderAsync:NoGroup</comment>
     </data>
     <data name="RenderAsync:NoActiveLab" xml:space="preserve">
@@ -31,7 +31,7 @@
         <comment>RenderAsync:EmptyScoreboard</comment>
     </data>
     <data name="SubmitFlagAsync:NoGroup" xml:space="preserve">
-        <value>You are not authenticated or did not join a group yet.</value>
+        <value>You are not authenticated or have not joined a group yet.</value>
         <comment>SubmitFlagAsync:NoGroup</comment>
     </data>
     <data name="SubmitFlagAsync:Success" xml:space="preserve">
@@ -51,7 +51,7 @@
         <comment>CallLabServerAsync:LabNotActive</comment>
     </data>
     <data name="CallLabServerAsync:NoGroup" xml:space="preserve">
-        <value>You are not authenticated or did not join a group yet.</value>
+        <value>You are not authenticated or have not joined a group yet.</value>
         <comment>CallLabServerAsync:NoGroup</comment>
     </data>
 </root>

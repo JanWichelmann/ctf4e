@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create slot.
+        ///   Looks up a localized string similar to Create time slot.
         /// </summary>
         internal static string Form_Submit {
             get {
@@ -88,7 +88,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create slot.
+        ///   Looks up a localized string similar to Create time slot.
         /// </summary>
         internal static string Title {
             get {

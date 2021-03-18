@@ -23,7 +23,7 @@
         <comment>DeleteExerciseSubmissionAsync:Success</comment>
     </data>
     <data name="DeleteExerciseSubmissionAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the exercise submission. Check the log for more details.</value>
+        <value>An error occured while deleting the exercise submission. Check the log for more details.</value>
         <comment>DeleteExerciseSubmissionAsync:UnknownError</comment>
     </data>
     <data name="DeleteExerciseSubmissionsAsync:Success" xml:space="preserve">
@@ -31,7 +31,7 @@
         <comment>DeleteExerciseSubmissionsAsync:Success</comment>
     </data>
     <data name="DeleteExerciseSubmissionsAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the exercise submissions. Check the log for more details.</value>
+        <value>An error occured while deleting the exercise submissions. Check the log for more details.</value>
         <comment>DeleteExerciseSubmissionsAsync:UnknownError</comment>
     </data>
     <data name="CreateExerciseSubmissionAsync:Success" xml:space="preserve">
@@ -39,7 +39,7 @@
         <comment>CreateExerciseSubmissionAsync:Success</comment>
     </data>
     <data name="CreateExerciseSubmissionAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when creating the exercise submission. Check the log for more details.</value>
+        <value>An error occured while creating the exercise submission. Check the log for more details.</value>
         <comment>CreateExerciseSubmissionAsync:UnknownError</comment>
     </data>
     <data name="DeleteFlagSubmissionAsync:Success" xml:space="preserve">
@@ -47,7 +47,7 @@
         <comment>DeleteFlagSubmissionAsync:Success</comment>
     </data>
     <data name="DeleteFlagSubmissionAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the flag submission. Check the log for more details.</value>
+        <value>An error occured while deleting the flag submission. Check the log for more details.</value>
         <comment>DeleteFlagSubmissionAsync:UnknownError</comment>
     </data>
     <data name="CreateFlagSubmissionAsync:Success" xml:space="preserve">
@@ -55,19 +55,19 @@
         <comment>CreateFlagSubmissionAsync:Success</comment>
     </data>
     <data name="CreateFlagSubmissionAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when creating the flag submission. Check the log for more details.</value>
+        <value>An error occured while creating the flag submission. Check the log for more details.</value>
         <comment>CreateFlagSubmissionAsync:UnknownError</comment>
     </data>
     <data name="UploadToMoodleAsync:Success" xml:space="preserve">
-        <value>The Moodle upload was completed successfully.</value>
+        <value>The Moodle upload has completed successfully.</value>
         <comment>UploadToMoodleAsync:Success</comment>
     </data>
     <data name="UploadToMoodleAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when collecting and uploading the data. Check the log for more details.</value>
+        <value>An error occured while collecting and uploading the data. Check the log for more details.</value>
         <comment>UploadToMoodleAsync:UnknownError</comment>
     </data>
     <data name="DownloadAsCsvAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when generating the CSV file. Check the log for more details.</value>
+        <value>An error occured while generating the CSV file. Check the log for more details.</value>
         <comment>DownloadAsCsvAsync:UnknownError</comment>
     </data>
     <data name="CallLabServerAsync:NotFound" xml:space="preserve">

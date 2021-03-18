@@ -97,7 +97,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This overrides all lab executions that may already exist for certain groups in the selected slot..
+        ///   Looks up a localized string similar to This overrides all lab executions that may already exist for certain groups in the selected time slot..
         /// </summary>
         internal static string Form_OverrideExisting_Description {
             get {
@@ -106,7 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slot.
+        ///   Looks up a localized string similar to Time slot.
         /// </summary>
         internal static string Form_SlotId {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select slot.
+        ///   Looks up a localized string similar to Select time slot.
         /// </summary>
         internal static string Form_SlotId_Placeholder {
             get {

@@ -40,7 +40,7 @@
         <value>Labs</value>
     </data>
     <data name="MenuItems:Admin:Slots" xml:space="preserve">
-        <value>Slots</value>
+        <value>Time slots</value>
     </data>
     <data name="MenuItems:Admin:LabExecutions" xml:space="preserve">
         <value>Active Labs</value>

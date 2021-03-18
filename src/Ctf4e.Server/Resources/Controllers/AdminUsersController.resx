@@ -35,7 +35,7 @@
         <comment>EditUserAsync:Success</comment>
     </data>
     <data name="EditUserAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the user. Check the log for more details.</value>
+        <value>An error occured while updating the user. Check the log for more details.</value>
         <comment>EditUserAsync:UnknownError</comment>
     </data>
 </root>

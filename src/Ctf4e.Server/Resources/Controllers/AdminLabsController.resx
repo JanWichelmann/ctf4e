@@ -35,7 +35,7 @@
         <comment>EditLabAsync:Success</comment>
     </data>
     <data name="EditLabAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when updating the lab. Check the log for more details.</value>
+        <value>An error occured while updating the lab. Check the log for more details.</value>
         <comment>EditLabAsync:UnknownError</comment>
     </data>
     <data name="CreateLabAsync:InvalidInput" xml:space="preserve">
@@ -47,7 +47,7 @@
         <comment>CreateLabAsync:Success</comment>
     </data>
     <data name="CreateLabAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when creating the lab. Check the log for more details.</value>
+        <value>An error occured while creating the lab. Check the log for more details.</value>
         <comment>CreateLabAsync:UnknownError</comment>
     </data>
     <data name="DeleteLabAsync:NotFound" xml:space="preserve">
@@ -59,7 +59,7 @@
         <comment>DeleteLabAsync:Success</comment>
     </data>
     <data name="DeleteLabAsync:UnknownError" xml:space="preserve">
-        <value>An error occured when deleting the lab. Check the log for more details.</value>
+        <value>An error occured while deleting the lab. Check the log for more details.</value>
         <comment>DeleteLabAsync:UnknownError</comment>
     </data>
     <data name="DeleteLabAsync:HasExecutions" xml:space="preserve">

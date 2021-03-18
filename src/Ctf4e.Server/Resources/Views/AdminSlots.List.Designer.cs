@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create slot.
+        ///   Looks up a localized string similar to Create time slot.
         /// </summary>
         internal static string CreateSlot {
             get {
@@ -106,7 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you really want to delete the slot &amp;quot;&lt;span data-replace=&quot;slot-name&quot;&gt;&lt;/span&gt;&amp;quot;?.
+        ///   Looks up a localized string similar to Do you really want to delete the time slot &amp;quot;&lt;span data-replace=&quot;slot-name&quot;&gt;&lt;/span&gt;&amp;quot;?.
         /// </summary>
         internal static string Modal_DeleteSlot_Body {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete slot.
+        ///   Looks up a localized string similar to Delete time slot.
         /// </summary>
         internal static string Modal_DeleteSlot_Submit {
             get {
@@ -124,7 +124,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete slot.
+        ///   Looks up a localized string similar to Delete time slot.
         /// </summary>
         internal static string Modal_DeleteSlot_Title {
             get {
@@ -160,7 +160,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage slots.
+        ///   Looks up a localized string similar to Manage time slots.
         /// </summary>
         internal static string Title {
             get {

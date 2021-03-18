@@ -124,7 +124,7 @@ namespace Ctf4e.Server.Resources.Views.Shared {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slots.
+        ///   Looks up a localized string similar to Time slots.
         /// </summary>
         internal static string MenuItems_Admin_Slots {
             get {

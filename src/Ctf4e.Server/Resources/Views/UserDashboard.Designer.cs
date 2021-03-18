@@ -322,7 +322,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NotSolved.
+        ///   Looks up a localized string similar to Not solved.
         /// </summary>
         internal static string NotSolved {
             get {

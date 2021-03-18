@@ -87,7 +87,7 @@
         <comment>ShowSelectedScoreboard</comment>
     </data>
     <data name="SelectSlot" xml:space="preserve">
-        <value>Select slot</value>
+        <value>Select time slot</value>
         <comment>SelectSlot</comment>
     </data>
     <data name="AllSlots" xml:space="preserve">
@@ -95,11 +95,11 @@
         <comment>AllSlots</comment>
     </data>
     <data name="Title:AllSlots" xml:space="preserve">
-        <value>All slots</value>
+        <value>All time slots</value>
         <comment>Title:AllSlots</comment>
     </data>
     <data name="Title:Slot" xml:space="preserve">
-        <value>Slot: {0}</value>
+        <value>Time slot: {0}</value>
         <comment>Title:Slot</comment>
     </data>
 </root>

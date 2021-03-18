@@ -70,7 +70,7 @@ namespace Ctf4e.LabServer.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when reading the configuration file. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while reading the configuration file. Check the log for more details..
         /// </summary>
         internal static string RenderAsync_UnknownError {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.LabServer.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the configuration. Possibly this left the system in an inconsistent state. It is recommend to check the current configuration and perform a restart. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the configuration. Possibly this has left the system in an inconsistent state. It is recommend to check the current configuration and perform a restart. Check the log for more details..
         /// </summary>
         internal static string UpdateConfigurationAsync_UnknownError {
             get {
@@ -124,7 +124,7 @@ namespace Ctf4e.LabServer.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to During validation an error was detected: {0}.
+        ///   Looks up a localized string similar to An error was detected during validation : {0}.
         /// </summary>
         internal static string UpdateConfigurationAsync_ValidationError {
             get {

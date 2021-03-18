@@ -55,11 +55,11 @@
         <comment>Form:ShowInScoreboard</comment>
     </data>
     <data name="Form:ShowInScoreboard:Description" xml:space="preserve">
-        <value>If you check this field, you participate on the course's Capture-The-Flag competition, and the name of your group will be shown in the scoreboard. Participation in the CTF is optional and has no disadvantages. The scoreboard only shows the top scores.</value>
+        <value>If you check this field, you participate in the course's Capture-The-Flag competition, and the name of your group will be shown in the scoreboard. Participation in the CTF is optional and has no disadvantages. The scoreboard only shows the top scores.</value>
         <comment>Form:ShowInScoreboard:Description</comment>
     </data>
     <data name="Form:FinalText" xml:space="preserve">
-        <value>Done? Great! Please check all inputs once again. After the group was created, you will be logged out and need to login again. Then, you have access to your group dashboard.</value>
+        <value>Done? Great! Please check all inputs once again. After the group has been created, you will be logged out and need to login again. Then, you will have access to your group dashboard.</value>
         <comment>Form:FinalText</comment>
     </data>
     <data name="Form:Submit" xml:space="preserve">

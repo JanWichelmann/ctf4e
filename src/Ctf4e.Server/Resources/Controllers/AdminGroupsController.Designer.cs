@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when creating the group. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while creating the group. Check the log for more details..
         /// </summary>
         internal static string CreateGroupAsync_UnknownError {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when deleting the group. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while deleting the group. Check the log for more details..
         /// </summary>
         internal static string DeleteGroupAsync_UnknownError {
             get {
@@ -142,7 +142,7 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occured when updating the group. Check the log for more details..
+        ///   Looks up a localized string similar to An error occured while updating the group. Check the log for more details..
         /// </summary>
         internal static string EditGroupAsync_UnknownError {
             get {
