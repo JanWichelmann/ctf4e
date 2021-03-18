@@ -70,6 +70,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Group view.
+        /// </summary>
+        internal static string SwitchScoreboard_GroupMode {
+            get {
+                return ResourceManager.GetString("SwitchScoreboard:GroupMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lab.
         /// </summary>
         internal static string SwitchScoreboard_Lab {

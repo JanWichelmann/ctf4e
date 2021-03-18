@@ -46,4 +46,8 @@
         <value>Show scoreboard</value>
         <comment>SwitchScoreboard:Submit</comment>
     </data>
+    <data name="SwitchScoreboard:GroupMode" xml:space="preserve">
+        <value>Group view</value>
+        <comment>SwitchScoreboard:GroupMode</comment>
+    </data>
 </root>

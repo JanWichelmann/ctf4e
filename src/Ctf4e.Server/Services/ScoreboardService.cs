@@ -20,7 +20,7 @@ namespace Ctf4e.Server.Services
 {
     public interface IScoreboardService
     {
-        Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default);
+        Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, CancellationToken cancellationToken = default);
         Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
         Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
         Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default);
@@ -52,7 +52,7 @@ namespace Ctf4e.Server.Services
             _dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
         }
 
-        public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, CancellationToken cancellationToken = default)
+        public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, CancellationToken cancellationToken = default)
         {
             // Load flag point parameters
             await InitFlagPointParametersAsync(cancellationToken);
@@ -77,10 +77,10 @@ namespace Ctf4e.Server.Services
                 .ToDictionaryAsync(l => l.GroupId, cancellationToken); // Each group ID can only appear once, since it is part of the primary key
 
             var users = await _dbContext.Users.AsNoTracking()
-                .Where(u => u.Group.SlotId == slotId)
+                .Where(u => u.GroupId != null && u.Group.SlotId == slotId)
                 .OrderBy(u => u.DisplayName)
                 .ToListAsync(cancellationToken);
-            var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId);
+            var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId!.Value);
             var userNameLookup = users.ToDictionary(u => u.Id, u => u.DisplayName);
 
             var exercises = await _dbContext.Exercises.AsNoTracking()
@@ -90,7 +90,7 @@ namespace Ctf4e.Server.Services
                 .ToListAsync(cancellationToken);
 
             var exerciseSubmissionsUngrouped = await _dbContext.ExerciseSubmissions.AsNoTracking()
-                .Where(e => e.Exercise.LabId == labId && e.User.Group.SlotId == slotId)
+                .Where(e => e.Exercise.LabId == labId && e.User.GroupId != null && e.User.Group.SlotId == slotId)
                 .OrderBy(e => e.ExerciseId)
                 .ThenBy(e => e.SubmissionTime)
                 .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
@@ -110,7 +110,7 @@ namespace Ctf4e.Server.Services
                 .ToListAsync(cancellationToken);
 
             var flagSubmissionsUngrouped = await _dbContext.FlagSubmissions.AsNoTracking()
-                .Where(f => f.Flag.LabId == labId && f.User.Group.SlotId == slotId)
+                .Where(f => f.Flag.LabId == labId && f.User.GroupId != null && f.User.Group.SlotId == slotId)
                 .ProjectTo<FlagSubmission>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
             var flagSubmissions = flagSubmissionsUngrouped
@@ -158,113 +158,317 @@ namespace Ctf4e.Server.Services
                 Labs = labs,
                 SlotId = slotId,
                 Slots = slots,
+                GroupMode = groupMode,
                 MandatoryExercisesCount = mandatoryExercisesCount,
                 OptionalExercisesCount = exercises.Count - mandatoryExercisesCount,
                 FlagCount = flags.Count,
                 Flags = scoreboardFlagStatus.Select(f => f.Value).ToList(),
                 UserEntries = new List<AdminScoreboardUserEntry>(),
+                GroupEntries = new List<AdminScoreboardGroupEntry>(),
                 PassAsGroup = passAsGroup,
                 UserNames = userNameLookup
             };
 
-            // For each user, collect exercise and flag data
-            foreach(var user in users)
+            // User mode or group mode?
+            // In group mode, we merge all submissions and show them once for each group
+            // In user mode, we have a scoreboard entry for each user
+            //     However, if passing as group is enabled, each user entry still shows all submissions, so the displayed "passed" status makes sense
+            if(groupMode)
             {
-                labExecutions.TryGetValue(user.GroupId ?? -1, out var groupLabExecution);
+                // Retrieve group list
+                var groups = await _dbContext.Groups.AsNoTracking()
+                    .Where(g => g.SlotId == slotId)
+                    .OrderBy(g => g.DisplayName)
+                    .ToListAsync(cancellationToken);
 
-                var userEntry = new AdminScoreboardUserEntry
+                // For each group, collect exercise and flag data
+                var flagSubmissionsByGroup = flagSubmissionsUngrouped
+                    .GroupBy(f => groupIdLookup[f.UserId])
+                    .ToDictionary(
+                        f => f.Key,
+                        f => f.GroupBy(fs => fs.FlagId)
+                            .ToDictionary(fs => fs.Key, fs => fs.ToList()));
+                foreach(var group in groups)
                 {
-                    UserId = user.Id,
-                    UserName = user.DisplayName,
-                    Status = LabExecutionToStatus(now, groupLabExecution),
-                    Exercises = new List<ScoreboardUserExerciseEntry>(),
-                    Flags = new List<AdminScoreboardUserFlagEntry>()
-                };
+                    int groupMemberCount = users.Count(u => u.GroupId == group.Id);
 
-                // Exercises
-                exerciseSubmissions.TryGetValue(passAsGroup ? user.GroupId : user.Id, out var userExerciseSubmissions);
-                int passedMandatoryExercisesCount = 0;
-                int passedOptionalExercisesCount = 0;
-                foreach(var exercise in exercises)
-                {
-                    if(userExerciseSubmissions != null && userExerciseSubmissions.ContainsKey(exercise.Id))
+                    labExecutions.TryGetValue(group.Id, out var groupLabExecution);
+
+                    var groupEntry = new AdminScoreboardGroupEntry
                     {
-                        var submissions = userExerciseSubmissions[exercise.Id];
+                        GroupId = group.Id,
+                        GroupName = group.DisplayName,
+                        Status = LabExecutionToStatus(now, groupLabExecution),
+                        Exercises = new List<ScoreboardUserExerciseEntry>(),
+                        Flags = new List<AdminScoreboardUserFlagEntry>()
+                    };
 
-                        var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
-
-                        userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                    // Exercises
+                    // If passing as group is enabled:
+                    //     The exercise submissions are already accumulated per group, so just run CalculateExerciseStatus on it
+                    // If passing as group is *not* enabled:
+                    //     The exercises submissions are stored per user
+                    //     First check whether each group member has passed an exercise, by looking at their individual submissions
+                    //     Then merge all exercises submissions into one big list, and compute the total tries and points
+                    int passedMandatoryExercisesCount = 0;
+                    int passedOptionalExercisesCount = 0;
+                    if(passAsGroup)
+                    {
+                        // Run through exercises
+                        //    If there are submissions for that exercise, compute points etc.
+                        //    If not, just produce an empty entry
+                        exerciseSubmissions.TryGetValue(group.Id, out var groupExerciseSubmissions);
+                        foreach(var exercise in exercises)
                         {
-                            Exercise = exercise,
-                            Tries = submissions.Count,
-                            ValidTries = validTries,
-                            Passed = passed,
-                            Points = points,
-                            Submissions = submissions
-                        });
+                            if(groupExerciseSubmissions != null && groupExerciseSubmissions.ContainsKey(exercise.Id))
+                            {
+                                var submissions = groupExerciseSubmissions[exercise.Id];
 
-                        if(passed)
-                        {
-                            if(exercise.IsMandatory)
-                                ++passedMandatoryExercisesCount;
+                                var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+
+                                groupEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                                {
+                                    Exercise = exercise,
+                                    Tries = submissions.Count,
+                                    ValidTries = validTries,
+                                    Passed = passed,
+                                    Points = points,
+                                    Submissions = submissions
+                                });
+
+                                if(passed)
+                                {
+                                    if(exercise.IsMandatory)
+                                        ++passedMandatoryExercisesCount;
+                                    else
+                                        ++passedOptionalExercisesCount;
+                                }
+                            }
                             else
-                                ++passedOptionalExercisesCount;
+                            {
+                                groupEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                                {
+                                    Exercise = exercise,
+                                    Tries = 0,
+                                    ValidTries = 0,
+                                    Passed = false,
+                                    Points = 0,
+                                    Submissions = new List<ExerciseSubmission>()
+                                });
+                            }
                         }
                     }
                     else
                     {
-                        userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                        // Run through exercises
+                        var exerciseSubmissionsPerGroupMember = exerciseSubmissions.Where(es => groupIdLookup[es.Key] == group.Id).ToList();
+                        var groupExerciseSubmissions = new Dictionary<int, List<ExerciseSubmission>>();
+                        foreach(var exercise in exercises)
                         {
-                            Exercise = exercise,
-                            Tries = 0,
-                            ValidTries = 0,
-                            Passed = false,
-                            Points = 0,
-                            Submissions = new List<ExerciseSubmission>()
-                        });
-                    }
-                }
+                            // Scan submissions for each group member to find out how many have passed the exercise
+                            int groupMembersPassed = 0;
+                            foreach(var (_, userExerciseSubmissions) in exerciseSubmissionsPerGroupMember)
+                            {
+                                if(userExerciseSubmissions.ContainsKey(exercise.Id))
+                                {
+                                    var submissions = userExerciseSubmissions[exercise.Id];
 
-                // Flags
-                flagSubmissions.TryGetValue(user.Id, out var userFlagSubmissions);
-                int foundFlagsCount = 0;
-                foreach(var flag in flags)
+                                    // Check whether user has passed
+                                    var (passed, _, _) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+                                    if(passed)
+                                        ++groupMembersPassed;
+
+                                    // Store user submissions in flattened list
+                                    if(!groupExerciseSubmissions.ContainsKey(exercise.Id))
+                                        groupExerciseSubmissions.Add(exercise.Id, new List<ExerciseSubmission>());
+
+                                    groupExerciseSubmissions[exercise.Id].AddRange(submissions);
+                                }
+                            }
+
+                            // The exercise is passed if all group members have passed
+                            bool groupPassed = groupMembersPassed == groupMemberCount;
+
+                            // Compute other scoreboard statistics by looking at the entire submission list
+                            if(groupExerciseSubmissions.ContainsKey(exercise.Id))
+                            {
+                                var submissions = groupExerciseSubmissions[exercise.Id];
+
+                                var (_, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+
+                                groupEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                                {
+                                    Exercise = exercise,
+                                    Tries = submissions.Count,
+                                    ValidTries = validTries,
+                                    Passed = groupPassed,
+                                    Points = points,
+                                    Submissions = submissions
+                                });
+
+                                if(groupPassed)
+                                {
+                                    if(exercise.IsMandatory)
+                                        ++passedMandatoryExercisesCount;
+                                    else
+                                        ++passedOptionalExercisesCount;
+                                }
+                            }
+                            else
+                            {
+                                groupEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                                {
+                                    Exercise = exercise,
+                                    Tries = 0,
+                                    ValidTries = 0,
+                                    Passed = false,
+                                    Points = 0,
+                                    Submissions = new List<ExerciseSubmission>()
+                                });
+                            }
+                        }
+                    }
+
+                    // Flags
+                    flagSubmissionsByGroup.TryGetValue(group.Id, out var groupFlagSubmissions);
+                    int foundFlagsCount = 0;
+                    foreach(var flag in flags)
+                    {
+                        if(groupFlagSubmissions != null && groupFlagSubmissions.ContainsKey(flag.Id))
+                        {
+                            var validSubmission = groupFlagSubmissions[flag.Id].FirstOrDefault(fs => CalculateFlagStatus(fs, groupLabExecution));
+                            groupEntry.Flags.Add(new AdminScoreboardUserFlagEntry
+                            {
+                                Flag = flag,
+                                Submitted = true,
+                                Valid = validSubmission != null,
+                                CurrentPoints = scoreboardFlagStatus[flag.Id].CurrentPoints,
+                                SubmissionTime = validSubmission?.SubmissionTime ?? groupFlagSubmissions[flag.Id].First().SubmissionTime
+                            });
+
+                            ++foundFlagsCount;
+                        }
+                        else
+                        {
+                            groupEntry.Flags.Add(new AdminScoreboardUserFlagEntry
+                            {
+                                Flag = flag,
+                                Submitted = false,
+                                Valid = false,
+                                SubmissionTime = DateTime.MinValue
+                            });
+                        }
+                    }
+
+                    // General statistics
+                    groupEntry.PassedMandatoryExercisesCount = passedMandatoryExercisesCount;
+                    groupEntry.HasPassed = passedMandatoryExercisesCount == mandatoryExercisesCount;
+                    groupEntry.PassedOptionalExercisesCount = passedOptionalExercisesCount;
+                    groupEntry.FoundFlagsCount = foundFlagsCount;
+                    adminScoreboard.GroupEntries.Add(groupEntry);
+                }
+            }
+            else
+            {
+                // For each user, collect exercise and flag data
+                foreach(var user in users)
                 {
-                    if(userFlagSubmissions != null && userFlagSubmissions.ContainsKey(flag.Id))
+                    labExecutions.TryGetValue(user.GroupId ?? -1, out var groupLabExecution);
+
+                    var userEntry = new AdminScoreboardUserEntry
                     {
-                        var submission = userFlagSubmissions[flag.Id];
+                        UserId = user.Id,
+                        UserName = user.DisplayName,
+                        Status = LabExecutionToStatus(now, groupLabExecution),
+                        Exercises = new List<ScoreboardUserExerciseEntry>(),
+                        Flags = new List<AdminScoreboardUserFlagEntry>()
+                    };
 
-                        var valid = CalculateFlagStatus(submission, groupLabExecution);
-
-                        userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
-                        {
-                            Flag = flag,
-                            Submitted = true,
-                            Valid = valid,
-                            CurrentPoints = scoreboardFlagStatus[flag.Id].CurrentPoints,
-                            SubmissionTime = submission.SubmissionTime
-                        });
-
-                        ++foundFlagsCount;
-                    }
-                    else
+                    // Exercises
+                    exerciseSubmissions.TryGetValue(passAsGroup ? (user.GroupId ?? -1) : user.Id, out var userExerciseSubmissions);
+                    int passedMandatoryExercisesCount = 0;
+                    int passedOptionalExercisesCount = 0;
+                    foreach(var exercise in exercises)
                     {
-                        userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
+                        if(userExerciseSubmissions != null && userExerciseSubmissions.ContainsKey(exercise.Id))
                         {
-                            Flag = flag,
-                            Submitted = false,
-                            Valid = false,
-                            SubmissionTime = DateTime.MinValue
-                        });
+                            var submissions = userExerciseSubmissions[exercise.Id];
+
+                            var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+
+                            userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                            {
+                                Exercise = exercise,
+                                Tries = submissions.Count,
+                                ValidTries = validTries,
+                                Passed = passed,
+                                Points = points,
+                                Submissions = submissions
+                            });
+
+                            if(passed)
+                            {
+                                if(exercise.IsMandatory)
+                                    ++passedMandatoryExercisesCount;
+                                else
+                                    ++passedOptionalExercisesCount;
+                            }
+                        }
+                        else
+                        {
+                            userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
+                            {
+                                Exercise = exercise,
+                                Tries = 0,
+                                ValidTries = 0,
+                                Passed = false,
+                                Points = 0,
+                                Submissions = new List<ExerciseSubmission>()
+                            });
+                        }
                     }
+
+                    // Flags
+                    flagSubmissions.TryGetValue(user.Id, out var userFlagSubmissions);
+                    int foundFlagsCount = 0;
+                    foreach(var flag in flags)
+                    {
+                        if(userFlagSubmissions != null && userFlagSubmissions.ContainsKey(flag.Id))
+                        {
+                            var submission = userFlagSubmissions[flag.Id];
+
+                            var valid = CalculateFlagStatus(submission, groupLabExecution);
+
+                            userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
+                            {
+                                Flag = flag,
+                                Submitted = true,
+                                Valid = valid,
+                                CurrentPoints = scoreboardFlagStatus[flag.Id].CurrentPoints,
+                                SubmissionTime = submission.SubmissionTime
+                            });
+
+                            ++foundFlagsCount;
+                        }
+                        else
+                        {
+                            userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
+                            {
+                                Flag = flag,
+                                Submitted = false,
+                                Valid = false,
+                                SubmissionTime = DateTime.MinValue
+                            });
+                        }
+                    }
+
+                    // General statistics
+                    userEntry.PassedMandatoryExercisesCount = passedMandatoryExercisesCount;
+                    userEntry.HasPassed = passedMandatoryExercisesCount == mandatoryExercisesCount;
+                    userEntry.PassedOptionalExercisesCount = passedOptionalExercisesCount;
+                    userEntry.FoundFlagsCount = foundFlagsCount;
+                    adminScoreboard.UserEntries.Add(userEntry);
                 }
-
-                // General statistics
-                userEntry.PassedMandatoryExercisesCount = passedMandatoryExercisesCount;
-                userEntry.HasPassed = passedMandatoryExercisesCount == mandatoryExercisesCount;
-                userEntry.PassedOptionalExercisesCount = passedOptionalExercisesCount;
-                userEntry.FoundFlagsCount = foundFlagsCount;
-                adminScoreboard.UserEntries.Add(userEntry);
             }
 
             return adminScoreboard;
@@ -294,7 +498,7 @@ namespace Ctf4e.Server.Services
         }
 
         /// <summary>
-        ///     Calculates the points for the given exercise from the given submission list. Ignores tries that are outside of the lab execution constraints.
+        /// Calculates the points for the given exercise from the given submission list. Ignores tries that are outside of the lab execution constraints.
         /// </summary>
         /// <param name="exercise">Exercise being evaluated.</param>
         /// <param name="submissions">All submissions for this exercise.</param>
@@ -577,7 +781,7 @@ namespace Ctf4e.Server.Services
                         {
                             if(!exercisePointsPerLab.TryGetValue(s.LabId, out var ex))
                                 ex = 0;
-                            
+
                             exercisePointsPerLab[s.LabId] = ex + Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
                         }
                     }
@@ -608,18 +812,18 @@ namespace Ctf4e.Server.Services
 
                         if(!flagPointsPerLab.TryGetValue(lab.Key, out var flagPoints))
                             flagPoints = (0, 0, 0);
-                        
+
                         // In breakdown, always return theoretical total of points without "maximum lab points" cut-off, just as it is shown in the lab scoreboard
                         entry.ExercisePoints += exercisePoints;
                         int cutOffFlagPoints = Math.Min(lab.Value.MaxFlagPoints, flagPoints.FlagPoints);
                         entry.FlagPoints += cutOffFlagPoints;
                         entry.BugBountyPoints += flagPoints.BugBountyPoints;
                         entry.FlagCount += flagPoints.FlagCount;
-                        
+
                         // Respect cut-offs in total points
                         entry.TotalPoints += Math.Min(lab.Value.MaxPoints, exercisePoints + cutOffFlagPoints) + flagPoints.BugBountyPoints;
                     }
-                    
+
                     entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
                 }
             }

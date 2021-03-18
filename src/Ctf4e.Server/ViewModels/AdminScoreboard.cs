@@ -13,6 +13,7 @@ namespace Ctf4e.Server.ViewModels
         public List<Slot> Slots { get; set; }
 
         public int SlotId { get; set; }
+        public bool GroupMode { get; set; }
 
         public int MandatoryExercisesCount { get; set; }
 
@@ -25,6 +26,7 @@ namespace Ctf4e.Server.ViewModels
         public List<AdminScoreboardFlagEntry> Flags { get; set; }
 
         public List<AdminScoreboardUserEntry> UserEntries { get; set; }
+        public List<AdminScoreboardGroupEntry> GroupEntries { get; set; }
 
         public Dictionary<int, string> UserNames { get; set; }
     }
@@ -42,6 +44,26 @@ namespace Ctf4e.Server.ViewModels
     {
         public int UserId { get; set; }
         public string UserName { get; set; }
+
+        public ScoreboardGroupStatus Status { get; set; }
+
+        public bool HasPassed { get; set; }
+
+        public List<ScoreboardUserExerciseEntry> Exercises { get; set; }
+
+        public int PassedMandatoryExercisesCount { get; set; }
+
+        public int PassedOptionalExercisesCount { get; set; }
+
+        public int FoundFlagsCount { get; set; }
+
+        public List<AdminScoreboardUserFlagEntry> Flags { get; set; }
+    }
+
+    public class AdminScoreboardGroupEntry
+    {
+        public int GroupId { get; set; }
+        public string GroupName { get; set; }
 
         public ScoreboardGroupStatus Status { get; set; }
 
