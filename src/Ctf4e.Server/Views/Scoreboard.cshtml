@@ -166,7 +166,7 @@
             IEnumerable<Lab> filteredLabs;
             if(currentUser.IsAdmin || currentUser.IsTutor)
             {
-                filteredLabs = labs;
+                filteredLabs = labs.OrderBy(l => l.Name).ToList();
                 foreach(var l in filteredLabs)
                 {
                     if(!l.Visible)
@@ -177,7 +177,7 @@
             }
             else
             {
-                filteredLabs = labs.Where(l => l.Visible).ToList();
+                filteredLabs = labs.Where(l => l.Visible).OrderBy(l => l.Name).ToList();
             }
         }
         <div class="mb-3">
