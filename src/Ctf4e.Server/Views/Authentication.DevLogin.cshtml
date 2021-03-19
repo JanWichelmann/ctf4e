@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Services
+@inject IViewLocalizer Localizer
+@inject IUserService UserService
+@{
+    var users = await UserService.GetUsersAsync().ToListAsync(Context.RequestAborted);
+}
+
+@{
+    // Make sure that this form is really unavailable outside of debug mode
+    // This also avoids potential future compilation errors when the form tag helper fails to resolve the DevLogin action,
+    //    which is inside preprocessor directives as well
+    #if DEBUG
+}
+
+<h3 class="header">
+    @Localizer["Title"]
+</h3>
+<hr class="header">
+
+<form asp-controller="Authentication" asp-action="DevLogin" method="get">
+    <div class="mb-3">
+        <label class="form-label" for="input-user-id">@Localizer["Form:UserId"]</label>
+        <select id="input-user-id" name="userId" class="form-control">
+            @foreach(var user in users.OrderBy(u => u.Id))
+            {
+                <option value="@user.Id">#@user.Id: @user.DisplayName</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+</form>
+
+@{
+    #endif
+}

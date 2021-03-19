@@ -553,6 +553,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UserDashboardController.de.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Views\Authentication.DevLogin.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.DevLogin.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Authentication.DevLogin.de.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Authentication.DevLogin.de.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -672,6 +682,9 @@
       <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
     </Content>
     <Content Update="Views\Authentication.GroupSelection.cshtml">
+      <DependentUpon>Authentication.cshtml</DependentUpon>
+    </Content>
+    <Content Update="Views\Authentication.DevLogin.cshtml">
       <DependentUpon>Authentication.cshtml</DependentUpon>
     </Content>
   </ItemGroup>
@@ -1046,10 +1059,12 @@
     <EmbeddedResource Update="Resources\Views\Authentication.GroupSelection.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Authentication.GroupSelection.Designer.cs</LastGenOutput>
+      <DependentUpon>Authentication.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Views\Authentication.GroupSelection.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Authentication.GroupSelection.de.Designer.cs</LastGenOutput>
+      <DependentUpon>Authentication.de.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -1146,6 +1161,16 @@
     <EmbeddedResource Update="Resources\Controllers\UserDashboardController.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>UserDashboardController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.DevLogin.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.DevLogin.Designer.cs</LastGenOutput>
+      <DependentUpon>Authentication.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.DevLogin.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.DevLogin.de.Designer.cs</LastGenOutput>
+      <DependentUpon>Authentication.de.resx</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 

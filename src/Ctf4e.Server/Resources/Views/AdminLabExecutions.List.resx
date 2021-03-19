@@ -124,4 +124,12 @@
         <value>Delete lab executions</value>
         <comment>Modal:DeleteLabExecutionsSlot:Submit</comment>
     </data>
+    <data name="LabExecutions:Group:Filter" xml:space="preserve">
+        <value>Filter</value>
+        <comment>LabExecutions:Group:Filter</comment>
+    </data>
+    <data name="LabExecutions:Lab:Filter" xml:space="preserve">
+        <value>Filter</value>
+        <comment>LabExecutions:Lab:Filter</comment>
+    </data>
 </root>

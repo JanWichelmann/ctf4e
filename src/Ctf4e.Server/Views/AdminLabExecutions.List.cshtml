@@ -30,11 +30,17 @@
         @Localizer["StopForSlot"]
     </a>
 </p>
-<table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
+<table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2" id="table-lab-executions">
     <thead>
     <tr>
-        <th scope="col">@Localizer["LabExecutions:Group"]</th>
-        <th scope="col">@Localizer["LabExecutions:Lab"]</th>
+        <th scope="col">
+            @Localizer["LabExecutions:Group"]
+            <input type="text" id="input-filter-group" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@Localizer["LabExecutions:Group:Filter"]">
+        </th>
+        <th scope="col">
+            @Localizer["LabExecutions:Lab"]
+            <input type="text" id="input-filter-lab" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@Localizer["LabExecutions:Lab:Filter"]">
+        </th>
         <th scope="col">@Localizer["LabExecutions:PreStart"]</th>
         <th scope="col">@Localizer["LabExecutions:Begin"]</th>
         <th scope="col">@Localizer["LabExecutions:End"]</th>
@@ -45,8 +51,8 @@
     @foreach(var l in Model)
     {
         <tr>
-            <td>#@l.GroupId: @l.Group.DisplayName</td>
-            <td>@l.Lab.Name</td>
+            <td data-content="group">#@l.GroupId: @l.Group.DisplayName</td>
+            <td data-content="lab">@l.Lab.Name</td>
             <td>@l.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
@@ -126,4 +132,40 @@ document.getElementById("modal-delete-lab-execution-group").addEventListener("sh
     e.target.querySelector('input[data-replace="lab-id"]').value = e.relatedTarget.dataset.labid;
     e.target.querySelector('span[data-replace="lab-name"]').innerText = e.relatedTarget.dataset.labname;
 });
+
+function filterTable()
+{
+    let groupFilter = document.getElementById("input-filter-group").value.trim();
+    let labFilter = document.getElementById("input-filter-lab").value.trim();
+    
+    // Run through table rows and filter
+    let table = document.getElementById("table-lab-executions");
+    for(let row of table.rows)
+    {
+        if(groupFilter !== "")
+        {
+            let groupCell = row.querySelector('td[data-content="group"]');
+            if(groupCell && !groupCell.innerHTML.includes(groupFilter))
+            {
+                row.classList.add("d-none");
+                continue;
+            }
+        }
+        
+        if(labFilter !== "")
+        {
+            let labCell = row.querySelector('td[data-content="lab"]');
+            if(labCell && !labCell.innerHTML.includes(labFilter))
+            {
+                row.classList.add("d-none");
+                continue;
+            }
+        }
+        
+        row.classList.remove("d-none");
+    }
+}
+
+document.getElementById("input-filter-group").addEventListener("keyup", filterTable);
+document.getElementById("input-filter-lab").addEventListener("keyup", filterTable);
 </script>

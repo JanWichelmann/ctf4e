@@ -13,7 +13,12 @@
 <div class="container">
     @if(viewType == AuthenticationController.ViewType.Blank)
     {
-        <!-- Status messages only -->
+        // Status messages only
+
+        // In development mode, show admin login
+        <environment include="Development">
+            <partial name="Authentication.DevLogin.cshtml" />
+        </environment>        
     }
     else if(viewType == AuthenticationController.ViewType.Redirect)
     {

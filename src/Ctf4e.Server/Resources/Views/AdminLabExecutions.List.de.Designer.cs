@@ -139,11 +139,29 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Filtern.
+        /// </summary>
+        internal static string LabExecutions_Group_Filter {
+            get {
+                return ResourceManager.GetString("LabExecutions:Group:Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Praktikum.
         /// </summary>
         internal static string LabExecutions_Lab {
             get {
                 return ResourceManager.GetString("LabExecutions:Lab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filtern.
+        /// </summary>
+        internal static string LabExecutions_Lab_Filter {
+            get {
+                return ResourceManager.GetString("LabExecutions:Lab:Filter", resourceCulture);
             }
         }
         

@@ -66,9 +66,13 @@ namespace Ctf4e.Server.Controllers
         }
 
 #if DEBUG
-        [HttpGet("login/dev/{userId}")]
+        [HttpGet("login/dev")]
         public async Task<IActionResult> DevLoginAsync(int userId)
         {
+            // Only allow this in development mode
+            if(!_webHostEnvironment.IsDevelopment())
+                return Forbid();
+            
             // Already logged in?
             var currentUser = await GetCurrentUserAsync();
             if(currentUser != null)
