@@ -27,6 +27,8 @@ namespace Ctf4e.Server.ViewModels
         public int FoundFlagsCount { get; set; }
 
         public int ValidFoundFlagsCount { get; set; }
+        
+        public bool HasFoundAllFlags { get; set; }
 
         public Dictionary<int, string> GroupMembers { get; set; }
         

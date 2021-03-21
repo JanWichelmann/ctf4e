@@ -1253,7 +1253,7 @@ namespace Ctf4e.Server.Services
 
             // Retrieve all flag submissions of this group
             var foundFlags = await _dbContext.FlagSubmissions.AsNoTracking()
-                .Where(fs => fs.User.GroupId == groupId && fs.Flag.LabId == labId)
+                .Where(fs => fs.User.GroupId == groupId && fs.Flag.LabId == labId && !fs.Flag.IsBounty) // Do not show bounty flags
                 .OrderBy(fs => fs.SubmissionTime)
                 .Select(fs => new UserScoreboardFlagEntry
                 {
@@ -1286,6 +1286,7 @@ namespace Ctf4e.Server.Services
                 LabExecution = _mapper.Map<LabExecution>(labExecution),
                 FoundFlagsCount = foundFlagsGrouped.Count,
                 ValidFoundFlagsCount = foundFlagsGrouped.Count(ff => ff.Any(ffs => ffs.Valid)),
+                HasFoundAllFlags = foundFlagsGrouped.Count == flags.Count(f => !f.Value.IsBounty),
                 Exercises = new List<ScoreboardUserExerciseEntry>(),
                 GroupMembers = groupMembers,
                 Flags = foundFlags

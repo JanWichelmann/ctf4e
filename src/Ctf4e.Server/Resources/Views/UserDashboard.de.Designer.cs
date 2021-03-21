@@ -124,6 +124,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alle gefunden.
+        /// </summary>
+        internal static string Flags_AllFound {
+            get {
+                return ResourceManager.GetString("Flags:AllFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Flag-Code.
         /// </summary>
         internal static string Flags_FlagCode {

@@ -166,4 +166,8 @@
         <value>hidden</value>
         <comment>SwitchLab:Hidden</comment>
     </data>
+    <data name="Flags:AllFound" xml:space="preserve">
+        <value>All found</value>
+        <comment>Flags:AllFound</comment>
+    </data>
 </root>

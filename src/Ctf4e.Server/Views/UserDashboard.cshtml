@@ -164,6 +164,13 @@
                     <span class="badge bg-light text-dark">
                         @Localizer["Flags:SubmissionStatistic", userScoreboard.ValidFoundFlagsCount, userScoreboard.FoundFlagsCount]
                     </span>
+                    @if(userScoreboard.HasFoundAllFlags)
+                    {
+                        <span class="badge bg-success text-light">
+                            <i class="bi bi-check-circle"></i>
+                            @Localizer["Flags:AllFound"]
+                        </span>
+                    }
                 </div>
             </div>
         </div>
