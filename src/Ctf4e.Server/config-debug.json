@@ -1,6 +1,7 @@
 {
   "MainOptions": {
-    "DevelopmentMode": true
+    "DevelopmentMode": true,
+    "DefaultCulture": "de-DE"
   },
   "CtfDbOptions": {
     "Server": "localhost",

@@ -2,7 +2,8 @@
   "CtfApiOptions": {
     "CtfServerApiBaseUrl": "https://localhost:5000/api/",
     "LabId": 11,
-    "LabApiCode": "12345"
+    "LabApiCode": "12345",
+    "DefaultCulture": "de-DE"
   },
   "LabOptions": {
     "CtfServerBaseUrl": "https://localhost:5000/",

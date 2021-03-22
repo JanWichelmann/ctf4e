@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Ctf4e.Api.DependencyInjection;
 using Ctf4e.Api.Options;
@@ -13,6 +15,7 @@ using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -121,10 +124,16 @@ namespace Ctf4e.LabServer
             // Localization
             // We keep the default cookie name, so the setting automatically translates to/from potential other server under the current domain
             var supportedCultures = new[] { "en-US", "de-DE" };
+            string defaultCulture = supportedCultures.Contains(_labOptions.DefaultCulture) ? _labOptions.DefaultCulture : supportedCultures[0];
             var localizationOptions = new RequestLocalizationOptions()
-                .SetDefaultCulture(supportedCultures[0])
+                .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
+            localizationOptions.RequestCultureProviders = new List<IRequestCultureProvider>
+            {
+                new QueryStringRequestCultureProvider(),
+                new CookieRequestCultureProvider()
+            };
             app.UseRequestLocalization(localizationOptions);
             
             // Verbose stack traces

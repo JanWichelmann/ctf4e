@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using AutoMapper;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -198,10 +200,16 @@ namespace Ctf4e.Server
             // Localization
             // We keep the default cookie name, so the setting automatically translates to potential other server under the current domain
             var supportedCultures = new[] { "en-US", "de-DE" };
+            string defaultCulture = supportedCultures.Contains(_mainOptions.DefaultCulture) ? _mainOptions.DefaultCulture : supportedCultures[0];
             var localizationOptions = new RequestLocalizationOptions()
-                .SetDefaultCulture(supportedCultures[0])
+                .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
+            localizationOptions.RequestCultureProviders = new List<IRequestCultureProvider>
+            {
+                new QueryStringRequestCultureProvider(),
+                new CookieRequestCultureProvider()
+            };
             app.UseRequestLocalization(localizationOptions);
             
             // Verbose stack traces
