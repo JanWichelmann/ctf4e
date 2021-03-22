@@ -61,6 +61,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;strong&gt;Note:&lt;/strong&gt; The dates must not be exactly the same, i.e. preparatory phase &amp;lt; start &amp;lt; end must apply..
+        /// </summary>
+        internal static string Form_DateNotes {
+            get {
+                return ResourceManager.GetString("Form:DateNotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to End.
         /// </summary>
         internal static string Form_End {

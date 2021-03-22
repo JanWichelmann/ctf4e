@@ -140,7 +140,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filter.
+        ///   Looks up a localized string similar to Filter (regex).
         /// </summary>
         internal static string LabExecutions_Group_Filter {
             get {
@@ -158,7 +158,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filter.
+        ///   Looks up a localized string similar to Filter (regex).
         /// </summary>
         internal static string LabExecutions_Lab_Filter {
             get {

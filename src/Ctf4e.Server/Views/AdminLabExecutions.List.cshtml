@@ -135,31 +135,25 @@ document.getElementById("modal-delete-lab-execution-group").addEventListener("sh
 
 function filterTable()
 {
-    let groupFilter = document.getElementById("input-filter-group").value.trim();
-    let labFilter = document.getElementById("input-filter-lab").value.trim();
+    let groupFilter = new RegExp(document.getElementById("input-filter-group").value, "i");
+    let labFilter = new RegExp(document.getElementById("input-filter-lab").value, "i");
     
     // Run through table rows and filter
     let table = document.getElementById("table-lab-executions");
     for(let row of table.rows)
-    {
-        if(groupFilter !== "")
+    {            
+        let groupCell = row.querySelector('td[data-content="group"]');
+        if(groupCell && !groupFilter.test(groupCell.innerHTML))
         {
-            let groupCell = row.querySelector('td[data-content="group"]');
-            if(groupCell && !groupCell.innerHTML.includes(groupFilter))
-            {
-                row.classList.add("d-none");
-                continue;
-            }
+            row.classList.add("d-none");
+            continue;
         }
         
-        if(labFilter !== "")
+        let labCell = row.querySelector('td[data-content="lab"]');
+        if(labCell && !labFilter.test(labCell.innerHTML))
         {
-            let labCell = row.querySelector('td[data-content="lab"]');
-            if(labCell && !labCell.innerHTML.includes(labFilter))
-            {
-                row.classList.add("d-none");
-                continue;
-            }
+            row.classList.add("d-none");
+            continue;
         }
         
         row.classList.remove("d-none");

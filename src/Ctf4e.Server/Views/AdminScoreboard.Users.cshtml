@@ -486,7 +486,7 @@ else
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" for="input-add-exercise-submission-time">@Localizer["Modal:CreateExerciseSubmission:Timestamp"]</label>
-                        <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)" />
+                        <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="input-add-exercise-submission-weight">@Localizer["Modal:CreateExerciseSubmission:Weight"]</label>
@@ -545,7 +545,7 @@ else
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label" for="input-add-flag-submission-time">@Localizer["Modal:CreateFlagSubmission:Timestamp"]</label>
-                        <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" value="@DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)" />
+                        <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -564,7 +564,8 @@ else
 // Date time picker
 flatpickr.localize(flatpickr.l10ns.de);                               
 options = {
-             "dateFormat": "d.m.Y H:i:S",
+             "altInput": true,
+             "altFormat": "Y-m-d H:i:S",
              "enableTime": true,
              "enableSeconds": true,
              "allowInput": true,
