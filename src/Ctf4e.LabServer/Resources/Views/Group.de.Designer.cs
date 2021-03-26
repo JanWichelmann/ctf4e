@@ -79,6 +79,15 @@ namespace Ctf4e.LabServer.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Zugangsdaten.
+        /// </summary>
+        internal static string Credentials {
+            get {
+                return ResourceManager.GetString("Credentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Passwort.
         /// </summary>
         internal static string Docker_Password {

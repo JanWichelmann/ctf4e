@@ -134,4 +134,8 @@
         <value>Reset</value>
         <comment>Modal:ResetExercise:Submit</comment>
     </data>
+    <data name="Credentials" xml:space="preserve">
+        <value>Credentials</value>
+        <comment>Credentials</comment>
+    </data>
 </root>

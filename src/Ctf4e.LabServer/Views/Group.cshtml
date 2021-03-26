@@ -13,20 +13,30 @@
     var userScoreboard = (UserScoreboard)ViewData["Scoreboard"];
     var adminMode = (bool)ViewData["AdminMode"];
     var labConfiguration = (LabConfiguration)ViewData["LabConfiguration"];
+
+    userScoreboard.DockerUserName = "test";
+    userScoreboard.DockerPassword = "test";
 }
 
 <div class="container">
-@if(adminMode)
-{
     <div class="float-end">
-        <a class="btn btn-sm btn-outline-primary" href="#log-table">
-            <i class="bi bi-chevron-down"></i>
-            @Localizer["Log"]
-        </a>
+        @if(userScoreboard.DockerUserName != null && userScoreboard.DockerPassword != null)
+        {
+            <a class="btn btn-sm btn-outline-primary" href="#docker-credentials">
+                <i class="bi bi-chevron-down"></i>
+                @Localizer["Credentials"]
+            </a>
+        }
+        @if(adminMode)
+        {
+            <a class="btn btn-sm btn-outline-primary" href="#log-table">
+                <i class="bi bi-chevron-down"></i>
+                @Localizer["Log"]
+            </a>
+        }
     </div>
-}
 
-<h3 class="header">
+    <h3 class="header">
     @Localizer["Title"]
 </h3>
 <hr class="header">
@@ -214,7 +224,7 @@
     <h5 class="header">@Localizer["Docker:Title"]</h5>
     <hr class="header-secondary">
 
-    <div class="mb-3">
+    <div class="mb-3" id="docker-credentials">
         <label for="input-docker-username">@Localizer["Docker:Username"]</label>
         <div class="input-group">
             <input id="input-docker-username" type="text" class="form-control font-monospace" readonly value="@userScoreboard.DockerUserName">
