@@ -85,3 +85,38 @@ hr.header-secondary {
   line-height: 1.5 !important;
   vertical-align: middle !important;
 }
+
+
+/* Cursor */
+
+.cursor-link {
+  cursor: pointer;
+}
+
+
+/* Collapse button on exercise cards */
+
+.exercise-card-heading {
+  display: flex;
+  align-items: center;
+
+  &:not(.collapsed) {
+    &::after {
+      background-image: escape-svg($accordion-button-active-icon);
+      transform: $accordion-icon-transform;
+    }
+  }
+
+  // Accordion icon
+  &::after {
+    flex-shrink: 0;
+    width: $accordion-icon-width;
+    height: $accordion-icon-width;
+    margin-left: auto;
+    content: "";
+    background-image: escape-svg($accordion-button-icon);
+    background-repeat: no-repeat;
+    background-size: $accordion-icon-width;
+    @include transition($accordion-icon-transition);
+  }
+}

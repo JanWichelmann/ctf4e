@@ -19,24 +19,24 @@
 }
 
 <div class="container">
-    <div class="float-end">
-        @if(userScoreboard.DockerUserName != null && userScoreboard.DockerPassword != null)
-        {
-            <a class="btn btn-sm btn-outline-primary" href="#docker-credentials">
-                <i class="bi bi-chevron-down"></i>
-                @Localizer["Credentials"]
-            </a>
-        }
-        @if(adminMode)
-        {
-            <a class="btn btn-sm btn-outline-primary" href="#log-table">
-                <i class="bi bi-chevron-down"></i>
-                @Localizer["Log"]
-            </a>
-        }
-    </div>
+<div class="float-end">
+    @if(userScoreboard.DockerUserName != null && userScoreboard.DockerPassword != null)
+    {
+        <a class="btn btn-sm btn-outline-primary" href="#docker-credentials">
+            <i class="bi bi-chevron-down"></i>
+            @Localizer["Credentials"]
+        </a>
+    }
+    @if(adminMode)
+    {
+        <a class="btn btn-sm btn-outline-primary" href="#log-table">
+            <i class="bi bi-chevron-down"></i>
+            @Localizer["Log"]
+        </a>
+    }
+</div>
 
-    <h3 class="header">
+<h3 class="header">
     @Localizer["Title"]
 </h3>
 <hr class="header">
@@ -46,6 +46,9 @@
     <div class="card mb-3">
         <div class="card-header container">
             <div class="row">
+                <div class="col col-auto fs-5 cursor-link exercise-card-heading @(exercise.Solved ? "collapsed" : "") pe-0" data-bs-toggle="collapse" data-bs-target="#exercise-@exercise.Exercise.Id-card">
+
+                </div>
                 <div class="col fs-5">
                     @if(exercise.Solved)
                     {
@@ -109,112 +112,112 @@
                 </div>
             </div>
         </div>
-
-        @if(exercise.Solved && !string.IsNullOrEmpty(exercise.Exercise.FlagCode))
-        {
-            <div class="card-body border-bottom">
-                <i class="bi bi-flag-fill"></i>
-                <span class="font-monospace">@exercise.Exercise.FlagCode</span>
-            </div>
-        }
-
-        <div class="card-body">
-            @if(!string.IsNullOrEmpty(exercise.Description))
+        <div class="collapse @(exercise.Solved ? "" : "show")" id="exercise-@exercise.Exercise.Id-card">
+            @if(exercise.Solved && !string.IsNullOrEmpty(exercise.Exercise.FlagCode))
             {
-                <p class="card-text">
-                    @Html.Raw(exercise.Description)
-                </p>
+                <div class="card-body border-bottom">
+                    <i class="bi bi-flag-fill"></i>
+                    <span class="font-monospace">@exercise.Exercise.FlagCode</span>
+                </div>
             }
-
-            @if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.String)
-            {
-                var exerciseData = (LabConfigurationStringExerciseEntry)exercise.Exercise;
-
-                var lastInput = ViewData.ContainsKey("LastStringInput") ? (StringExerciseInputData)ViewData["LastStringInput"] : null;
-                if(lastInput?.ExerciseId != exercise.Exercise.Id)
+            <div class="card-body">
+                @if(!string.IsNullOrEmpty(exercise.Description))
                 {
-                    lastInput = null;
+                    <p class="card-text">
+                        @Html.Raw(exercise.Description)
+                    </p>
                 }
 
-                <form class="form" method="post" asp-controller="Group" asp-action="CheckStringInput">
-                    <div class="mb-3">
-                        @if(exerciseData.Multiline)
-                        {
-                            <textarea class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
-                        }
-                        else
-                        {
-                            <input type="text" class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
-                        }
-                    </div>
-
-                    <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
-
-                    <button type="submit" class="btn btn-primary">
-                        @Localizer["Exercises:Form:Submit"]
-                    </button>
-                </form>            }
-            else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.MultipleChoice)
-            {
-                var exerciseData = (LabConfigurationMultipleChoiceExerciseEntry)exercise.Exercise;
-
-                var lastInput = ViewData.ContainsKey("LastMultipleChoiceInput") ? (MultipleChoiceExerciseInputData)ViewData["LastMultipleChoiceInput"] : null;
-                if(lastInput?.ExerciseId != exercise.Exercise.Id)
+                @if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.String)
                 {
-                    lastInput = null;
-                }
+                    var exerciseData = (LabConfigurationStringExerciseEntry)exercise.Exercise;
 
-                <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInput">
-                    <div class="mb-3">
-                        @for(int i = 0; i < exerciseData.Options.Length; ++i)
-                        {
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="selectedOptions[]" value="@i" id="option-@i" @(lastInput?.SelectedOptions?.Contains(i) ?? false ? "checked" : "")>
-                                @* ReSharper disable once Html.IdNotResolved *@
-                                <label class="form-check-label" for="option-@i">
-                                    @exerciseData.Options[i].Value
-                                </label>
-                            </div>
-                        }
-                    </div>
-
-                    <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
-
-                    <button type="submit" class="btn btn-primary">
-                        @Localizer["Exercises:Form:Submit"]
-                    </button>
-                </form>            }
-            else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.Script)
-            {
-                var exerciseData = (LabConfigurationScriptExerciseEntry)exercise.Exercise;
-
-                var lastInput = ViewData.ContainsKey("LastScriptInput") ? (ScriptExerciseInputData)ViewData["LastScriptInput"] : null;
-                if(lastInput?.ExerciseId != exercise.Exercise.Id)
-                {
-                    lastInput = null;
-                }
-
-                <form class="form" method="post" asp-controller="Group" asp-action="CheckScriptInput">
-                    @if(exerciseData.StringInput)
+                    var lastInput = ViewData.ContainsKey("LastStringInput") ? (StringExerciseInputData)ViewData["LastStringInput"] : null;
+                    if(lastInput?.ExerciseId != exercise.Exercise.Id)
                     {
+                        lastInput = null;
+                    }
+
+                    <form class="form" method="post" asp-controller="Group" asp-action="CheckStringInput">
                         <div class="mb-3">
                             @if(exerciseData.Multiline)
                             {
-                                <textarea class="form-control" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
+                                <textarea class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
                             }
                             else
                             {
-                                <input type="text" class="form-control text-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
+                                <input type="text" class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
                             }
                         </div>
+
+                        <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
+
+                        <button type="submit" class="btn btn-primary">
+                            @Localizer["Exercises:Form:Submit"]
+                        </button>
+                    </form>                }
+                else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.MultipleChoice)
+                {
+                    var exerciseData = (LabConfigurationMultipleChoiceExerciseEntry)exercise.Exercise;
+
+                    var lastInput = ViewData.ContainsKey("LastMultipleChoiceInput") ? (MultipleChoiceExerciseInputData)ViewData["LastMultipleChoiceInput"] : null;
+                    if(lastInput?.ExerciseId != exercise.Exercise.Id)
+                    {
+                        lastInput = null;
                     }
 
-                    <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
+                    <form class="form" method="post" asp-controller="Group" asp-action="CheckMultipleChoiceInput">
+                        <div class="mb-3">
+                            @for(int i = 0; i < exerciseData.Options.Length; ++i)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="selectedOptions[]" value="@i" id="option-@i" @(lastInput?.SelectedOptions?.Contains(i) ?? false ? "checked" : "")>
+                                    @* ReSharper disable once Html.IdNotResolved *@
+                                    <label class="form-check-label" for="option-@i">
+                                        @exerciseData.Options[i].Value
+                                    </label>
+                                </div>
+                            }
+                        </div>
 
-                    <button type="submit" class="btn btn-primary">
-                        @Localizer["Exercises:Form:Submit"]
-                    </button>
-                </form>            }
+                        <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
+
+                        <button type="submit" class="btn btn-primary">
+                            @Localizer["Exercises:Form:Submit"]
+                        </button>
+                    </form>                }
+                else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.Script)
+                {
+                    var exerciseData = (LabConfigurationScriptExerciseEntry)exercise.Exercise;
+
+                    var lastInput = ViewData.ContainsKey("LastScriptInput") ? (ScriptExerciseInputData)ViewData["LastScriptInput"] : null;
+                    if(lastInput?.ExerciseId != exercise.Exercise.Id)
+                    {
+                        lastInput = null;
+                    }
+
+                    <form class="form" method="post" asp-controller="Group" asp-action="CheckScriptInput">
+                        @if(exerciseData.StringInput)
+                        {
+                            <div class="mb-3">
+                                @if(exerciseData.Multiline)
+                                {
+                                    <textarea class="form-control" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control text-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
+                                }
+                            </div>
+                        }
+
+                        <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
+
+                        <button type="submit" class="btn btn-primary">
+                            @Localizer["Exercises:Form:Submit"]
+                        </button>
+                    </form>                }
+            </div>
         </div>
     </div>
 }
