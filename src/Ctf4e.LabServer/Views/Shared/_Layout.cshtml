@@ -34,6 +34,9 @@
 
     var labOptions = (LabOptions)ViewData["LabOptions"];
     var labConfiguration = (LabConfiguration)ViewData["LabConfiguration"];
+
+    // Build ID
+    var buildVersion = (string)ViewData["BuildVersion"];
 }
 <!DOCTYPE html>
 <html lang="de">
@@ -175,6 +178,10 @@
         <div class="row mt-2 pb-2">
             <div class="col">
                 Powered by <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e" target="_blank">CTF4E</a>
+                <span>&middot;</span>
+                <span>
+                    <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/releases/tag/server%2F@(buildVersion)">v@(buildVersion)</a>
+                </span>
             </div>
             <div class="col d-flex align-items-center justify-content-end">
                 <div class="dropdown">

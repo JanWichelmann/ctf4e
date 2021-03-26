@@ -48,3 +48,4 @@ jobs:
           ctf4e/ctf4e-labserver:latest
           ctf4e/ctf4e-labserver:${{ steps.get_version.outputs.VERSION }}
         file: src/Ctf4e.LabServer/Dockerfile
+        build-args: BUILD_VERSION=${{ steps.get_version.outputs.VERSION }}

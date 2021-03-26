@@ -1,9 +1,10 @@
 # Build ASP.NET Core application
 FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
+ARG BUILD_VERSION=unknown
 WORKDIR /src
 COPY . .
 WORKDIR "/src/src/Ctf4e.LabServer"
-RUN dotnet publish "Ctf4e.LabServer.csproj" -c Release -o /app/publish
+RUN dotnet publish "Ctf4e.LabServer.csproj" -c Release -o /app/publish -p:BuildVersion=$BUILD_VERSION
 
 # Setup static files
 FROM node:latest AS build-static

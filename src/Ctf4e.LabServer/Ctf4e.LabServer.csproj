@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Web" />
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -21,76 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Ctf4e.Api\Ctf4e.Api.csproj" />
     <ProjectReference Include="..\Ctf4e.Utilities\Ctf4e.Utilities.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\js\bootstrap.bundle.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\js\jquery.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\css\open-iconic-bootstrap.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.eot" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.otf" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.svg" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.ttf" />
-    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.woff" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Views\Shared\_Layout.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>_Layout.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Shared\_Layout.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>_Layout.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Authentication.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Authentication.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Authentication.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Authentication.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\AdminConfiguration.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfiguration.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\AdminConfiguration.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfiguration.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Group.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Group.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Group.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Group.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfigurationController.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfigurationController.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AuthenticationController.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AuthenticationController.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\GroupController.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>GroupController.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\GroupController.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>GroupController.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -164,6 +95,94 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>GroupController.de.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\lib\bootstrap\js\bootstrap.bundle.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\js\jquery.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\css\open-iconic-bootstrap.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.otf" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\open-iconic\fonts\open-iconic.woff" />
+  </ItemGroup>
+  
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Web" />
+
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <AssemblyAttributes Include="Ctf4e.LabServer.Attributes.AssemblyBuildVersionAttribute">
+        <_Parameter1>$(BuildVersion)</_Parameter1>
+      </AssemblyAttributes>
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteCodeFragment AssemblyAttributes="@(AssemblyAttributes)" Language="C#" OutputDirectory="$(IntermediateOutputPath)" OutputFile="BuildVersionInfo.cs">
+      <Output TaskParameter="OutputFile" ItemName="FileWrites" />
+    </WriteCodeFragment>
+  </Target>
+  
+  <ItemGroup>
+    <Compile Include="$(IntermediateOutputPath)BuildVersionInfo.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Layout.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_Layout.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Layout.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Authentication.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Authentication.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminConfiguration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfiguration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\AdminConfiguration.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfiguration.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Group.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Group.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Group.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Group.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfigurationController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdminConfigurationController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthenticationController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\GroupController.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GroupController.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Controllers\GroupController.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GroupController.de.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

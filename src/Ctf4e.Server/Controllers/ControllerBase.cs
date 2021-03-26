@@ -12,12 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Ctf4e.Server.Controllers
 {
     /// <summary>
-    ///     Abstract base class for controllers.
+    /// Abstract base class for controllers.
     /// </summary>
     public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     {
         /// <summary>
-        ///     Version of this assembly.
+        /// Version of this assembly.
         /// </summary>
         private static string _buildVersion = null;
 

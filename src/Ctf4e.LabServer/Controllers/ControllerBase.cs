@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
+using Ctf4e.LabServer.Attributes;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.Models;
 using Ctf4e.LabServer.Options;
@@ -14,6 +16,11 @@ namespace Ctf4e.LabServer.Controllers
     /// </summary>
     public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     {
+        /// <summary>
+        /// Version of this assembly.
+        /// </summary>
+        private static string _buildVersion = null;
+        
         private User _currentUser = null;
         private bool _adminMode = false;
         private bool _currentUserHasLoggedOut = false;
@@ -25,6 +32,15 @@ namespace Ctf4e.LabServer.Controllers
         {
             _labOptions = labOptions ?? throw new ArgumentNullException(nameof(labOptions));
             _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
+
+            if(_buildVersion == null)
+            {
+                _buildVersion = Assembly.GetExecutingAssembly()
+                    .GetCustomAttributes<AssemblyBuildVersionAttribute>()
+                    .FirstOrDefault()?.Version;
+                if(string.IsNullOrWhiteSpace(_buildVersion))
+                    _buildVersion = "DEV";
+            }
         }
 
         /// <summary>
@@ -138,6 +154,9 @@ namespace Ctf4e.LabServer.Controllers
             // Pass current lab configuration
             ViewData["LabOptions"] = _labOptions.Value;
             ViewData["LabConfiguration"] = _labConfiguration.CurrentConfiguration;
+
+            // Other render data
+            ViewData["BuildVersion"] = _buildVersion;
 
             // Render view
             return RenderView(model);
