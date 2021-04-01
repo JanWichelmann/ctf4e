@@ -17,6 +17,14 @@ namespace Ctf4e.Server.Models
         [DisplayFormat(ConvertEmptyStringToNull = false)]
         [StringLength(50)]
         public string DisplayName { get; set; }
+        
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        [StringLength(50)]
+        public string ScoreboardAnnotation { get; set; }
+        
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        [StringLength(200)]
+        public string ScoreboardAnnotationHoverText { get; set; }
 
         public bool ShowInScoreboard { get; set; }
 

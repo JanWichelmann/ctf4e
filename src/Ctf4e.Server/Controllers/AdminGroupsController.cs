@@ -94,6 +94,8 @@ namespace Ctf4e.Server.Controllers
                 // Retrieve edited group from database and apply changes
                 var group = await _userService.GetGroupAsync(groupData.Id, HttpContext.RequestAborted);
                 group.DisplayName = groupData.DisplayName;
+                group.ScoreboardAnnotation = groupData.ScoreboardAnnotation;
+                group.ScoreboardAnnotationHoverText = groupData.ScoreboardAnnotationHoverText;
                 group.SlotId = groupData.SlotId;
                 group.ShowInScoreboard = groupData.ShowInScoreboard;
                 await _userService.UpdateGroupAsync(group, HttpContext.RequestAborted);
@@ -136,6 +138,8 @@ namespace Ctf4e.Server.Controllers
                 var group = new Group
                 {
                     DisplayName = groupData.DisplayName,
+                    ScoreboardAnnotation = groupData.ScoreboardAnnotation,
+                    ScoreboardAnnotationHoverText = groupData.ScoreboardAnnotationHoverText,
                     SlotId = groupData.SlotId,
                     ShowInScoreboard = groupData.ShowInScoreboard
                 };

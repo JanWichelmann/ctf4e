@@ -178,6 +178,8 @@ namespace Ctf4e.Server.Services
             {
                 SlotId = group.SlotId,
                 DisplayName = group.DisplayName,
+                ScoreboardAnnotation = group.ScoreboardAnnotation,
+                ScoreboardAnnotationHoverText = group.ScoreboardAnnotationHoverText,
                 ShowInScoreboard = group.ShowInScoreboard,
                 Members = new List<UserEntity>()
             }).Entity;
@@ -200,6 +202,8 @@ namespace Ctf4e.Server.Services
             {
                 SlotId = group.SlotId,
                 DisplayName = group.DisplayName,
+                ScoreboardAnnotation = group.ScoreboardAnnotation,
+                ScoreboardAnnotationHoverText = group.ScoreboardAnnotationHoverText,
                 ShowInScoreboard = group.ShowInScoreboard,
                 Members = new List<UserEntity>()
             }).Entity;
@@ -218,6 +222,8 @@ namespace Ctf4e.Server.Services
 
             // Update entry
             groupEntity.DisplayName = group.DisplayName;
+            groupEntity.ScoreboardAnnotation = group.ScoreboardAnnotation;
+            groupEntity.ScoreboardAnnotationHoverText = group.ScoreboardAnnotationHoverText;
             groupEntity.SlotId = group.SlotId;
             groupEntity.ShowInScoreboard = group.ShowInScoreboard;
 

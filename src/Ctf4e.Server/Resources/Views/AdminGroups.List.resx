@@ -78,4 +78,8 @@
         <value>Export group list as JSON</value>
         <comment>DownloadJson</comment>
     </data>
+    <data name="Groups:ScoreboardAnnotation" xml:space="preserve">
+        <value>Annotation</value>
+        <comment>Groups:ScoreboardAnnotation</comment>
+    </data>
 </root>

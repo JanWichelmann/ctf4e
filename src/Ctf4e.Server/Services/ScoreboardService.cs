@@ -629,6 +629,8 @@ namespace Ctf4e.Server.Services
                     SELECT
                       g.`Id` AS 'GroupId',
                       g.`DisplayName` AS 'GroupName',
+                      g.`ScoreboardAnnotation` AS 'GroupAnnotation',
+                      g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
                       g.`SlotId`, (
                         SELECT MAX((
                           SELECT MAX(es.`SubmissionTime`)
@@ -933,6 +935,8 @@ namespace Ctf4e.Server.Services
                     SELECT
                       g.`Id` AS 'GroupId',
                       g.`DisplayName` AS 'GroupName',
+                      g.`ScoreboardAnnotation` AS 'GroupAnnotation',
+                      g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
                       g.`SlotId`,
                       (
                         SELECT MAX((

@@ -142,6 +142,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Annotation.
+        /// </summary>
+        internal static string Groups_ScoreboardAnnotation {
+            get {
+                return ResourceManager.GetString("Groups:ScoreboardAnnotation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scoreboard?.
         /// </summary>
         internal static string Groups_ShowInScoreboard {

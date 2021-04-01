@@ -79,6 +79,24 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scoreboard annotation.
+        /// </summary>
+        internal static string Form_ScoreboardAnnotation {
+            get {
+                return ResourceManager.GetString("Form:ScoreboardAnnotation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scoreboard annotation hover text.
+        /// </summary>
+        internal static string Form_ScoreboardAnnotationHoverText {
+            get {
+                return ResourceManager.GetString("Form:ScoreboardAnnotationHoverText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show in scoreboard.
         /// </summary>
         internal static string Form_ShowInScoreboard {

@@ -46,4 +46,12 @@
         <value>Select time slot</value>
         <comment>Form:SlotId:Placeholder</comment>
     </data>
+    <data name="Form:ScoreboardAnnotation" xml:space="preserve">
+        <value>Scoreboard annotation</value>
+        <comment>Form:ScoreboardAnnotation</comment>
+    </data>
+    <data name="Form:ScoreboardAnnotationHoverText" xml:space="preserve">
+        <value>Scoreboard annotation hover text</value>
+        <comment>Form:ScoreboardAnnotationHoverText</comment>
+    </data>
 </root>

@@ -46,4 +46,12 @@
         <value>Slot auswählen</value>
         <comment>Form:SlotId:Placeholder</comment>
     </data>
+    <data name="Form:ScoreboardAnnotation" xml:space="preserve">
+        <value>Scoreboard-Annotierung</value>
+        <comment>Form:ScoreboardAnnotation</comment>
+    </data>
+    <data name="Form:ScoreboardAnnotationHoverText" xml:space="preserve">
+        <value>Scoreboard-Annotierung Hover-Text</value>
+        <comment>Form:ScoreboardAnnotationHoverText</comment>
+    </data>
 </root>

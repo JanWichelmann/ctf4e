@@ -30,6 +30,9 @@ namespace Ctf4e.Server.ViewModels
         public int GroupId { get; set; }
 
         public string GroupName { get; set; }
+        
+        public string GroupAnnotation { get; set; }
+        public string GroupAnnotationHoverText { get; set; }
 
         public int ExercisePoints { get; set; }
 

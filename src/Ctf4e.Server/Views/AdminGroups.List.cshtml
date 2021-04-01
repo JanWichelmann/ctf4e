@@ -20,6 +20,7 @@
         <th scope="col">@Localizer["Groups:ID"]</th>
         <th scope="col">@Localizer["Groups:Slot"]</th>
         <th scope="col">@Localizer["Groups:Name"]</th>
+        <th scope="col">@Localizer["Groups:ScoreboardAnnotation"]</th>
         <th scope="col">@Localizer["Groups:Members"]</th>
         <th scope="col">@Localizer["Groups:ShowInScoreboard"]</th>
         <th scope="col">@Localizer["Actions"]</th>
@@ -32,6 +33,7 @@
             <td>@g.Id</td>
             <td>@g.Slot.Name</td>
             <td>@g.DisplayName</td>
+            <td><span title="@(g.ScoreboardAnnotationHoverText ?? "")">@(g.ScoreboardAnnotation ?? "")</span></td>
             <td>@g.Members.Count</td>
             <td>
                 @if(g.ShowInScoreboard)

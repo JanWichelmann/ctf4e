@@ -18,7 +18,15 @@ namespace Ctf4e.Server.Data.Entities
         [Required]
         [StringLength(50)]
         public string DisplayName { get; set; }
-
+        
+        [Required]
+        [StringLength(50)]
+        public string ScoreboardAnnotation { get; set; }
+        
+        [Required]
+        [StringLength(200)]
+        public string ScoreboardAnnotationHoverText { get; set; }
+        
         public bool ShowInScoreboard { get; set; }
 
         public ICollection<UserEntity> Members { get; set; }
