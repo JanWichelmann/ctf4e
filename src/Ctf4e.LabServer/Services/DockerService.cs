@@ -29,13 +29,9 @@ namespace Ctf4e.LabServer.Services
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
 
-            // Only initialize this container support is enabled
+            // Only initialize this if container support is enabled
             if(!string.IsNullOrWhiteSpace(_options.Value.DockerContainerName))
             {
-                // There must be a grading script
-                if(string.IsNullOrWhiteSpace(_options.Value.DockerContainerGradeScriptPath))
-                    throw new Exception("Grading script is not specified.");
-                
                 _dockerClient = new DockerClientConfiguration(new Uri("unix:///docker/docker.sock")).CreateClient();
             }
         }
@@ -74,6 +70,9 @@ namespace Ctf4e.LabServer.Services
         {
             if(_dockerClient == null)
                 throw new NotSupportedException("Docker support is not initialized.");
+            
+            if(string.IsNullOrWhiteSpace(_options.Value.DockerContainerGradeScriptPath))
+                throw new NotSupportedException("Grading script is not specified.");
             
             // Prepare command
             bool stringInputPresent = input != null;
