@@ -48,7 +48,11 @@
 
     <partial name="AdminScoreboard.Users.cshtml" />
     <partial name="AdminScoreboard.Flags.cshtml" />
-
+    
+    <script>
+        window.addEventListener("load", e => table_sorting());
+    </script>
+    
     @if(currentUser.IsAdmin)
     {
         <partial name="AdminScoreboard.Sync.cshtml" />    }
