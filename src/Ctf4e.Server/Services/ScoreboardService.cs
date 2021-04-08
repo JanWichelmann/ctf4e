@@ -175,6 +175,21 @@ namespace Ctf4e.Server.Services
             //     However, if passing as group is enabled, each user entry still shows all submissions, so the displayed "passed" status makes sense
             if(groupMode)
             {
+                // Transform exercise submissions into representation: exerciseId -> [ groupId -> submissions ]
+                // This is needed when passing as group is not enabled, since the exerciseSubmissions will have a userId -> submissions mapping then.
+                // In this case, we want to calculate the total points and tries based on the accumulated list. Since we have already done all sorting
+                // in the database query, there is no point in accumulating and sorting the submissions again, so we just do it here, and only once.
+                Dictionary<int, Dictionary<int, List<ExerciseSubmission>>> exerciseSubmissionsByGroup = null;
+                if(!passAsGroup)
+                {
+                    exerciseSubmissionsByGroup = exerciseSubmissionsUngrouped
+                        .GroupBy(e => groupIdLookup[e.UserId])
+                        .ToDictionary(
+                            e => e.Key,
+                            e => e.GroupBy(es => es.ExerciseId)
+                                .ToDictionary(es => es.Key, es => es.ToList()));
+                }
+
                 // Retrieve group list
                 var groups = await _dbContext.Groups.AsNoTracking()
                     .Where(g => g.SlotId == slotId)
@@ -209,7 +224,7 @@ namespace Ctf4e.Server.Services
                     // If passing as group is *not* enabled:
                     //     The exercises submissions are stored per user
                     //     First check whether each group member has passed an exercise, by looking at their individual submissions
-                    //     Then merge all exercises submissions into one big list, and compute the total tries and points
+                    //     Then compute the total tries and points using the accumulated submissions
                     int passedMandatoryExercisesCount = 0;
                     int passedOptionalExercisesCount = 0;
                     if(passAsGroup)
@@ -262,7 +277,7 @@ namespace Ctf4e.Server.Services
                     {
                         // Run through exercises
                         var exerciseSubmissionsPerGroupMember = exerciseSubmissions.Where(es => groupIdLookup[es.Key] == group.Id).ToList();
-                        var groupExerciseSubmissions = new Dictionary<int, List<ExerciseSubmission>>();
+                        exerciseSubmissionsByGroup.TryGetValue(group.Id, out var groupExerciseSubmissions);
                         foreach(var exercise in exercises)
                         {
                             // Scan submissions for each group member to find out how many have passed the exercise
@@ -277,12 +292,6 @@ namespace Ctf4e.Server.Services
                                     var (passed, _, _) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
                                     if(passed)
                                         ++groupMembersPassed;
-
-                                    // Store user submissions in flattened list
-                                    if(!groupExerciseSubmissions.ContainsKey(exercise.Id))
-                                        groupExerciseSubmissions.Add(exercise.Id, new List<ExerciseSubmission>());
-
-                                    groupExerciseSubmissions[exercise.Id].AddRange(submissions);
                                 }
                             }
 
@@ -290,8 +299,9 @@ namespace Ctf4e.Server.Services
                             bool groupPassed = groupMembersPassed == groupMemberCount;
 
                             // Compute other scoreboard statistics by looking at the entire submission list
-                            if(groupExerciseSubmissions.ContainsKey(exercise.Id))
+                            if(groupExerciseSubmissions != null && groupExerciseSubmissions.ContainsKey(exercise.Id))
                             {
+                                // Ensure that exercise submission
                                 var submissions = groupExerciseSubmissions[exercise.Id];
 
                                 var (_, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
@@ -368,7 +378,7 @@ namespace Ctf4e.Server.Services
                     adminScoreboard.GroupEntries.Add(groupEntry);
                 }
             }
-            else
+            else // !groupMode
             {
                 // For each user, collect exercise and flag data
                 foreach(var user in users)
