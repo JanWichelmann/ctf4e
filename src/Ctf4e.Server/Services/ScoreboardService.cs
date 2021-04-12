@@ -651,12 +651,12 @@ namespace Ctf4e.Server.Services
                           SELECT MAX(es.`SubmissionTime`)
                           FROM `ExerciseSubmissions` es
                           INNER JOIN `Exercises` e ON es.`ExerciseId` = e.`Id`
-                          WHERE u1.`Id` = es.`UserId`
+                          WHERE es.`UserId` = u1.`Id`
                             AND es.`ExercisePassed`
                             AND EXISTS(
                               SELECT 1
                               FROM `LabExecutions` le1
-                              WHERE g.`Id` = le1.`GroupId`
+                              WHERE le1.`GroupId` = g.`Id`
                                 AND le1.`LabId` = e.`LabId`
                                 AND le1.`PreStart` <= es.`SubmissionTime`
                                 AND es.`SubmissionTime` < le1.`End`
@@ -669,18 +669,18 @@ namespace Ctf4e.Server.Services
                           SELECT MAX(fs.`SubmissionTime`)
                           FROM `FlagSubmissions` fs
                           INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
-                          WHERE u2.`Id` = fs.`UserId`
+                          WHERE fs.`UserId` = u2.`Id`
                             AND EXISTS(
                               SELECT 1
                               FROM `LabExecutions` le2
-                              WHERE g.`Id` = le2.`GroupId`
+                              WHERE le2.`GroupId` = g.`Id`
                                 AND le2.`LabId` = f.`LabId`
                                 AND le2.`PreStart` <= fs.`SubmissionTime`
                                 AND fs.`SubmissionTime` < le2.`End`
                             )
                         ))
                         FROM `Users` u2
-                        WHERE g.`Id` = u2.`GroupId`
+                        WHERE u2.`GroupId` = g.`Id`
                       ) AS 'LastFlagSubmissionTime'
                     FROM `Groups` g
                     WHERE g.`ShowInScoreboard`"))
@@ -959,19 +959,19 @@ namespace Ctf4e.Server.Services
                           FROM `ExerciseSubmissions` es
                           INNER JOIN `Exercises` e ON es.`ExerciseId` = e.`Id`
                           WHERE e.`LabId` = @labId
-                            AND u1.`Id` = es.`UserId`
+                            AND es.`UserId` = u1.`Id`
                             AND es.`ExercisePassed`
                             AND EXISTS(
                               SELECT 1
                               FROM `LabExecutions` le1
-                              WHERE g.`Id` = le1.`GroupId`
+                              WHERE le1.`GroupId` = g.`Id`
                                 AND le1.`LabId` = @labId
                                 AND le1.`PreStart` <= es.`SubmissionTime`
                                 AND es.`SubmissionTime` < le1.`End`
                             )
 	                    ))
                         FROM `Users` u1
-                        WHERE g.`Id` = u1.`GroupId`
+                        WHERE u1.`GroupId` = g.`Id`
                       ) AS 'LastExerciseSubmissionTime',
                       (
                         SELECT MAX((
@@ -979,18 +979,18 @@ namespace Ctf4e.Server.Services
                           FROM `FlagSubmissions` fs
                           INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
                           WHERE f.`LabId` = @labId
-                            AND u2.`Id` = fs.`UserId`
+                            AND fs.`UserId` = u2.`Id`
                             AND EXISTS(
                               SELECT 1
                               FROM `LabExecutions` le2
-                              WHERE g.`Id` = le2.`GroupId`
+                              WHERE le2.`GroupId` = g.`Id`
                                 AND le2.`LabId` = @labId
                                 AND le2.`PreStart` <= fs.`SubmissionTime`
                                 AND fs.`SubmissionTime` < le2.`End`
                             )
                         ))
                         FROM `Users` u2
-                        WHERE g.`Id` = u2.`GroupId`
+                        WHERE u2.`GroupId` = g.`Id`
                       ) AS 'LastFlagSubmissionTime'
                     FROM `Groups` g
                     WHERE g.`ShowInScoreboard`",
