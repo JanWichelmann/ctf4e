@@ -20,7 +20,7 @@ namespace Ctf4e.Server.Services
 {
     public interface IScoreboardService
     {
-        Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, CancellationToken cancellationToken = default);
+        Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken = default);
         Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
         Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
         Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default);
@@ -52,7 +52,7 @@ namespace Ctf4e.Server.Services
             _dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
         }
 
-        public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, CancellationToken cancellationToken = default)
+        public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken = default)
         {
             // Load flag point parameters
             await InitFlagPointParametersAsync(cancellationToken);
@@ -75,7 +75,7 @@ namespace Ctf4e.Server.Services
             var labExecutions = await _dbContext.LabExecutions.AsNoTracking()
                 .Where(l => l.LabId == labId && l.Group.SlotId == slotId)
                 .ToDictionaryAsync(l => l.GroupId, cancellationToken); // Each group ID can only appear once, since it is part of the primary key
-
+            
             var users = await _dbContext.Users.AsNoTracking()
                 .Where(u => u.GroupId != null && u.Group.SlotId == slotId)
                 .OrderBy(u => u.DisplayName)
@@ -159,6 +159,7 @@ namespace Ctf4e.Server.Services
                 SlotId = slotId,
                 Slots = slots,
                 GroupMode = groupMode,
+                IncludeTutors = includeTutors || groupMode, // Group mode will always include tutors, so we don't have to care about mixed groups
                 MandatoryExercisesCount = mandatoryExercisesCount,
                 OptionalExercisesCount = exercises.Count - mandatoryExercisesCount,
                 FlagCount = flags.Count,
@@ -383,6 +384,10 @@ namespace Ctf4e.Server.Services
                 // For each user, collect exercise and flag data
                 foreach(var user in users)
                 {
+                    // Skip tutors and admins, if requested
+                    if(!includeTutors && (user.IsAdmin || user.IsTutor))
+                        continue;
+
                     labExecutions.TryGetValue(user.GroupId ?? -1, out var groupLabExecution);
 
                     var userEntry = new AdminScoreboardUserEntry

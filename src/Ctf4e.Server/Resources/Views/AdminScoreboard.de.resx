@@ -50,4 +50,8 @@
         <value>Gruppenansicht</value>
         <comment>SwitchScoreboard:GroupMode</comment>
     </data>
+    <data name="SwitchScoreboard:IncludeTutors" xml:space="preserve">
+        <value>Tutoren anzeigen</value>
+        <comment>SwitchScoreboard:IncludeTutors</comment>
+    </data>
 </root>

@@ -36,11 +36,17 @@
             </select>
         </div>
         <div class="mb-3">
-        <div class="form-check">
-            <input type="checkbox" value="true" id="input-group-mode" name="groupMode" class="form-check-input" @(Model.GroupMode ? "checked" : "")>
-            <label for="input-group-mode" class="form-check-label">@Localizer["SwitchScoreboard:GroupMode"]</label>
+            <div class="form-check">
+                <input type="checkbox" value="true" id="input-group-mode" name="groupMode" class="form-check-input" @(Model.GroupMode ? "checked" : "")>
+                <label for="input-group-mode" class="form-check-label">@Localizer["SwitchScoreboard:GroupMode"]</label>
+            </div>
         </div>
-    </div>
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" value="true" id="input-include-tutors" name="includeTutors" class="form-check-input" @(Model.IncludeTutors ? "checked" : "")>
+                <label for="input-include-tutors" class="form-check-label">@Localizer["SwitchScoreboard:IncludeTutors"]</label>
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary">@Localizer["SwitchScoreboard:Submit"]</button>
     </form>
 

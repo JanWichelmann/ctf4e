@@ -79,6 +79,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Include tutors.
+        /// </summary>
+        internal static string SwitchScoreboard_IncludeTutors {
+            get {
+                return ResourceManager.GetString("SwitchScoreboard:IncludeTutors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lab.
         /// </summary>
         internal static string SwitchScoreboard_Lab {

@@ -34,15 +34,15 @@ namespace Ctf4e.Server.Controllers
             _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
         }
 
-        private async Task<IActionResult> RenderAsync(int labId, int slotId, bool groupMode)
+        private async Task<IActionResult> RenderAsync(int labId, int slotId, bool groupMode, bool includeTutors)
         {
-            var scoreboard = await _scoreboardService.GetAdminScoreboardAsync(labId, slotId, groupMode, HttpContext.RequestAborted);
+            var scoreboard = await _scoreboardService.GetAdminScoreboardAsync(labId, slotId, groupMode, includeTutors, HttpContext.RequestAborted);
 
             return await RenderViewAsync(MenuItems.AdminScoreboard, scoreboard);
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenderScoreboardAsync([FromServices] ILabExecutionService labExecutionService, int? labId, int? slotId, bool groupMode)
+        public async Task<IActionResult> RenderScoreboardAsync([FromServices] ILabExecutionService labExecutionService, int? labId, int? slotId, bool groupMode, bool includeTutors)
         {
             if(labId == null || slotId == null)
             {
@@ -55,13 +55,13 @@ namespace Ctf4e.Server.Controllers
                 }
             }
 
-            return await RenderAsync(labId ?? 0, slotId ?? 0, groupMode);
+            return await RenderAsync(labId ?? 0, slotId ?? 0, groupMode, includeTutors);
         }
 
         [HttpPost("exercisesubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, int submissionId)
+        public async Task<IActionResult> DeleteExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, int submissionId)
         {
             try
             {
@@ -76,13 +76,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["DeleteExerciseSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId, groupMode);
+            return await RenderAsync(labId, slotId, groupMode, includeTutors);
         }
 
         [HttpPost("exercisesubmission/deletemultiple")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteExerciseSubmissionsAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, List<int> submissionIds)
+        public async Task<IActionResult> DeleteExerciseSubmissionsAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, List<int> submissionIds)
         {
             try
             {
@@ -97,13 +97,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["DeleteExerciseSubmissionsAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId, groupMode);
+            return await RenderAsync(labId, slotId, groupMode, includeTutors);
         }
 
         [HttpPost("exercisesubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
+        public async Task<IActionResult> CreateExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
         {
             try
             {
@@ -126,13 +126,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["CreateExerciseSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId, groupMode);
+            return await RenderAsync(labId, slotId, groupMode, includeTutors);
         }
 
         [HttpPost("flagsubmission/delete")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, int userId, int flagId)
+        public async Task<IActionResult> DeleteFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId)
         {
             try
             {
@@ -147,13 +147,13 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["DeleteFlagSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId, groupMode);
+            return await RenderAsync(labId, slotId, groupMode, includeTutors);
         }
 
         [HttpPost("flagsubmission/create")]
         [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, int userId, int flagId, DateTime submissionTime)
+        public async Task<IActionResult> CreateFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId, DateTime submissionTime)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["CreateFlagSubmissionAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(labId, slotId, groupMode);
+            return await RenderAsync(labId, slotId, groupMode, includeTutors);
         }
 
         [HttpGet("labserver")]
@@ -225,7 +225,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["UploadToMoodleAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(0, 0, false);
+            return await RenderAsync(0, 0, false, false);
         }
 
         [HttpGet("sync/csv")]
@@ -243,7 +243,7 @@ namespace Ctf4e.Server.Controllers
                 AddStatusMessage(_localizer["DownloadAsCsvAsync:UnknownError"], StatusMessageTypes.Error);
             }
 
-            return await RenderAsync(0, 0, false);
+            return await RenderAsync(0, 0, false, false);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Ctf4e.Server.ViewModels
 
         public int SlotId { get; set; }
         public bool GroupMode { get; set; }
+        
+        public bool IncludeTutors { get; set; }
 
         public int MandatoryExercisesCount { get; set; }
 
