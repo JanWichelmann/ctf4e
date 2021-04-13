@@ -648,24 +648,6 @@ namespace Ctf4e.Server.Services
                       g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
                       g.`SlotId`, (
                         SELECT MAX((
-                          SELECT MAX(es.`SubmissionTime`)
-                          FROM `ExerciseSubmissions` es
-                          INNER JOIN `Exercises` e ON es.`ExerciseId` = e.`Id`
-                          WHERE es.`UserId` = u1.`Id`
-                            AND es.`ExercisePassed`
-                            AND EXISTS(
-                              SELECT 1
-                              FROM `LabExecutions` le1
-                              WHERE le1.`GroupId` = g.`Id`
-                                AND le1.`LabId` = e.`LabId`
-                                AND le1.`PreStart` <= es.`SubmissionTime`
-                                AND es.`SubmissionTime` < le1.`End`
-                            )
-	                    ))
-                        FROM `Users` u1
-                        WHERE g.`Id` = u1.`GroupId`
-                      ) AS 'LastExerciseSubmissionTime', (
-                        SELECT MAX((
                           SELECT MAX(fs.`SubmissionTime`)
                           FROM `FlagSubmissions` fs
                           INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
@@ -688,10 +670,10 @@ namespace Ctf4e.Server.Services
 
             // Get valid submission counts for passed exercises
             // A passed exercise always has Weight = 1
-            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int LabId, int WeightSum)>(@"
+            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>(@"
                     CREATE TEMPORARY TABLE MinPassedSubmissionTimes
                       (PRIMARY KEY primary_key (ExerciseId, GroupId))
-                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS 'MinSubmissionTime'
+                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
 	                  FROM `ExerciseSubmissions` s
                       INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
 	                  INNER JOIN `Users` u ON u.`Id` = s.`UserId`
@@ -707,7 +689,7 @@ namespace Ctf4e.Server.Services
                       GROUP BY s.ExerciseId, u.GroupId
                     ;
 
-                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, e.`LabId` AS `LabId`, SUM(s.`Weight`) AS `WeightSum`
+                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, e.`LabId` AS `LabId`, SUM(s.`Weight`) AS `WeightSum`, MAX(s.`SubmissionTime`) AS `MinPassedSubmissionTime`
                     FROM `ExerciseSubmissions` s
                     INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
                     INNER JOIN `Users` u ON u.`Id` = s.`UserId`
@@ -796,6 +778,9 @@ namespace Ctf4e.Server.Services
                     {
                         foreach(var s in groupExerciseSubmissions)
                         {
+                            if(s.MinPassedSubmissionTime > entry.LastExerciseSubmissionTime)
+                                entry.LastExerciseSubmissionTime = s.MinPassedSubmissionTime;
+                            
                             if(!exercisePointsPerLab.TryGetValue(s.LabId, out var ex))
                                 ex = 0;
 
@@ -955,26 +940,6 @@ namespace Ctf4e.Server.Services
                       g.`SlotId`,
                       (
                         SELECT MAX((
-                          SELECT MAX(es.`SubmissionTime`)
-                          FROM `ExerciseSubmissions` es
-                          INNER JOIN `Exercises` e ON es.`ExerciseId` = e.`Id`
-                          WHERE e.`LabId` = @labId
-                            AND es.`UserId` = u1.`Id`
-                            AND es.`ExercisePassed`
-                            AND EXISTS(
-                              SELECT 1
-                              FROM `LabExecutions` le1
-                              WHERE le1.`GroupId` = g.`Id`
-                                AND le1.`LabId` = @labId
-                                AND le1.`PreStart` <= es.`SubmissionTime`
-                                AND es.`SubmissionTime` < le1.`End`
-                            )
-	                    ))
-                        FROM `Users` u1
-                        WHERE u1.`GroupId` = g.`Id`
-                      ) AS 'LastExerciseSubmissionTime',
-                      (
-                        SELECT MAX((
                           SELECT MAX(fs.`SubmissionTime`)
                           FROM `FlagSubmissions` fs
                           INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
@@ -999,10 +964,10 @@ namespace Ctf4e.Server.Services
 
             // Get valid submission counts for passed exercises
             // A passed exercise always has Weight = 1
-            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum)>(@"
+            var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>(@"
                     CREATE TEMPORARY TABLE MinPassedSubmissionTimes
                       (PRIMARY KEY primary_key (ExerciseId, GroupId))
-                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS 'MinSubmissionTime'
+                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
 	                  FROM `ExerciseSubmissions` s
 	                  INNER JOIN `Users` u ON u.`Id` = s.`UserId`
                       INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
@@ -1019,7 +984,7 @@ namespace Ctf4e.Server.Services
                       GROUP BY s.ExerciseId, u.GroupId
                     ;
 
-                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`
+                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`, MAX(s.`SubmissionTime`) AS `MinPassedSubmissionTime`
                     FROM `ExerciseSubmissions` s
                     INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
                     INNER JOIN `Users` u ON u.`Id` = s.`UserId`
@@ -1112,7 +1077,11 @@ namespace Ctf4e.Server.Services
                     if(groupExerciseSubmissions != null)
                     {
                         foreach(var s in groupExerciseSubmissions)
+                        {
+                            if(s.MinPassedSubmissionTime > entry.LastExerciseSubmissionTime)
+                                entry.LastExerciseSubmissionTime = s.MinPassedSubmissionTime;
                             entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
+                        }
                     }
 
                     // Flag points
