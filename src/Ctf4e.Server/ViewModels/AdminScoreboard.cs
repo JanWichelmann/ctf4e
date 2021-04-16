@@ -25,7 +25,8 @@ namespace Ctf4e.Server.ViewModels
 
         public bool PassAsGroup { get; set; }
 
-        public List<AdminScoreboardFlagEntry> Flags { get; set; }
+        public List<AdminScoreboardExerciseStatisticsEntry> ExerciseStatistics { get; set; }
+        public List<AdminScoreboardFlagStatisticsEntry> FlagStatistics { get; set; }
 
         public List<AdminScoreboardUserEntry> UserEntries { get; set; }
         public List<AdminScoreboardGroupEntry> GroupEntries { get; set; }
@@ -33,13 +34,20 @@ namespace Ctf4e.Server.ViewModels
         public Dictionary<int, string> UserNames { get; set; }
     }
 
-    public class AdminScoreboardFlagEntry
+    public class AdminScoreboardFlagStatisticsEntry
     {
         public Flag Flag { get; set; }
 
         public int SubmissionCount { get; set; }
 
         public int CurrentPoints { get; set; }
+    }
+
+    public class AdminScoreboardExerciseStatisticsEntry
+    {
+        public Exercise Exercise { get; set; }
+        
+        public int PassedCount { get; set; }
     }
 
     public class AdminScoreboardUserEntry

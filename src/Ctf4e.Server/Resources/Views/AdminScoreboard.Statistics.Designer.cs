@@ -22,14 +22,14 @@ namespace Ctf4e.Server.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AdminScoreboard_de {
+    internal class AdminScoreboard_Statistics {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AdminScoreboard_de() {
+        internal AdminScoreboard_Statistics() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Ctf4e.Server.Resources.Views {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ctf4e.Server.Resources.Views.AdminScoreboard.de", typeof(AdminScoreboard_de).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ctf4e.Server.Resources.Views.AdminScoreboard.Statistics", typeof(AdminScoreboard_Statistics).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,79 +61,106 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Statistiken.
+        ///   Looks up a localized string similar to Bug bounty.
         /// </summary>
-        internal static string Statistics {
+        internal static string BugBounty {
             get {
-                return ResourceManager.GetString("Statistics", resourceCulture);
+                return ResourceManager.GetString("BugBounty", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gruppenansicht.
+        ///   Looks up a localized string similar to Name.
         /// </summary>
-        internal static string SwitchScoreboard_GroupMode {
+        internal static string Exercises_Name {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:GroupMode", resourceCulture);
+                return ResourceManager.GetString("Exercises:Name", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tutoren anzeigen.
+        ///   Looks up a localized string similar to No..
         /// </summary>
-        internal static string SwitchScoreboard_IncludeTutors {
+        internal static string Exercises_Number {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:IncludeTutors", resourceCulture);
+                return ResourceManager.GetString("Exercises:Number", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Praktikum.
+        ///   Looks up a localized string similar to Passed Submissions.
         /// </summary>
-        internal static string SwitchScoreboard_Lab {
+        internal static string Exercises_Passed {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:Lab", resourceCulture);
+                return ResourceManager.GetString("Exercises:Passed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Praktikum auswählen.
+        ///   Looks up a localized string similar to Points.
         /// </summary>
-        internal static string SwitchScoreboard_Lab_Placeholder {
+        internal static string Exercises_Points {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:Lab:Placeholder", resourceCulture);
+                return ResourceManager.GetString("Exercises:Points", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Terminslot.
+        ///   Looks up a localized string similar to Exercises.
         /// </summary>
-        internal static string SwitchScoreboard_Slot {
+        internal static string ExercisesTitle {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:Slot", resourceCulture);
+                return ResourceManager.GetString("ExercisesTitle", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slot auswählen.
+        ///   Looks up a localized string similar to Description.
         /// </summary>
-        internal static string SwitchScoreboard_Slot_Placeholder {
+        internal static string Flags_Description {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:Slot:Placeholder", resourceCulture);
+                return ResourceManager.GetString("Flags:Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scoreboard anzeigen.
+        ///   Looks up a localized string similar to Points.
         /// </summary>
-        internal static string SwitchScoreboard_Submit {
+        internal static string Flags_Points {
             get {
-                return ResourceManager.GetString("SwitchScoreboard:Submit", resourceCulture);
+                return ResourceManager.GetString("Flags:Points", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin-Scoreboard.
+        ///   Looks up a localized string similar to Submissions.
+        /// </summary>
+        internal static string Flags_Submissions {
+            get {
+                return ResourceManager.GetString("Flags:Submissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flags (all time slots).
+        /// </summary>
+        internal static string FlagsTitle {
+            get {
+                return ResourceManager.GetString("FlagsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mandatory.
+        /// </summary>
+        internal static string Mandatory {
+            get {
+                return ResourceManager.GetString("Mandatory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statistics.
         /// </summary>
         internal static string Title {
             get {
