@@ -22,14 +22,14 @@ namespace Ctf4e.Server.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AdminScoreboard_Flags_de {
+    internal class AdminScoreboard_Statistics_de {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal AdminScoreboard_Flags_de() {
+        internal AdminScoreboard_Statistics_de() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Ctf4e.Server.Resources.Views {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ctf4e.Server.Resources.Views.AdminScoreboard.Flags.de", typeof(AdminScoreboard_Flags_de).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ctf4e.Server.Resources.Views.AdminScoreboard.Statistics.de", typeof(AdminScoreboard_Statistics_de).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -66,6 +66,51 @@ namespace Ctf4e.Server.Resources.Views {
         internal static string BugBounty {
             get {
                 return ResourceManager.GetString("BugBounty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string Exercises_Name {
+            get {
+                return ResourceManager.GetString("Exercises:Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nr..
+        /// </summary>
+        internal static string Exercises_Number {
+            get {
+                return ResourceManager.GetString("Exercises:Number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bestandene Einreichungen.
+        /// </summary>
+        internal static string Exercises_Passed {
+            get {
+                return ResourceManager.GetString("Exercises:Passed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Punkte.
+        /// </summary>
+        internal static string Exercises_Points {
+            get {
+                return ResourceManager.GetString("Exercises:Points", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aufgaben.
+        /// </summary>
+        internal static string ExercisesTitle {
+            get {
+                return ResourceManager.GetString("ExercisesTitle", resourceCulture);
             }
         }
         
@@ -98,6 +143,24 @@ namespace Ctf4e.Server.Resources.Views {
         
         /// <summary>
         ///   Looks up a localized string similar to Flags (alle Terminslots).
+        /// </summary>
+        internal static string FlagsTitle {
+            get {
+                return ResourceManager.GetString("FlagsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pflicht.
+        /// </summary>
+        internal static string Mandatory {
+            get {
+                return ResourceManager.GetString("Mandatory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statistiken.
         /// </summary>
         internal static string Title {
             get {

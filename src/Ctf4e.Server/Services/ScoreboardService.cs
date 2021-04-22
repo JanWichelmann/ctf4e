@@ -95,12 +95,40 @@ namespace Ctf4e.Server.Services
                 .ThenBy(e => e.SubmissionTime)
                 .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
-            var exerciseSubmissions = exerciseSubmissionsUngrouped
-                .GroupBy(e => passAsGroup ? groupIdLookup[e.UserId] : e.UserId) // This needs to be done in memory (no aggregation)
+            
+            // Aggregate exercise submissions by user and by group
+            var exerciseSubmissionsByUser = exerciseSubmissionsUngrouped
+                .GroupBy(e => e.UserId)
                 .ToDictionary(
                     e => e.Key,
                     e => e.GroupBy(es => es.ExerciseId)
                         .ToDictionary(es => es.Key, es => es.ToList()));
+            var exerciseSubmissionsByGroup = exerciseSubmissionsUngrouped
+                .GroupBy(e => groupIdLookup[e.UserId])
+                .ToDictionary(
+                    e => e.Key,
+                    e => e.GroupBy(es => es.ExerciseId)
+                        .ToDictionary(es => es.Key, es => es.ToList()));
+            
+            // Compute exercise statistics
+            var exercisePassedCounts = exercises
+                .ToDictionary(e => e.Id, _ => 0);
+            foreach(var groupSubmissions in exerciseSubmissionsByGroup)
+            {
+                foreach(var exercise in groupSubmissions.Value)
+                {
+                    if(exercise.Value.Any(es => es.ExercisePassed))
+                        ++exercisePassedCounts[exercise.Key];
+                }
+            }
+
+            var exerciseStatistics = exercises
+                .Select(e => new AdminScoreboardExerciseStatisticsEntry
+                {
+                    Exercise = e,
+                    PassedCount = exercisePassedCounts[e.Id]
+                })
+                .ToList();
 
             var flags = await _dbContext.Flags.AsNoTracking()
                 .Where(f => f.LabId == labId)
@@ -121,7 +149,7 @@ namespace Ctf4e.Server.Services
                         .ToDictionary(fs => fs.Key, fs => fs.Single())); // There can only be one submission per flag and user
 
             // Compute submission counts and current points of all flags over all slots
-            var scoreboardFlagStatus = (await _dbConn.QueryAsync<FlagEntity, long, AdminScoreboardFlagEntry>(@"
+            var scoreboardFlagStatus = (await _dbConn.QueryAsync<FlagEntity, long, AdminScoreboardFlagStatisticsEntry>(@"
                         SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
                         FROM `Flags` f
                         LEFT JOIN(
@@ -140,7 +168,7 @@ namespace Ctf4e.Server.Services
                           )
                         WHERE f.`LabId` = @labId
                         GROUP BY f.`Id`",
-                    (flag, submissionCount) => new AdminScoreboardFlagEntry
+                    (flag, submissionCount) => new AdminScoreboardFlagStatisticsEntry
                     {
                         Flag = _mapper.Map<Flag>(flag),
                         SubmissionCount = (int)submissionCount
@@ -163,7 +191,8 @@ namespace Ctf4e.Server.Services
                 MandatoryExercisesCount = mandatoryExercisesCount,
                 OptionalExercisesCount = exercises.Count - mandatoryExercisesCount,
                 FlagCount = flags.Count,
-                Flags = scoreboardFlagStatus.Select(f => f.Value).ToList(),
+                ExerciseStatistics = exerciseStatistics,
+                FlagStatistics = scoreboardFlagStatus.Select(f => f.Value).ToList(),
                 UserEntries = new List<AdminScoreboardUserEntry>(),
                 GroupEntries = new List<AdminScoreboardGroupEntry>(),
                 PassAsGroup = passAsGroup,
@@ -176,21 +205,6 @@ namespace Ctf4e.Server.Services
             //     However, if passing as group is enabled, each user entry still shows all submissions, so the displayed "passed" status makes sense
             if(groupMode)
             {
-                // Transform exercise submissions into representation: exerciseId -> [ groupId -> submissions ]
-                // This is needed when passing as group is not enabled, since the exerciseSubmissions will have a userId -> submissions mapping then.
-                // In this case, we want to calculate the total points and tries based on the accumulated list. Since we have already done all sorting
-                // in the database query, there is no point in accumulating and sorting the submissions again, so we just do it here, and only once.
-                Dictionary<int, Dictionary<int, List<ExerciseSubmission>>> exerciseSubmissionsByGroup = null;
-                if(!passAsGroup)
-                {
-                    exerciseSubmissionsByGroup = exerciseSubmissionsUngrouped
-                        .GroupBy(e => groupIdLookup[e.UserId])
-                        .ToDictionary(
-                            e => e.Key,
-                            e => e.GroupBy(es => es.ExerciseId)
-                                .ToDictionary(es => es.Key, es => es.ToList()));
-                }
-
                 // Retrieve group list
                 var groups = await _dbContext.Groups.AsNoTracking()
                     .Where(g => g.SlotId == slotId)
@@ -233,7 +247,7 @@ namespace Ctf4e.Server.Services
                         // Run through exercises
                         //    If there are submissions for that exercise, compute points etc.
                         //    If not, just produce an empty entry
-                        exerciseSubmissions.TryGetValue(group.Id, out var groupExerciseSubmissions);
+                        exerciseSubmissionsByGroup.TryGetValue(group.Id, out var groupExerciseSubmissions);
                         foreach(var exercise in exercises)
                         {
                             if(groupExerciseSubmissions != null && groupExerciseSubmissions.ContainsKey(exercise.Id))
@@ -274,10 +288,10 @@ namespace Ctf4e.Server.Services
                             }
                         }
                     }
-                    else
+                    else // !passAsGroup
                     {
                         // Run through exercises
-                        var exerciseSubmissionsPerGroupMember = exerciseSubmissions.Where(es => groupIdLookup[es.Key] == group.Id).ToList();
+                        var exerciseSubmissionsPerGroupMember = exerciseSubmissionsByUser.Where(es => groupIdLookup[es.Key] == group.Id).ToList();
                         exerciseSubmissionsByGroup.TryGetValue(group.Id, out var groupExerciseSubmissions);
                         foreach(var exercise in exercises)
                         {
@@ -400,7 +414,11 @@ namespace Ctf4e.Server.Services
                     };
 
                     // Exercises
-                    exerciseSubmissions.TryGetValue(passAsGroup ? (user.GroupId ?? -1) : user.Id, out var userExerciseSubmissions);
+                    Dictionary<int, List<ExerciseSubmission>> userExerciseSubmissions;
+                    if(passAsGroup)
+                        exerciseSubmissionsByGroup.TryGetValue(user.GroupId ?? -1, out userExerciseSubmissions);
+                    else
+                        exerciseSubmissionsByUser.TryGetValue(user.Id, out userExerciseSubmissions);
                     int passedMandatoryExercisesCount = 0;
                     int passedOptionalExercisesCount = 0;
                     foreach(var exercise in exercises)

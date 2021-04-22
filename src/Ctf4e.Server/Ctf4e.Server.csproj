@@ -93,12 +93,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AdminScoreboard.Users.de.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\Views\AdminScoreboard.Flags.Designer.cs">
+    <Compile Update="Resources\Views\AdminScoreboard.Statistics.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AdminScoreboard.Flags.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\Views\AdminScoreboard.Flags.de.Designer.cs">
+    <Compile Update="Resources\Views\AdminScoreboard.Statistics.de.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>AdminScoreboard.Flags.de.resx</DependentUpon>
@@ -678,7 +678,7 @@
     <Content Update="Views\AdminScoreboard.Sync.cshtml">
       <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminScoreboard.Flags.cshtml">
+    <Content Update="Views\AdminScoreboard.Statistics.cshtml">
       <DependentUpon>AdminScoreboard.cshtml</DependentUpon>
     </Content>
     <Content Update="Views\Authentication.GroupSelection.cshtml">
@@ -750,14 +750,14 @@
       <LastGenOutput>AdminScoreboard.Users.de.Designer.cs</LastGenOutput>
       <DependentUpon>AdminScoreboard.de.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Flags.resx">
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Statistics.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminScoreboard.Flags.Designer.cs</LastGenOutput>
+      <LastGenOutput>AdminScoreboard.Statistics.Designer.cs</LastGenOutput>
       <DependentUpon>AdminScoreboard.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Flags.de.resx">
+    <EmbeddedResource Update="Resources\Views\AdminScoreboard.Statistics.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminScoreboard.Flags.de.Designer.cs</LastGenOutput>
+      <LastGenOutput>AdminScoreboard.Statistics.de.Designer.cs</LastGenOutput>
       <DependentUpon>AdminScoreboard.de.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Views\AdminScoreboard.Sync.resx">

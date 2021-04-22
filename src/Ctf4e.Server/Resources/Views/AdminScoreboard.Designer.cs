@@ -61,11 +61,11 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Flags.
+        ///   Looks up a localized string similar to Statistics.
         /// </summary>
-        internal static string Flags {
+        internal static string Statistics {
             get {
-                return ResourceManager.GetString("Flags", resourceCulture);
+                return ResourceManager.GetString("Statistics", resourceCulture);
             }
         }
         
