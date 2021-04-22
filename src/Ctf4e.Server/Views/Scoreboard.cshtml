@@ -53,6 +53,7 @@
                 <th scope="col">#</th>
                 <th scope="col">@Localizer["Scoreboard:Points"]</th>
                 <th scope="col">@Localizer["Scoreboard:Flags"]</th>
+                <th scope="col"></th>
                 <th scope="col">@Localizer["Scoreboard:Group"]</th>
             </tr>
             </thead>
@@ -113,11 +114,13 @@
                         @entry.FlagCount
                     </td>
                     <td>
-                        @entry.GroupName
                         @if(entry.GroupAnnotation != null)
                         {
                             <span title="@(entry.GroupAnnotationHoverText ?? "")">@entry.GroupAnnotation</span>
                         }
+                    </td>
+                    <td>
+                        @entry.GroupName
                     </td>
                 </tr>
                 ++entryCount;
@@ -153,11 +156,13 @@
                             @entry.FlagCount
                         </td>
                         <td>
-                            @entry.GroupName
                             @if(entry.GroupAnnotation != null)
                             {
                                 <span title="@(entry.GroupAnnotationHoverText ?? "")">@entry.GroupAnnotation</span>
                             }
+                        </td>
+                        <td>
+                            @entry.GroupName
                         </td>
                     </tr>
                 }
