@@ -82,6 +82,13 @@ namespace Ctf4e.Server.Services
                 .ToListAsync(cancellationToken);
             var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId!.Value);
             var userNameLookup = users.ToDictionary(u => u.Id, u => u.DisplayName);
+            
+            var groups = await _dbContext.Groups.AsNoTracking()
+                .Where(g => g.SlotId == slotId)
+                .OrderBy(g => g.DisplayName)
+                .ProjectTo<Group>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+            var groupNameLookup = groups.ToDictionary(g => g.Id, g => g.DisplayName);
 
             var exercises = await _dbContext.Exercises.AsNoTracking()
                 .Where(e => e.LabId == labId)
@@ -196,7 +203,8 @@ namespace Ctf4e.Server.Services
                 UserEntries = new List<AdminScoreboardUserEntry>(),
                 GroupEntries = new List<AdminScoreboardGroupEntry>(),
                 PassAsGroup = passAsGroup,
-                UserNames = userNameLookup
+                UserNames = userNameLookup,
+                GroupNames = groupNameLookup
             };
 
             // User mode or group mode?
@@ -205,12 +213,6 @@ namespace Ctf4e.Server.Services
             //     However, if passing as group is enabled, each user entry still shows all submissions, so the displayed "passed" status makes sense
             if(groupMode)
             {
-                // Retrieve group list
-                var groups = await _dbContext.Groups.AsNoTracking()
-                    .Where(g => g.SlotId == slotId)
-                    .OrderBy(g => g.DisplayName)
-                    .ToListAsync(cancellationToken);
-
                 // For each group, collect exercise and flag data
                 var flagSubmissionsByGroup = flagSubmissionsUngrouped
                     .GroupBy(f => groupIdLookup[f.UserId])
@@ -220,7 +222,10 @@ namespace Ctf4e.Server.Services
                             .ToDictionary(fs => fs.Key, fs => fs.ToList()));
                 foreach(var group in groups)
                 {
-                    int groupMemberCount = users.Count(u => u.GroupId == group.Id);
+                    var groupMembers = users
+                        .Where(u => u.GroupId == group.Id)
+                        .Select(u => u.Id)
+                        .ToList();
 
                     labExecutions.TryGetValue(group.Id, out var groupLabExecution);
 
@@ -230,7 +235,8 @@ namespace Ctf4e.Server.Services
                         GroupName = group.DisplayName,
                         Status = LabExecutionToStatus(now, groupLabExecution),
                         Exercises = new List<ScoreboardUserExerciseEntry>(),
-                        Flags = new List<AdminScoreboardUserFlagEntry>()
+                        Flags = new List<AdminScoreboardUserFlagEntry>(),
+                        GroupMembers = groupMembers
                     };
 
                     // Exercises
@@ -311,7 +317,7 @@ namespace Ctf4e.Server.Services
                             }
 
                             // The exercise is passed if all group members have passed
-                            bool groupPassed = groupMembersPassed == groupMemberCount;
+                            bool groupPassed = groupMembersPassed == groupMembers.Count;
 
                             // Compute other scoreboard statistics by looking at the entire submission list
                             if(groupExerciseSubmissions != null && groupExerciseSubmissions.ContainsKey(exercise.Id))
@@ -408,6 +414,7 @@ namespace Ctf4e.Server.Services
                     {
                         UserId = user.Id,
                         UserName = user.DisplayName,
+                        GroupId = user.GroupId,
                         Status = LabExecutionToStatus(now, groupLabExecution),
                         Exercises = new List<ScoreboardUserExerciseEntry>(),
                         Flags = new List<AdminScoreboardUserFlagEntry>()

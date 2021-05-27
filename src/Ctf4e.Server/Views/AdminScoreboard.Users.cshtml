@@ -12,7 +12,7 @@
     foreach(var group in Model.GroupEntries)
     {
         <div class="card mb-1">
-            <div class="card-header container" id="group@(group.GroupId)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card">
+            <div class="card-header container" id="group@(group.GroupId)" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card">
                 <div class="row">
                     <div class="col">
                         @if(group.HasPassed)
@@ -54,6 +54,25 @@
             </div>
             <div id="group@(group.GroupId)-card" class="collapse">
                 <div class="card-body">
+                    <p>
+                        <span class="fw-bold">@Localizer["Members"]:</span>
+                        @{
+                            bool first = true;
+                        }
+                        @foreach(var userId in group.GroupMembers)
+                        {
+                            if(first)
+                            {
+                                first = false;
+                            }
+                            else
+                            {
+                                @:/
+                            }
+                            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-groupMode="false" asp-route-includeTutors="true" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-fragment="@("user" + userId)">@(Model.UserNames[userId])</a>
+                        }
+                    </p>
+                
                     @foreach(var exercise in group.Exercises)
                     {
                         <div class="card mb-2">
@@ -91,11 +110,11 @@
                                         <th scope="col">@Localizer["ExerciseSubmissions:Solved"]</th>
                                         <th scope="col">@Localizer["ExerciseSubmissions:Timestamp"]</th>
                                         <th scope="col">@Localizer["ExerciseSubmissions:Weight"]</th>
-                                            <th scope="col">@Localizer["ExerciseSubmissions:SubmittedBy"]</th>
-                                            @if(currentUser.IsAdmin)
-                                            {
-                                                <th scope="col">Aktionen</th>
-                                            }
+                                        <th scope="col">@Localizer["ExerciseSubmissions:SubmittedBy"]</th>
+                                        @if(currentUser.IsAdmin)
+                                        {
+                                            <th scope="col">Aktionen</th>
+                                        }
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -122,9 +141,9 @@
                                             <td>
                                                 @submission.Weight
                                             </td>
-                                                <td>
-                                                    @Model.UserNames[submission.UserId]
-                                                </td>
+                                            <td>
+                                                @Model.UserNames[submission.UserId]
+                                            </td>
                                             @if(currentUser.IsAdmin)
                                             {
                                                 <td>
@@ -191,13 +210,29 @@
             </div>
         </div>
     }
+
+    <script>
+        // Automatically show card if specified in URL
+        window.addEventListener("load", () => {
+            if(window.location.hash === null)
+                return;
+            
+            let cardIdMatch = window.location.hash.match(/^#(group[0-9]+)$/);
+            if(cardIdMatch.length === 2)
+            {
+                let card = document.getElementById(cardIdMatch[1] + "-card");
+                if(card)
+                   card.classList.add("show");
+            }
+        });
+    </script>
 }
 else
 {
     foreach(var user in Model.UserEntries)
     {
         <div class="card mb-1">
-        <div class="card-header container" id="user@(user.UserId)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
+        <div class="card-header container" id="user@(user.UserId)" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
             <div class="row">
                 <div class="col">
                     @if(user.HasPassed)
@@ -239,6 +274,16 @@ else
         </div>
         <div id="user@(user.UserId)-card" class="collapse">
             <div class="card-body">
+                @if(user.GroupId != null)
+                {
+                    <p>
+                        <span class="fw-bold">@Localizer["Group"]:</span>
+                        <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-groupMode="true" asp-route-includeTutors="true" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-fragment="@("group" + user.GroupId)">
+                            @(Model.GroupNames[user.GroupId!.Value])
+                        </a>
+                    </p>
+                }
+            
                 <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">
                     <i class="bi bi-arrow-return-right"></i>
                     <i class="bi bi-hdd-network"></i>
@@ -421,6 +466,22 @@ else
         </div>
         </div>
     }
+
+    <script>
+        // Automatically show card if specified in URL
+        window.addEventListener("load", () => {
+            if(window.location.hash === null)
+                return;
+            
+            let cardIdMatch = window.location.hash.match(/^#(user[0-9]+)$/);
+            if(cardIdMatch.length === 2)
+            {
+                let card = document.getElementById(cardIdMatch[1] + "-card");
+                if(card)
+                   card.classList.add("show");
+            }
+        });
+    </script>
 }
 
 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submissions">

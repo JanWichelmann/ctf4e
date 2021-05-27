@@ -234,4 +234,12 @@
         <value>Create submission</value>
         <comment>Modal:CreateFlagSubmission:Submit</comment>
     </data>
+    <data name="Group" xml:space="preserve">
+        <value>Group</value>
+        <comment>Group</comment>
+    </data>
+    <data name="Members" xml:space="preserve">
+        <value>Members</value>
+        <comment>Members</comment>
+    </data>
 </root>

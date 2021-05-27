@@ -234,4 +234,12 @@
         <value>Einreichung erstellen</value>
         <comment>Modal:CreateFlagSubmission:Submit</comment>
     </data>
+    <data name="Group" xml:space="preserve">
+        <value>Gruppe</value>
+        <comment>Group</comment>
+    </data>
+    <data name="Members" xml:space="preserve">
+        <value>Mitglieder</value>
+        <comment>Members</comment>
+    </data>
 </root>

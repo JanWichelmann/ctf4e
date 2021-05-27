@@ -32,6 +32,7 @@ namespace Ctf4e.Server.ViewModels
         public List<AdminScoreboardGroupEntry> GroupEntries { get; set; }
 
         public Dictionary<int, string> UserNames { get; set; }
+        public Dictionary<int, string> GroupNames { get; set; }
     }
 
     public class AdminScoreboardFlagStatisticsEntry
@@ -54,6 +55,8 @@ namespace Ctf4e.Server.ViewModels
     {
         public int UserId { get; set; }
         public string UserName { get; set; }
+        
+        public int? GroupId { get; set; }
 
         public ScoreboardGroupStatus Status { get; set; }
 
@@ -88,6 +91,8 @@ namespace Ctf4e.Server.ViewModels
         public int FoundFlagsCount { get; set; }
 
         public List<AdminScoreboardUserFlagEntry> Flags { get; set; }
+        
+        public List<int> GroupMembers { get; set; }
     }
 
     public enum ScoreboardGroupStatus
