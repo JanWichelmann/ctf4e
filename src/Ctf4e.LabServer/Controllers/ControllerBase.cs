@@ -24,7 +24,7 @@ namespace Ctf4e.LabServer.Controllers
         private User _currentUser = null;
         private bool _adminMode = false;
         private bool _currentUserHasLoggedOut = false;
-        private IOptionsSnapshot<LabOptions> _labOptions;
+        private readonly IOptionsSnapshot<LabOptions> _labOptions;
         private readonly ILabConfigurationService _labConfiguration;
 
         protected ControllerBase(string viewPath, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration)
