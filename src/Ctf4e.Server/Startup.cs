@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using AutoMapper;
@@ -10,6 +11,7 @@ using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -51,6 +53,13 @@ namespace Ctf4e.Server
             _mainOptions = _configuration.GetSection(nameof(MainOptions)).Get<MainOptions>();
             services.AddOptions<MainOptions>().Bind(_configuration.GetSection(nameof(MainOptions)));
             var dbOptions = _configuration.GetSection(nameof(CtfDbOptions)).Get<CtfDbOptions>();
+            
+            // Key persistence
+            if(_mainOptions.SecretsDirectory != null)
+            {
+                services.AddDataProtection()
+                    .PersistKeysToFileSystem(new DirectoryInfo(_mainOptions.SecretsDirectory));
+            }
 
             // Moodle connection
             services.AddHttpClient();

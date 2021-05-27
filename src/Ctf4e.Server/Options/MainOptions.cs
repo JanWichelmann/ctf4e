@@ -7,5 +7,6 @@ namespace Ctf4e.Server.Options
         public string ProxyNetworkAddress { get; set; }
         public int ProxyNetworkPrefix { get; set; }
         public string DefaultCulture { get; set; }
+        public string SecretsDirectory { get; set; }
     }
 }

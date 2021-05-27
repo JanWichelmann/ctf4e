@@ -1,7 +1,8 @@
 {
   "MainOptions": {
     "DevelopmentMode": true,
-    "DefaultCulture": "de-DE"
+    "DefaultCulture": "de-DE",
+    "SecretsDirectory": "R:\\ctf4e-secrets"
   },
   "CtfDbOptions": {
     "Server": "localhost",
