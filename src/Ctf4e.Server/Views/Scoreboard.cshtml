@@ -92,7 +92,7 @@
                     </th>
                     <td title="@Localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
                         @entry.TotalPoints
-                        @if(isCurrentGroup || currentUser.IsAdmin || currentUser.IsTutor)
+                        @if(isCurrentGroup || ((currentUser.IsAdmin || currentUser.IsTutor) && showAllEntries))
                         {
                             <span class="text-muted">
                                 @if(entry.BugBountyPoints == 0)
