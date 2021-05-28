@@ -956,6 +956,8 @@ namespace Ctf4e.Server.Services
                 return null; // No scoreboard for empty labs
 
             // Initialize scoreboard entries with group data and latest submission timestamps
+            // Exclude bug bounties from submission time computation, as points do not exceed the cap
+            //     TODO Check this query anyway, the MAX statement appears to be invalid
             var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
                     SELECT
                       g.`Id` AS 'GroupId',
@@ -970,6 +972,7 @@ namespace Ctf4e.Server.Services
                           INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
                           WHERE f.`LabId` = @labId
                             AND fs.`UserId` = u2.`Id`
+                            AND f.`IsBounty` = 0
                             AND EXISTS(
                               SELECT 1
                               FROM `LabExecutions` le2
@@ -1128,7 +1131,7 @@ namespace Ctf4e.Server.Services
                             entry.FlagPoints = lab.MaxFlagPoints;
                     }
 
-                    entry.TotalPoints = Math.Min(entry.ExercisePoints + entry.FlagPoints, lab.MaxPoints) + entry.BugBountyPoints;
+                    entry.TotalPoints = Math.Min(entry.ExercisePoints + entry.FlagPoints + entry.BugBountyPoints, lab.MaxPoints);
                     entry.LastSubmissionTime = entry.LastExerciseSubmissionTime > entry.LastFlagSubmissionTime ? entry.LastExerciseSubmissionTime : entry.LastFlagSubmissionTime;
                 }
             }
