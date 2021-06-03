@@ -18,6 +18,7 @@ namespace Ctf4e.Server.Services
     public interface IUserService
     {
         IAsyncEnumerable<User> GetUsersAsync();
+        IAsyncEnumerable<User> GetGroupMembersAsync(int groupId);
         Task<bool> AnyUsers(CancellationToken cancellationToken = default);
         Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken = default);
         Task<User> GetUserAsync(int id, CancellationToken cancellationToken = default);
@@ -48,6 +49,15 @@ namespace Ctf4e.Server.Services
         public IAsyncEnumerable<User> GetUsersAsync()
         {
             return _dbContext.Users.AsNoTracking()
+                .OrderBy(u => u.DisplayName)
+                .ProjectTo<User>(_mapper.ConfigurationProvider)
+                .AsAsyncEnumerable();
+        }
+
+        public IAsyncEnumerable<User> GetGroupMembersAsync(int groupId)
+        {
+            return _dbContext.Users.AsNoTracking()
+                .Where(u => u.GroupId == groupId)
                 .OrderBy(u => u.DisplayName)
                 .ProjectTo<User>(_mapper.ConfigurationProvider)
                 .AsAsyncEnumerable();

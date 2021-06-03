@@ -13,6 +13,8 @@ namespace Ctf4e.Api.Services
     {
         Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken = default);
         Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken = default);
+        Task CreateGroupExerciseSubmissionAsync(ApiGroupExerciseSubmission submission, CancellationToken cancellationToken = default);
+        Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken = default);
     }
 
     public class CtfApiClient : ICtfApiClient
@@ -32,6 +34,12 @@ namespace Ctf4e.Api.Services
         public Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken = default)
             => RunApiPostRequestAsync("exercisesubmission/clear", new ApiExerciseSubmission { ExerciseNumber = exerciseNumber, UserId = userId }, cancellationToken);
 
+        public Task CreateGroupExerciseSubmissionAsync(ApiGroupExerciseSubmission submission, CancellationToken cancellationToken = default)
+            => RunApiPostRequestAsync("exercisesubmission-group/create", submission, cancellationToken);
+
+        public Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken = default)
+            => RunApiPostRequestAsync("exercisesubmission-group/clear", new ApiGroupExerciseSubmission { ExerciseNumber = exerciseNumber, GroupId = groupId }, cancellationToken);
+
         private async Task RunApiPostRequestAsync(string resource, object payload, CancellationToken cancellationToken = default)
         {
             // Run request
@@ -39,7 +47,7 @@ namespace Ctf4e.Api.Services
             var request = new RestRequest(resource, Method.POST);
             request.AddJsonBody(CtfApiRequest.Create(_options.Value.LabId, _cryptoService, payload));
             var response = await client.ExecuteAsync(request, cancellationToken);
-            
+
             // WORKAROUND: The current implementation of RestSharp silently swallows exceptions; check and throw possible exceptions manually
             if(response.ErrorException != null)
                 throw response.ErrorException;

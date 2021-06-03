@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Ctf4e.Api;
@@ -105,6 +106,103 @@ namespace Ctf4e.Server.Controllers
 
                 // Clear exercise submissions
                 await _exerciseService.ClearExerciseSubmissionsAsync(exercise.Id, apiExerciseSubmission.UserId, HttpContext.RequestAborted);
+
+                return Ok();
+            }
+            catch(CryptographicException ex)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { error = ex.ToString() });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.ToString() });
+            }
+        }
+
+        [HttpPost("exercisesubmission-group/create")]
+        public async Task<IActionResult> CreateGroupExerciseSubmissionAsync(CtfApiRequest request)
+        {
+            try
+            {
+                // Resolve lab
+                var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
+                if(lab == null)
+                    return BadRequest();
+
+                // Decode request
+                var apiExerciseSubmission = request.Decode<ApiGroupExerciseSubmission>(new CryptoService(lab.ApiCode));
+
+                // Resolve exercise
+                var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+                if(exercise == null)
+                    return NotFound(new { error = "Exercise not found" });
+
+                // Check lab execution
+                // This will also automatically check whether the given group exists
+                var labExecution = await _labExecutionService.GetLabExecutionAsync(apiExerciseSubmission.GroupId, lab.Id, HttpContext.RequestAborted);
+                var now = DateTime.Now;
+                if(labExecution == null || now < labExecution.PreStart)
+                    return NotFound(new { error = "Lab is not active for this group" });
+
+                // Some exercises may only be submitted after the pre-start phase has ended
+                if(!exercise.IsPreStartAvailable && now < labExecution.Start)
+                    return NotFound(new { error = "This exercise may not be submitted in the pre-start phase" });
+
+                // Create submission for each group member
+                var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId).ToListAsync(HttpContext.RequestAborted);
+                foreach(var groupMember in groupMembers)
+                {
+                    var submission = new ExerciseSubmission
+                    {
+                        ExerciseId = exercise.Id,
+                        UserId = groupMember.Id,
+                        ExercisePassed = apiExerciseSubmission.ExercisePassed,
+                        SubmissionTime = apiExerciseSubmission.SubmissionTime ?? DateTime.Now,
+                        Weight = apiExerciseSubmission.ExercisePassed ? 1 : (apiExerciseSubmission.Weight >= 0 ? apiExerciseSubmission.Weight : 1)
+                    };
+                    await _exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
+                }
+
+                return Ok();
+            }
+            catch(CryptographicException ex)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { error = ex.ToString() });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.ToString() });
+            }
+        }
+
+        [HttpPost("exercisesubmission-group/clear")]
+        public async Task<IActionResult> ClearGroupExerciseSubmissionsAsync(CtfApiRequest request)
+        {
+            try
+            {
+                // Resolve lab
+                var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
+                if(lab == null)
+                    return BadRequest();
+
+                // Decode request
+                var apiExerciseSubmission = request.Decode<ApiGroupExerciseSubmission>(new CryptoService(lab.ApiCode));
+
+                // Resolve exercise
+                var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+                if(exercise == null)
+                    return NotFound(new { error = "Exercise not found" });
+
+                // Get group members
+                var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId).ToListAsync(HttpContext.RequestAborted);
+                if(!groupMembers.Any())
+                    return NotFound(new { error = "Empty or not existing group" });
+
+                // Clear exercise submissions for each group member
+                foreach(var groupMember in groupMembers)
+                {
+                    await _exerciseService.ClearExerciseSubmissionsAsync(exercise.Id, groupMember.Id, HttpContext.RequestAborted);
+                }
 
                 return Ok();
             }
