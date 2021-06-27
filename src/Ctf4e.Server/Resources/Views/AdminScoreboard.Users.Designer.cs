@@ -124,6 +124,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        internal static string ExerciseSubmissions_Actions {
+            get {
+                return ResourceManager.GetString("ExerciseSubmissions:Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Solved.
         /// </summary>
         internal static string ExerciseSubmissions_Solved {

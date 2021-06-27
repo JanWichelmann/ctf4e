@@ -27,7 +27,7 @@
         <comment>DownloadCsv</comment>
     </data>
     <data name="UploadMoodle" xml:space="preserve">
-        <value>Upload resuts to Moodle course</value>
+        <value>Upload results to Moodle course</value>
         <comment>UploadMoodle</comment>
     </data>
     <data name="Cancel" xml:space="preserve">

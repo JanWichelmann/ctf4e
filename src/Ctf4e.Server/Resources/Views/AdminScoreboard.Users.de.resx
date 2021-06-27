@@ -242,4 +242,8 @@
         <value>Mitglieder</value>
         <comment>Members</comment>
     </data>
+    <data name="ExerciseSubmissions:Actions" xml:space="preserve">
+        <value>Aktionen</value>
+        <comment>ExerciseSubmissions:Actions</comment>
+    </data>
 </root>

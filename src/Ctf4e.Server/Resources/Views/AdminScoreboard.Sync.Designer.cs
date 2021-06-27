@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Upload resuts to Moodle course.
+        ///   Looks up a localized string similar to Upload results to Moodle course.
         /// </summary>
         internal static string UploadMoodle {
             get {

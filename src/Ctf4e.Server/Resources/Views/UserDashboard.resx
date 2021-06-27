@@ -170,4 +170,8 @@
         <value>All found</value>
         <comment>Flags:AllFound</comment>
     </data>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Lab Dashboard</value>
+        <comment>HtmlTitle</comment>
+    </data>
 </root>

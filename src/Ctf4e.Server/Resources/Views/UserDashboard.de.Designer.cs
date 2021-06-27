@@ -205,6 +205,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Praktikumsübersicht.
+        /// </summary>
+        internal static string HtmlTitle {
+            get {
+                return ResourceManager.GetString("HtmlTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ungültig.
         /// </summary>
         internal static string Invalid {

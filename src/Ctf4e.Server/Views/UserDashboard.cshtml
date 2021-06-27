@@ -5,7 +5,7 @@
 @inject IConfigurationService ConfigurationService
 @inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Aufgaben";
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var userScoreboard = (UserScoreboard)ViewData["Scoreboard"];
     
