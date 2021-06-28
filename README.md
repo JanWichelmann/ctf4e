@@ -1,4 +1,4 @@
-[![Build](https://img.shields.io/github/workflow/status/JanWichelmann/ctf4e/Build)](https://github.com/JanWichelmann/ctf4e/actions?query=workflow%3ABuild) [![Ctf4e.Api NuGet package](https://img.shields.io/nuget/v/Ctf4e.Api?label=nuget)](https://www.nuget.org/packages/Ctf4e.Api/)
+[![Build](https://img.shields.io/github/workflow/status/JanWichelmann/ctf4e/Build)](https://github.com/JanWichelmann/ctf4e/actions?query=workflow%3ABuild) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ctf4e/ctf4e-server?label=docker&sort=date)](https://hub.docker.com/r/ctf4e/ctf4e-server/tags)
 
 
 # CTF4E: Capture the Flag for Education
