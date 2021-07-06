@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.ViewModels
@@ -21,6 +22,7 @@ namespace Ctf4e.Server.ViewModels
         public Dictionary<int, ScoreboardFlagEntry> Flags { get; set; }
     }
 
+    [DebuggerDisplay("Group: {" + nameof(GroupName) + "}")]
     public class ScoreboardEntry
     {
         public int SlotId { get; set; }

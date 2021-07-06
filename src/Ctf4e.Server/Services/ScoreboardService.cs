@@ -694,47 +694,46 @@ namespace Ctf4e.Server.Services
                 .ToList();
 
             // Get valid submission counts for passed exercises
-            // A passed exercise always has Weight = 1
+            // TODO This is slow once again
             var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>(@"
-                    CREATE TEMPORARY TABLE MinPassedSubmissionTimes
-                      (PRIMARY KEY primary_key (ExerciseId, GroupId))
-                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
-	                  FROM `ExerciseSubmissions` s
-                      INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
-	                  INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-	                  WHERE s.`ExercisePassed` = 1
-                        AND EXISTS(
-                          SELECT 1
-                          FROM `LabExecutions` le
-                          WHERE u.`GroupId` = le.`GroupId`
-                            AND le.`LabId` = e.`LabId`
-                            AND le.`PreStart` <= s.`SubmissionTime`
-                            AND s.`SubmissionTime` < le.`End`
-                        )
-                      GROUP BY s.ExerciseId, u.GroupId
-                    ;
+                WITH
+                  `ValidSubmissions` AS (
+	                SELECT s.*,
+		                   u.`GroupId` AS `GroupId`,
+		                   e.`LabId` AS `LabId`
+	                FROM `ExerciseSubmissions` s
+	                INNER JOIN `Users` u ON u.`Id` = s.`UserId`
+	                INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
+	                WHERE EXISTS(
+		                SELECT 1
+		                FROM `LabExecutions` le
+		                WHERE u.`GroupId` = le.`GroupId`
+		                  AND le.`LabId` = e.`LabId`
+		                  AND le.`PreStart` <= s.`SubmissionTime`
+		                  AND s.`SubmissionTime` < le.`End`
+	                  )
+                  ),
+                  `MinPassedSubmissionTimes` AS (
+	                SELECT s.`ExerciseId`, s.`GroupId`, s.`LabId`,
+		                   MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
+	                FROM `ValidSubmissions` s
+	                WHERE s.`ExercisePassed` = 1
+	                GROUP BY s.`ExerciseId`, s.`GroupId`
+                  )
 
-                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, e.`LabId` AS `LabId`, SUM(s.`Weight`) AS `WeightSum`, MAX(s.`SubmissionTime`) AS `MinPassedSubmissionTime`
-                    FROM `ExerciseSubmissions` s
-                    INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
-                    INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                    INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                    WHERE g.`ShowInScoreboard` = 1
-                      AND s.`SubmissionTime` <= (
-	                    SELECT st.`MinSubmissionTime`
-	                    FROM `MinPassedSubmissionTimes` st
-	                    WHERE st.`ExerciseId` = s.ExerciseId
-                    	  AND st.`GroupId` = u.`GroupId`
-                      )
-                      AND EXISTS(
-                        SELECT 1
-                        FROM `LabExecutions` le
-                        WHERE le.`GroupId` = g.`Id`
-                          AND le.`LabId` = e.`LabId`
-                          AND le.`PreStart` <= s.`SubmissionTime`
-                          AND s.`SubmissionTime` < le.`End`
-                      )
-                    GROUP BY g.`Id`, e.`Id`"))
+                SELECT st.`GroupId` AS `GroupId`,
+	                   st.`ExerciseId` AS `ExerciseId`,
+	                   st.`LabId` AS `LabId`,
+	                   COALESCE(SUM(s.`Weight`), 0) AS `WeightSum`,
+	                   st.`MinSubmissionTime` AS `MinPassedSubmissionTime`
+                FROM `MinPassedSubmissionTimes` st
+                INNER JOIN `Groups` g ON g.`Id` = st.`GroupId` AND g.`ShowInScoreboard` = 1
+                LEFT JOIN `ValidSubmissions` s
+                  ON s.`ExerciseId` = st.`ExerciseId`
+                  AND s.`GroupId` = st.`GroupId`
+                  AND s.`ExercisePassed` = 0
+                  AND s.`SubmissionTime` <= st.`MinSubmissionTime`
+                GROUP BY st.`GroupId`, st.`ExerciseId`"))
                 .ToList();
             var validExerciseSubmissions = validExerciseSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
@@ -809,7 +808,7 @@ namespace Ctf4e.Server.Services
                             if(!exercisePointsPerLab.TryGetValue(s.LabId, out var ex))
                                 ex = 0;
 
-                            exercisePointsPerLab[s.LabId] = ex + Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
+                            exercisePointsPerLab[s.LabId] = ex + Math.Max(0, exercises[s.ExerciseId].BasePoints - s.WeightSum * exercises[s.ExerciseId].PenaltyPoints);
                         }
                     }
 
@@ -990,51 +989,46 @@ namespace Ctf4e.Server.Services
                     new { labId }))
                 .ToList();
 
-            // Get valid submission counts for passed exercises
-            // A passed exercise always has Weight = 1
+            // Get valid "failed" submission counts for passed exercises
             var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>(@"
-                    CREATE TEMPORARY TABLE MinPassedSubmissionTimes
-                      (PRIMARY KEY primary_key (ExerciseId, GroupId))
-                      SELECT s.ExerciseId, u.GroupId, MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
-	                  FROM `ExerciseSubmissions` s
-	                  INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                      INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
-	                  WHERE e.`LabId` = @labId
-                        AND s.`ExercisePassed` = 1
-                        AND EXISTS(
-                          SELECT 1
-                          FROM `LabExecutions` le
-                          WHERE u.`GroupId` = le.`GroupId`
-                            AND le.`LabId` = @labId
-                            AND le.`PreStart` <= s.`SubmissionTime`
-                            AND s.`SubmissionTime` < le.`End`
-                        )
-                      GROUP BY s.ExerciseId, u.GroupId
-                    ;
-
-                    SELECT g.`Id` AS `GroupId`, e.`Id` AS `ExerciseId`, SUM(s.`Weight`) AS `WeightSum`, MAX(s.`SubmissionTime`) AS `MinPassedSubmissionTime`
+                WITH
+                  `ValidSubmissions` AS (
+                    SELECT s.*,
+	                       u.`GroupId` AS `GroupId`
                     FROM `ExerciseSubmissions` s
-                    INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
-                    INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                    INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                    WHERE g.`ShowInScoreboard` = 1
-                      AND e.`LabId` = @labId
-                      AND s.`SubmissionTime` <= (
-	                    SELECT st.`MinSubmissionTime`
-	                    FROM `MinPassedSubmissionTimes` st
-	                    WHERE st.`ExerciseId` = s.ExerciseId
-                    	  AND st.`GroupId` = u.`GroupId`
-                      )
-                      AND EXISTS(
-                        SELECT 1
-                        FROM `LabExecutions` le
-                        WHERE le.`GroupId` = g.`Id`
-                          AND le.`LabId` = @labId
-                          AND le.`PreStart` <= s.`SubmissionTime`
-                          AND s.`SubmissionTime` < le.`End`
-                      )
-                    GROUP BY g.`Id`, e.`Id`",
-                    new { labId }))
+	                INNER JOIN `Users` u ON u.`Id` = s.`UserId`
+	                INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
+                    WHERE e.`LabId` = @labId
+	                  AND EXISTS(
+		                SELECT 1
+		                FROM `LabExecutions` le
+		                WHERE u.`GroupId` = le.`GroupId`
+		                  AND le.`LabId` = @labId
+		                  AND le.`PreStart` <= s.`SubmissionTime`
+		                  AND s.`SubmissionTime` < le.`End`
+	                  )
+                  ),
+                  `MinPassedSubmissionTimes` AS (
+	                SELECT s.`ExerciseId`, s.`GroupId`,
+	                       MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
+	                FROM `ValidSubmissions` s
+	                WHERE s.`ExercisePassed` = 1
+	                GROUP BY s.`ExerciseId`, s.`GroupId`
+                  )
+
+                SELECT st.`GroupId` AS `GroupId`,
+	                   st.`ExerciseId` AS `ExerciseId`,
+	                   COALESCE(SUM(s.`Weight`), 0) AS `WeightSum`,
+	                   st.`MinSubmissionTime` AS `MinPassedSubmissionTime`
+                FROM `MinPassedSubmissionTimes` st
+                INNER JOIN `Groups` g ON g.`Id` = st.`GroupId` AND g.`ShowInScoreboard` = 1
+                LEFT JOIN `ValidSubmissions` s
+                  ON s.`ExerciseId` = st.`ExerciseId`
+                  AND s.`GroupId` = st.`GroupId`
+                  AND s.`ExercisePassed` = 0
+                  AND s.`SubmissionTime` <= st.`MinSubmissionTime`
+                GROUP BY st.`GroupId`, st.`ExerciseId`
+                ", new { labId }))
                 .ToList();
             var validExerciseSubmissions = validExerciseSubmissionsUngrouped
                 .GroupBy(s => s.GroupId) // This must be an in-memory operation
@@ -1108,7 +1102,7 @@ namespace Ctf4e.Server.Services
                         {
                             if(s.MinPassedSubmissionTime > entry.LastExerciseSubmissionTime)
                                 entry.LastExerciseSubmissionTime = s.MinPassedSubmissionTime;
-                            entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - ((s.WeightSum - 1) * exercises[s.ExerciseId].PenaltyPoints));
+                            entry.ExercisePoints += Math.Max(0, exercises[s.ExerciseId].BasePoints - s.WeightSum * exercises[s.ExerciseId].PenaltyPoints);
                         }
                     }
 
