@@ -161,6 +161,11 @@ namespace Ctf4e.Server.Controllers
                         Weight = apiExerciseSubmission.ExercisePassed ? 1 : (apiExerciseSubmission.Weight >= 0 ? apiExerciseSubmission.Weight : 1)
                     };
                     await _exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
+                    
+                    // If the exercise is not passed with weight > 0, do only insert it for a single group member
+                    // Else, the penalty points would be applied for each group member
+                    if(!apiExerciseSubmission.ExercisePassed && apiExerciseSubmission.Weight > 0)
+                        break;
                 }
 
                 return Ok();
