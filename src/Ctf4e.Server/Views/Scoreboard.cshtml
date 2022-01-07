@@ -2,7 +2,7 @@
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 @{
     ViewData["Title"] = "Scoreboard";
 
@@ -28,21 +28,21 @@
         <h3 class="header">
             @if(scoreboard.AllLabs)
             {
-                @Localizer["Title:ScoreboardAll"]
+                @_localizer["Title:ScoreboardAll"]
             }
             else
             {
-                @Localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
+                @_localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
             }
         </h3>
         <h5 class="subheader">
             @if(scoreboard.SlotId == null)
             {
-                @Localizer["Title:AllSlots"]
+                @_localizer["Title:AllSlots"]
             }
             else
             {
-                @Localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
+                @_localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
             }
         </h5>
         <hr class="header">
@@ -51,10 +51,10 @@
             <thead>
             <tr>
                 <th style="min-width: 5%;" scope="col">#</th>
-                <th style="min-width: 10%;" scope="col">@Localizer["Scoreboard:Points"]</th>
-                <th style="min-width: 10%;" scope="col">@Localizer["Scoreboard:Flags"]</th>
+                <th style="min-width: 10%;" scope="col">@_localizer["Scoreboard:Points"]</th>
+                <th style="min-width: 10%;" scope="col">@_localizer["Scoreboard:Flags"]</th>
                 <th style="min-width: 5%;" scope="col"></th>
-                <th style="max-width: 70%;" scope="col">@Localizer["Scoreboard:Group"]</th>
+                <th style="max-width: 70%;" scope="col">@_localizer["Scoreboard:Group"]</th>
             </tr>
             </thead>
             <tbody>
@@ -90,24 +90,24 @@
                             }
                         }
                     </th>
-                    <td title="@Localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
+                    <td title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
                         @entry.TotalPoints
                         @if(isCurrentGroup || ((currentUser.IsAdmin || currentUser.IsTutor) && showAllEntries))
                         {
                             <span class="text-muted">
                                 @if(entry.BugBountyPoints == 0)
                                 {
-                                    @Localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
+                                    @_localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
                                 }
                                 else
                                 {
-                                    @Localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
+                                    @_localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
                                 }
                             </span>
                         }
                         @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                         {
-                            <i class="bi bi-bug-fill text-primary" title="@Localizer["Scoreboard:GotBugBounty"]"></i>
+                            <i class="bi bi-bug-fill text-primary" title="@_localizer["Scoreboard:GotBugBounty"]"></i>
                         }
                     </td>
                     <td>
@@ -135,21 +135,21 @@
                         <th scope="row">
                             @entry.Rank
                         </th>
-                        <td title="@Localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
+                        <td title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
                             @entry.TotalPoints
                             <span class="text-muted">
                                 @if(entry.BugBountyPoints == 0)
                                 {
-                                    @Localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
+                                    @_localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
                                 }
                                 else
                                 {
-                                    @Localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
+                                    @_localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
                                 }
                             </span>
                             @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                             {
-                                <i class="bi bi-bug-fill text-primary" title="@Localizer["Scoreboard:GotBugBounty"]"></i>
+                                <i class="bi bi-bug-fill text-primary" title="@_localizer["Scoreboard:GotBugBounty"]"></i>
                             }
                         </td>
                         <td>
@@ -184,7 +184,7 @@
                 {
                     if(!l.Visible)
                     {
-                        l.Name += " " + Localizer.GetString("SelectScoreboard:HiddenLab");
+                        l.Name += " " + _localizer.GetString("SelectScoreboard:HiddenLab");
                     }
                 }
             }
@@ -194,15 +194,15 @@
             }
         }
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">@Localizer["SelectScoreboard"]</label>
+            <label class="form-label" for="input-lab-id">@_localizer["SelectScoreboard"]</label>
             <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
-                <option value="" selected>@Localizer["AllLabs"]</option>
+                <option value="" selected>@_localizer["AllLabs"]</option>
             </select>
         </div>
         <div class="mb-3">
-            <label class="form-label" for="input-slot-id">@Localizer["SelectSlot"]</label>
+            <label class="form-label" for="input-slot-id">@_localizer["SelectSlot"]</label>
             <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-control">
-                <option value="" selected>@Localizer["AllSlots"]</option>
+                <option value="" selected>@_localizer["AllSlots"]</option>
             </select>
         </div>
         @if(currentUser.IsAdmin || currentUser.IsTutor)
@@ -211,8 +211,8 @@
                 <div class="form-check">
                     <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
                     <label for="input-showAllEntries" class="form-check-label">
-                        @Localizer["ShowAllEntries"]
-                        <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@Localizer["TutorsAndAdminsOnly"]"></i>
+                        @_localizer["ShowAllEntries"]
+                        <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@_localizer["TutorsAndAdminsOnly"]"></i>
                     </label>
                 </div>
             </div>
@@ -223,23 +223,23 @@
                 <div class="form-check">
                     <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
                     <label for="input-resetCache" class="form-check-label">
-                        @Localizer["ResetCache"]
-                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@Localizer["AdminsOnly"]"></i>
+                        @_localizer["ResetCache"]
+                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["AdminsOnly"]"></i>
                     </label>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="input-reload">
-                    @Localizer["AutoReload"]
-                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@Localizer["AdminsOnly"]"></i>
+                    @_localizer["AutoReload"]
+                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["AdminsOnly"]"></i>
                 </label>
                 <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
             </div>
         }
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-arrow-return-right"></i>
-            @Localizer["ShowSelectedScoreboard"]
+            @_localizer["ShowSelectedScoreboard"]
         </button>
     </form>
 </div>

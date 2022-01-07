@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 @{
-    ViewData["Title"] = Localizer["HtmlTitle"];
+    ViewData["Title"] = _localizer["HtmlTitle"];
 
     var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
 }
@@ -13,7 +13,7 @@
     }
     else if(viewType == AuthenticationController.ViewType.Redirect)
     {
-        <a asp-controller="Group" asp-action="RenderPage">@Localizer["Redirecting"]</a>
+        <a asp-controller="Group" asp-action="RenderPage">@_localizer["Redirecting"]</a>
     }
 </div>
 

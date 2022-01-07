@@ -2,7 +2,7 @@
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
 @model AdminScoreboard
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 @{
     ViewData["Title"] = "Admin-Scoreboard";
 
@@ -11,43 +11,45 @@
 
 <div class="container">
     <div class="float-end">
+        @* ReSharper disable Html.IdNotResolved *@
         <a class="btn btn-sm btn-outline-primary" href="#exercises-table">
             <i class="bi bi-chevron-down"></i>
-            @Localizer["Statistics"]
+            @_localizer["Statistics"]
         </a>
+        @* ReSharper restore Html.IdNotResolved *@
     </div>
 
     <h3 class="header">
-        @Localizer["Title"]
+        @_localizer["Title"]
     </h3>
     <hr class="header">
 
     <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">@Localizer["SwitchScoreboard:Lab"]</label>
+            <label class="form-label" for="input-lab-id">@_localizer["SwitchScoreboard:Lab"]</label>
             <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-control">
-                <option value="" disabled selected>@Localizer["SwitchScoreboard:Lab:Placeholder"]</option>
+                <option value="" disabled selected>@_localizer["SwitchScoreboard:Lab:Placeholder"]</option>
             </select>
         </div>
         <div class="mb-3">
-            <label class="form-label" for="input-slot-id">@Localizer["SwitchScoreboard:Slot"]</label>
+            <label class="form-label" for="input-slot-id">@_localizer["SwitchScoreboard:Slot"]</label>
             <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-control">
-                <option value="" disabled selected>@Localizer["SwitchScoreboard:Slot:Placeholder"]</option>
+                <option value="" disabled selected>@_localizer["SwitchScoreboard:Slot:Placeholder"]</option>
             </select>
         </div>
         <div class="mb-3">
             <div class="form-check">
                 <input type="checkbox" value="true" id="input-group-mode" name="groupMode" class="form-check-input" @(Model.GroupMode ? "checked" : "")>
-                <label for="input-group-mode" class="form-check-label">@Localizer["SwitchScoreboard:GroupMode"]</label>
+                <label for="input-group-mode" class="form-check-label">@_localizer["SwitchScoreboard:GroupMode"]</label>
             </div>
         </div>
         <div class="mb-3">
             <div class="form-check">
                 <input type="checkbox" value="true" id="input-include-tutors" name="includeTutors" class="form-check-input" @(Model.IncludeTutors ? "checked" : "")>
-                <label for="input-include-tutors" class="form-check-label">@Localizer["SwitchScoreboard:IncludeTutors"]</label>
+                <label for="input-include-tutors" class="form-check-label">@_localizer["SwitchScoreboard:IncludeTutors"]</label>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">@Localizer["SwitchScoreboard:Submit"]</button>
+        <button type="submit" class="btn btn-primary">@_localizer["SwitchScoreboard:Submit"]</button>
     </form>
 
     <hr class="header-secondary">

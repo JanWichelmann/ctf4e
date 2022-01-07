@@ -1,6 +1,6 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 @model List<Exercise>
 @{
     var lab = (Lab)ViewData["Lab"];
@@ -9,16 +9,16 @@
 <div class="float-end">
     <a class="btn btn-sm btn-secondary" asp-controller="AdminLabs" asp-action="RenderLabList">
         <i class="bi bi-arrow-left"></i>
-        @Localizer["Back"]
+        @_localizer["Back"]
     </a>
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowCreateExerciseForm" asp-route-labId="@lab.Id">
         <i class="bi bi-plus"></i>
-        @Localizer["CreateExercise"]
+        @_localizer["CreateExercise"]
     </a>
 </div>
 
 <h3 class="header">
-    @Localizer["Title", lab.Name]
+    @_localizer["Title", lab.Name]
 </h3>
 <hr class="header">
 
@@ -26,14 +26,14 @@
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">@Localizer["Exercises:ID"]</th>
-        <th scope="col">@Localizer["Exercises:Number"]</th>
-        <th scope="col">@Localizer["Exercises:Name"]</th>
-        <th scope="col">@Localizer["Exercises:BasePoints"]</th>
-        <th scope="col">@Localizer["Exercises:PenaltyPoints"]</th>
-        <th scope="col">@Localizer["Exercises:Mandatory"]</th>
-        <th scope="col">@Localizer["Exercises:PreStart"]</th>
-        <th scope="col">@Localizer["Actions"]</th>
+        <th scope="col">@_localizer["Exercises:ID"]</th>
+        <th scope="col">@_localizer["Exercises:Number"]</th>
+        <th scope="col">@_localizer["Exercises:Name"]</th>
+        <th scope="col">@_localizer["Exercises:BasePoints"]</th>
+        <th scope="col">@_localizer["Exercises:PenaltyPoints"]</th>
+        <th scope="col">@_localizer["Exercises:Mandatory"]</th>
+        <th scope="col">@_localizer["Exercises:PreStart"]</th>
+        <th scope="col">@_localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -68,11 +68,11 @@
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminExercises" asp-action="ShowEditExerciseForm" asp-route-id="@e.Id">
                     <i class="bi bi-pencil"></i>
-                    @Localizer["Edit"]
+                    @_localizer["Edit"]
                 </a>
                 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise" data-exerciseid="@e.Id" data-exercisename="@e.Name">
                     <i class="bi bi-trash"></i>
-                    @Localizer["Delete"]
+                    @_localizer["Delete"]
                 </a>
             </td>
         </tr>
@@ -84,18 +84,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@Localizer["Modal:DeleteExercise:Title"]</h5>
+                <h5 class="modal-title">@_localizer["Modal:DeleteExercise:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @Localizer["Modal:DeleteExercise:Body"]
+                @_localizer["Modal:DeleteExercise:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminExercises" asp-action="DeleteExercise" method="post">
                     <input type="hidden" data-replace="exercise-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteExercise:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteExercise:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
                 </form>
             </div>
         </div>

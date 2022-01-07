@@ -1,29 +1,29 @@
 @model List<Ctf4e.Server.Models.Group>
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 
 <div class="float-end">
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowCreateGroupForm">
         <i class="bi bi-plus"></i>
-        @Localizer["CreateGroup"]
+        @_localizer["CreateGroup"]
     </a>
 </div>
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">@Localizer["Groups:ID"]</th>
-        <th scope="col">@Localizer["Groups:Slot"]</th>
-        <th scope="col">@Localizer["Groups:Name"]</th>
-        <th scope="col">@Localizer["Groups:ScoreboardAnnotation"]</th>
-        <th scope="col">@Localizer["Groups:Members"]</th>
-        <th scope="col">@Localizer["Groups:ShowInScoreboard"]</th>
-        <th scope="col">@Localizer["Actions"]</th>
+        <th scope="col">@_localizer["Groups:ID"]</th>
+        <th scope="col">@_localizer["Groups:Slot"]</th>
+        <th scope="col">@_localizer["Groups:Name"]</th>
+        <th scope="col">@_localizer["Groups:ScoreboardAnnotation"]</th>
+        <th scope="col">@_localizer["Groups:Members"]</th>
+        <th scope="col">@_localizer["Groups:ShowInScoreboard"]</th>
+        <th scope="col">@_localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -48,13 +48,13 @@
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@g.Id">
                     <i class="bi bi-pencil"></i>
-                    @Localizer["Edit"]
+                    @_localizer["Edit"]
                 </a>
                 @if(!g.Members.Any())
                 {
                     <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-group" data-groupid="@g.Id" data-groupname="@g.DisplayName">
                         <i class="bi bi-trash"></i>
-                        @Localizer["Delete"]
+                        @_localizer["Delete"]
                     </a>
                 }
             </td>
@@ -67,18 +67,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@Localizer["Modal:DeleteGroup:Title"]</h5>
+                <h5 class="modal-title">@_localizer["Modal:DeleteGroup:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @Localizer["Modal:DeleteGroup:Body"]
+                @_localizer["Modal:DeleteGroup:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminGroups" asp-action="DeleteGroup" method="post">
                     <input type="hidden" data-replace="group-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteGroup:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]Abbrechen</button>
+                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteGroup:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]Abbrechen</button>
                 </form>
             </div>
         </div>
@@ -96,5 +96,5 @@ window.addEventListener("load", e => table_sorting());
 
 <a class="btn btn-primary mb-2" asp-controller="AdminGroups" asp-action="DownloadAsJson">
     <i class="bi bi-download"></i>
-    @Localizer["DownloadJson"]
+    @_localizer["DownloadJson"]
 </a>

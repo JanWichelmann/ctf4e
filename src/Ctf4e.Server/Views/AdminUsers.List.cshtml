@@ -1,22 +1,22 @@
 @model List<Ctf4e.Server.Models.User>
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap">
     <thead>
     <tr>
-        <th scope="col">@Localizer["Users:Id"]</th>
-        <th scope="col">@Localizer["Users:Name"]</th>
-        <th scope="col">@Localizer["Users:MoodleAccount"]</th>
-        <th scope="col">@Localizer["Users:GroupCode"]</th>
-        <th scope="col">@Localizer["Users:GroupId"]</th>
-        <th scope="col">@Localizer["Users:Status"]</th>
-        <th scope="col">@Localizer["Actions"]</th>
+        <th scope="col">@_localizer["Users:Id"]</th>
+        <th scope="col">@_localizer["Users:Name"]</th>
+        <th scope="col">@_localizer["Users:MoodleAccount"]</th>
+        <th scope="col">@_localizer["Users:GroupCode"]</th>
+        <th scope="col">@_localizer["Users:GroupId"]</th>
+        <th scope="col">@_localizer["Users:Status"]</th>
+        <th scope="col">@_localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -30,7 +30,7 @@
             <td>
                 @if(u.GroupId != null)
                 {
-                    <a asp-controller="AdminGroups" asp-action="EditGroup" asp-route-id="@u.GroupId" title="@Localizer["Users:EditGroup:Text"]">
+                    <a asp-controller="AdminGroups" asp-action="EditGroup" asp-route-id="@u.GroupId" title="@_localizer["Users:EditGroup:Text"]">
                         <i class="bi bi-people"></i>
                         #@u.GroupId
                     </a>                    
@@ -39,22 +39,22 @@
             <td>
                 @if(u.IsAdmin)
                 {
-                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@Localizer["Users:IsAdmin:Text"]"></i>
+                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["Users:IsAdmin:Text"]"></i>
                 }
                 else if(u.IsTutor)
                 {
-                    <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@Localizer["Users:IsTutor:Text"]"></i>
+                    <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@_localizer["Users:IsTutor:Text"]"></i>
                 }
             </td>
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminUsers" asp-action="ShowEditUserForm" asp-route-id="@u.Id">
                     <i class="bi bi-pencil"></i>
-                    @Localizer["Edit"]
+                    @_localizer["Edit"]
                 </a>
                 <environment include="Development">
                     <a role="button" class="btn btn-sm btn-secondary" asp-controller="Authentication" asp-action="AdminLoginAsUser" asp-route-userId="@u.Id" title="Als diesen Benutzer einloggen">
                         <i class="bi bi-box-arrow-in-right"></i>
-                        @Localizer["Login"]
+                        @_localizer["Login"]
                     </a>
                 </environment>
             </td>

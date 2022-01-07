@@ -1,9 +1,9 @@
 @model Ctf4e.Server.ViewModels.AdminLabExecution
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
@@ -13,6 +13,6 @@
     <input asp-for="LabExecution.GroupId" type="hidden">
     <input asp-for="LabExecution.LabId" type="hidden">
 
-    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
-    <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
+    <button type="submit" class="btn btn-primary">@_localizer["Form:Submit"]</button>
+    <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@_localizer["Form:Cancel"]</a>
 </form>

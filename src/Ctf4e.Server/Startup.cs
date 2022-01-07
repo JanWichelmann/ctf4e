@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using AutoMapper;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Options;
@@ -53,7 +52,7 @@ namespace Ctf4e.Server
             _mainOptions = _configuration.GetSection(nameof(MainOptions)).Get<MainOptions>();
             services.AddOptions<MainOptions>().Bind(_configuration.GetSection(nameof(MainOptions)));
             var dbOptions = _configuration.GetSection(nameof(CtfDbOptions)).Get<CtfDbOptions>();
-            
+
             // Key persistence
             if(_mainOptions.SecretsDirectory != null)
             {
@@ -69,16 +68,15 @@ namespace Ctf4e.Server
             // Database
             services.AddDbContextPool<CtfDbContext>(options =>
             {
-                options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};", _ =>
-                {
-                });
+                options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};",
+                    ServerVersion.Parse("10.5.8-mariadb"), mysqlOptions => mysqlOptions.EnableRetryOnFailure(3));
                 if(_environment.IsDevelopment())
                 {
                     options.UseLoggerFactory(_debugLoggerFactory)
                         .EnableSensitiveDataLogging();
                 }
             });
-            
+
             // Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -96,7 +94,7 @@ namespace Ctf4e.Server
             services.AddScoped<IFlagService, FlagService>();
             services.AddScoped<ILabExecutionService, LabExecutionService>();
             services.AddScoped<IScoreboardService, ScoreboardService>();
-            
+
             // Markdown parser
             services.AddSingleton<IMarkdownService, MarkdownService>();
 
@@ -220,11 +218,11 @@ namespace Ctf4e.Server
                 new CookieRequestCultureProvider()
             };
             app.UseRequestLocalization(localizationOptions);
-            
+
             // Verbose stack traces
             if(_mainOptions.DevelopmentMode)
                 app.UseDeveloperExceptionPage();
-            
+
             // Simple status code pages
             app.UseStatusCodePages();
 

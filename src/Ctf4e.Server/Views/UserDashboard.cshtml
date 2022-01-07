@@ -2,10 +2,10 @@
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
-@inject IConfigurationService ConfigurationService
-@inject IViewLocalizer Localizer
+@inject IConfigurationService _configurationService
+@inject IViewLocalizer _localizer
 @{
-    ViewData["Title"] = Localizer["HtmlTitle"];
+    ViewData["Title"] = _localizer["HtmlTitle"];
 
     var userScoreboard = (UserScoreboard)ViewData["Scoreboard"];
     
@@ -20,37 +20,37 @@
         {
             <span class="badge bg-success" style="font-size: 1rem;">
                 <i class="bi bi-check-circle"></i>
-                @Localizer["Passed"]
+                @_localizer["Passed"]
             </span>
         }
     </div>
 
     <h3 class="header">
-        @Localizer["Lab"]: @userScoreboard.CurrentLab.Name
+        @_localizer["Lab"]: @userScoreboard.CurrentLab.Name
     </h3>
     <hr class="header">
 
     switch(userScoreboard.LabExecutionStatus)
     {
         case ScoreboardGroupStatus.Undefined:
-            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:Undefined:Text"]</p>
+            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:Undefined:Title"]</span>
+            <p>@_localizer["LabExecutionStatus:Undefined:Text"]</p>
             break;
         case ScoreboardGroupStatus.BeforePreStart:
-            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:BeforePreStart:Text", userScoreboard.LabExecution.PreStart]</p>
+            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
+            <p>@_localizer["LabExecutionStatus:BeforePreStart:Text", userScoreboard.LabExecution.PreStart]</p>
             break;
         case ScoreboardGroupStatus.PreStart:
-            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:PreStart:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:PreStart:Text", userScoreboard.LabExecution.Start]</p>
+            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:PreStart:Title"]</span>
+            <p>@_localizer["LabExecutionStatus:PreStart:Text", userScoreboard.LabExecution.Start]</p>
             break;
         case ScoreboardGroupStatus.Start:
-            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Start:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:Start:Text", userScoreboard.LabExecution.End]</p>
+            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:Start:Title"]</span>
+            <p>@_localizer["LabExecutionStatus:Start:Text", userScoreboard.LabExecution.End]</p>
             break;
         case ScoreboardGroupStatus.End:
-            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:End:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:End:Text"]</p>
+            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:End:Title"]</span>
+            <p>@_localizer["LabExecutionStatus:End:Text"]</p>
             break;
     }
 
@@ -59,11 +59,11 @@
         <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@userScoreboard.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
             <i class="bi bi-hdd-network"></i>
-            @Localizer["LabServer"]
+            @_localizer["LabServer"]
         </a>    }
 
     <h5 class="header">
-        @Localizer["Exercises"]
+        @_localizer["Exercises"]
     </h5>
     <hr class="header-secondary">
 
@@ -76,19 +76,19 @@
                         @exercise.Exercise.Name
                         @if(exercise.Exercise.IsMandatory)
                         {
-                            <span class="badge bg-info">@Localizer["Mandatory"]</span>
+                            <span class="badge bg-info">@_localizer["Mandatory"]</span>
                         }
                     </div>
                     <div class="col col-auto ms-auto">
-                        <span class="badge bg-light text-dark">@Localizer["Exercises:SubmissionStatistic", exercise.ValidTries, exercise.Tries]</span>
+                        <span class="badge bg-light text-dark">@_localizer["Exercises:SubmissionStatistic", exercise.ValidTries, exercise.Tries]</span>
                         @if(exercise.Passed)
                         {
-                            <span class="badge bg-primary">@exercise.Points @Localizer["Points"]</span>
-                            <i class="bi bi-check-circle-fill  text-success" title="@Localizer["Solved"]"></i>
+                            <span class="badge bg-primary">@exercise.Points @_localizer["Points"]</span>
+                            <i class="bi bi-check-circle-fill  text-success" title="@_localizer["Solved"]"></i>
                         }
                         else
                         {
-                            <i class="bi bi-x-circle-fill  text-danger" title="@Localizer["NotSolved"]"></i>
+                            <i class="bi bi-x-circle-fill  text-danger" title="@_localizer["NotSolved"]"></i>
                         }
                     </div>
                 </div>
@@ -98,9 +98,9 @@
                     <table class="table table-sm">
                         <thead>
                         <tr>
-                            <th scope="col">@Localizer["ExerciseSubmissions:Timestamp"]</th>
-                            <th scope="col">@Localizer["ExerciseSubmissions:Correct"]</th>
-                            <th scope="col">@Localizer["ExerciseSubmissions:GroupMember"]</th>
+                            <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
+                            <th scope="col">@_localizer["ExerciseSubmissions:Correct"]</th>
+                            <th scope="col">@_localizer["ExerciseSubmissions:GroupMember"]</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -111,7 +111,7 @@
                                     @submission.SubmissionTime.ToString("G")
                                     @if(submission.SubmissionTime < (userScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (userScoreboard.LabExecution?.End ?? DateTime.MinValue))
                                     {
-                                        <span class="badge bg-warning" title="@Localizer["ExerciseSubmissions:Invalid"]">@Localizer["Invalid"]</span>
+                                        <span class="badge bg-warning" title="@_localizer["ExerciseSubmissions:Invalid"]">@_localizer["Invalid"]</span>
                                     }
                                 </td>
                                 <td>
@@ -138,37 +138,37 @@
 
     <div>
         <h5 class="header">
-            @Localizer["Flags"]
+            @_localizer["Flags"]
         </h5>
         <hr class="header-secondary">
     </div>
 
     <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@userScoreboard.LabId" class="mb-3">
         <div class="mb-3">
-            <label class="form-label" for="input-flag-code">@Localizer["Flags:FlagCode"]</label>
+            <label class="form-label" for="input-flag-code">@_localizer["Flags:FlagCode"]</label>
             <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
         </div>
 
         <button type="submit" class="btn btn-primary">
             <span class="bi bi-flag-fill"></span>
-            @Localizer["Flags:SubmitFlag"]
+            @_localizer["Flags:SubmitFlag"]
         </button>
     </form>
     <div class="card mb-2">
         <div class="card-header" id="flag-list-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#flag-list-card">
             <div class="row">
                 <div class="col">
-                    @Localizer["Flags:FoundFlags"]
+                    @_localizer["Flags:FoundFlags"]
                 </div>
                 <div class="col col-auto ms-auto">
                     <span class="badge bg-light text-dark">
-                        @Localizer["Flags:SubmissionStatistic", userScoreboard.ValidFoundFlagsCount, userScoreboard.FoundFlagsCount]
+                        @_localizer["Flags:SubmissionStatistic", userScoreboard.ValidFoundFlagsCount, userScoreboard.FoundFlagsCount]
                     </span>
                     @if(userScoreboard.HasFoundAllFlags)
                     {
                         <span class="badge bg-success text-light">
                             <i class="bi bi-check-circle"></i>
-                            @Localizer["Flags:AllFound"]
+                            @_localizer["Flags:AllFound"]
                         </span>
                     }
                 </div>
@@ -179,9 +179,9 @@
                 <table class="table table-sm">
                     <thead>
                     <tr>
-                        <th scope="col">@Localizer["FlagSubmissions:Timestamp"]</th>
-                        <th scope="col">@Localizer["FlagSubmissions:Code"]</th>
-                        <th scope="col">@Localizer["FlagSubmissions:GroupMember"]</th>
+                        <th scope="col">@_localizer["FlagSubmissions:Timestamp"]</th>
+                        <th scope="col">@_localizer["FlagSubmissions:Code"]</th>
+                        <th scope="col">@_localizer["FlagSubmissions:GroupMember"]</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -192,7 +192,7 @@
                                 @flagSubmission.SubmissionTime.ToString("G")
                                 @if(!flagSubmission.Valid)
                                 {
-                                    <span class="badge bg-warning" title="@Localizer["FlagSubmissions:Invalid"]">@Localizer["Invalid"]</span>
+                                    <span class="badge bg-warning" title="@_localizer["FlagSubmissions:Invalid"]">@_localizer["Invalid"]</span>
                                 }
                             </td>
                             <td>
@@ -211,13 +211,13 @@
 
 
     <h5 class="header">
-        @Localizer["SwitchLab:Title"]
+        @_localizer["SwitchLab:Title"]
     </h5>
     <hr class="header-secondary">
 
     <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
         <div class="mb-3">
-            <label class="form-label" for="input-lab-id">@Localizer["Lab"]</label>
+            <label class="form-label" for="input-lab-id">@_localizer["Lab"]</label>
             <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">
                 @foreach(var lab in userScoreboard.Labs)
                 {
@@ -230,11 +230,11 @@
                         @lab.Name
                         @if(lab.Active)
                         {
-                            @:(@Localizer["SwitchLab:Active"])
+                            @:(@_localizer["SwitchLab:Active"])
                         }
                         @if(!lab.Visible)
                         {
-                            @:(@Localizer["SwitchLab:Hidden"])
+                            @:(@_localizer["SwitchLab:Hidden"])
                         }
                     </option>                }
             </select>
@@ -242,7 +242,7 @@
 
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-arrow-return-right"></i>
-            @Localizer["SwitchLab:Submit"]
+            @_localizer["SwitchLab:Submit"]
         </button>
     </form>}
 </div>

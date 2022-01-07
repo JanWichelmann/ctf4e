@@ -1,6 +1,6 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 @model List<LabExecution>
 @{
     var slots = (List<Slot>)ViewData["Slots"];
@@ -8,43 +8,43 @@
 }
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 
-@Localizer["Explanation"]
+@_localizer["Explanation"]
 <p>
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForGroupForm">
         <i class="bi bi-plus"></i>
-        @Localizer["StartForOneGroup"]
+        @_localizer["StartForOneGroup"]
     </a>
 </p>
 <p>
     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForSlotForm">
         <i class="bi bi-plus"></i>
-        @Localizer["StartForSlot"]
+        @_localizer["StartForSlot"]
     </a>
     <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-slot">
         <i class="bi bi-trash"></i>
-        @Localizer["StopForSlot"]
+        @_localizer["StopForSlot"]
     </a>
 </p>
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2" id="table-lab-executions">
     <thead>
     <tr>
         <th scope="col">
-            @Localizer["LabExecutions:Group"]
-            <input type="text" id="input-filter-group" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@Localizer["LabExecutions:Group:Filter"]">
+            @_localizer["LabExecutions:Group"]
+            <input type="text" id="input-filter-group" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@_localizer["LabExecutions:Group:Filter"]">
         </th>
         <th scope="col">
-            @Localizer["LabExecutions:Lab"]
-            <input type="text" id="input-filter-lab" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@Localizer["LabExecutions:Lab:Filter"]">
+            @_localizer["LabExecutions:Lab"]
+            <input type="text" id="input-filter-lab" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@_localizer["LabExecutions:Lab:Filter"]">
         </th>
-        <th scope="col">@Localizer["LabExecutions:PreStart"]</th>
-        <th scope="col">@Localizer["LabExecutions:Begin"]</th>
-        <th scope="col">@Localizer["LabExecutions:End"]</th>
-        <th scope="col">@Localizer["Actions"]</th>
+        <th scope="col">@_localizer["LabExecutions:PreStart"]</th>
+        <th scope="col">@_localizer["LabExecutions:Begin"]</th>
+        <th scope="col">@_localizer["LabExecutions:End"]</th>
+        <th scope="col">@_localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody>
@@ -59,11 +59,11 @@
             <td>
                 <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowEditLabExecutionForm" asp-route-groupId="@l.GroupId" asp-route-labId="@l.LabId">
                     <i class="bi bi-pencil"></i>
-                    @Localizer["Edit"]
+                    @_localizer["Edit"]
                 </a>
                 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-group" data-groupid="@l.GroupId" data-labid="@l.LabId" data-groupname="@l.Group.DisplayName" data-labname="@l.Lab.Name">
                     <i class="bi bi-trash"></i>
-                    @Localizer["Delete"]
+                    @_localizer["Delete"]
                 </a>
             </td>
         </tr>
@@ -75,19 +75,19 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@Localizer["Modal:DeleteLabExecutionGroup:Title"]</h5>
+                <h5 class="modal-title">@_localizer["Modal:DeleteLabExecutionGroup:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @Localizer["Modal:DeleteLabExecutionGroup:Body"]
+                @_localizer["Modal:DeleteLabExecutionGroup:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminLabExecutions" asp-action="DeleteLabExecutionForGroup" method="post">
                     <input type="hidden" data-replace="group-id" name="groupId" value="">
                     <input type="hidden" data-replace="lab-id" name="labId" value="">
                     
-                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteLabExecutionGroup:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteLabExecutionGroup:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
                 </form>
             </div>
         </div>
@@ -98,27 +98,27 @@
         <div class="modal-content">
             <form asp-controller="AdminLabExecutions" asp-action="DeleteLabExecutionForSlot" method="post">
                 <div class="modal-header">
-                    <h5 class="modal-title">@Localizer["Modal:DeleteLabExecutionsSlot:Title"]</h5>
+                    <h5 class="modal-title">@_localizer["Modal:DeleteLabExecutionsSlot:Title"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    @Localizer["Modal:DeleteLabExecutionsSlot:Body"]
+                    @_localizer["Modal:DeleteLabExecutionsSlot:Body"]
                     <div class="mb-3">
-                        <label class="form-label">@Localizer["Modal:DeleteLabExecutionsSlot:Form:Lab"]</label>
+                        <label class="form-label">@_localizer["Modal:DeleteLabExecutionsSlot:Form:Lab"]</label>
                         <select name="labId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-control">
-                            <option value="" disabled selected>@Localizer["Modal:DeleteLabExecutionsSlot:Form:Lab:Placeholder"]</option>
+                            <option value="" disabled selected>@_localizer["Modal:DeleteLabExecutionsSlot:Form:Lab:Placeholder"]</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">@Localizer["Modal:DeleteLabExecutionsSlot:Form:Slot"]</label>
+                        <label class="form-label">@_localizer["Modal:DeleteLabExecutionsSlot:Form:Slot"]</label>
                         <select name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-control">
-                            <option value="" disabled selected>@Localizer["Modal:DeleteLabExecutionsSlot:Form:Slot:Placeholder"]</option>
+                            <option value="" disabled selected>@_localizer["Modal:DeleteLabExecutionsSlot:Form:Slot:Placeholder"]</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteLabExecutionsSlot:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteLabExecutionsSlot:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
                 </div>
             </form>
         </div>

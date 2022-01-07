@@ -1,9 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Services
-@inject IViewLocalizer Localizer
-@inject IUserService UserService
+@inject IViewLocalizer _localizer
+@inject IUserService _userService
 @{
-    var users = await UserService.GetUsersAsync().ToListAsync(Context.RequestAborted);
+    var users = await _userService.GetUsersAsync().ToListAsync(Context.RequestAborted);
 }
 
 @{
@@ -14,13 +14,13 @@
 }
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="Authentication" asp-action="DevLogin" method="get">
     <div class="mb-3">
-        <label class="form-label" for="input-user-id">@Localizer["Form:UserId"]</label>
+        <label class="form-label" for="input-user-id">@_localizer["Form:UserId"]</label>
         <select id="input-user-id" name="userId" class="form-control">
             @foreach(var user in users.OrderBy(u => u.Id))
             {
@@ -29,7 +29,7 @@
         </select>
     </div>
 
-    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <button type="submit" class="btn btn-primary">@_localizer["Form:Submit"]</button>
 </form>
 
 @{

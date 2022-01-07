@@ -1,55 +1,55 @@
 @model Ctf4e.Server.Models.Lab
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminLabs" asp-action="CreateLab" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
+        <label class="form-label" asp-for="Name">@_localizer["Form:Name"]</label>
         <input asp-for="Name" class="form-control">
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="ServerBaseUrl">@Localizer["Form:ServerBaseUrl"]</label>
+        <label class="form-label" asp-for="ServerBaseUrl">@_localizer["Form:ServerBaseUrl"]</label>
         <input asp-for="ServerBaseUrl" class="form-control">
         <span asp-validation-for="ServerBaseUrl" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="ApiCode">@Localizer["Form:ApiCode"]</label>
+        <label class="form-label" asp-for="ApiCode">@_localizer["Form:ApiCode"]</label>
         <input asp-for="ApiCode" class="form-control" value="@RandomStringGenerator.GetRandomString(32)">
         <span asp-validation-for="ApiCode" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="MaxPoints">@Localizer["Form:MaxPoints"]</label>
+        <label class="form-label" asp-for="MaxPoints">@_localizer["Form:MaxPoints"]</label>
         <input asp-for="MaxPoints" class="form-control">
         <span asp-validation-for="MaxPoints" class="text-danger"></span>
         <small class="text-muted">
-            @Localizer["Form:MaxPoints:Description"]
+            @_localizer["Form:MaxPoints:Description"]
         </small>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="MaxFlagPoints">@Localizer["Form:MaxFlagPoints"]</label>
+        <label class="form-label" asp-for="MaxFlagPoints">@_localizer["Form:MaxFlagPoints"]</label>
         <input asp-for="MaxFlagPoints" class="form-control">
         <span asp-validation-for="MaxFlagPoints" class="text-danger"></span>
         <small class="text-muted">
-            @Localizer["Form:MaxFlagPoints:Description"]
+            @_localizer["Form:MaxFlagPoints:Description"]
         </small>
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="Visible" class="form-check-input">
-            <label asp-for="Visible" class="form-check-label">@Localizer["Form:Visible"]</label>
+            <label asp-for="Visible" class="form-check-label">@_localizer["Form:Visible"]</label>
             <br>
             <small class="form-text text-muted">
-                @Localizer["Form:Visible:Description"]
+                @_localizer["Form:Visible:Description"]
             </small>
         </div>
     </div>
     
-    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
-    <a asp-controller="AdminLabs" asp-action="RenderLabList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
+    <button type="submit" class="btn btn-primary">@_localizer["Form:Submit"]</button>
+    <a asp-controller="AdminLabs" asp-action="RenderLabList" class="btn btn-secondary">@_localizer["Form:Cancel"]</a>
 </form>

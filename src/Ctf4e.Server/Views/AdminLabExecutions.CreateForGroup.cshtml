@@ -1,6 +1,6 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 @model Ctf4e.Server.ViewModels.AdminLabExecution
 @{
     var groups = (List<Group>)ViewData["Groups"];
@@ -8,21 +8,21 @@
 }
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 <form asp-controller="AdminLabExecutions" asp-action="CreateLabExecutionForGroup" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="LabExecution.LabId">@Localizer["Form:LabId"]</label>
+        <label class="form-label" asp-for="LabExecution.LabId">@_localizer["Form:LabId"]</label>
         <select asp-for="LabExecution.LabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-control">
-            <option value="" disabled selected>@Localizer["Form:LabId:Placeholder"]</option>
+            <option value="" disabled selected>@_localizer["Form:LabId:Placeholder"]</option>
         </select>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="LabExecution.GroupId">@Localizer["Form:GroupId"]</label>
+        <label class="form-label" asp-for="LabExecution.GroupId">@_localizer["Form:GroupId"]</label>
         <select asp-for="LabExecution.GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
-            <option value="" disabled selected>@Localizer["Form:GroupId:Placeholder"]</option>
+            <option value="" disabled selected>@_localizer["Form:GroupId:Placeholder"]</option>
         </select>
     </div>
 
@@ -31,13 +31,13 @@
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="OverrideExisting" class="form-check-input" checked>
-            <label asp-for="OverrideExisting" class="form-check-label">@Localizer["Form:OverrideExisting"]</label>
+            <label asp-for="OverrideExisting" class="form-check-label">@_localizer["Form:OverrideExisting"]</label>
             <small>
-                @Localizer["Form:OverrideExisting:Description"]
+                @_localizer["Form:OverrideExisting:Description"]
             </small>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
-    <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
+    <button type="submit" class="btn btn-primary">@_localizer["Form:Submit"]</button>
+    <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@_localizer["Form:Cancel"]</a>
 </form>

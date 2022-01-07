@@ -1,24 +1,24 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @model Ctf4e.Server.ViewModels.AdminScoreboard
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 
 <h3 class="header">
-    @Localizer["Title"]
+    @_localizer["Title"]
 </h3>
 <hr class="header">
 
 <h5 class="header">
-    @Localizer["ExercisesTitle"]
+    @_localizer["ExercisesTitle"]
 </h5>
 
 <table class="table table-sm" id="exercises-table">
     <thead>
     <tr>
         <th></th>
-        <th scope="col">@Localizer["Exercises:Number"]</th>
-        <th scope="col">@Localizer["Exercises:Name"]</th>
-        <th scope="col">@Localizer["Exercises:Passed"]</th>
-        <th scope="col">@Localizer["Exercises:Points"]</th>
+        <th scope="col">@_localizer["Exercises:Number"]</th>
+        <th scope="col">@_localizer["Exercises:Name"]</th>
+        <th scope="col">@_localizer["Exercises:Passed"]</th>
+        <th scope="col">@_localizer["Exercises:Points"]</th>
     </tr>
     </thead>
     <tbody>
@@ -31,7 +31,7 @@
                 @exercise.Exercise.Name
                 @if(exercise.Exercise.IsMandatory)
                 {
-                    <span class="badge bg-info text-light">@Localizer["Mandatory"]</span>
+                    <span class="badge bg-info text-light">@_localizer["Mandatory"]</span>
                 }
             </td>
             <td>
@@ -49,16 +49,16 @@
 
 
 <h5 class="header">
-    @Localizer["FlagsTitle"]
+    @_localizer["FlagsTitle"]
 </h5>
 
 <table class="table table-sm" id="flags-table">
     <thead>
     <tr>
         <th></th>
-        <th scope="col">@Localizer["Flags:Description"]</th>
-        <th scope="col">@Localizer["Flags:Submissions"]</th>
-        <th scope="col">@Localizer["Flags:Points"]</th>
+        <th scope="col">@_localizer["Flags:Description"]</th>
+        <th scope="col">@_localizer["Flags:Submissions"]</th>
+        <th scope="col">@_localizer["Flags:Points"]</th>
     </tr>
     </thead>
     <tbody>
@@ -70,7 +70,7 @@
                 @flag.Flag.Description
                 @if(flag.Flag.IsBounty)
                 {
-                    <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
+                    <i class="bi bi-bug-fill text-primary" title="@_localizer["BugBounty"]"></i>
                 }
             </td>
             <td>

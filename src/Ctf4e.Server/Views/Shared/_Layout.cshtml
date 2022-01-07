@@ -4,8 +4,8 @@
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.Extensions.Options
-@inject IViewLocalizer Localizer
-@inject IOptionsSnapshot<MainOptions> MainOptions
+@inject IViewLocalizer _localizer
+@inject IOptionsSnapshot<MainOptions> _mainOptions
 @{
     // Retrieve status messages
     var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
@@ -73,14 +73,14 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "active" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">
-                                @Localizer["MenuItems:Scoreboard"]
+                                @_localizer["MenuItems:Scoreboard"]
                             </a>
                         </li>
                         if(currentUser.Group != null)
                         {
                             <li class="nav-item">
                                 <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage">
-                                    @Localizer["MenuItems:Dashboard"]
+                                    @_localizer["MenuItems:Dashboard"]
                                 </a>
                             </li>
                         }
@@ -88,7 +88,7 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "active" : "")" asp-controller="Authentication" asp-action="ShowGroupForm">
-                                    @Localizer["MenuItems:CreateGroup"]
+                                    @_localizer["MenuItems:CreateGroup"]
                                 </a>
                             </li>
                         }
@@ -113,14 +113,14 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown">
-                                    @Localizer["MenuItems:Admin"]
+                                    @_localizer["MenuItems:Admin"]
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end mt-0">
                                     @if(currentUser.IsAdmin || currentUser.IsTutor)
                                     {
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">
-                                                @Localizer["MenuItems:Admin:AdminScoreboard"]
+                                                @_localizer["MenuItems:Admin:AdminScoreboard"]
                                             </a>
                                         </li>
                                     }
@@ -131,12 +131,12 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" asp-controller="AdminUsers" asp-action="RenderUserList">
-                                                @Localizer["MenuItems:Admin:Users"]
+                                                @_localizer["MenuItems:Admin:Users"]
                                             </a>
                                         </li>
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" asp-controller="AdminGroups" asp-action="RenderGroupList">
-                                                @Localizer["MenuItems:Admin:Groups"]
+                                                @_localizer["MenuItems:Admin:Groups"]
                                             </a>
                                         </li>
                                         <li>
@@ -144,12 +144,12 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">
-                                                @Localizer["MenuItems:Admin:Labs"]
+                                                @_localizer["MenuItems:Admin:Labs"]
                                             </a>
                                         </li>
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" asp-controller="AdminSlots" asp-action="RenderSlotList">
-                                                @Localizer["MenuItems:Admin:Slots"]
+                                                @_localizer["MenuItems:Admin:Slots"]
                                             </a>
                                         </li>
                                         <li>
@@ -157,7 +157,7 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">
-                                                @Localizer["MenuItems:Admin:LabExecutions"]
+                                                @_localizer["MenuItems:Admin:LabExecutions"]
                                             </a>
                                         </li>
                                         <li>
@@ -165,7 +165,7 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="Render">
-                                                @Localizer["MenuItems:Admin:Configuration"]
+                                                @_localizer["MenuItems:Admin:Configuration"]
                                             </a>
                                         </li>
                                     }
@@ -185,7 +185,7 @@
                                 <li>
                                     <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
                                         <i class="bi bi-door-closed"></i>
-                                        @Localizer["MenuItems:Logout"]
+                                        @_localizer["MenuItems:Logout"]
                                     </a>
                                 </li>
                             </ul>
@@ -249,7 +249,7 @@
                 <span>
                     <a class="link-footer" href="https://github.com/JanWichelmann/ctf4e/releases/tag/server%2F@(buildVersion)">v@(buildVersion)</a>
                 </span>
-                @if(MainOptions.Value.DevelopmentMode && currentUser != null && currentUser.IsAdmin)
+                @if(_mainOptions.Value.DevelopmentMode && currentUser != null && currentUser.IsAdmin)
                 {
                     <span>&middot;</span>
                     <a class="link-footer" href="~/dev/profiler/results-index" target="_blank">Profiler</a>
@@ -270,7 +270,7 @@
                             currentLanguage = "en-US";
                         }
                     }
-                    <a class="dropdown-toggle link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
+                    <a class="dropdown-toggle link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@_localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
                     <ul class="dropdown-menu" aria-labelledby="language-menu-button">
                         @foreach(var language in supportedLanguages)
                         {

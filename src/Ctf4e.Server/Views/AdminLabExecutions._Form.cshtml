@@ -1,24 +1,24 @@
 @model Ctf4e.Server.ViewModels.AdminLabExecution
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@inject IViewLocalizer _localizer
 
 <div class="mb-3">
-    <label class="form-label" asp-for="LabExecution.PreStart">@Localizer["Form:PreStart"]</label>
+    <label class="form-label" asp-for="LabExecution.PreStart">@_localizer["Form:PreStart"]</label>
     <input asp-for="LabExecution.PreStart" id="datetime-prestart" type="text" class="form-control" />
     <span asp-validation-for="LabExecution.PreStart" class="text-danger"></span>
 </div>
 <div class="mb-3">
-    <label class="form-label" asp-for="LabExecution.Start">@Localizer["Form:Start"]</label>
+    <label class="form-label" asp-for="LabExecution.Start">@_localizer["Form:Start"]</label>
     <input asp-for="LabExecution.Start" id="datetime-start" type="text" class="form-control" />
     <span asp-validation-for="LabExecution.Start" class="text-danger"></span>
 </div>
 <div class="mb-3">
-    <label class="form-label" asp-for="LabExecution.End">@Localizer["Form:End"]</label>
+    <label class="form-label" asp-for="LabExecution.End">@_localizer["Form:End"]</label>
     <input asp-for="LabExecution.End" id="datetime-end" type="text" class="form-control" />
     <span asp-validation-for="LabExecution.End" class="text-danger"></span>
 </div>
 <div class="mb-3">
-    @Localizer["Form:DateNotes"]
+    @_localizer["Form:DateNotes"]
 </div>
 
 <script>

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Ctf4e.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable CollectionNeverQueried.Local
 
 namespace Ctf4e.Server.Services.Sync
 {

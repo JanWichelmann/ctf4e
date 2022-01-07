@@ -44,7 +44,7 @@ namespace Ctf4e.Api.Services
         {
             // Run request
             var client = new RestClient(_options.Value.CtfServerApiBaseUrl);
-            var request = new RestRequest(resource, Method.POST);
+            var request = new RestRequest(resource, Method.Post);
             request.AddJsonBody(CtfApiRequest.Create(_options.Value.LabId, _cryptoService, payload));
             var response = await client.ExecuteAsync(request, cancellationToken);
 
