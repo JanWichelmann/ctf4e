@@ -1,14 +1,13 @@
 using System;
 
-namespace Ctf4e.Server.Attributes
-{
-    public class AssemblyBuildVersionAttribute : Attribute
-    {
-        public string Version { get; }
+namespace Ctf4e.Server.Attributes;
 
-        public AssemblyBuildVersionAttribute(string version)
-        {
-            Version = version;
-        }
+public class AssemblyBuildVersionAttribute : Attribute
+{
+    public string Version { get; }
+
+    public AssemblyBuildVersionAttribute(string version)
+    {
+        Version = version;
     }
 }

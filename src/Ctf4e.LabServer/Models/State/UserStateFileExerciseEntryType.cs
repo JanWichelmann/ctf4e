@@ -1,13 +1,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Ctf4e.LabServer.Models.State
+namespace Ctf4e.LabServer.Models.State;
+
+[JsonConverter(typeof(StringEnumConverter))]
+public enum UserStateFileExerciseEntryType
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum UserStateFileExerciseEntryType
-    {
-        String,
-        MultipleChoice,
-        Script
-    }
+    String,
+    MultipleChoice,
+    Script
 }

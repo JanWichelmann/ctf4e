@@ -1,10 +1,9 @@
-﻿namespace Ctf4e.Utilities
+﻿namespace Ctf4e.Utilities;
+
+public enum StatusMessageTypes
 {
-    public enum StatusMessageTypes
-    {
-        Info,
-        Success,
-        Warning,
-        Error
-    }
+    Info,
+    Success,
+    Warning,
+    Error
 }
