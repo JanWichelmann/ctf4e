@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/groups")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.ViewGroups)]
 public class AdminGroupsController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -73,6 +73,7 @@ public class AdminGroupsController : ControllerBase
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.EditGroups)]
     public Task<IActionResult> ShowEditGroupFormAsync(int id)
     {
         return ShowEditGroupFormAsync(id, null);
@@ -80,6 +81,7 @@ public class AdminGroupsController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditGroups)]
     public async Task<IActionResult> EditGroupAsync(Group groupData)
     {
         // Check input
@@ -113,6 +115,7 @@ public class AdminGroupsController : ControllerBase
     }
 
     [HttpGet("create")]
+    [AnyUserPrivilege(UserPrivileges.EditGroups)]
     public async Task<IActionResult> ShowCreateGroupFormAsync(Group group = null)
     {
         // Pass list of slots
@@ -123,6 +126,7 @@ public class AdminGroupsController : ControllerBase
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditGroups)]
     public async Task<IActionResult> CreateGroupAsync(Group groupData)
     {
         // Check input
@@ -159,6 +163,7 @@ public class AdminGroupsController : ControllerBase
 
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditGroups)]
     public async Task<IActionResult> DeleteGroupAsync(int id)
     {
         // Input check
@@ -192,6 +197,7 @@ public class AdminGroupsController : ControllerBase
     }
 
     [HttpGet("sync/json")]
+    [AnyUserPrivilege(UserPrivileges.TransferResults)]
     public async Task<IActionResult> DownloadAsJsonAsync([FromServices] IDumpService dumpService)
     {
         try

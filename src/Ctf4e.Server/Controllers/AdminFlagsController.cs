@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/flags")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.ViewLabs)]
 public class AdminFlagsController : ControllerBase
 {
     private readonly IStringLocalizer<AdminFlagsController> _localizer;
@@ -66,6 +66,7 @@ public class AdminFlagsController : ControllerBase
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public Task<IActionResult> ShowEditFlagFormAsync(int id)
     {
         return ShowEditFlagFormAsync(id, null);
@@ -73,6 +74,7 @@ public class AdminFlagsController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> EditFlagAsync(Flag flagData)
     {
         // Check input
@@ -104,6 +106,7 @@ public class AdminFlagsController : ControllerBase
     }
 
     [HttpGet("create")]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> ShowCreateFlagFormAsync(int labId, Flag flag = null)
     {
         return await RenderAsync(ViewType.Create, labId, flag);
@@ -111,6 +114,7 @@ public class AdminFlagsController : ControllerBase
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> CreateFlagAsync(Flag flagData, string returnToForm)
     {
         // Check input
@@ -149,6 +153,7 @@ public class AdminFlagsController : ControllerBase
 
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> DeleteFlagAsync(int id)
     {
         // Input check

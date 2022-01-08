@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Ctf4e.Server.Migrations
 {
     [DbContext(typeof(CtfDbContext))]
@@ -14,17 +16,17 @@ namespace Ctf4e.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.6")
+                .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.ConfigurationItemEntity", b =>
                 {
                     b.Property<string>("Key")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4")
-                        .HasMaxLength(255);
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Key");
 
@@ -54,8 +56,8 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("PenaltyPoints")
                         .HasColumnType("int");
@@ -108,13 +110,13 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<bool>("IsBounty")
                         .HasColumnType("tinyint(1)");
@@ -155,16 +157,16 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ScoreboardAnnotation")
-                        .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ScoreboardAnnotationHoverText")
-                        .HasColumnType("varchar(200) CHARACTER SET utf8mb4")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
                     b.Property<bool>("ShowInScoreboard")
                         .HasColumnType("tinyint(1)");
@@ -187,8 +189,8 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("ApiCode")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("MaxFlagPoints")
                         .HasColumnType("int");
@@ -198,13 +200,13 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("ServerBaseUrl")
                         .IsRequired()
-                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<bool>("Visible")
                         .HasColumnType("tinyint(1)");
@@ -246,8 +248,8 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(50) CHARACTER SET utf8mb4")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -262,27 +264,29 @@ namespace Ctf4e.Server.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("GroupFindingCode")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsTutor")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("MoodleName")
                         .IsRequired()
-                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("MoodleUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Privileges")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -302,6 +306,8 @@ namespace Ctf4e.Server.Migrations
                         .HasForeignKey("LabId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lab");
                 });
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.ExerciseSubmissionEntity", b =>
@@ -317,6 +323,10 @@ namespace Ctf4e.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.FlagEntity", b =>
@@ -326,6 +336,8 @@ namespace Ctf4e.Server.Migrations
                         .HasForeignKey("LabId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Lab");
                 });
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.FlagSubmissionEntity", b =>
@@ -341,6 +353,10 @@ namespace Ctf4e.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Flag");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.GroupEntity", b =>
@@ -350,6 +366,8 @@ namespace Ctf4e.Server.Migrations
                         .HasForeignKey("SlotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Slot");
                 });
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.LabExecutionEntity", b =>
@@ -365,6 +383,10 @@ namespace Ctf4e.Server.Migrations
                         .HasForeignKey("LabId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Lab");
                 });
 
             modelBuilder.Entity("Ctf4e.Server.Data.Entities.UserEntity", b =>
@@ -372,6 +394,46 @@ namespace Ctf4e.Server.Migrations
                     b.HasOne("Ctf4e.Server.Data.Entities.GroupEntity", "Group")
                         .WithMany("Members")
                         .HasForeignKey("GroupId");
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Ctf4e.Server.Data.Entities.ExerciseEntity", b =>
+                {
+                    b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("Ctf4e.Server.Data.Entities.FlagEntity", b =>
+                {
+                    b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("Ctf4e.Server.Data.Entities.GroupEntity", b =>
+                {
+                    b.Navigation("LabExecutions");
+
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Ctf4e.Server.Data.Entities.LabEntity", b =>
+                {
+                    b.Navigation("Executions");
+
+                    b.Navigation("Exercises");
+
+                    b.Navigation("Flags");
+                });
+
+            modelBuilder.Entity("Ctf4e.Server.Data.Entities.SlotEntity", b =>
+                {
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("Ctf4e.Server.Data.Entities.UserEntity", b =>
+                {
+                    b.Navigation("ExerciseSubmissions");
+
+                    b.Navigation("FlagSubmissions");
                 });
 #pragma warning restore 612, 618
         }

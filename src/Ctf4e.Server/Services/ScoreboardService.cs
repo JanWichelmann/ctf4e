@@ -20,10 +20,10 @@ namespace Ctf4e.Server.Services;
 
 public interface IScoreboardService
 {
-    Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken = default);
-    Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
-    Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false);
-    Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default);
+    Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken);
+    Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken, bool forceUncached = false);
+    Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken, bool forceUncached = false);
+    Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
 }
 
 public class ScoreboardService : IScoreboardService
@@ -52,7 +52,7 @@ public class ScoreboardService : IScoreboardService
         _dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
     }
 
-    public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken = default)
+    public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken)
     {
         // Load flag point parameters
         await InitFlagPointParametersAsync(cancellationToken);
@@ -405,7 +405,7 @@ public class ScoreboardService : IScoreboardService
             foreach(var user in users)
             {
                 // Skip tutors and admins, if requested
-                if(!includeTutors && (user.IsAdmin || user.IsTutor))
+                if(!includeTutors && user.IsTutor)
                     continue;
 
                 labExecutions.TryGetValue(user.GroupId ?? -1, out var groupLabExecution);
@@ -601,7 +601,7 @@ public class ScoreboardService : IScoreboardService
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    private async Task InitFlagPointParametersAsync(CancellationToken cancellationToken = default)
+    private async Task InitFlagPointParametersAsync(CancellationToken cancellationToken)
     {
         // Retrieve constants
         _minPointsMultiplier = 1.0 / await _configurationService.GetFlagMinimumPointsDivisorAsync(cancellationToken);
@@ -640,7 +640,7 @@ public class ScoreboardService : IScoreboardService
         return points > flag.BasePoints ? flag.BasePoints : (int)Math.Round(points);
     }
 
-    public async Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false)
+    public async Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken, bool forceUncached = false)
     {
         // Is there a cached scoreboard?
         string fullScoreboardCacheKey = "scoreboard-full-" + (slotId?.ToString() ?? "all");
@@ -926,7 +926,7 @@ public class ScoreboardService : IScoreboardService
         return scoreboard;
     }
 
-    public async Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken = default, bool forceUncached = false)
+    public async Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken, bool forceUncached = false)
     {
         // Is there a cached scoreboard?
         string scoreboardCacheKey = "scoreboard-" + labId + "-" + (slotId?.ToString() ?? "all");
@@ -1203,7 +1203,7 @@ public class ScoreboardService : IScoreboardService
         return scoreboard;
     }
 
-    public async Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken = default)
+    public async Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken)
     {
         // Consistent time
         var now = DateTime.Now;

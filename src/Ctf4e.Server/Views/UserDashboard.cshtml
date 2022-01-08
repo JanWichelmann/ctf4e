@@ -2,13 +2,14 @@
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
+@using Ctf4e.Server.Authorization
 @inject IConfigurationService _configurationService
 @inject IViewLocalizer _localizer
 @{
     ViewData["Title"] = _localizer["HtmlTitle"];
 
     var userScoreboard = (UserScoreboard)ViewData["Scoreboard"];
-    
+
     var currentUser = (User)ViewData["CurrentUser"];
 }
 
@@ -25,9 +26,13 @@
         }
     </div>
 
-    <h3 class="header">
+    <h1 class="header @(!userScoreboard.CurrentLab.Visible ? "fst-italic" : "")">
+        @if(!userScoreboard.CurrentLab.Visible)
+        {
+            <i class="bi bi-lock-fill" title="@_localizer["LabHidden"]"></i>
+        }
         @_localizer["Lab"]: @userScoreboard.CurrentLab.Name
-    </h3>
+    </h1>
     <hr class="header">
 
     switch(userScoreboard.LabExecutionStatus)
@@ -60,11 +65,12 @@
             <i class="bi bi-arrow-return-right"></i>
             <i class="bi bi-hdd-network"></i>
             @_localizer["LabServer"]
-        </a>    }
+        </a>
+    }
 
-    <h5 class="header">
+    <h2 class="header">
         @_localizer["Exercises"]
-    </h5>
+    </h2>
     <hr class="header-secondary">
 
     foreach(var exercise in userScoreboard.Exercises)
@@ -137,9 +143,9 @@
     }
 
     <div>
-        <h5 class="header">
+        <h2 class="header">
             @_localizer["Flags"]
-        </h5>
+        </h2>
         <hr class="header-secondary">
     </div>
 
@@ -166,7 +172,7 @@
                     </span>
                     @if(userScoreboard.HasFoundAllFlags)
                     {
-                        <span class="badge bg-success text-light">
+                        <span class="badge bg-success text-light py-2">
                             <i class="bi bi-check-circle"></i>
                             @_localizer["Flags:AllFound"]
                         </span>
@@ -210,9 +216,9 @@
     </div>
 
 
-    <h5 class="header">
+    <h2 class="header">
         @_localizer["SwitchLab:Title"]
-    </h5>
+    </h2>
     <hr class="header-secondary">
 
     <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
@@ -221,11 +227,11 @@
             <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">
                 @foreach(var lab in userScoreboard.Labs)
                 {
-                    if(!lab.Visible && !currentUser.IsAdmin && !currentUser.IsTutor)
+                    if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs))
                     {
                         continue;
                     }
-                    
+
                     <option value="@lab.LabId" selected="@(userScoreboard.LabId == lab.LabId)">
                         @lab.Name
                         @if(lab.Active)
@@ -236,7 +242,8 @@
                         {
                             @:(@_localizer["SwitchLab:Hidden"])
                         }
-                    </option>                }
+                    </option>
+                }
             </select>
         </div>
 
@@ -244,5 +251,6 @@
             <i class="bi bi-arrow-return-right"></i>
             @_localizer["SwitchLab:Submit"]
         </button>
-    </form>}
+    </form>
+}
 </div>

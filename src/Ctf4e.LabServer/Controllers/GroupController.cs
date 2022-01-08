@@ -202,7 +202,7 @@ public class GroupController : ControllerBase
                     ExercisePassed = true,
                     Weight = 1,
                     SubmissionTime = DateTime.Now
-                });
+                }, CancellationToken.None);
             }
 
             AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:Success"], StatusMessageTypes.Success);

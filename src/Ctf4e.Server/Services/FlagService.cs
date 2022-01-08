@@ -15,13 +15,13 @@ namespace Ctf4e.Server.Services;
 public interface IFlagService
 {
     IAsyncEnumerable<Flag> GetFlagsAsync(int labId);
-    Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken = default);
-    Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken = default);
-    Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken = default);
-    Task DeleteFlagAsync(int id, CancellationToken cancellationToken = default);
-    Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken = default);
-    Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken = default);
-    Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken = default);
+    Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken);
+    Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken);
+    Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken);
+    Task DeleteFlagAsync(int id, CancellationToken cancellationToken);
+    Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken);
+    Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken);
+    Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken);
 }
 
 public class FlagService : IFlagService
@@ -44,7 +44,7 @@ public class FlagService : IFlagService
             .AsAsyncEnumerable();
     }
 
-    public Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Flags.AsNoTracking()
             .Where(f => f.Id == id)
@@ -52,7 +52,7 @@ public class FlagService : IFlagService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken = default)
+    public async Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken)
     {
         // Create new Flag
         var flagEntity = _dbContext.Flags.Add(new FlagEntity
@@ -70,7 +70,7 @@ public class FlagService : IFlagService
         return _mapper.Map<Flag>(flagEntity);
     }
 
-    public async Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken = default)
+    public async Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken)
     {
         // Try to retrieve existing entity
         var flagEntity = await _dbContext.Flags.FindAsync(new object[] { flag.Id }, cancellationToken);
@@ -88,7 +88,7 @@ public class FlagService : IFlagService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteFlagAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteFlagAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
@@ -103,7 +103,7 @@ public class FlagService : IFlagService
         }
     }
 
-    public async Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken = default)
+    public async Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken)
     {
         // Create new submission
         var submissionEntity = _dbContext.FlagSubmissions.Add(new FlagSubmissionEntity
@@ -118,7 +118,7 @@ public class FlagService : IFlagService
         return _mapper.Map<FlagSubmission>(submissionEntity);
     }
 
-    public async Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken = default)
+    public async Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken)
     {
         try
         {
@@ -133,7 +133,7 @@ public class FlagService : IFlagService
         }
     }
 
-    public async Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken = default)
+    public async Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken)
     {
         // Try to find matching flag
         var flag = await _dbContext.Flags.AsNoTracking()

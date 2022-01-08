@@ -15,11 +15,11 @@ namespace Ctf4e.Server.Services;
 public interface ISlotService
 {
     IAsyncEnumerable<Slot> GetSlotsAsync();
-    Task<Slot> GetSlotAsync(int id, CancellationToken cancellationToken = default);
-    Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken = default);
-    Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken = default);
-    Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken = default);
-    Task DeleteSlotAsync(int id, CancellationToken cancellationToken = default);
+    Task<Slot> GetSlotAsync(int id, CancellationToken cancellationToken);
+    Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken);
+    Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken);
+    Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken);
+    Task DeleteSlotAsync(int id, CancellationToken cancellationToken);
 }
 
 public class SlotService : ISlotService
@@ -42,7 +42,7 @@ public class SlotService : ISlotService
             .AsAsyncEnumerable();
     }
 
-    public Task<Slot> GetSlotAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Slot> GetSlotAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Slots.AsNoTracking()
             .Include(s => s.Groups)
@@ -51,14 +51,14 @@ public class SlotService : ISlotService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken = default)
+    public Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Slots.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken = default)
+    public async Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken)
     {
         // Create new Slot
         var slotEntity = _dbContext.Slots.Add(new SlotEntity
@@ -72,7 +72,7 @@ public class SlotService : ISlotService
         return _mapper.Map<Slot>(slotEntity);
     }
 
-    public async Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken = default)
+    public async Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken)
     {
         // Try to retrieve existing entity
         var slotEntity = await _dbContext.Slots.FindAsync(new object[] { slot.Id }, cancellationToken);
@@ -86,7 +86,7 @@ public class SlotService : ISlotService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteSlotAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteSlotAsync(int id, CancellationToken cancellationToken)
     {
         try
         {

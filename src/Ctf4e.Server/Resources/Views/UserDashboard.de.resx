@@ -174,4 +174,8 @@
         <value>Praktikumsübersicht</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="LabHidden" xml:space="preserve">
+        <value>Versteckt, nur zugreifbar für Benutzer mit Admin- oder Praktikumsbearbeitungs-Rechten</value>
+        <comment>LabHidden</comment>
+    </data>
 </root>

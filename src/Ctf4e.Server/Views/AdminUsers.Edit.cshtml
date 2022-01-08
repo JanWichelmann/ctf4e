@@ -1,31 +1,28 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
-@model User
+@model Ctf4e.Server.ViewModels.AdminEditUserData
 @{
     var groups = (List<Group>)ViewData["Groups"];
+    
+    var currentUser = (User)ViewData["CurrentUser"];
 }
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
 <form asp-controller="AdminUsers" asp-action="EditUser" method="post">
+    <h2 class="mb-3">
+        @_localizer["GeneralSettings"]
+    </h2>
+
     <div class="mb-3">
         <label class="form-label" asp-for="DisplayName">@_localizer["Form:DisplayName"]</label>
         <input asp-for="DisplayName" class="form-control">
         <span asp-validation-for="DisplayName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">@_localizer["Form:MoodleName"]</label>
-        <input asp-for="MoodleName" class="form-control" readonly="readonly">
-    </div>
-    <div class="mb-3">
-        <div class="form-check">
-            <input asp-for="IsAdmin" class="form-check-input">
-            <label asp-for="IsAdmin" class="form-check-label">@_localizer["Form:IsAdmin"]</label>
-        </div>
     </div>
     <div class="mb-3">
         <div class="form-check">
@@ -44,6 +41,78 @@
             <option value="" selected>@_localizer["Form:GroupId:None"]</option>
         </select>
     </div>
+
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
+    {
+        <h2 class="mb-3">
+            @_localizer["Privileges"]
+        </h2>
+        
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeAdmin" class="form-check-input">
+            <label asp-for="PrivilegeAdmin" class="form-check-label">@_localizer["Privilege:Admin"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeViewUsers" class="form-check-input">
+            <label asp-for="PrivilegeViewUsers" class="form-check-label">@_localizer["Privilege:ViewUsers"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditUsers" class="form-check-input">
+            <label asp-for="PrivilegeEditUsers" class="form-check-label">@_localizer["Privilege:EditUsers"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeViewGroups" class="form-check-input">
+            <label asp-for="PrivilegeViewGroups" class="form-check-label">@_localizer["Privilege:ViewGroups"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditGroups" class="form-check-input">
+            <label asp-for="PrivilegeEditGroups" class="form-check-label">@_localizer["Privilege:EditGroups"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeViewLabs" class="form-check-input">
+            <label asp-for="PrivilegeViewLabs" class="form-check-label">@_localizer["Privilege:ViewLabs"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditLabs" class="form-check-input">
+            <label asp-for="PrivilegeEditLabs" class="form-check-label">@_localizer["Privilege:EditLabs"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeViewSlots" class="form-check-input">
+            <label asp-for="PrivilegeViewSlots" class="form-check-label">@_localizer["Privilege:ViewSlots"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditSlots" class="form-check-input">
+            <label asp-for="PrivilegeEditSlots" class="form-check-label">@_localizer["Privilege:EditSlots"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeViewLabExecutions" class="form-check-input">
+            <label asp-for="PrivilegeViewLabExecutions" class="form-check-label">@_localizer["Privilege:ViewLabExecutions"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditLabExecutions" class="form-check-input">
+            <label asp-for="PrivilegeEditLabExecutions" class="form-check-label">@_localizer["Privilege:EditLabExecutions"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeViewAdminScoreboard" class="form-check-input">
+            <label asp-for="PrivilegeViewAdminScoreboard" class="form-check-label">@_localizer["Privilege:ViewAdminScoreboard"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditAdminScoreboard" class="form-check-input">
+            <label asp-for="PrivilegeEditAdminScoreboard" class="form-check-label">@_localizer["Privilege:EditAdminScoreboard"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeEditConfiguration" class="form-check-input">
+            <label asp-for="PrivilegeEditConfiguration" class="form-check-label">@_localizer["Privilege:EditConfiguration"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeTransferResults" class="form-check-input">
+            <label asp-for="PrivilegeTransferResults" class="form-check-label">@_localizer["Privilege:TransferResults"]</label>
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <input asp-for="PrivilegeLoginAsLabServerAdmin" class="form-check-input">
+            <label asp-for="PrivilegeLoginAsLabServerAdmin" class="form-check-label">@_localizer["Privilege:LoginAsLabServerAdmin"]</label>
+        </div>
+    }
 
     <input asp-for="Id" type="hidden">
 

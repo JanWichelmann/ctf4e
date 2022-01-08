@@ -38,8 +38,8 @@
         <value>Group ID</value>
         <comment>Users:GroupId</comment>
     </data>
-    <data name="Users:Status" xml:space="preserve">
-        <value>Status</value>
+    <data name="Users:IsTutor" xml:space="preserve">
+        <value>Tutor</value>
         <comment>Users:Status</comment>
     </data>
     <data name="Actions" xml:space="preserve">
@@ -50,12 +50,8 @@
         <value>Edit group</value>
         <comment>Users:EditGroup:Text</comment>
     </data>
-    <data name="Users:IsAdmin:Text" xml:space="preserve">
-        <value>Admin permissions</value>
-        <comment>Users:IsAdmin:Text</comment>
-    </data>
     <data name="Users:IsTutor:Text" xml:space="preserve">
-        <value>Tutor permissions</value>
+        <value>Is tutor and thus not shown in scoreboard</value>
         <comment>Users:IsTutor:Text</comment>
     </data>
     <data name="Edit" xml:space="preserve">
@@ -69,5 +65,56 @@
     <data name="Users:MoodleAccount" xml:space="preserve">
         <value>Moodle account</value>
         <comment>Users:MoodleAccount</comment>
+    </data>
+    <data name="Users:Privileges:Admin" xml:space="preserve">
+        <value>Admin permissions</value>
+    </data>
+    <data name="Users:Privileges:ViewUsers" xml:space="preserve">
+        <value>View users</value>
+    </data>
+    <data name="Users:Privileges:EditUsers" xml:space="preserve">
+        <value>Edit users</value>
+    </data>
+    <data name="Users:Privileges:ViewGroups" xml:space="preserve">
+        <value>View groups</value>
+    </data>
+    <data name="Users:Privileges:EditGroups" xml:space="preserve">
+        <value>Edit groups</value>
+    </data>
+    <data name="Users:Privileges:ViewLabs" xml:space="preserve">
+        <value>View labs/exercises/flags</value>
+    </data>
+    <data name="Users:Privileges:EditLabs" xml:space="preserve">
+        <value>Edit labs/exercises/flags</value>
+    </data>
+    <data name="Users:Privileges:ViewSlots" xml:space="preserve">
+        <value>View slots</value>
+    </data>
+    <data name="Users:Privileges:EditSlots" xml:space="preserve">
+        <value>Edit time slots</value>
+    </data>
+    <data name="Users:Privileges:ViewLabExecutions" xml:space="preserve">
+        <value>View lab executions</value>
+    </data>
+    <data name="Users:Privileges:EditLabExecutions" xml:space="preserve">
+        <value>Edit lab executions</value>
+    </data>
+    <data name="Users:Privileges:ViewAdminScoreboard" xml:space="preserve">
+        <value>View admin scoreboard</value>
+    </data>
+    <data name="Users:Privileges:EditAdminScoreboard" xml:space="preserve">
+        <value>Edit admin scoreboard</value>
+    </data>
+    <data name="Users:Privileges:EditConfiguration" xml:space="preserve">
+        <value>Edit configuration</value>
+    </data>
+    <data name="Users:Privileges:TransferResults" xml:space="preserve">
+        <value>Synchronize/import/export results</value>
+    </data>
+    <data name="Users:Privileges:LoginAsLabServerAdmin" xml:space="preserve">
+        <value>Admin permissions for lab servers (via admin scoreboard)</value>
+    </data>
+    <data name="Users:Privileges" xml:space="preserve">
+        <value>Permissions</value>
     </data>
 </root>

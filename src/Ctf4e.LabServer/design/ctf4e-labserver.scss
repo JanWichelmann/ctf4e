@@ -2,6 +2,18 @@
 
 $blue: #003e80 !default;
 
+
+/* Override heading sizes */
+
+$font-size-base: 1rem; // This is the default
+$h1-font-size: $font-size-base * 1.75;
+$h2-font-size: $font-size-base * 1.5;
+$h3-font-size: $font-size-base * 1.25;
+$h4-font-size: $font-size-base;
+$h5-font-size: $font-size-base;
+$h6-font-size: $font-size-base;
+
+
 /* Load bootstrap */
 
 @import "../node_modules/bootstrap/scss/bootstrap";
@@ -46,24 +58,28 @@ footer {
 
 /* Headlines */
 
-h3.header {
-  color: $blue;
+h1.header {
   margin-top: 2*$spacer;
+  color: $primary;
 }
 
-h5.header {
-  color: $blue;
+h2.header {
   margin-top: 2*$spacer;
+  color: $primary;
+}
+
+h2.subheader {
+  margin-top: 1.0*$spacer;
+  color: $primary;
 }
 
 hr.header {
-  color: $blue;
   opacity: 1;
   height: 2px;
+  color: $primary;
 }
 
 hr.header-secondary {
-  color: $blue;
   height: 1px;
 }
 
@@ -80,9 +96,8 @@ hr.header-secondary {
   }
 }
 
-.bi::before {
-  // Hack: Reset weird line height override in bi-* classes, so icons are centered
-  line-height: 1.5 !important;
+// Hack: Change vertical alignment for bi-* classes in buttons, so icons are centered
+.btn .bi::before {
   vertical-align: middle !important;
 }
 

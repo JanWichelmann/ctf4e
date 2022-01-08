@@ -11,10 +11,10 @@ namespace Ctf4e.Api.Services
 {
     public interface ICtfApiClient
     {
-        Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken = default);
-        Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken = default);
-        Task CreateGroupExerciseSubmissionAsync(ApiGroupExerciseSubmission submission, CancellationToken cancellationToken = default);
-        Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken = default);
+        Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken);
+        Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken);
+        Task CreateGroupExerciseSubmissionAsync(ApiGroupExerciseSubmission submission, CancellationToken cancellationToken);
+        Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken);
     }
 
     public class CtfApiClient : ICtfApiClient
@@ -28,19 +28,19 @@ namespace Ctf4e.Api.Services
             _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
         }
 
-        public Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken = default)
+        public Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken)
             => RunApiPostRequestAsync("exercisesubmission/create", submission, cancellationToken);
 
-        public Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken = default)
+        public Task ClearExerciseSubmissionsAsync(int exerciseNumber, int userId, CancellationToken cancellationToken)
             => RunApiPostRequestAsync("exercisesubmission/clear", new ApiExerciseSubmission { ExerciseNumber = exerciseNumber, UserId = userId }, cancellationToken);
 
-        public Task CreateGroupExerciseSubmissionAsync(ApiGroupExerciseSubmission submission, CancellationToken cancellationToken = default)
+        public Task CreateGroupExerciseSubmissionAsync(ApiGroupExerciseSubmission submission, CancellationToken cancellationToken)
             => RunApiPostRequestAsync("exercisesubmission-group/create", submission, cancellationToken);
 
-        public Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken = default)
+        public Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken)
             => RunApiPostRequestAsync("exercisesubmission-group/clear", new ApiGroupExerciseSubmission { ExerciseNumber = exerciseNumber, GroupId = groupId }, cancellationToken);
 
-        private async Task RunApiPostRequestAsync(string resource, object payload, CancellationToken cancellationToken = default)
+        private async Task RunApiPostRequestAsync(string resource, object payload, CancellationToken cancellationToken)
         {
             // Run request
             var client = new RestClient(_options.Value.CtfServerApiBaseUrl);

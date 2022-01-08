@@ -9,9 +9,9 @@
 }
 
 <div class="container">
-    <h3 class="header">
+    <h1 class="header">
         @_localizer["Title"]
-    </h3>
+    </h1>
     <hr class="header">
 
     <form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
@@ -105,9 +105,9 @@
         <button type="submit" class="btn btn-primary">@_localizer["SaveChanges"]</button>
     </form>
 
-    <h3 class="text-primary mt-5">
+    <h2 class="header">
         @_localizer["Visualization:Title"]
-    </h3>
+    </h2>
     <hr class="header-secondary">
 
     <p>
@@ -193,9 +193,9 @@
     inputFlagHalfPointsSubmissionCount.addEventListener("change", updateChart);
     </script>
 
-    <h3 class="header">
+    <h1 class="header">
         @_localizer["Status:Title"]
-    </h3>
+    </h1>
     <hr class="header-secondary">
 
     <p>@_localizer["Status:CurrentCulture"]: @CultureInfo.CurrentCulture.ToString()</p>

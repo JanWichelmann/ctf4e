@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/labs")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.ViewLabs)]
 public class AdminLabsController : ControllerBase
 {
     private readonly IStringLocalizer<AdminLabsController> _localizer;
@@ -67,6 +67,7 @@ public class AdminLabsController : ControllerBase
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public Task<IActionResult> ShowEditLabFormAsync(int id)
     {
         return ShowEditLabFormAsync(id, null);
@@ -74,6 +75,7 @@ public class AdminLabsController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> EditLabAsync(Lab labData)
     {
         // Check input
@@ -108,6 +110,7 @@ public class AdminLabsController : ControllerBase
     }
 
     [HttpGet("create")]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> ShowCreateLabFormAsync(Lab lab = null)
     {
         return await RenderAsync(ViewType.Create, lab);
@@ -115,6 +118,7 @@ public class AdminLabsController : ControllerBase
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> CreateLabAsync(Lab labData)
     {
         // Check input
@@ -152,6 +156,7 @@ public class AdminLabsController : ControllerBase
 
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> DeleteLabAsync(int id)
     {
         // Input check

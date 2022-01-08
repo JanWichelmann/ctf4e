@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
-using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
+using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/users")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.Admin | UserPrivileges.ViewUsers)]
 public class AdminUsersController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -38,25 +38,50 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> RenderUserListAsync()
     {
         // Pass users
-        var users = await _userService.GetUsersAsync().ToListAsync();
+        var users = await _userService.GetUsersWithGroupsAsync().ToListAsync();
 
         return await RenderAsync(ViewType.List, users);
     }
 
-    private async Task<IActionResult> ShowEditUserFormAsync(int? id, User user = null)
+    private async Task<IActionResult> ShowEditUserFormAsync(int? id, AdminEditUserData userData = null)
     {
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            user = await _userService.GetUserAsync(id.Value, HttpContext.RequestAborted);
+            var user = await _userService.FindByIdAsync(id.Value, HttpContext.RequestAborted);
             if(user == null)
             {
                 AddStatusMessage(_localizer["ShowEditUserFormAsync:NotFound"], StatusMessageTypes.Error);
                 return await RenderUserListAsync();
             }
+
+            userData = new AdminEditUserData
+            {
+                Id = user.Id,
+                DisplayName = user.DisplayName,
+                IsTutor = user.IsTutor,
+                GroupFindingCode = user.GroupFindingCode,
+                GroupId = user.GroupId,
+                PrivilegeAdmin = user.Privileges.HasPrivileges(UserPrivileges.Admin),
+                PrivilegeViewUsers = user.Privileges.HasPrivileges(UserPrivileges.ViewUsers),
+                PrivilegeEditUsers = user.Privileges.HasPrivileges(UserPrivileges.EditUsers),
+                PrivilegeViewGroups = user.Privileges.HasPrivileges(UserPrivileges.ViewGroups),
+                PrivilegeEditGroups = user.Privileges.HasPrivileges(UserPrivileges.EditGroups),
+                PrivilegeViewLabs = user.Privileges.HasPrivileges(UserPrivileges.ViewLabs),
+                PrivilegeEditLabs = user.Privileges.HasPrivileges(UserPrivileges.EditLabs),
+                PrivilegeViewSlots = user.Privileges.HasPrivileges(UserPrivileges.ViewSlots),
+                PrivilegeEditSlots = user.Privileges.HasPrivileges(UserPrivileges.EditSlots),
+                PrivilegeViewLabExecutions = user.Privileges.HasPrivileges(UserPrivileges.ViewLabExecutions),
+                PrivilegeEditLabExecutions = user.Privileges.HasPrivileges(UserPrivileges.EditLabExecutions),
+                PrivilegeViewAdminScoreboard = user.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard),
+                PrivilegeEditAdminScoreboard = user.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard),
+                PrivilegeEditConfiguration = user.Privileges.HasPrivileges(UserPrivileges.EditConfiguration),
+                PrivilegeTransferResults = user.Privileges.HasPrivileges(UserPrivileges.TransferResults),
+                PrivilegeLoginAsLabServerAdmin = user.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin),
+            };
         }
 
-        if(user == null)
+        if(userData == null)
         {
             AddStatusMessage(_localizer["ShowEditUserFormAsync:MissingParameter"], StatusMessageTypes.Error);
             return await RenderUserListAsync();
@@ -65,10 +90,11 @@ public class AdminUsersController : ControllerBase
         // Pass list of groups
         ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
 
-        return await RenderAsync(ViewType.Edit, user);
+        return await RenderAsync(ViewType.Edit, userData);
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.Admin | UserPrivileges.EditUsers)]
     public Task<IActionResult> ShowEditUserFormAsync(int id)
     {
         return ShowEditUserFormAsync(id, null);
@@ -76,7 +102,8 @@ public class AdminUsersController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditUserAsync(User userData)
+    [AnyUserPrivilege(UserPrivileges.Admin | UserPrivileges.EditUsers)]
+    public async Task<IActionResult> EditUserAsync(AdminEditUserData userData)
     {
         // Check input
         if(!ModelState.IsValid)
@@ -85,16 +112,62 @@ public class AdminUsersController : ControllerBase
             return await ShowEditUserFormAsync(null, userData);
         }
 
+        var currentUser = await GetCurrentUserAsync();
         try
         {
             // Retrieve edited user from database and apply changes
-            var user = await _userService.GetUserAsync(userData.Id, HttpContext.RequestAborted);
+            var user = await _userService.FindByIdAsync(userData.Id, HttpContext.RequestAborted);
             user.DisplayName = userData.DisplayName;
+            user.IsTutor = userData.IsTutor;
             user.GroupFindingCode = userData.GroupFindingCode;
             user.GroupId = userData.GroupId;
-            if(user.Id != (await GetCurrentUserAsync()).Id)
-                user.IsAdmin = userData.IsAdmin;
-            user.IsTutor = userData.IsTutor;
+
+            if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
+            {
+                // Privileges
+                var privileges = UserPrivileges.Default;
+                if(userData.PrivilegeAdmin)
+                    privileges |= UserPrivileges.Admin;
+                if(userData.PrivilegeViewUsers)
+                    privileges |= UserPrivileges.ViewUsers;
+                if(userData.PrivilegeEditUsers)
+                    privileges |= UserPrivileges.ViewUsers | UserPrivileges.EditUsers;
+                if(userData.PrivilegeViewGroups)
+                    privileges |= UserPrivileges.ViewGroups;
+                if(userData.PrivilegeEditGroups)
+                    privileges |= UserPrivileges.ViewGroups | UserPrivileges.EditGroups;
+                if(userData.PrivilegeViewLabs)
+                    privileges |= UserPrivileges.ViewLabs;
+                if(userData.PrivilegeEditLabs)
+                    privileges |= UserPrivileges.ViewLabs | UserPrivileges.EditLabs;
+                if(userData.PrivilegeViewSlots)
+                    privileges |= UserPrivileges.ViewSlots;
+                if(userData.PrivilegeEditSlots)
+                    privileges |= UserPrivileges.ViewSlots | UserPrivileges.EditSlots;
+                if(userData.PrivilegeViewLabExecutions)
+                    privileges |= UserPrivileges.ViewLabExecutions;
+                if(userData.PrivilegeEditLabExecutions)
+                    privileges |= UserPrivileges.ViewLabExecutions | UserPrivileges.EditLabExecutions;
+                if(userData.PrivilegeViewAdminScoreboard)
+                    privileges |= UserPrivileges.ViewAdminScoreboard;
+                if(userData.PrivilegeEditAdminScoreboard)
+                    privileges |= UserPrivileges.ViewAdminScoreboard | UserPrivileges.EditAdminScoreboard;
+                if(userData.PrivilegeEditConfiguration)
+                    privileges |= UserPrivileges.EditConfiguration;
+                if(userData.PrivilegeTransferResults)
+                    privileges |= UserPrivileges.TransferResults;
+                if(userData.PrivilegeLoginAsLabServerAdmin)
+                    privileges |= UserPrivileges.LoginAsLabServerAdmin;
+
+                // Ensure that admins don't accidentally lock out themselves
+                if(user.Id == currentUser.Id)
+                {
+                    privileges |= UserPrivileges.Admin;
+                }
+
+                user.Privileges = privileges;
+            }
+
             await _userService.UpdateUserAsync(user, HttpContext.RequestAborted);
 
             AddStatusMessage(_localizer["EditUserAsync:Success"], StatusMessageTypes.Success);

@@ -97,6 +97,15 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This lab does not exist..
+        /// </summary>
+        internal static string RenderAsync_LabNotFound {
+            get {
+                return ResourceManager.GetString("RenderAsync:LabNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Currently there are no active labs..
         /// </summary>
         internal static string RenderAsync_NoActiveLab {

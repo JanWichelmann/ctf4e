@@ -1,6 +1,7 @@
 ﻿@using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Authorization
 @model AdminScoreboard
 @inject IViewLocalizer _localizer
 @{
@@ -19,9 +20,9 @@
         @* ReSharper restore Html.IdNotResolved *@
     </div>
 
-    <h3 class="header">
+    <h1 class="header">
         @_localizer["Title"]
-    </h3>
+    </h1>
     <hr class="header">
 
     <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
@@ -56,14 +57,15 @@
 
     <partial name="AdminScoreboard.Users.cshtml" />
     <partial name="AdminScoreboard.Statistics.cshtml" />
-    
+
     <script>
         window.addEventListener("load", e => table_sorting());
     </script>
-    
-    @if(currentUser.IsAdmin)
+
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.TransferResults))
     {
-        <partial name="AdminScoreboard.Sync.cshtml" />    }
+        <partial name="AdminScoreboard.Sync.cshtml" />
+    }
 </div>
 
 <!-- Necessary includes -->

@@ -54,4 +54,8 @@
         <value>Sie sind nicht angemeldet oder keiner Gruppe zugewiesen.</value>
         <comment>CallLabServerAsync:NoGroup</comment>
     </data>
+    <data name="RenderAsync:LabNotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+        <comment>RenderAsync:LabNotFound</comment>
+    </data>
 </root>

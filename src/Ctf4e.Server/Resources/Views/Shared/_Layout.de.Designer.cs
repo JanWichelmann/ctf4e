@@ -176,5 +176,14 @@ namespace Ctf4e.Server.Resources.Views.Shared {
                 return ResourceManager.GetString("MenuItems:Scoreboard", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Navigation umschalten.
+        /// </summary>
+        internal static string ToggleNavbar {
+            get {
+                return ResourceManager.GetString("ToggleNavbar", resourceCulture);
+            }
+        }
     }
 }

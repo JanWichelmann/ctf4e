@@ -1,5 +1,6 @@
 using System.Security;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Models;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +51,8 @@ public partial class AuthenticationController
                 MoodleUserId = authData.UserId,
                 MoodleName = authData.LoginName,
                 GroupFindingCode = RandomStringGenerator.GetRandomString(10),
-                IsAdmin = firstUser
+                IsTutor = firstUser,
+                Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default
             };
             user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
             AddStatusMessage(_localizer["LoginMoodleAsync:AccountCreationSuccess"], StatusMessageTypes.Success);

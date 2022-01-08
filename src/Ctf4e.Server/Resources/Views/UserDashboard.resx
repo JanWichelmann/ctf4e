@@ -174,4 +174,8 @@
         <value>Lab Dashboard</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="LabHidden" xml:space="preserve">
+        <value>Hidden, only accessible by user with admin or lab editing privileges</value>
+        <comment>LabHidden</comment>
+    </data>
 </root>

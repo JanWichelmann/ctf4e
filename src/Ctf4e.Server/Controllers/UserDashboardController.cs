@@ -2,17 +2,16 @@
 using System.Threading.Tasks;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("dashboard")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsGroupMember)]
 public class UserDashboardController : ControllerBase
 {
     private readonly IStringLocalizer<UserDashboardController> _localizer;
@@ -44,7 +43,7 @@ public class UserDashboardController : ControllerBase
         // Show group's most recent lab
         if(labId == null)
         {
-            var currentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(currentUser.GroupId.Value);
+            var currentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(currentUser.GroupId.Value, HttpContext.RequestAborted);
             if(currentLabExecution == null)
             {
                 AddStatusMessage(_localizer["RenderAsync:NoActiveLab"], StatusMessageTypes.Info);
@@ -52,6 +51,14 @@ public class UserDashboardController : ControllerBase
             }
 
             labId = currentLabExecution.LabId;
+        }
+        
+        // Retrieve lab data
+        var lab = await _labService.GetLabAsync(labId.Value, HttpContext.RequestAborted);
+        if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
+        {
+            AddStatusMessage(_localizer["RenderAsync:LabNotFound"], StatusMessageTypes.Error);
+            return await RenderViewAsync();
         }
 
         // Retrieve scoreboard
@@ -112,7 +119,7 @@ public class UserDashboardController : ControllerBase
             
         // Retrieve lab data
         var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
-        if(lab == null)
+        if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
             AddStatusMessage(_localizer["CallLabServerAsync:LabNotFound"], StatusMessageTypes.Error);
             return await RenderViewAsync();
@@ -124,7 +131,7 @@ public class UserDashboardController : ControllerBase
         if(labExecution == null || now < labExecution.PreStart)
         {
             AddStatusMessage(_localizer["CallLabServerAsync:LabNotActive"], StatusMessageTypes.Error);
-            return await RenderViewAsync();
+            return await RenderAsync(labId);
         }
 
         // Build authentication string

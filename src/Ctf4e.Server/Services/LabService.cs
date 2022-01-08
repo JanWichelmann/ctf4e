@@ -16,11 +16,11 @@ public interface ILabService
 {
     IAsyncEnumerable<Lab> GetLabsAsync();
     IAsyncEnumerable<Lab> GetFullLabsAsync();
-    Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken = default);
-    Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken = default);
-    Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken = default);
-    Task UpdateLabAsync(Lab lab, CancellationToken cancellationToken = default);
-    Task DeleteLabAsync(int id, CancellationToken cancellationToken = default);
+    Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken);
+    Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken);
+    Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken);
+    Task UpdateLabAsync(Lab lab, CancellationToken cancellationToken);
+    Task DeleteLabAsync(int id, CancellationToken cancellationToken);
 }
 
 public class LabService : ILabService
@@ -52,7 +52,7 @@ public class LabService : ILabService
             .AsAsyncEnumerable();
     }
 
-    public Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Labs.AsNoTracking()
             .Include(l => l.Exercises)
@@ -62,14 +62,14 @@ public class LabService : ILabService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken = default)
+    public Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Labs.AsNoTracking()
             .Where(l => l.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken = default)
+    public async Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken)
     {
         // Create new lab
         var labEntity = _dbContext.Labs.Add(new LabEntity
@@ -90,7 +90,7 @@ public class LabService : ILabService
         return _mapper.Map<Lab>(labEntity);
     }
 
-    public async Task UpdateLabAsync(Lab lab, CancellationToken cancellationToken = default)
+    public async Task UpdateLabAsync(Lab lab, CancellationToken cancellationToken)
     {
         // Try to retrieve existing entity
         var labEntity = await _dbContext.Labs.FindAsync(new object[] { lab.Id }, cancellationToken);
@@ -109,7 +109,7 @@ public class LabService : ILabService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteLabAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteLabAsync(int id, CancellationToken cancellationToken)
     {
         try
         {

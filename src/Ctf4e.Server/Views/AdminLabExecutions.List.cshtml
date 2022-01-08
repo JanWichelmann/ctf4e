@@ -1,35 +1,40 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
 @model List<LabExecution>
 @{
     var slots = (List<Slot>)ViewData["Slots"];
     var labs = (List<Lab>)ViewData["Labs"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
 }
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
-
 @_localizer["Explanation"]
-<p>
-    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForGroupForm">
-        <i class="bi bi-plus"></i>
-        @_localizer["StartForOneGroup"]
-    </a>
-</p>
-<p>
-    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForSlotForm">
-        <i class="bi bi-plus"></i>
-        @_localizer["StartForSlot"]
-    </a>
-    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-slot">
-        <i class="bi bi-trash"></i>
-        @_localizer["StopForSlot"]
-    </a>
-</p>
+@if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabExecutions))
+{
+    <p>
+        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForGroupForm">
+            <i class="bi bi-plus"></i>
+            @_localizer["StartForOneGroup"]
+        </a>
+    </p>
+    <p>
+        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowCreateLabExecutionForSlotForm">
+            <i class="bi bi-plus"></i>
+            @_localizer["StartForSlot"]
+        </a>
+        <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-slot">
+            <i class="bi bi-trash"></i>
+            @_localizer["StopForSlot"]
+        </a>
+    </p>
+}
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2" id="table-lab-executions">
     <thead>
     <tr>
@@ -57,14 +62,17 @@
             <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>
-                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowEditLabExecutionForm" asp-route-groupId="@l.GroupId" asp-route-labId="@l.LabId">
-                    <i class="bi bi-pencil"></i>
-                    @_localizer["Edit"]
-                </a>
-                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-group" data-groupid="@l.GroupId" data-labid="@l.LabId" data-groupname="@l.Group.DisplayName" data-labname="@l.Lab.Name">
-                    <i class="bi bi-trash"></i>
-                    @_localizer["Delete"]
-                </a>
+                @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabExecutions))
+                {
+                    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabExecutions" asp-action="ShowEditLabExecutionForm" asp-route-groupId="@l.GroupId" asp-route-labId="@l.LabId">
+                        <i class="bi bi-pencil"></i>
+                        @_localizer["Edit"]
+                    </a>
+                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab-execution-group" data-groupid="@l.GroupId" data-labid="@l.LabId" data-groupname="@l.Group.DisplayName" data-labname="@l.Lab.Name">
+                        <i class="bi bi-trash"></i>
+                        @_localizer["Delete"]
+                    </a>
+                }
             </td>
         </tr>
     }
@@ -85,7 +93,7 @@
                 <form asp-controller="AdminLabExecutions" asp-action="DeleteLabExecutionForGroup" method="post">
                     <input type="hidden" data-replace="group-id" name="groupId" value="">
                     <input type="hidden" data-replace="lab-id" name="labId" value="">
-                    
+
                     <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteLabExecutionGroup:Submit"]</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
                 </form>

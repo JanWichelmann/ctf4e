@@ -97,6 +97,15 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dieses Praktikum existiert nicht..
+        /// </summary>
+        internal static string RenderAsync_LabNotFound {
+            get {
+                return ResourceManager.GetString("RenderAsync:LabNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Aktuell ist kein Praktikum aktiv..
         /// </summary>
         internal static string RenderAsync_NoActiveLab {

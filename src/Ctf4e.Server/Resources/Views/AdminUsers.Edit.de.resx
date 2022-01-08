@@ -30,12 +30,8 @@
         <value>Moodle-Account</value>
         <comment>Form:MoodleName</comment>
     </data>
-    <data name="Form:IsAdmin" xml:space="preserve">
-        <value>Administratorrechte</value>
-        <comment>Form:IsAdmin</comment>
-    </data>
     <data name="Form:IsTutor" xml:space="preserve">
-        <value>Tutorrechte</value>
+        <value>Tutor (nicht im Scoreboard sichtbar)</value>
         <comment>Form:IsTutor</comment>
     </data>
     <data name="Form:GroupFindingCode" xml:space="preserve">
@@ -57,5 +53,64 @@
     <data name="Form:Cancel" xml:space="preserve">
         <value>Abbrechen</value>
         <comment>Form:Cancel</comment>
+    </data>
+    <data name="GeneralSettings" xml:space="preserve">
+        <value>Allgemeine Einstellungen</value>
+        <comment>GeneralSettings</comment>
+    </data>
+    <data name="Privileges" xml:space="preserve">
+        <value>Zugriffsrechte</value>
+        <comment>Privileges</comment>
+    </data>
+    <data name="Privilege:Admin" xml:space="preserve">
+        <value>Adminrechte</value>
+        <comment>Privilege:Admin</comment>
+    </data>
+    <data name="Privilege:EditUsers" xml:space="preserve">
+        <value>Benutzer bearbeiten</value>
+        <comment>Privilege:EditUsers</comment>
+    </data>
+    <data name="Privilege:ViewUsers" xml:space="preserve">
+        <value>Benutzer einsehen</value>
+        <comment>Privilege:ViewUsers</comment>
+    </data>
+    <data name="Privilege:ViewAdminScoreboard" xml:space="preserve">
+        <value>Admin-Scoreboard einsehen</value>
+    </data>
+    <data name="Privilege:EditAdminScoreboard" xml:space="preserve">
+        <value>Einträge im Admin-Scoreboard bearbeiten: Aufgaben/Flag-Einreichungen erstellen/bearbeiten/löschen</value>
+    </data>
+    <data name="Privilege:EditConfiguration" xml:space="preserve">
+        <value>Konfiguration bearbeiten</value>
+    </data>
+    <data name="Privilege:EditGroups" xml:space="preserve">
+        <value>Gruppen bearbeiten</value>
+    </data>
+    <data name="Privilege:EditLabExecutions" xml:space="preserve">
+        <value>Aktive Praktika bearbeiten</value>
+    </data>
+    <data name="Privilege:EditLabs" xml:space="preserve">
+        <value>Praktika/Aufgaben/Flags bearbeiten</value>
+    </data>
+    <data name="Privilege:EditSlots" xml:space="preserve">
+        <value>Terminslots bearbeiten</value>
+    </data>
+    <data name="Privilege:LoginAsLabServerAdmin" xml:space="preserve">
+        <value>Admin-Zugriff auf Praktikumsserver (via Admin-Scoreboard)</value>
+    </data>
+    <data name="Privilege:TransferResults" xml:space="preserve">
+        <value>Ergebnisse synchronisieren/importieren/exportieren</value>
+    </data>
+    <data name="Privilege:ViewGroups" xml:space="preserve">
+        <value>Gruppen einsehen</value>
+    </data>
+    <data name="Privilege:ViewLabExecutions" xml:space="preserve">
+        <value>Aktive Praktika einsehen</value>
+    </data>
+    <data name="Privilege:ViewLabs" xml:space="preserve">
+        <value>Praktika/Aufgaben/Flags einsehen</value>
+    </data>
+    <data name="Privilege:ViewSlots" xml:space="preserve">
+        <value>Terminslots einsehen</value>
     </data>
 </root>

@@ -4,12 +4,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/scoreboard")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsPrivileged)]
+[AnyUserPrivilege(UserPrivileges.ViewAdminScoreboard)]
 public class AdminScoreboardController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -59,8 +59,8 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpPost("exercisesubmission/delete")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
     public async Task<IActionResult> DeleteExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, int submissionId)
     {
         try
@@ -80,8 +80,8 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpPost("exercisesubmission/deletemultiple")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
     public async Task<IActionResult> DeleteExerciseSubmissionsAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, List<int> submissionIds)
     {
         try
@@ -101,8 +101,8 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpPost("exercisesubmission/create")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
     public async Task<IActionResult> CreateExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
     {
         try
@@ -130,8 +130,8 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpPost("flagsubmission/delete")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
     public async Task<IActionResult> DeleteFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId)
     {
         try
@@ -151,8 +151,8 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpPost("flagsubmission/create")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
     public async Task<IActionResult> CreateFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId, DateTime submissionTime)
     {
         try
@@ -178,6 +178,7 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpGet("labserver")]
+    [AnyUserPrivilege(UserPrivileges.LoginAsLabServerAdmin)]
     public async Task<IActionResult> CallLabServerAsync([FromServices] ILabService labService, int labId, int userId)
     {
         // Retrieve lab data
@@ -189,8 +190,8 @@ public class AdminScoreboardController : ControllerBase
         }
 
         // Build authentication string
-        var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
-        var group = user.GroupId == null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1);
+        var user = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
+        var group = user.GroupId == null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1, HttpContext.RequestAborted);
         var authData = new UserLoginRequest
         {
             UserId = userId,
@@ -209,8 +210,8 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpPost("sync/moodle")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.TransferResults)]
     public async Task<IActionResult> UploadToMoodleAsync([FromServices] IMoodleService moodleService)
     {
         try
@@ -229,7 +230,7 @@ public class AdminScoreboardController : ControllerBase
     }
 
     [HttpGet("sync/csv")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+    [AnyUserPrivilege(UserPrivileges.TransferResults)]
     public async Task<IActionResult> DownloadAsCsvAsync([FromServices] ICsvService csvService)
     {
         try

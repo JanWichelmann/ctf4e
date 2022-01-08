@@ -54,4 +54,8 @@
         <value>You are not authenticated or have not joined a group yet.</value>
         <comment>CallLabServerAsync:NoGroup</comment>
     </data>
+    <data name="RenderAsync:LabNotFound" xml:space="preserve">
+        <value>This lab does not exist.</value>
+        <comment>RenderAsync:LabNotFound</comment>
+    </data>
 </root>

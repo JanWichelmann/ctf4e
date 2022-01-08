@@ -1,17 +1,25 @@
 @model List<Ctf4e.Server.Models.Slot>
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
+@{
+    var currentUser = (User)ViewData["CurrentUser"];
+}
 
 <div class="float-end">
-    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowCreateSlotForm">
-        <i class="bi bi-plus"></i>
-        @_localizer["CreateSlot"]
-    </a>
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditSlots))
+    {
+        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowCreateSlotForm">
+            <i class="bi bi-plus"></i>
+            @_localizer["CreateSlot"]
+        </a>
+    }
 </div>
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
 
@@ -32,16 +40,19 @@
             <td>@s.Name</td>
             <td>@s.Groups.Count</td>
             <td>
-                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowEditSlotForm" asp-route-id="@s.Id">
-                    <i class="bi bi-pencil"></i>
-                    @_localizer["Edit"]
-                </a>
-                @if(!s.Groups.Any())
+                @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditSlots))
                 {
-                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slotid="@s.Id" data-slotname="@s.Name">
-                        <i class="bi bi-trash"></i>
-                        @_localizer["Delete"]
+                    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowEditSlotForm" asp-route-id="@s.Id">
+                        <i class="bi bi-pencil"></i>
+                        @_localizer["Edit"]
                     </a>
+                    @if(!s.Groups.Any())
+                    {
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slotid="@s.Id" data-slotname="@s.Name">
+                            <i class="bi bi-trash"></i>
+                            @_localizer["Delete"]
+                        </a>
+                    }
                 }
             </td>
         </tr>

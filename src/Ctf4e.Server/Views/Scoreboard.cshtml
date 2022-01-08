@@ -2,6 +2,7 @@
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
 @{
     ViewData["Title"] = "Scoreboard";
@@ -25,7 +26,7 @@
     }
     else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
     {
-        <h3 class="header">
+        <h1 class="header">
             @if(scoreboard.AllLabs)
             {
                 @_localizer["Title:ScoreboardAll"]
@@ -34,8 +35,8 @@
             {
                 @_localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
             }
-        </h3>
-        <h5 class="subheader">
+        </h1>
+        <h2 class="subheader">
             @if(scoreboard.SlotId == null)
             {
                 @_localizer["Title:AllSlots"]
@@ -44,10 +45,10 @@
             {
                 @_localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
             }
-        </h5>
+        </h2>
         <hr class="header">
 
-        <table class="table table-sm text-nowrap" id="flags-table">
+        <table class="table table-sm text-nowrap mt-4" id="flags-table">
             <thead>
             <tr>
                 <th style="min-width: 5%;" scope="col">#</th>
@@ -92,7 +93,7 @@
                     </th>
                     <td title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
                         @entry.TotalPoints
-                        @if(isCurrentGroup || ((currentUser.IsAdmin || currentUser.IsTutor) && showAllEntries))
+                        @if(isCurrentGroup || showAllEntries)
                         {
                             <span class="text-muted">
                                 @if(entry.BugBountyPoints == 0)
@@ -171,13 +172,13 @@
         </table>
     }
 
-    <hr class="header-secondary">
+    <hr class="header-secondary mt-4">
 
     <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
         @{
             // Handle visible/hidden labs
             IEnumerable<Lab> filteredLabs;
-            if(currentUser.IsAdmin || currentUser.IsTutor)
+            if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
             {
                 filteredLabs = labs.OrderBy(l => l.Name).ToList();
                 foreach(var l in filteredLabs)
@@ -205,7 +206,7 @@
                 <option value="" selected>@_localizer["AllSlots"]</option>
             </select>
         </div>
-        @if(currentUser.IsAdmin || currentUser.IsTutor)
+        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
         {
             <div class="mb-3">
                 <div class="form-check">
@@ -213,18 +214,6 @@
                     <label for="input-showAllEntries" class="form-check-label">
                         @_localizer["ShowAllEntries"]
                         <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@_localizer["TutorsAndAdminsOnly"]"></i>
-                    </label>
-                </div>
-            </div>
-        }
-        @if(currentUser.IsAdmin)
-        {
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
-                    <label for="input-resetCache" class="form-check-label">
-                        @_localizer["ResetCache"]
-                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["AdminsOnly"]"></i>
                     </label>
                 </div>
             </div>
@@ -237,6 +226,19 @@
                 <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
             </div>
         }
+        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
+        {
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
+                    <label for="input-resetCache" class="form-check-label">
+                        @_localizer["ResetCache"]
+                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["AdminsOnly"]"></i>
+                    </label>
+                </div>
+            </div>
+        }
+        
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-arrow-return-right"></i>
             @_localizer["ShowSelectedScoreboard"]

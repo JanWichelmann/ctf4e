@@ -60,9 +60,8 @@ public class MoodleService : IMoodleService
 
         // Get mapping of users and groups
         var users = await _dbContext.Users.AsNoTracking()
-            .Where(u => !u.IsAdmin
-                        && !u.IsTutor
-                        && u.GroupId != null)
+            .Where(u => !u.IsTutor
+                         && u.GroupId != null)
             .OrderBy(u => u.DisplayName)
             .ToListAsync(cancellationToken);
         var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId);

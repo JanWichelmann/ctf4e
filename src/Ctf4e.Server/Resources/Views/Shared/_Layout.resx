@@ -58,4 +58,8 @@
         <value>Change language</value>
         <comment>ChangeLanguage</comment>
     </data>
+    <data name="ToggleNavbar" xml:space="preserve">
+        <value>Toggle navbar</value>
+        <comment>ToggleNavbar</comment>
+    </data>
 </root>

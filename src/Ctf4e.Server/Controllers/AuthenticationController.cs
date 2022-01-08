@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
@@ -18,6 +19,9 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
+
+// TODO settings form
+// TODO no re-login after creating a group
 
 [Route("auth")]
 public partial class AuthenticationController : ControllerBase
@@ -79,7 +83,7 @@ public partial class AuthenticationController : ControllerBase
             return await RenderAsync(ViewType.Redirect);
 
         // Find user
-        var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
+        var user = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
             AddStatusMessage(_localizer["DevLoginAsync:NotFound"], StatusMessageTypes.Error);
@@ -95,18 +99,12 @@ public partial class AuthenticationController : ControllerBase
             return await ShowGroupFormAsync();
         return await RenderAsync(ViewType.Redirect);
     }
-#endif
 
     [HttpGet("login/as")]
-    [Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
     public async Task<IActionResult> AdminLoginAsUserAsync(int userId)
     {
-        // Only allow this in development mode
-        if(!_webHostEnvironment.IsDevelopment())
-            return Forbid();
-            
         // Try to retrieve user
-        var user = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
+        var user = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
             AddStatusMessage(_localizer["AdminLoginAsUserAsync:NotFound"], StatusMessageTypes.Error);
@@ -122,20 +120,15 @@ public partial class AuthenticationController : ControllerBase
             return await ShowGroupFormAsync();
         return await RenderAsync(ViewType.Redirect);
     }
+#endif
 
     private async Task DoLoginAsync(User user)
     {
         // Prepare session data to identify user
         var claims = new List<Claim>
         {
-            new Claim(AuthenticationStrings.ClaimUserId, user.Id.ToString())
+            new (AuthenticationStrings.ClaimUserId, user.Id.ToString())
         };
-        if(user.IsAdmin)
-            claims.Add(new Claim(AuthenticationStrings.ClaimIsAdmin, true.ToString()));
-        if(user.IsTutor)
-            claims.Add(new Claim(AuthenticationStrings.ClaimIsTutor, true.ToString()));
-        if(user.GroupId != null)
-            claims.Add(new Claim(AuthenticationStrings.ClaimIsGroupMember, true.ToString()));
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
         var authProperties = new AuthenticationProperties

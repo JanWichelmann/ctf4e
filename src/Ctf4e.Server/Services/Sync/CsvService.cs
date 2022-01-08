@@ -54,8 +54,7 @@ public class CsvService : ICsvService
 
         // Get mapping of users and groups
         var users = await _dbContext.Users.AsNoTracking()
-            .Where(u => !u.IsAdmin
-                        && !u.IsTutor
+            .Where(u => !u.IsTutor
                         && u.GroupId != null)
             .OrderBy(u => u.DisplayName)
             .ToListAsync(cancellationToken);

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/exercises")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.ViewLabs)]
 public class AdminExercisesController : ControllerBase
 {
     private readonly IStringLocalizer<AdminExercisesController> _localizer;
@@ -66,6 +66,7 @@ public class AdminExercisesController : ControllerBase
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public Task<IActionResult> ShowEditExerciseFormAsync(int id)
     {
         return ShowEditExerciseFormAsync(id, null);
@@ -73,6 +74,7 @@ public class AdminExercisesController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> EditExerciseAsync(Exercise exerciseData)
     {
         // Check input
@@ -106,6 +108,7 @@ public class AdminExercisesController : ControllerBase
     }
 
     [HttpGet("create")]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> ShowCreateExerciseFormAsync(int labId, Exercise exercise = null)
     {
         return await RenderAsync(ViewType.Create, labId, exercise);
@@ -113,6 +116,7 @@ public class AdminExercisesController : ControllerBase
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> CreateExerciseAsync(Exercise exerciseData, string returnToForm)
     {
         // Check input
@@ -153,6 +157,7 @@ public class AdminExercisesController : ControllerBase
 
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> DeleteExerciseAsync(int id)
     {
         // Input check

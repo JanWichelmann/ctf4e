@@ -322,6 +322,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hidden, only accessible by user with admin or lab editing privileges.
+        /// </summary>
+        internal static string LabHidden {
+            get {
+                return ResourceManager.GetString("LabHidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lab server.
         /// </summary>
         internal static string LabServer {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Ctf4e.Server.Authorization;
 
 namespace Ctf4e.Server.Data.Entities;
 
@@ -19,11 +20,14 @@ public class UserEntity
     [Required]
     [StringLength(100)]
     public string MoodleName { get; set; }
-
-    public bool IsAdmin { get; set; }
-
+        
+    [Required]
+    public UserPrivileges Privileges { get; set; }
+    
     public bool IsTutor { get; set; }
 
+    [Required]
+    [StringLength(100)]
     public string GroupFindingCode { get; set; }
 
     public ICollection<FlagSubmissionEntity> FlagSubmissions { get; set; }

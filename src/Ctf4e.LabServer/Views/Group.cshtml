@@ -35,9 +35,9 @@
     @* ReSharper restore Html.IdNotResolved *@
 </div>
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
 @foreach(var exercise in userScoreboard.Exercises)
@@ -223,7 +223,7 @@
 
 @if(userScoreboard.DockerUserName != null && userScoreboard.DockerPassword != null)
 {
-    <h5 class="header">@_localizer["Docker:Title"]</h5>
+    <h2 class="header">@_localizer["Docker:Title"]</h2>
     <hr class="header-secondary">
 
     <div class="mb-3" id="docker-credentials">
@@ -257,7 +257,7 @@
 
 @if(adminMode)
 {
-    <h5 class="header">@_localizer["Log:Title"]</h5>
+    <h2 class="header">@_localizer["Log:Title"]</h2>
     <hr class="header-secondary">
 
     <p>

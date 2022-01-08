@@ -15,15 +15,15 @@ namespace Ctf4e.Server.Services;
 public interface IExerciseService
 {
     IAsyncEnumerable<Exercise> GetExercisesAsync(int labId);
-    Task<Exercise> GetExerciseAsync(int id, CancellationToken cancellationToken = default);
-    Task<Exercise> FindExerciseAsync(int labId, int exerciseNumber, CancellationToken cancellationToken = default);
-    Task<Exercise> CreateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default);
-    Task UpdateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default);
-    Task DeleteExerciseAsync(int id, CancellationToken cancellationToken = default);
-    Task<ExerciseSubmission> CreateExerciseSubmissionAsync(ExerciseSubmission submission, CancellationToken cancellationToken = default);
-    Task DeleteExerciseSubmissionAsync(int id, CancellationToken cancellationToken = default);
-    Task DeleteExerciseSubmissionsAsync(List<int> ids, CancellationToken cancellationToken = default);
-    Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken = default);
+    Task<Exercise> GetExerciseAsync(int id, CancellationToken cancellationToken);
+    Task<Exercise> FindExerciseAsync(int labId, int exerciseNumber, CancellationToken cancellationToken);
+    Task<Exercise> CreateExerciseAsync(Exercise exercise, CancellationToken cancellationToken);
+    Task UpdateExerciseAsync(Exercise exercise, CancellationToken cancellationToken);
+    Task DeleteExerciseAsync(int id, CancellationToken cancellationToken);
+    Task<ExerciseSubmission> CreateExerciseSubmissionAsync(ExerciseSubmission submission, CancellationToken cancellationToken);
+    Task DeleteExerciseSubmissionAsync(int id, CancellationToken cancellationToken);
+    Task DeleteExerciseSubmissionsAsync(List<int> ids, CancellationToken cancellationToken);
+    Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken);
 }
 
 public class ExerciseService : IExerciseService
@@ -46,7 +46,7 @@ public class ExerciseService : IExerciseService
             .AsAsyncEnumerable();
     }
 
-    public Task<Exercise> GetExerciseAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Exercise> GetExerciseAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Exercises.AsNoTracking()
             .Where(e => e.Id == id)
@@ -54,7 +54,7 @@ public class ExerciseService : IExerciseService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<Exercise> FindExerciseAsync(int labId, int exerciseNumber, CancellationToken cancellationToken = default)
+    public Task<Exercise> FindExerciseAsync(int labId, int exerciseNumber, CancellationToken cancellationToken)
     {
         return _dbContext.Exercises.AsNoTracking()
             .Where(e => e.LabId == labId && e.ExerciseNumber == exerciseNumber)
@@ -62,7 +62,7 @@ public class ExerciseService : IExerciseService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Exercise> CreateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default)
+    public async Task<Exercise> CreateExerciseAsync(Exercise exercise, CancellationToken cancellationToken)
     {
         // Create new exercise
         var exerciseEntity = _dbContext.Exercises.Add(new ExerciseEntity
@@ -82,7 +82,7 @@ public class ExerciseService : IExerciseService
         return _mapper.Map<Exercise>(exerciseEntity);
     }
 
-    public async Task UpdateExerciseAsync(Exercise exercise, CancellationToken cancellationToken = default)
+    public async Task UpdateExerciseAsync(Exercise exercise, CancellationToken cancellationToken)
     {
         // Try to retrieve existing entity
         var exerciseEntity = await _dbContext.Exercises.FindAsync(new object[] { exercise.Id }, cancellationToken);
@@ -102,7 +102,7 @@ public class ExerciseService : IExerciseService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteExerciseAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteExerciseAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
@@ -117,7 +117,7 @@ public class ExerciseService : IExerciseService
         }
     }
 
-    public async Task<ExerciseSubmission> CreateExerciseSubmissionAsync(ExerciseSubmission submission, CancellationToken cancellationToken = default)
+    public async Task<ExerciseSubmission> CreateExerciseSubmissionAsync(ExerciseSubmission submission, CancellationToken cancellationToken)
     {
         // Create new submission
         var submissionEntity = _dbContext.ExerciseSubmissions.Add(new ExerciseSubmissionEntity
@@ -134,7 +134,7 @@ public class ExerciseService : IExerciseService
         return _mapper.Map<ExerciseSubmission>(submissionEntity);
     }
 
-    public async Task DeleteExerciseSubmissionAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteExerciseSubmissionAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
@@ -149,7 +149,7 @@ public class ExerciseService : IExerciseService
         }
     }
 
-    public async Task DeleteExerciseSubmissionsAsync(List<int> ids, CancellationToken cancellationToken = default)
+    public async Task DeleteExerciseSubmissionsAsync(List<int> ids, CancellationToken cancellationToken)
     {
         try
         {
@@ -165,7 +165,7 @@ public class ExerciseService : IExerciseService
         }
     }
 
-    public Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken = default)
+    public Task ClearExerciseSubmissionsAsync(int exerciseId, int userId, CancellationToken cancellationToken)
     {
         // Delete all matching submissions
         _dbContext.ExerciseSubmissions.RemoveRange(_dbContext.ExerciseSubmissions.AsQueryable().Where(es => es.ExerciseId == exerciseId && es.UserId == userId));

@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/slots")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.ViewSlots)]
 public class AdminSlotsController : ControllerBase
 {
     private readonly IStringLocalizer<AdminSlotsController> _localizer;
@@ -66,6 +66,7 @@ public class AdminSlotsController : ControllerBase
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.EditSlots)]
     public Task<IActionResult> ShowEditSlotFormAsync(int id)
     {
         return ShowEditSlotFormAsync(id, null);
@@ -73,6 +74,7 @@ public class AdminSlotsController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditSlots)]
     public async Task<IActionResult> EditSlotAsync(Slot slotData)
     {
         // Check input
@@ -102,6 +104,7 @@ public class AdminSlotsController : ControllerBase
     }
 
     [HttpGet("create")]
+    [AnyUserPrivilege(UserPrivileges.EditSlots)]
     public async Task<IActionResult> ShowCreateSlotFormAsync(Slot slot = null)
     {
         return await RenderAsync(ViewType.Create, slot);
@@ -109,6 +112,7 @@ public class AdminSlotsController : ControllerBase
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditSlots)]
     public async Task<IActionResult> CreateSlotAsync(Slot slotData)
     {
         // Check input
@@ -141,6 +145,7 @@ public class AdminSlotsController : ControllerBase
 
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditSlots)]
     public async Task<IActionResult> DeleteSlotAsync(int id)
     {
         // Input check

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 
 namespace Ctf4e.Server.Models;
@@ -19,9 +20,9 @@ public class User
     [DisplayFormat(ConvertEmptyStringToNull = false)]
     [StringLength(100)]
     public string MoodleName { get; set; }
-
-    public bool IsAdmin { get; set; }
-
+        
+    public UserPrivileges Privileges { get; set; }
+    
     public bool IsTutor { get; set; }
 
     public string GroupFindingCode { get; set; }

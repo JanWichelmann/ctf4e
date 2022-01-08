@@ -1,17 +1,25 @@
 @model List<Ctf4e.Server.Models.Lab>
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
+@{
+    var currentUser = (User)ViewData["CurrentUser"];
+}
 
 <div class="float-end">
-    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowCreateLabForm">
-        <i class="bi bi-plus"></i>
-        @_localizer["CreateLab"]
-    </a>
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabs))
+    {
+        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowCreateLabForm">
+            <i class="bi bi-plus"></i>
+            @_localizer["CreateLab"]
+        </a>
+    }
 </div>
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
 <table class="table table-sm table-bordered align-middle table-hover text-nowrap mt-2">
@@ -64,17 +72,19 @@
                 </a>
             </td>
             <td>
-
-                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowEditLabForm" asp-route-id="@l.Id">
-                    <i class="bi bi-pencil"></i>
-                    @_localizer["Edit"]
-                </a>
-                @if(!l.Executions.Any())
+                @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabs))
                 {
-                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab" data-labid="@l.Id" data-labname="@l.Name">
-                        <i class="bi bi-trash"></i>
-                        @_localizer["Delete"]
+                    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowEditLabForm" asp-route-id="@l.Id">
+                        <i class="bi bi-pencil"></i>
+                        @_localizer["Edit"]
                     </a>
+                    @if(!l.Executions.Any())
+                    {
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab" data-labid="@l.Id" data-labname="@l.Name">
+                            <i class="bi bi-trash"></i>
+                            @_localizer["Delete"]
+                        </a>
+                    }
                 }
             </td>
         </tr>

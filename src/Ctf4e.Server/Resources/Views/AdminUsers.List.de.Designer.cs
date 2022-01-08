@@ -133,16 +133,16 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hat Administratorrechte.
+        ///   Looks up a localized string similar to Tutor.
         /// </summary>
-        internal static string Users_IsAdmin_Text {
+        internal static string Users_IsTutor {
             get {
-                return ResourceManager.GetString("Users:IsAdmin:Text", resourceCulture);
+                return ResourceManager.GetString("Users:IsTutor", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hat Tutorrechte.
+        ///   Looks up a localized string similar to Ist Tutor und wird daher nicht im Scoreboard angezeigt.
         /// </summary>
         internal static string Users_IsTutor_Text {
             get {
@@ -169,11 +169,155 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Status.
+        ///   Looks up a localized string similar to Zugriffsrechte.
         /// </summary>
-        internal static string Users_Status {
+        internal static string Users_Privileges {
             get {
-                return ResourceManager.GetString("Users:Status", resourceCulture);
+                return ResourceManager.GetString("Users:Privileges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adminrechte.
+        /// </summary>
+        internal static string Users_Privileges_Admin {
+            get {
+                return ResourceManager.GetString("Users:Privileges:Admin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin-Scoreboard bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditAdminScoreboard {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditAdminScoreboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Konfiguration bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditConfiguration {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gruppen bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditGroups {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aktive Praktika bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditLabExecutions {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditLabExecutions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Praktika/Aufgaben/Flags bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditLabs {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditLabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminslots bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditSlots {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditSlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Benutzer bearbeiten.
+        /// </summary>
+        internal static string Users_Privileges_EditUsers {
+            get {
+                return ResourceManager.GetString("Users:Privileges:EditUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin-Zugriff auf Praktikumsserver (via Admin-Scoreboard).
+        /// </summary>
+        internal static string Users_Privileges_LoginAsLabServerAdmin {
+            get {
+                return ResourceManager.GetString("Users:Privileges:LoginAsLabServerAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ergebnisse synchronisieren/importieren/exportieren.
+        /// </summary>
+        internal static string Users_Privileges_TransferResults {
+            get {
+                return ResourceManager.GetString("Users:Privileges:TransferResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin-Scoreboard einsehen.
+        /// </summary>
+        internal static string Users_Privileges_ViewAdminScoreboard {
+            get {
+                return ResourceManager.GetString("Users:Privileges:ViewAdminScoreboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gruppen einsehen.
+        /// </summary>
+        internal static string Users_Privileges_ViewGroups {
+            get {
+                return ResourceManager.GetString("Users:Privileges:ViewGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aktive Praktika einsehen.
+        /// </summary>
+        internal static string Users_Privileges_ViewLabExecutions {
+            get {
+                return ResourceManager.GetString("Users:Privileges:ViewLabExecutions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Praktika/Aufgaben/Flags einsehen.
+        /// </summary>
+        internal static string Users_Privileges_ViewLabs {
+            get {
+                return ResourceManager.GetString("Users:Privileges:ViewLabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminslots einsehen.
+        /// </summary>
+        internal static string Users_Privileges_ViewSlots {
+            get {
+                return ResourceManager.GetString("Users:Privileges:ViewSlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Benutzer einsehen.
+        /// </summary>
+        internal static string Users_Privileges_ViewUsers {
+            get {
+                return ResourceManager.GetString("Users:Privileges:ViewUsers", resourceCulture);
             }
         }
     }

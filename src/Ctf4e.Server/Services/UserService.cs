@@ -18,21 +18,22 @@ namespace Ctf4e.Server.Services;
 public interface IUserService
 {
     IAsyncEnumerable<User> GetUsersAsync();
+    IAsyncEnumerable<User> GetUsersWithGroupsAsync();
     IAsyncEnumerable<User> GetGroupMembersAsync(int groupId);
-    Task<bool> AnyUsers(CancellationToken cancellationToken = default);
-    Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken = default);
-    Task<User> GetUserAsync(int id, CancellationToken cancellationToken = default);
-    Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken = default);
-    Task<User> CreateUserAsync(User user, CancellationToken cancellationToken = default);
-    Task UpdateUserAsync(User user, CancellationToken cancellationToken = default);
+    Task<bool> AnyUsers(CancellationToken cancellationToken);
+    Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken);
+    Task<User> FindByIdAsync(int id, CancellationToken cancellationToken);
+    Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken);
+    Task<User> CreateUserAsync(User user, CancellationToken cancellationToken);
+    Task UpdateUserAsync(User user, CancellationToken cancellationToken);
     IAsyncEnumerable<Group> GetGroupsAsync();
     IAsyncEnumerable<Group> GetGroupsInSlotAsync(int slotId);
-    Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken = default);
-    Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken = default);
-    Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken = default);
-    Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken = default);
-    Task UpdateGroupAsync(Group group, CancellationToken cancellationToken = default);
-    Task DeleteGroupAsync(int id, CancellationToken cancellationToken = default);
+    Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken);
+    Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken);
+    Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken);
+    Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken);
+    Task UpdateGroupAsync(Group group, CancellationToken cancellationToken);
+    Task DeleteGroupAsync(int id, CancellationToken cancellationToken);
 }
 
 public class UserService : IUserService
@@ -54,6 +55,15 @@ public class UserService : IUserService
             .AsAsyncEnumerable();
     }
 
+    public IAsyncEnumerable<User> GetUsersWithGroupsAsync()
+    {
+        return _dbContext.Users.AsNoTracking()
+            .Include(u => u.Group)
+            .OrderBy(u => u.DisplayName)
+            .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
+            .AsAsyncEnumerable();
+    }
+
     public IAsyncEnumerable<User> GetGroupMembersAsync(int groupId)
     {
         return _dbContext.Users.AsNoTracking()
@@ -63,13 +73,13 @@ public class UserService : IUserService
             .AsAsyncEnumerable();
     }
 
-    public Task<bool> AnyUsers(CancellationToken cancellationToken = default)
+    public Task<bool> AnyUsers(CancellationToken cancellationToken)
     {
         return _dbContext.Users.AsNoTracking()
             .AnyAsync(cancellationToken);
     }
 
-    public Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken = default)
+    public Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken)
     {
         return _dbContext.Users.AsNoTracking()
             .Include(u => u.Group)
@@ -78,8 +88,9 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<User> GetUserAsync(int id, CancellationToken cancellationToken = default)
+    public Task<User> FindByIdAsync(int id, CancellationToken cancellationToken)
     {
+        // TODO cache users, labs, ...?
         return _dbContext.Users.AsNoTracking()
             .Include(u => u.Group)
             .Where(u => u.Id == id)
@@ -87,14 +98,14 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken = default)
+    public Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Users.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<User> CreateUserAsync(User user, CancellationToken cancellationToken = default)
+    public async Task<User> CreateUserAsync(User user, CancellationToken cancellationToken)
     {
         // Create new user
         var userEntity = _dbContext.Users.Add(new UserEntity
@@ -102,7 +113,7 @@ public class UserService : IUserService
             DisplayName = user.DisplayName,
             MoodleUserId = user.MoodleUserId,
             MoodleName = user.MoodleName,
-            IsAdmin = user.IsAdmin,
+            Privileges = user.Privileges,
             IsTutor = user.IsTutor,
             GroupFindingCode = user.GroupFindingCode,
             ExerciseSubmissions = new List<ExerciseSubmissionEntity>(),
@@ -114,7 +125,7 @@ public class UserService : IUserService
         return _mapper.Map<User>(userEntity);
     }
 
-    public async Task UpdateUserAsync(User user, CancellationToken cancellationToken = default)
+    public async Task UpdateUserAsync(User user, CancellationToken cancellationToken)
     {
         // Try to retrieve existing user entity
         var userEntity = await _dbContext.Users.FindAsync(new object[] { user.Id }, cancellationToken);
@@ -125,7 +136,7 @@ public class UserService : IUserService
         userEntity.DisplayName = user.DisplayName;
         userEntity.MoodleUserId = user.MoodleUserId;
         userEntity.MoodleName = user.MoodleName;
-        userEntity.IsAdmin = user.IsAdmin;
+        userEntity.Privileges = user.Privileges;
         userEntity.IsTutor = user.IsTutor;
         userEntity.GroupFindingCode = user.GroupFindingCode;
         userEntity.GroupId = user.GroupId;
@@ -154,7 +165,7 @@ public class UserService : IUserService
             .AsAsyncEnumerable();
     }
 
-    public Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Groups.AsNoTracking()
             .Include(g => g.Slot)
@@ -164,14 +175,14 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken = default)
+    public Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Groups.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken = default)
+    public async Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken)
     {
         // Retrieve affected users
         var userEntities = await _dbContext.Users.AsQueryable()
@@ -205,7 +216,7 @@ public class UserService : IUserService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken = default)
+    public async Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken)
     {
         // Create new group
         var groupEntity = _dbContext.Groups.Add(new GroupEntity
@@ -223,7 +234,7 @@ public class UserService : IUserService
         return _mapper.Map<Group>(groupEntity);
     }
 
-    public async Task UpdateGroupAsync(Group group, CancellationToken cancellationToken = default)
+    public async Task UpdateGroupAsync(Group group, CancellationToken cancellationToken)
     {
         // Try to retrieve existing user entity
         var groupEntity = await _dbContext.Groups.FindAsync(new object[] { group.Id }, cancellationToken);
@@ -241,7 +252,7 @@ public class UserService : IUserService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteGroupAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteGroupAsync(int id, CancellationToken cancellationToken)
     {
         try
         {

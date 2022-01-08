@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
@@ -70,10 +71,10 @@ public class ScoreboardController : ControllerBase
         }
 
         var currentUser = await GetCurrentUserAsync();
-        ViewData["ShowAllEntries"] = showAllEntries && (currentUser.IsAdmin || currentUser.IsTutor);
-        ViewData["ResetCache"] = resetCache && currentUser.IsAdmin;
+        ViewData["ShowAllEntries"] = showAllEntries && currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard);
+        ViewData["ResetCache"] = resetCache && currentUser.Privileges.HasPrivileges(UserPrivileges.Admin);
 
-        if(reload > 0)
+        if(reload > 0 && currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
             Response.Headers.Add("Refresh", reload.ToString());
 
         return await RenderAsync(ViewType.Scoreboard);

@@ -322,6 +322,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Versteckt, nur zugreifbar für Benutzer mit Admin- oder Praktikumsbearbeitungs-Rechten.
+        /// </summary>
+        internal static string LabHidden {
+            get {
+                return ResourceManager.GetString("LabHidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Zum Praktikumsserver.
         /// </summary>
         internal static string LabServer {

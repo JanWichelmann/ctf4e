@@ -1,17 +1,25 @@
 @model List<Ctf4e.Server.Models.Group>
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
+@{
+    var currentUser = (User)ViewData["CurrentUser"];
+}
 
 <div class="float-end">
-    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowCreateGroupForm">
-        <i class="bi bi-plus"></i>
-        @_localizer["CreateGroup"]
-    </a>
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditGroups))
+    {
+        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowCreateGroupForm">
+            <i class="bi bi-plus"></i>
+            @_localizer["CreateGroup"]
+        </a>
+    }
 </div>
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
@@ -33,7 +41,9 @@
             <td>@g.Id</td>
             <td>@g.Slot.Name</td>
             <td>@g.DisplayName</td>
-            <td><span title="@(g.ScoreboardAnnotationHoverText ?? "")">@(g.ScoreboardAnnotation ?? "")</span></td>
+            <td>
+                <span title="@(g.ScoreboardAnnotationHoverText ?? "")">@(g.ScoreboardAnnotation ?? "")</span>
+            </td>
             <td>@g.Members.Count</td>
             <td>
                 @if(g.ShowInScoreboard)
@@ -46,16 +56,19 @@
                 }
             </td>
             <td>
-                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@g.Id">
-                    <i class="bi bi-pencil"></i>
-                    @_localizer["Edit"]
-                </a>
-                @if(!g.Members.Any())
+                @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditGroups))
                 {
-                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-group" data-groupid="@g.Id" data-groupname="@g.DisplayName">
-                        <i class="bi bi-trash"></i>
-                        @_localizer["Delete"]
+                    <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@g.Id">
+                        <i class="bi bi-pencil"></i>
+                        @_localizer["Edit"]
                     </a>
+                    @if(!g.Members.Any())
+                    {
+                        <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-group" data-groupid="@g.Id" data-groupname="@g.DisplayName">
+                            <i class="bi bi-trash"></i>
+                            @_localizer["Delete"]
+                        </a>
+                    }
                 }
             </td>
         </tr>
@@ -91,10 +104,13 @@ document.getElementById("modal-delete-group").addEventListener("show.bs.modal", 
     e.target.querySelector('span[data-replace="group-name"]').innerText = e.relatedTarget.dataset.groupname;
 });
 
-window.addEventListener("load", e => table_sorting());
+window.addEventListener("load", table_sorting);
 </script>
 
-<a class="btn btn-primary mb-2" asp-controller="AdminGroups" asp-action="DownloadAsJson">
-    <i class="bi bi-download"></i>
-    @_localizer["DownloadJson"]
-</a>
+@if(currentUser.Privileges.HasPrivileges(UserPrivileges.TransferResults))
+{
+    <a class="btn btn-primary mb-2" asp-controller="AdminGroups" asp-action="DownloadAsJson">
+        <i class="bi bi-download"></i>
+        @_localizer["DownloadJson"]
+    </a>
+}

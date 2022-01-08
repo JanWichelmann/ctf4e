@@ -1,6 +1,7 @@
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Authorization
 @model Ctf4e.Server.ViewModels.AdminScoreboard
 @inject IViewLocalizer _localizer
 @{
@@ -111,7 +112,7 @@
                                         <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
                                         <th scope="col">@_localizer["ExerciseSubmissions:Weight"]</th>
                                         <th scope="col">@_localizer["ExerciseSubmissions:SubmittedBy"]</th>
-                                        @if(currentUser.IsAdmin)
+                                        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                         {
                                             <th scope="col">@_localizer["ExerciseSubmissions:Actions"]</th>
                                         }
@@ -144,7 +145,7 @@
                                             <td>
                                                 @Model.UserNames[submission.UserId]
                                             </td>
-                                            @if(currentUser.IsAdmin)
+                                            @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                             {
                                                 <td>
                                                     <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@Model.UserNames[submission.UserId]">
@@ -284,11 +285,14 @@ else
                     </p>
                 }
             
-                <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">
-                    <i class="bi bi-arrow-return-right"></i>
-                    <i class="bi bi-hdd-network"></i>
-                    @_localizer["LabServerButtonText"]
-                </a>
+                @if(currentUser.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin))
+                {
+                    <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">
+                        <i class="bi bi-arrow-return-right"></i>
+                        <i class="bi bi-hdd-network"></i>
+                        @_localizer["LabServerButtonText"]
+                    </a>
+                }
 
                 @foreach(var exercise in user.Exercises)
                 {
@@ -336,7 +340,7 @@ else
                                     {
                                         <th scope="col">@_localizer["ExerciseSubmissions:SubmittedBy"]</th>
                                     }
-                                    @if(currentUser.IsAdmin)
+                                    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                     {
                                         <th>
                                             <a role="button" class="btn btn-sm btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exerciseid="@exercise.Exercise.Id" data-userid="@user.UserId">
@@ -377,7 +381,7 @@ else
                                                 @Model.UserNames[submission.UserId]
                                             </td>
                                         }
-                                        @if(currentUser.IsAdmin)
+                                        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                         {
                                             <td>
                                                 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@user.UserName">
@@ -401,7 +405,7 @@ else
                         <th scope="col">@_localizer["Flags:Description"]</th>
                         <th scope="col">@_localizer["Flags:Submitted"]</th>
                         <th scope="col">@_localizer["Flags:Valid"]</th>
-                        @if(currentUser.IsAdmin)
+                        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                         {
                             <th scope="col">@_localizer["Flags:Actions"]</th>
                         }
@@ -439,7 +443,7 @@ else
                                     }
                                 }
                             </td>
-                            @if(currentUser.IsAdmin)
+                            @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                             {
                                 <td>
                                     @if(flag.Submitted)

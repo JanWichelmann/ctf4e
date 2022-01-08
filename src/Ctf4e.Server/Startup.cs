@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Ctf4e.Server.Constants;
+using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 using Microsoft.Extensions.Primitives;
 using MoodleLti.Options;
+using AuthenticationStrings = Ctf4e.Server.Authorization.AuthenticationStrings;
 
 namespace Ctf4e.Server;
 
@@ -106,6 +110,12 @@ public class Startup
         services.AddScoped<ICsvService, CsvService>();
         services.AddScoped<IDumpService, DumpService>();
 
+        // Forward headers when used behind a proxy
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+        });
+
         // Change name of antiforgery cookie
         services.AddAntiforgery(options =>
         {
@@ -114,23 +124,20 @@ public class Startup
         });
 
         // Authentication
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+        services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        }).AddCookie(options =>
         {
             options.Cookie.Name = "ctf4e.session";
             options.LoginPath = "/auth";
             options.LogoutPath = "/auth/logout";
             options.AccessDeniedPath = "/auth";
         });
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(AuthenticationStrings.PolicyIsGroupMember, policy => policy.RequireClaim(AuthenticationStrings.ClaimIsGroupMember, true.ToString()));
-            options.AddPolicy(AuthenticationStrings.PolicyIsAdmin, policy => policy.RequireClaim(AuthenticationStrings.ClaimIsAdmin, true.ToString()));
-            options.AddPolicy(AuthenticationStrings.PolicyIsPrivileged, policy => policy.RequireAssertion(context =>
-            {
-                return context.User.Claims.Any(c => c.Type == AuthenticationStrings.ClaimIsAdmin && c.Value == true.ToString())
-                       || context.User.Claims.Any(c => c.Type == AuthenticationStrings.ClaimIsTutor && c.Value == true.ToString());
-            }));
-        });
+
+        // Authorization
+        services.AddSingleton<IAuthorizationHandler, UserPrivilegeHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, UserPrivilegePolicyProvider>();
 
         // Use MVC
         var mvcBuilder = services.AddControllersWithViews(_ =>
@@ -146,14 +153,35 @@ public class Startup
                 // Put profiler results to dev route
                 options.RouteBasePath = "/dev/profiler";
 
-                // Only allow admins access to profiler results
-                static bool AuthorizeFunc(HttpRequest request)
+                // Only allow access to profiler results in developer mode
+                static async Task<bool> AuthorizeAsync(HttpRequest request)
                 {
-                    return request.HttpContext.User.Claims.Any(c => c.Type == AuthenticationStrings.ClaimIsAdmin && c.Value == true.ToString());
+                    // Get required services
+                    var context = request.HttpContext;
+                    var userService = context.RequestServices.GetRequiredService<IUserService>();
+
+                    // Check whether user is authenticated
+                    var authenticateResult = await context.AuthenticateAsync();
+                    if(!authenticateResult.Succeeded)
+                        return false;
+
+                    // Retrieve user data
+                    var userIdClaim = authenticateResult.Ticket.Principal.Claims.FirstOrDefault(c => c.Type == AuthenticationStrings.ClaimUserId);
+                    if(userIdClaim == null)
+                        return false;
+                    int userId = int.Parse(userIdClaim.Value);
+                    var user = await userService.FindByIdAsync(userId, context.RequestAborted);
+
+                    // If the user does not exist, deny all access
+                    if(user == null)
+                        return false;
+
+                    // Check whether the user has the necessary privileges
+                    return user.Privileges.HasPrivileges(UserPrivileges.Admin);
                 }
 
-                options.ResultsAuthorize = AuthorizeFunc;
-                options.ResultsListAuthorize = AuthorizeFunc;
+                options.ResultsAuthorizeAsync = AuthorizeAsync;
+                options.ResultsListAuthorizeAsync = AuthorizeAsync;
 
                 // Reduce noise for database queries
                 options.TrackConnectionOpenClose = false;
@@ -162,10 +190,9 @@ public class Startup
                 options.ShouldProfile = request =>
                 {
                     // Do not profile static files
-                    if(request.Path.Value == null)
-                        return true;
                     if(request.Path.Value.StartsWith("/lib")
-                       || request.Path.Value.StartsWith("/css"))
+                       || request.Path.Value.StartsWith("/css")
+                       || request.Path.Value.StartsWith("/img"))
                         return false;
 
                     return true;
@@ -173,15 +200,21 @@ public class Startup
             }).AddEntityFramework();
         }
 
+#if DEBUG
         // IDE-only tools
         if(_environment.IsDevelopment())
         {
             mvcBuilder.AddRazorRuntimeCompilation();
         }
+#endif
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        // Verbose stack traces
+        if(_environment.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+        
         // Forward headers when used behind a proxy
         // Must be the very first middleware
         if(_mainOptions.ProxySupport)
@@ -203,9 +236,13 @@ public class Startup
                 return next();
             });
         }
+        
+        // Install MiniProfiler
+        // This can be very early in the pipeline, as we use a custom authorization function which does not rely on the framework-supplied one
+        app.UseMiniProfiler();
 
         // Localization
-        // We keep the default cookie name, so the setting automatically translates to potential other server under the current domain
+        // We keep the default cookie name, so the setting automatically translates to potential other servers under the current domain
         var supportedCultures = new[] { "en-US", "de-DE" };
         string defaultCulture = supportedCultures.Contains(_mainOptions.DefaultCulture) ? _mainOptions.DefaultCulture : supportedCultures[0];
         var localizationOptions = new RequestLocalizationOptions()
@@ -219,11 +256,7 @@ public class Startup
         };
         app.UseRequestLocalization(localizationOptions);
 
-        // Verbose stack traces
-        if(_mainOptions.DevelopmentMode)
-            app.UseDeveloperExceptionPage();
-
-        // Simple status code pages
+        // Show simple status code pages in case of errors
         app.UseStatusCodePages();
 
         // Serve static files from wwwroot/
@@ -240,14 +273,6 @@ public class Startup
         });
         app.UseAuthentication();
         app.UseAuthorization();
-
-        // Install MiniProfiler
-        //     Needs to be after UseAuthorization(), else authorization doesn't work.
-        //     However, this does mean that earlier middleware isn't profiled!
-        //     If this ever becomes an issue, remove authorization or use a workaround.
-        //     Relevant: https://stackoverflow.com/questions/59290361/what-is-an-appropriate-way-to-drive-miniprofiler-nets-resultsauthorize-handler
-        if(_mainOptions.DevelopmentMode)
-            app.UseMiniProfiler();
 
         // Create routing endpoints
         app.UseEndpoints(endpoints =>

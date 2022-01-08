@@ -106,16 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin permissions.
-        /// </summary>
-        internal static string Form_IsAdmin {
-            get {
-                return ResourceManager.GetString("Form:IsAdmin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tutor permissions.
+        ///   Looks up a localized string similar to Tutor (hidden from scoreboard).
         /// </summary>
         internal static string Form_IsTutor {
             get {
@@ -138,6 +129,168 @@ namespace Ctf4e.Server.Resources.Views {
         internal static string Form_Submit {
             get {
                 return ResourceManager.GetString("Form:Submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General settings.
+        /// </summary>
+        internal static string GeneralSettings {
+            get {
+                return ResourceManager.GetString("GeneralSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin permissions.
+        /// </summary>
+        internal static string Privilege_Admin {
+            get {
+                return ResourceManager.GetString("Privilege:Admin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit admin scoreboard: Create/edit/delete exercise/flag submissions.
+        /// </summary>
+        internal static string Privilege_EditAdminScoreboard {
+            get {
+                return ResourceManager.GetString("Privilege:EditAdminScoreboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit configuration.
+        /// </summary>
+        internal static string Privilege_EditConfiguration {
+            get {
+                return ResourceManager.GetString("Privilege:EditConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit groups.
+        /// </summary>
+        internal static string Privilege_EditGroups {
+            get {
+                return ResourceManager.GetString("Privilege:EditGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit lab executions.
+        /// </summary>
+        internal static string Privilege_EditLabExecutions {
+            get {
+                return ResourceManager.GetString("Privilege:EditLabExecutions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit labs/exercises/flags.
+        /// </summary>
+        internal static string Privilege_EditLabs {
+            get {
+                return ResourceManager.GetString("Privilege:EditLabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit time slots.
+        /// </summary>
+        internal static string Privilege_EditSlots {
+            get {
+                return ResourceManager.GetString("Privilege:EditSlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit users.
+        /// </summary>
+        internal static string Privilege_EditUsers {
+            get {
+                return ResourceManager.GetString("Privilege:EditUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Admin permissions for lab servers (via admin scoreboard).
+        /// </summary>
+        internal static string Privilege_LoginAsLabServerAdmin {
+            get {
+                return ResourceManager.GetString("Privilege:LoginAsLabServerAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronize/import/export results.
+        /// </summary>
+        internal static string Privilege_TransferResults {
+            get {
+                return ResourceManager.GetString("Privilege:TransferResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View admin scoreboard.
+        /// </summary>
+        internal static string Privilege_ViewAdminScoreboard {
+            get {
+                return ResourceManager.GetString("Privilege:ViewAdminScoreboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View groups.
+        /// </summary>
+        internal static string Privilege_ViewGroups {
+            get {
+                return ResourceManager.GetString("Privilege:ViewGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View lab executions.
+        /// </summary>
+        internal static string Privilege_ViewLabExecutions {
+            get {
+                return ResourceManager.GetString("Privilege:ViewLabExecutions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View labs/exercises/flags.
+        /// </summary>
+        internal static string Privilege_ViewLabs {
+            get {
+                return ResourceManager.GetString("Privilege:ViewLabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View time slots.
+        /// </summary>
+        internal static string Privilege_ViewSlots {
+            get {
+                return ResourceManager.GetString("Privilege:ViewSlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View users.
+        /// </summary>
+        internal static string Privilege_ViewUsers {
+            get {
+                return ResourceManager.GetString("Privilege:ViewUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Privileges.
+        /// </summary>
+        internal static string Privileges {
+            get {
+                return ResourceManager.GetString("Privileges", resourceCulture);
             }
         }
         

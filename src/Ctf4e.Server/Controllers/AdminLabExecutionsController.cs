@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/executions")]
-[Authorize(Policy = AuthenticationStrings.PolicyIsAdmin)]
+[AnyUserPrivilege(UserPrivileges.ViewLabExecutions)]
 public class AdminLabExecutionsController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -78,6 +78,7 @@ public class AdminLabExecutionsController : ControllerBase
     }
 
     [HttpGet("edit")]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public Task<IActionResult> ShowEditLabExecutionFormAsync(int groupId, int labId)
     {
         // Always show warning
@@ -88,6 +89,7 @@ public class AdminLabExecutionsController : ControllerBase
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> EditLabExecutionAsync(AdminLabExecution labExecutionData)
     {
         // Check input
@@ -120,6 +122,7 @@ public class AdminLabExecutionsController : ControllerBase
     }
 
     [HttpGet("create/slot")]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> ShowCreateLabExecutionForSlotFormAsync(AdminLabExecution labExecutionData = null)
     {
         // Pass lists
@@ -131,6 +134,7 @@ public class AdminLabExecutionsController : ControllerBase
 
     [HttpPost("create/slot")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> CreateLabExecutionForSlotAsync(AdminLabExecution labExecutionData)
     {
         // Check input
@@ -181,6 +185,7 @@ public class AdminLabExecutionsController : ControllerBase
     }
 
     [HttpGet("create/group")]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> ShowCreateLabExecutionForGroupFormAsync(AdminLabExecution labExecutionData = null)
     {
         // Pass lists
@@ -192,6 +197,7 @@ public class AdminLabExecutionsController : ControllerBase
 
     [HttpPost("create/group")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> CreateLabExecutionForGroupAsync(AdminLabExecution labExecutionData)
     {
         // Check input
@@ -232,6 +238,7 @@ public class AdminLabExecutionsController : ControllerBase
 
     [HttpPost("delete/group")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> DeleteLabExecutionForGroupAsync(int groupId, int labId)
     {
         // Input check
@@ -260,6 +267,7 @@ public class AdminLabExecutionsController : ControllerBase
 
     [HttpPost("delete/slot")]
     [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
     public async Task<IActionResult> DeleteLabExecutionForSlotAsync(int slotId, int labId)
     {
         try

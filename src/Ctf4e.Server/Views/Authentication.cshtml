@@ -1,6 +1,7 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Authorization
 @inject IViewLocalizer _localizer
 @{
     ViewData["Title"] = _localizer["HtmlTitle"];
@@ -18,11 +19,11 @@
         // In development mode, show admin login
         <environment include="Development">
             <partial name="Authentication.DevLogin.cshtml" />
-        </environment>        
+        </environment>
     }
     else if(viewType == AuthenticationController.ViewType.Redirect)
     {
-        if(currentUser.IsAdmin)
+        if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
         {
             <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">@_localizer["Redirecting"]</a>
         }
@@ -41,7 +42,7 @@
 {
     @if(viewType == AuthenticationController.ViewType.Redirect)
     {
-        if(currentUser.IsAdmin)
+        if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
         {
             <meta http-equiv="refresh" content="1;url=@(Url.Action("RenderScoreboard", "AdminScoreboard"))">
         }

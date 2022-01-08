@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Ctf4e.Server.Attributes;
+using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
@@ -48,7 +49,7 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     /// <returns></returns>
     protected async Task HandleUserLoginAsync(int userId)
     {
-        _currentUser = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
+        _currentUser = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
     }
 
     /// <summary>
@@ -74,7 +75,7 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
         {
             // Retrieve user data
             int userId = int.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserId).Value);
-            _currentUser = await _userService.GetUserAsync(userId, HttpContext.RequestAborted);
+            _currentUser = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
         }
     }
 
@@ -109,8 +110,8 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
         // Page title
         // Request service manually, to avoid injecting too many services in constructors of derived classes
         var configService = HttpContext.RequestServices.GetService<IConfigurationService>() ?? throw new Exception("Could not retrieve configuration service.");
-        ViewData["PageTitle"] = await configService.GetPageTitleAsync();
-        ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync();
+        ViewData["PageTitle"] = await configService.GetPageTitleAsync(HttpContext.RequestAborted);
+        ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync(HttpContext.RequestAborted);
 
         // Other render data
         ViewData["BuildVersion"] = _buildVersion;

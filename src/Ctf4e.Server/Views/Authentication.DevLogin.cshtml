@@ -8,14 +8,14 @@
 
 @{
     // Make sure that this form is really unavailable outside of debug mode
-    // This also avoids potential future compilation errors when the form tag helper fails to resolve the DevLogin action,
+    // This avoids compilation errors when the form tag helper fails to resolve the DevLogin action,
     //    which is inside preprocessor directives as well
     #if DEBUG
 }
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
 <form asp-controller="Authentication" asp-action="DevLogin" method="get">

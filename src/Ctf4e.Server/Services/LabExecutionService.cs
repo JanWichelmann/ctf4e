@@ -18,14 +18,14 @@ namespace Ctf4e.Server.Services;
 public interface ILabExecutionService
 {
     IAsyncEnumerable<LabExecution> GetLabExecutionsAsync();
-    Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default);
-    Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default);
-    Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken = default);
-    Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken = default);
-    Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken = default);
-    Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken = default);
-    Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default);
-    Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken = default);
+    Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
+    Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken);
+    Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken);
+    Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken);
+    Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken);
+    Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken);
+    Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
+    Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken);
 }
 
 public class LabExecutionService : ILabExecutionService
@@ -50,7 +50,7 @@ public class LabExecutionService : ILabExecutionService
             .AsAsyncEnumerable();
     }
 
-    public Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default)
+    public Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken)
     {
         return _dbContext.LabExecutions.AsNoTracking()
             .Include(l => l.Lab)
@@ -60,7 +60,7 @@ public class LabExecutionService : ILabExecutionService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken = default)
+    public async Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken)
     {
         // We have to match against user IDs, which does not seem to be supported by EF
         var dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
@@ -77,7 +77,7 @@ public class LabExecutionService : ILabExecutionService
         return _mapper.Map<LabExecutionEntity, LabExecution>(labExecutionEntity);
     }
 
-    public Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken = default)
+    public Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken)
     {
         var now = DateTime.Now;
         return _dbContext.LabExecutions.AsNoTracking()
@@ -88,7 +88,7 @@ public class LabExecutionService : ILabExecutionService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken = default)
+    public Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken)
     {
         var now = DateTime.Now;
         return _dbContext.LabExecutions.AsNoTracking()
@@ -99,7 +99,7 @@ public class LabExecutionService : ILabExecutionService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken = default)
+    public async Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken)
     {
         // Update existing one?
         LabExecutionEntity labExecutionEntity;
@@ -127,7 +127,7 @@ public class LabExecutionService : ILabExecutionService
         return _mapper.Map<LabExecution>(labExecutionEntity);
     }
 
-    public async Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken = default)
+    public async Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken)
     {
         // Try to retrieve existing entity
         var labExecutionEntity = await _dbContext.LabExecutions.FindAsync(new object[] { labExecution.GroupId, labExecution.LabId }, cancellationToken);
@@ -143,7 +143,7 @@ public class LabExecutionService : ILabExecutionService
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken = default)
+    public async Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken)
     {
         try
         {
@@ -158,7 +158,7 @@ public class LabExecutionService : ILabExecutionService
         }
     }
 
-    public Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken = default)
+    public Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken)
     {
         // Delete all matching entries
         var labExecutionsInSlot = _dbContext.LabExecutions

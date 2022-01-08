@@ -2,14 +2,14 @@
 @model Ctf4e.Server.ViewModels.AdminScoreboard
 @inject IViewLocalizer _localizer
 
-<h3 class="header">
+<h1 class="header">
     @_localizer["Title"]
-</h3>
+</h1>
 <hr class="header">
 
-<h5 class="header">
+<h2 class="header">
     @_localizer["ExercisesTitle"]
-</h5>
+</h2>
 
 <table class="table table-sm" id="exercises-table">
     <thead>
@@ -48,9 +48,9 @@
 </table>
 
 
-<h5 class="header">
+<h2 class="header">
     @_localizer["FlagsTitle"]
-</h5>
+</h2>
 
 <table class="table table-sm" id="flags-table">
     <thead>
