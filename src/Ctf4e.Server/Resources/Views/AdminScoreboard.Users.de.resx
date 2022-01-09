@@ -246,4 +246,8 @@
         <value>Aktionen</value>
         <comment>ExerciseSubmissions:Actions</comment>
     </data>
+    <data name="ExerciseSubmissions:Points" xml:space="preserve">
+        <value>Punkte</value>
+        <comment>ExerciseSubmissions:Points</comment>
+    </data>
 </root>

@@ -178,4 +178,8 @@
         <value>Versteckt, nur zugreifbar für Benutzer mit Admin- oder Praktikumsbearbeitungs-Rechten</value>
         <comment>LabHidden</comment>
     </data>
+    <data name="ExerciseSubmissions:Points" xml:space="preserve">
+        <value>Punkte</value>
+        <comment>ExerciseSubmissions:Points</comment>
+    </data>
 </root>

@@ -18,7 +18,7 @@ public class UserScoreboard
 
     public bool HasPassed { get; set; }
 
-    public List<ScoreboardUserExerciseEntry> Exercises { get; set; }
+    public List<UserScoreboardExerciseEntry> Exercises { get; set; }
 
     public int PassedMandatoryExercisesCount { get; set; }
 
@@ -46,6 +46,33 @@ public class UserScoreboardLabEntry
     public bool Active { get; set; }
         
     public bool Visible { get; set; }
+}
+
+public class UserScoreboardExerciseEntry
+{
+    public Exercise Exercise { get; set; }
+
+    /// <summary>
+    /// Total valid tries by this user and their group members.
+    /// </summary>
+    public int Tries { get; set; }
+
+    public int ValidTries { get; set; }
+
+    /// <summary>
+    /// Determines whether the user has successfully solved the exercise (or a group member, when passing as group is enabled).
+    /// </summary>
+    public bool Passed { get; set; }
+    
+    /// <summary>
+    /// Determines that the user or one of their group members has passed.
+    /// This is used for displaying the earned points even when the user has not yet passed.
+    /// </summary>
+    public bool GroupMemberHasPassed { get; set; }
+
+    public int Points { get; set; }
+
+    public List<ExerciseSubmission> Submissions { get; set; }
 }
 
 public class UserScoreboardFlagEntry

@@ -70,7 +70,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tries: {0} valid, {1} total.
+        ///   Looks up a localized string similar to Attempts: {0} valid, {1} total.
         /// </summary>
         internal static string Exercises_SubmissionStatistic {
             get {
@@ -102,6 +102,15 @@ namespace Ctf4e.Server.Resources.Views {
         internal static string ExerciseSubmissions_Invalid {
             get {
                 return ResourceManager.GetString("ExerciseSubmissions:Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points.
+        /// </summary>
+        internal static string ExerciseSubmissions_Points {
+            get {
+                return ResourceManager.GetString("ExerciseSubmissions:Points", resourceCulture);
             }
         }
         

@@ -106,6 +106,15 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Punkte.
+        /// </summary>
+        internal static string ExerciseSubmissions_Points {
+            get {
+                return ResourceManager.GetString("ExerciseSubmissions:Points", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Zeitpunkt des Lösungsversuchs.
         /// </summary>
         internal static string ExerciseSubmissions_Timestamp {

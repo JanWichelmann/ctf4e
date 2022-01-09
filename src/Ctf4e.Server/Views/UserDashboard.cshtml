@@ -87,10 +87,13 @@
                         }
                     </div>
                     <div class="col col-auto ms-auto">
-                        <span class="badge bg-light text-dark">@_localizer["Exercises:SubmissionStatistic", exercise.ValidTries, exercise.Tries]</span>
+                        <span class="badge bg-light text-dark border border-1 me-1">@_localizer["Exercises:SubmissionStatistic", exercise.ValidTries, exercise.Tries]</span>
+                        @if(exercise.GroupMemberHasPassed)
+                        {
+                            <span class="badge bg-primary me-1">@exercise.Points @_localizer["Points"]</span>
+                        }
                         @if(exercise.Passed)
                         {
-                            <span class="badge bg-primary">@exercise.Points @_localizer["Points"]</span>
                             <i class="bi bi-check-circle-fill  text-success" title="@_localizer["Solved"]"></i>
                         }
                         else
@@ -106,11 +109,15 @@
                         <thead>
                         <tr>
                             <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
-                            <th scope="col">@_localizer["ExerciseSubmissions:Correct"]</th>
                             <th scope="col">@_localizer["ExerciseSubmissions:GroupMember"]</th>
+                            <th scope="col" class="text-center">@_localizer["ExerciseSubmissions:Correct"]</th>
+                            <th scope="col" class="text-end">@_localizer["ExerciseSubmissions:Points"]</th>
                         </tr>
                         </thead>
                         <tbody>
+                        @{
+                            bool sawPassedSolution = false;
+                        }
                         @foreach(var submission in exercise.Submissions)
                         {
                             <tr>
@@ -122,19 +129,41 @@
                                     }
                                 </td>
                                 <td>
+                                    @userScoreboard.GroupMembers[submission.UserId]
+                                </td>
+                                <td class="text-center">
                                     @if(submission.ExercisePassed)
                                     {
-                                        <i class="bi bi-check-circle-fill  text-success align-middle"></i>
+                                        <i class="bi bi-check-circle-fill text-success"></i>
                                     }
                                     else
                                     {
-                                        <i class="bi bi-x-circle-fill  text-danger align-middle"></i>
+                                        <i class="bi bi-x-circle-fill text-danger"></i>
                                     }
                                 </td>
-                                <td>
-                                    @userScoreboard.GroupMembers[submission.UserId]
+                                <td class="text-end">
+                                    @if(!sawPassedSolution)
+                                    {
+                                        if(submission.ExercisePassed)
+                                        {
+                                            <span class="text-success fw-bold">
+                                                +@exercise.Exercise.BasePoints
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger fw-bold">
+                                                &minus;@(submission.Weight * exercise.Exercise.PenaltyPoints)
+                                            </span>
+                                        }
+                                    }
                                 </td>
                             </tr>
+
+                            if(submission.ExercisePassed)
+                            {
+                                sawPassedSolution = true;
+                            }
                         }
                         </tbody>
                     </table>

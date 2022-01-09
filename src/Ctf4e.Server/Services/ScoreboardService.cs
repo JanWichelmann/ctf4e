@@ -75,14 +75,14 @@ public class ScoreboardService : IScoreboardService
         var labExecutions = await _dbContext.LabExecutions.AsNoTracking()
             .Where(l => l.LabId == labId && l.Group.SlotId == slotId)
             .ToDictionaryAsync(l => l.GroupId, cancellationToken); // Each group ID can only appear once, since it is part of the primary key
-            
+
         var users = await _dbContext.Users.AsNoTracking()
             .Where(u => u.GroupId != null && u.Group.SlotId == slotId)
             .OrderBy(u => u.DisplayName)
             .ToListAsync(cancellationToken);
         var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId!.Value);
         var userNameLookup = users.ToDictionary(u => u.Id, u => u.DisplayName);
-            
+
         var groups = await _dbContext.Groups.AsNoTracking()
             .Where(g => g.SlotId == slotId)
             .OrderBy(g => g.DisplayName)
@@ -102,7 +102,7 @@ public class ScoreboardService : IScoreboardService
             .ThenBy(e => e.SubmissionTime)
             .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
-            
+
         // Aggregate exercise submissions by user and by group
         var exerciseSubmissionsByUser = exerciseSubmissionsUngrouped
             .GroupBy(e => e.UserId)
@@ -116,7 +116,7 @@ public class ScoreboardService : IScoreboardService
                 e => e.Key,
                 e => e.GroupBy(es => es.ExerciseId)
                     .ToDictionary(es => es.Key, es => es.ToList()));
-            
+
         // Compute exercise statistics
         var exercisePassedCounts = exercises
             .ToDictionary(e => e.Id, _ => 0);
@@ -322,7 +322,6 @@ public class ScoreboardService : IScoreboardService
                         // Compute other scoreboard statistics by looking at the entire submission list
                         if(groupExerciseSubmissions != null && groupExerciseSubmissions.ContainsKey(exercise.Id))
                         {
-                            // Ensure that exercise submission
                             var submissions = groupExerciseSubmissions[exercise.Id];
 
                             var (_, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
@@ -804,7 +803,7 @@ public class ScoreboardService : IScoreboardService
                     {
                         if(s.MinPassedSubmissionTime > entry.LastExerciseSubmissionTime)
                             entry.LastExerciseSubmissionTime = s.MinPassedSubmissionTime;
-                            
+
                         if(!exercisePointsPerLab.TryGetValue(s.LabId, out var ex))
                             ex = 0;
 
@@ -1253,7 +1252,6 @@ public class ScoreboardService : IScoreboardService
                     INNER JOIN `Exercises` e ON e.`Id` = es.`ExerciseId`
                     INNER JOIN `Users` u ON u.`Id` = es.`UserId`
                     WHERE u.`GroupId` = @groupId
-                    {(passAsGroup ? "" : "AND u.`Id` = @userId")}
                     AND e.`LabId` = @labId
                     ORDER BY e.`Id`, es.`SubmissionTime`",
                 new { groupId, userId, labId }))
@@ -1297,7 +1295,7 @@ public class ScoreboardService : IScoreboardService
             FoundFlagsCount = foundFlagsGrouped.Count,
             ValidFoundFlagsCount = foundFlagsGrouped.Count(ff => ff.Any(ffs => ffs.Valid)),
             HasFoundAllFlags = foundFlagsGrouped.Count == flags.Count(f => !f.Value.IsBounty),
-            Exercises = new List<ScoreboardUserExerciseEntry>(),
+            Exercises = new List<UserScoreboardExerciseEntry>(),
             GroupMembers = groupMembers,
             Flags = foundFlags
         };
@@ -1315,14 +1313,20 @@ public class ScoreboardService : IScoreboardService
             {
                 var submissions = exerciseSubmissions[exercise.Id];
 
-                var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, labExecution);
+                var (groupMemberHasPassed, points, validTries) = CalculateExerciseStatus(exercise, submissions, labExecution);
 
-                scoreboard.Exercises.Add(new ScoreboardUserExerciseEntry
+                // If passing as group is disabled, do another check whether this user has a valid passing submission
+                bool passed = groupMemberHasPassed;
+                if(!passAsGroup)
+                    passed = submissions.Any(s => s.ExercisePassed && s.UserId == userId && labExecution.PreStart <= s.SubmissionTime && s.SubmissionTime < labExecution.End);
+
+                scoreboard.Exercises.Add(new UserScoreboardExerciseEntry
                 {
                     Exercise = exercise,
                     Tries = submissions.Count,
                     ValidTries = validTries,
                     Passed = passed,
+                    GroupMemberHasPassed = groupMemberHasPassed,
                     Points = points,
                     Submissions = submissions
                 });
@@ -1337,12 +1341,13 @@ public class ScoreboardService : IScoreboardService
             }
             else
             {
-                scoreboard.Exercises.Add(new ScoreboardUserExerciseEntry
+                scoreboard.Exercises.Add(new UserScoreboardExerciseEntry
                 {
                     Exercise = exercise,
                     Tries = 0,
                     ValidTries = 0,
                     Passed = false,
+                    GroupMemberHasPassed = false,
                     Points = 0,
                     Submissions = new List<ExerciseSubmission>()
                 });

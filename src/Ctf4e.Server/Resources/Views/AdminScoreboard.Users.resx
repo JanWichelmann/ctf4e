@@ -87,11 +87,11 @@
         <comment>Mandatory</comment>
     </data>
     <data name="Exercises:Tries:Text" xml:space="preserve">
-        <value>Valid tries (total)</value>
+        <value>Valid attempts (total)</value>
         <comment>Exercises:Tries:Text</comment>
     </data>
     <data name="Exercises:Tries:Value" xml:space="preserve">
-        <value>{0} ({1}) tries</value>
+        <value>{0} ({1}) attempts</value>
         <comment>Exercises:Tries:Value</comment>
     </data>
     <data name="Solved" xml:space="preserve">
@@ -245,5 +245,9 @@
     <data name="ExerciseSubmissions:Actions" xml:space="preserve">
         <value>Actions</value>
         <comment>ExerciseSubmissions:Actions</comment>
+    </data>
+    <data name="ExerciseSubmissions:Points" xml:space="preserve">
+        <value>Points</value>
+        <comment>ExerciseSubmissions:Points</comment>
     </data>
 </root>

@@ -13,203 +13,229 @@
     foreach(var group in Model.GroupEntries)
     {
         <div class="card mb-1">
-            <div class="card-header container" id="group@(group.GroupId)" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card">
-                <div class="row">
-                    <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card"></div>
-                    <div class="col">
-                        @if(group.HasPassed)
+        <div class="card-header container" id="group@(group.GroupId)" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card">
+            <div class="row">
+                <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card"></div>
+                <div class="col">
+                    @if(group.HasPassed)
+                    {
+                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Passed"]"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotPassed"]"></i>
+                    }
+                    <span class="ms-2">@group.GroupName</span>
+                </div>
+                <div class="col-auto ms-auto">
+                    @if(group.Status == ScoreboardGroupStatus.BeforePreStart)
+                    {
+                        <span class="badge bg-info" title="@_localizer["LabExecutionStatus:BeforePreStart:Text"]">@_localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
+                    }
+                    else if(group.Status == ScoreboardGroupStatus.PreStart)
+                    {
+                        <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:PreStart:Text"]">@_localizer["LabExecutionStatus:PreStart:Title"]</span>
+                    }
+                    else if(group.Status == ScoreboardGroupStatus.Start)
+                    {
+                        <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:Start:Text"]">@_localizer["LabExecutionStatus:Start:Title"]</span>
+                    }
+                    else if(group.Status == ScoreboardGroupStatus.End)
+                    {
+                        <span class="badge bg-success" title="@_localizer["LabExecutionStatus:End:Text"]">@_localizer["LabExecutionStatus:End:Title"]</span>
+                    }
+                    else if(group.Status == ScoreboardGroupStatus.Undefined)
+                    {
+                        <span class="badge bg-danger" title="@_localizer["LabExecutionStatus:Undefined:Text"]">@_localizer["LabExecutionStatus:Undefined:Title"]</span>
+                    }
+                    <span class="badge bg-primary" title="@_localizer["Statistics:MandatoryExercises"]">@group.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
+                    <span class="badge bg-secondary" title="@_localizer["Statistics:OptionalExercises"]">@group.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
+                    <span class="badge bg-info" title="@_localizer["Statistics:FoundFlags"]">@group.FoundFlagsCount / @Model.FlagCount</span>
+                </div>
+            </div>
+        </div>
+        <div id="group@(group.GroupId)-card" class="collapse">
+            <div class="card-body">
+                <p>
+                    <span class="fw-bold">@_localizer["Members"]:</span>
+                    @{
+                        bool first = true;
+                    }
+                    @foreach(var userId in group.GroupMembers)
+                    {
+                        if(first)
                         {
-                            <i class="bi bi-check-circle-fill text-success" title="@_localizer["Passed"]"></i>
+                            first = false;
                         }
                         else
                         {
-                            <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotPassed"]"></i>
+                            @:/
                         }
-                        <span class="ms-2">@group.GroupName</span>
-                    </div>
-                    <div class="col-auto ms-auto">
-                        @if(group.Status == ScoreboardGroupStatus.BeforePreStart)
-                        {
-                            <span class="badge bg-info" title="@_localizer["LabExecutionStatus:BeforePreStart:Text"]">@_localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
-                        }
-                        else if(group.Status == ScoreboardGroupStatus.PreStart)
-                        {
-                            <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:PreStart:Text"]">@_localizer["LabExecutionStatus:PreStart:Title"]</span>
-                        }
-                        else if(group.Status == ScoreboardGroupStatus.Start)
-                        {
-                            <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:Start:Text"]">@_localizer["LabExecutionStatus:Start:Title"]</span>
-                        }
-                        else if(group.Status == ScoreboardGroupStatus.End)
-                        {
-                            <span class="badge bg-success" title="@_localizer["LabExecutionStatus:End:Text"]">@_localizer["LabExecutionStatus:End:Title"]</span>
-                        }
-                        else if(group.Status == ScoreboardGroupStatus.Undefined)
-                        {
-                            <span class="badge bg-danger" title="@_localizer["LabExecutionStatus:Undefined:Text"]">@_localizer["LabExecutionStatus:Undefined:Title"]</span>
-                        }
-                        <span class="badge bg-primary" title="@_localizer["Statistics:MandatoryExercises"]">@group.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
-                        <span class="badge bg-secondary" title="@_localizer["Statistics:OptionalExercises"]">@group.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
-                        <span class="badge bg-info" title="@_localizer["Statistics:FoundFlags"]">@group.FoundFlagsCount / @Model.FlagCount</span>
-                    </div>
-                </div>
-            </div>
-            <div id="group@(group.GroupId)-card" class="collapse">
-                <div class="card-body">
-                    <p>
-                        <span class="fw-bold">@_localizer["Members"]:</span>
-                        @{
-                            bool first = true;
-                        }
-                        @foreach(var userId in group.GroupMembers)
-                        {
-                            if(first)
-                            {
-                                first = false;
-                            }
-                            else
-                            {
-                                @:/
-                            }
-                            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-groupMode="false" asp-route-includeTutors="true" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-fragment="@("user" + userId)">@(Model.UserNames[userId])</a>
-                        }
-                    </p>
-                
-                    @foreach(var exercise in group.Exercises)
-                    {
-                        <div class="card mb-2">
-                            <div class="card-header container">
-                                <div class="row">
-                                    <div class="col">
-                                        @exercise.Exercise.Name
-                                        @if(exercise.Exercise.IsMandatory)
-                                        {
-                                            <span class="badge bg-info">@_localizer["Mandatory"]</span>
-                                        }
-                                    </div>
-                                    <div class="col-auto ms-auto">
-                                        <span class="badge bg-light text-dark" title="@_localizer["Exercises:Tries:Text"]">@_localizer["Exercises:Tries:Value", exercise.ValidTries, exercise.Tries]</span>
-                                        @if(exercise.Passed)
-                                        {
-                                            <span class="badge bg-primary">@_localizer["Points", exercise.Points]</span>
-                                            <i class="bi bi-check-circle-fill text-success" title="@_localizer["Solved"]"></i>
-                                        }
-                                        else
-                                        {
-                                            <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotSolved"]"></i>
-                                        }
-                                    </div>
+                        <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-groupMode="false" asp-route-includeTutors="true" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-fragment="@("user" + userId)">@(Model.UserNames[userId])</a>
+                    }
+                </p>
+
+                @foreach(var exercise in group.Exercises)
+                {
+                    <div class="card mb-2">
+                        <div class="card-header container">
+                            <div class="row">
+                                <div class="col">
+                                    @exercise.Exercise.Name
+                                    @if(exercise.Exercise.IsMandatory)
+                                    {
+                                        <span class="badge bg-info">@_localizer["Mandatory"]</span>
+                                    }
+                                </div>
+                                <div class="col-auto ms-auto">
+                                    <span class="badge bg-light text-dark" title="@_localizer["Exercises:Tries:Text"]">@_localizer["Exercises:Tries:Value", exercise.ValidTries, exercise.Tries]</span>
+                                    @if(exercise.Passed)
+                                    {
+                                        <span class="badge bg-primary">@_localizer["Points", exercise.Points]</span>
+                                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Solved"]"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotSolved"]"></i>
+                                    }
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <table class="table table-sm align-middle">
-                                    <thead>
-                                    <tr>
-                                        <th>
-                                            <input type="checkbox" class="form-check-input" name="es-checkbox-select-all">
-                                        </th>
-                                        <th></th>
-                                        <th scope="col">@_localizer["ExerciseSubmissions:Solved"]</th>
-                                        <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
-                                        <th scope="col">@_localizer["ExerciseSubmissions:Weight"]</th>
-                                        <th scope="col">@_localizer["ExerciseSubmissions:SubmittedBy"]</th>
-                                        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
-                                        {
-                                            <th scope="col">@_localizer["ExerciseSubmissions:Actions"]</th>
-                                        }
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach(var submission in exercise.Submissions)
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" class="form-check-input" name="es-checkbox-select-all">
+                                    </th>
+                                    <th></th>
+                                    <th scope="col">@_localizer["ExerciseSubmissions:Solved"]</th>
+                                    <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
+                                    <th scope="col">@_localizer["ExerciseSubmissions:SubmittedBy"]</th>
+                                    <th scope="col">@_localizer["ExerciseSubmissions:Weight"]</th>
+                                    <th scope="col">@_localizer["ExerciseSubmissions:Points"]</th>
+                                    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                     {
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" class="form-check-input" name="es-checkbox" value="@submission.Id">
-                                            </td>
-                                            <th scope="row">#@submission.Id</th>
-                                            <td>
-                                                @if(submission.ExercisePassed)
+                                        <th scope="col">@_localizer["ExerciseSubmissions:Actions"]</th>
+                                    }
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @{
+                                    bool sawPassedSolution = false;
+                                }
+                                @foreach(var submission in exercise.Submissions)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input" name="es-checkbox" value="@submission.Id">
+                                        </td>
+                                        <th scope="row">#@submission.Id</th>
+                                        <td>
+                                            @if(submission.ExercisePassed)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle-fill text-danger"></i>
+                                            }
+                                        </td>
+                                        <td>
+                                            @submission.SubmissionTime.ToString("G")
+                                        </td>
+                                        <td>
+                                            @Model.UserNames[submission.UserId]
+                                        </td>
+                                        <td>
+                                            @submission.Weight
+                                        </td>
+                                        <td>
+                                            @if(!sawPassedSolution)
+                                            {
+                                                if(submission.ExercisePassed)
                                                 {
-                                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                                    <span class="text-success fw-bold">
+                                                        +@exercise.Exercise.BasePoints
+                                                    </span>
                                                 }
                                                 else
                                                 {
-                                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                                    <span class="text-danger fw-bold">
+                                                        &minus;@(submission.Weight * exercise.Exercise.PenaltyPoints)
+                                                    </span>
                                                 }
-                                            </td>
-                                            <td>
-                                                @submission.SubmissionTime.ToString("G")
-                                            </td>
-                                            <td>
-                                                @submission.Weight
-                                            </td>
-                                            <td>
-                                                @Model.UserNames[submission.UserId]
-                                            </td>
-                                            @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
-                                            {
-                                                <td>
-                                                    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@Model.UserNames[submission.UserId]">
-                                                        <i class="bi bi-trash"></i>
-                                                        @_localizer["Delete"]
-                                                    </a>
-                                                </td>
                                             }
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    }
+                                        </td>
+                                        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
+                                        {
+                                            <td>
+                                                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@Model.UserNames[submission.UserId]">
+                                                    <i class="bi bi-trash"></i>
+                                                    @_localizer["Delete"]
+                                                </a>
+                                            </td>
+                                        }
+                                    </tr>
 
-                    <table class="table table-sm mt-3">
-                        <thead>
+                                    if(submission.ExercisePassed)
+                                    {
+                                        sawPassedSolution = true;
+                                    }
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <table class="table table-sm mt-3">
+                    <thead>
+                    <tr>
+                        <th>@_localizer["Flags:Flag"]</th>
+                        <th scope="col">@_localizer["Flags:Description"]</th>
+                        <th scope="col">@_localizer["Flags:Submitted"]</th>
+                        <th scope="col">@_localizer["Flags:Valid"]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach(var flag in group.Flags)
+                    {
                         <tr>
-                            <th>@_localizer["Flags:Flag"]</th>
-                            <th scope="col">@_localizer["Flags:Description"]</th>
-                            <th scope="col">@_localizer["Flags:Submitted"]</th>
-                            <th scope="col">@_localizer["Flags:Valid"]</th>
+                            <th scope="row">#@flag.Flag.Id</th>
+                            <td>
+                                @flag.Flag.Description
+                                @if(flag.Flag.IsBounty)
+                                {
+                                    <i class="bi bi-bug-fill text-primary" title="@_localizer["BugBounty"]"></i>
+                                }
+                            </td>
+                            <td>
+                                @if(flag.Submitted)
+                                {
+                                    <i class="bi bi-check-circle-fill text-success" title="@flag.SubmissionTime.ToString("G")"></i>
+                                }
+                            </td>
+                            <td>
+                                @if(flag.Submitted)
+                                {
+                                    if(flag.Valid)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                        <span class="badge bg-primary">@_localizer["Points", flag.CurrentPoints]</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle-fill text-danger"></i>
+                                    }
+                                }
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        @foreach(var flag in group.Flags)
-                        {
-                            <tr>
-                                <th scope="row">#@flag.Flag.Id</th>
-                                <td>
-                                    @flag.Flag.Description
-                                    @if(flag.Flag.IsBounty)
-                                    {
-                                        <i class="bi bi-bug-fill text-primary" title="@_localizer["BugBounty"]"></i>
-                                    }
-                                </td>
-                                <td>
-                                    @if(flag.Submitted)
-                                    {
-                                        <i class="bi bi-check-circle-fill text-success" title="@flag.SubmissionTime.ToString("G")"></i>
-                                    }
-                                </td>
-                                <td>
-                                    @if(flag.Submitted)
-                                    {
-                                        if(flag.Valid)
-                                        {
-                                            <i class="bi bi-check-circle-fill text-success"></i>
-                                            <span class="badge bg-primary">@_localizer["Points", flag.CurrentPoints]</span>
-                                        }
-                                        else
-                                        {
-                                            <i class="bi bi-x-circle-fill text-danger"></i>
-                                        }
-                                    }
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
+                    }
+                    </tbody>
+                </table>
             </div>
+        </div>
         </div>
     }
 
@@ -286,7 +312,7 @@ else
                         </a>
                     </p>
                 }
-            
+
                 @if(currentUser.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin))
                 {
                     <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">

@@ -106,7 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Valid tries (total).
+        ///   Looks up a localized string similar to Valid attempts (total).
         /// </summary>
         internal static string Exercises_Tries_Text {
             get {
@@ -115,7 +115,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} ({1}) tries.
+        ///   Looks up a localized string similar to {0} ({1}) attempts.
         /// </summary>
         internal static string Exercises_Tries_Value {
             get {
@@ -129,6 +129,15 @@ namespace Ctf4e.Server.Resources.Views {
         internal static string ExerciseSubmissions_Actions {
             get {
                 return ResourceManager.GetString("ExerciseSubmissions:Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points.
+        /// </summary>
+        internal static string ExerciseSubmissions_Points {
+            get {
+                return ResourceManager.GetString("ExerciseSubmissions:Points", resourceCulture);
             }
         }
         

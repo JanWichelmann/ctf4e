@@ -79,7 +79,7 @@
         <comment>Mandatory</comment>
     </data>
     <data name="Exercises:SubmissionStatistic" xml:space="preserve">
-        <value>Tries: {0} valid, {1} total</value>
+        <value>Attempts: {0} valid, {1} total</value>
         <comment>ExerciseSubmissionStatistic</comment>
     </data>
     <data name="Points" xml:space="preserve">
@@ -177,5 +177,9 @@
     <data name="LabHidden" xml:space="preserve">
         <value>Hidden, only accessible by user with admin or lab editing privileges</value>
         <comment>LabHidden</comment>
+    </data>
+    <data name="ExerciseSubmissions:Points" xml:space="preserve">
+        <value>Points</value>
+        <comment>ExerciseSubmissions:Points</comment>
     </data>
 </root>
