@@ -76,8 +76,9 @@
     foreach(var exercise in userScoreboard.Exercises)
     {
         <div class="card mb-2">
-            <div class="card-header" id="exercise@(exercise.Exercise.Id)-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card">
+            <div class="card-header cursor-link collapsed" id="exercise@(exercise.Exercise.Id)-card-heading" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card">
                 <div class="row">
+                    <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card"></div>
                     <div class="col">
                         @exercise.Exercise.Name
                         @if(exercise.Exercise.IsMandatory)
@@ -99,7 +100,7 @@
                     </div>
                 </div>
             </div>
-            <div id="exercise@(exercise.Exercise.Id)-card" class="collapse @(exercise.Submissions.Any() ? "show" : ""))">
+            <div id="exercise@(exercise.Exercise.Id)-card" class="collapse">
                 <div class="card-body">
                     <table class="table table-sm">
                         <thead>

@@ -15,6 +15,7 @@
         <div class="card mb-1">
             <div class="card-header container" id="group@(group.GroupId)" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card">
                 <div class="row">
+                    <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#group@(group.GroupId)-card"></div>
                     <div class="col">
                         @if(group.HasPassed)
                         {
@@ -233,8 +234,9 @@ else
     foreach(var user in Model.UserEntries)
     {
         <div class="card mb-1">
-        <div class="card-header container" id="user@(user.UserId)" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
+        <div class="card-header container cursor-link collapsed" id="user@(user.UserId)" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card">
             <div class="row">
+                <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#user@(user.UserId)-card"></div>
                 <div class="col">
                     @if(user.HasPassed)
                     {
