@@ -22,7 +22,8 @@ public interface IUserService
     IAsyncEnumerable<User> GetGroupMembersAsync(int groupId);
     Task<bool> AnyUsers(CancellationToken cancellationToken);
     Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken);
-    Task<User> FindByIdAsync(int id, CancellationToken cancellationToken);
+    Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken);
+    Task<User> FindUserByMoodleNameAsync(string moodleName, CancellationToken cancellationToken);
     Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken);
     Task<User> CreateUserAsync(User user, CancellationToken cancellationToken);
     Task UpdateUserAsync(User user, CancellationToken cancellationToken);
@@ -88,13 +89,21 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<User> FindByIdAsync(int id, CancellationToken cancellationToken)
+    public Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken)
     {
         // TODO cache users, labs, ...?
         return _dbContext.Users.AsNoTracking()
             .Include(u => u.Group)
             .Where(u => u.Id == id)
             .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<User> FindUserByMoodleNameAsync(string moodleName, CancellationToken cancellationToken)
+    {
+        return _dbContext.Users.AsNoTracking()
+            .Where(u => u.MoodleName == moodleName)
+            .ProjectTo<User>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -113,6 +122,7 @@ public class UserService : IUserService
             DisplayName = user.DisplayName,
             MoodleUserId = user.MoodleUserId,
             MoodleName = user.MoodleName,
+            PasswordHash = user.PasswordHash,
             Privileges = user.Privileges,
             IsTutor = user.IsTutor,
             GroupFindingCode = user.GroupFindingCode,
@@ -137,6 +147,7 @@ public class UserService : IUserService
         userEntity.MoodleUserId = user.MoodleUserId;
         userEntity.MoodleName = user.MoodleName;
         userEntity.Privileges = user.Privileges;
+        userEntity.PasswordHash = user.PasswordHash;
         userEntity.IsTutor = user.IsTutor;
         userEntity.GroupFindingCode = user.GroupFindingCode;
         userEntity.GroupId = user.GroupId;

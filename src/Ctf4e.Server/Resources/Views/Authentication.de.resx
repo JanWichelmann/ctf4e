@@ -26,4 +26,10 @@
         <value>Weiterleiten...</value>
         <comment>Redirecting</comment>
     </data>
+    <data name="HtmlTitle:GroupSelection" xml:space="preserve">
+        <value>Gruppe gründen</value>
+    </data>
+    <data name="HtmlTitle:Settings" xml:space="preserve">
+        <value>Einstellungen</value>
+    </data>
 </root>

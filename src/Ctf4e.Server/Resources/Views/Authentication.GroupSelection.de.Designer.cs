@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben. Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut einloggen. Im Anschluss haben Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe..
+        ///   Looks up a localized string similar to Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben. Anschließend klicken Sie auf &quot;Gruppe erstellen&quot;. Das System wird dann eine neue Gruppe anlegen und Sie zum Arbeitsbereich Ihrer neuen Gruppe weiterleiten..
         /// </summary>
         internal static string Form_FinalText {
             get {

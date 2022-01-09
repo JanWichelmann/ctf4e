@@ -109,6 +109,9 @@ public class Startup
         services.AddScoped<IMoodleService, MoodleService>();
         services.AddScoped<ICsvService, CsvService>();
         services.AddScoped<IDumpService, DumpService>();
+        
+        // Rate limiting
+        services.AddSingleton<ILoginRateLimiter, LoginRateLimiter>();
 
         // Forward headers when used behind a proxy
         services.Configure<ForwardedHeadersOptions>(options =>
@@ -170,7 +173,7 @@ public class Startup
                     if(userIdClaim == null)
                         return false;
                     int userId = int.Parse(userIdClaim.Value);
-                    var user = await userService.FindByIdAsync(userId, context.RequestAborted);
+                    var user = await userService.FindUserByIdAsync(userId, context.RequestAborted);
 
                     // If the user does not exist, deny all access
                     if(user == null)

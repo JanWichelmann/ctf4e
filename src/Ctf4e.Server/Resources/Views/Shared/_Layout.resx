@@ -62,4 +62,7 @@
         <value>Toggle navbar</value>
         <comment>ToggleNavbar</comment>
     </data>
+    <data name="MenuItems:Settings" xml:space="preserve">
+        <value>Account settings</value>
+    </data>
 </root>

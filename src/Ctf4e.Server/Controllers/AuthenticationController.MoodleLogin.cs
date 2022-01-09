@@ -20,7 +20,7 @@ public partial class AuthenticationController
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser != null)
-            return await RenderAsync(ViewType.Redirect);
+            return await ShowRedirectAsync(null);
 
         // Parse and check request
         MoodleAuthenticationMessageData authData;
@@ -37,7 +37,7 @@ public partial class AuthenticationController
         catch(SecurityException)
         {
             AddStatusMessage(_localizer["LoginMoodleAsync:InvalidLogin"], StatusMessageTypes.Error);
-            return await RenderAsync(ViewType.Blank);
+            return await RenderAsync(ViewType.Login);
         }
 
         // Does the user exist already?
@@ -63,8 +63,6 @@ public partial class AuthenticationController
 
         // Done
         AddStatusMessage(_localizer["LoginMoodleAsync:Success"], StatusMessageTypes.Success);
-        if(user.Group == null)
-            return await ShowGroupFormAsync();
-        return await RenderAsync(ViewType.Redirect);
+        return await ShowRedirectAsync(null);
     }
 }

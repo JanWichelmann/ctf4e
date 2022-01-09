@@ -42,10 +42,6 @@
         <value>Die Gruppe wurde erfolgreich erstellt.</value>
         <comment>HandleGroupSelectionAsync:Success</comment>
     </data>
-    <data name="RenderAsync:MoodleOnly" xml:space="preserve">
-        <value>Ein Login ist nur über den Moodlekurs möglich.</value>
-        <comment>MoodleOnly</comment>
-    </data>
     <data name="AdminLoginAsUserAsync:Success" xml:space="preserve">
         <value>Login als {0} erfolgreich.</value>
         <comment>AdminLoginAsUserAsync:Success</comment>
@@ -66,10 +62,6 @@
         <value>Ein Fehler ist aufgetreten.</value>
         <comment>HandleGroupSelectionAsync:UnknownError</comment>
     </data>
-    <data name="HandleGroupSelectionAsync:SuccessInfo" xml:space="preserve">
-        <value>Bitte loggen Sie sich erneut ein, um die Registrierung abzuschließen.</value>
-        <comment>HandleGroupSelectionAsync:SuccessInfo</comment>
-    </data>
     <data name="LoginMoodleAsync:InvalidLogin" xml:space="preserve">
         <value>Ungültiger Login.</value>
         <comment>LoginMoodleAsync:InvalidLogin</comment>
@@ -81,5 +73,26 @@
     <data name="LoginMoodleAsync:Success" xml:space="preserve">
         <value>Login erfolgreich.</value>
         <comment>LoginMoodleAsync:Success</comment>
+    </data>
+    <data name="ChangeSettingsAsync:PasswordsDoNotMatch" xml:space="preserve">
+        <value>Die beiden Angaben für das neue Passwort stimmen nicht überein.</value>
+    </data>
+    <data name="ChangeSettingsAsync:Success" xml:space="preserve">
+        <value>Aktualisieren der Einstellungen erfolgreich.</value>
+    </data>
+    <data name="ChangeSettingsAsync:WrongOldPassword" xml:space="preserve">
+        <value>Das angegebene alte Passwort ist falsch.</value>
+    </data>
+    <data name="ChangeSettingsAsync:WrongPasswordFormat" xml:space="preserve">
+        <value>Das neue Passwort muss mindestens 8 Zeichen lang sein.</value>
+    </data>
+    <data name="PasswordLoginAsync:RateLimited" xml:space="preserve">
+        <value>Die Anzahl der erlaubten Login-Versuche wurde überschritten. Bitte warten Sie einige Minuten, oder nutzen Sie den Moodle-basierten Login.</value>
+    </data>
+    <data name="PasswordLoginAsync:Success" xml:space="preserve">
+        <value>Login erfolgreich.</value>
+    </data>
+    <data name="PasswordLoginAsync:WrongPassword" xml:space="preserve">
+        <value>Diese Kombination aus Benutzername und Passwort ist ungültig.</value>
     </data>
 </root>

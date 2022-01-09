@@ -79,6 +79,42 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The new passwords do not match..
+        /// </summary>
+        internal static string ChangeSettingsAsync_PasswordsDoNotMatch {
+            get {
+                return ResourceManager.GetString("ChangeSettingsAsync:PasswordsDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating settings successful..
+        /// </summary>
+        internal static string ChangeSettingsAsync_Success {
+            get {
+                return ResourceManager.GetString("ChangeSettingsAsync:Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The old password is incorrect..
+        /// </summary>
+        internal static string ChangeSettingsAsync_WrongOldPassword {
+            get {
+                return ResourceManager.GetString("ChangeSettingsAsync:WrongOldPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The new password must be non-empty and at least 8 characters long..
+        /// </summary>
+        internal static string ChangeSettingsAsync_WrongPasswordFormat {
+            get {
+                return ResourceManager.GetString("ChangeSettingsAsync:WrongPasswordFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This user does not exist..
         /// </summary>
         internal static string DevLoginAsync_NotFound {
@@ -120,15 +156,6 @@ namespace Ctf4e.Server.Resources.Controllers {
         internal static string HandleGroupSelectionAsync_Success {
             get {
                 return ResourceManager.GetString("HandleGroupSelectionAsync:Success", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please login again, to complete the registration..
-        /// </summary>
-        internal static string HandleGroupSelectionAsync_SuccessInfo {
-            get {
-                return ResourceManager.GetString("HandleGroupSelectionAsync:SuccessInfo", resourceCulture);
             }
         }
         
@@ -196,11 +223,29 @@ namespace Ctf4e.Server.Resources.Controllers {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Login is only possible via the Moodle course..
+        ///   Looks up a localized string similar to Allowed number of login attempts exceeded. Please wait for a few minutes, or try to login via Moodle..
         /// </summary>
-        internal static string RenderAsync_MoodleOnly {
+        internal static string PasswordLoginAsync_RateLimited {
             get {
-                return ResourceManager.GetString("RenderAsync:MoodleOnly", resourceCulture);
+                return ResourceManager.GetString("PasswordLoginAsync:RateLimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login successful..
+        /// </summary>
+        internal static string PasswordLoginAsync_Success {
+            get {
+                return ResourceManager.GetString("PasswordLoginAsync:Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This username/password combination is invalid..
+        /// </summary>
+        internal static string PasswordLoginAsync_WrongPassword {
+            get {
+                return ResourceManager.GetString("PasswordLoginAsync:WrongPassword", resourceCulture);
             }
         }
     }

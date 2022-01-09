@@ -79,7 +79,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Done? Great! Please check all inputs once again. After the group has been created, you will be logged out and need to login again. Then, you will have access to your group dashboard..
+        ///   Looks up a localized string similar to Done? Great! Please check all inputs once again. If everything looks fine, you can click &quot;Create group&quot;. The system will then create a new group and redirect you to the lab dashboard..
         /// </summary>
         internal static string Form_FinalText {
             get {

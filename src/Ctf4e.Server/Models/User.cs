@@ -23,6 +23,8 @@ public class User
         
     public UserPrivileges Privileges { get; set; }
     
+    public string PasswordHash { get; set; }
+    
     public bool IsTutor { get; set; }
 
     public string GroupFindingCode { get; set; }

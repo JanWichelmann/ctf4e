@@ -59,207 +59,218 @@
 </head>
 <body class="d-flex flex-column">
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom px-2">
-        <div class="container">
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom px-2">
+<div class="container">
 
-            <a class="navbar-brand" asp-controller="Scoreboard" asp-action="RenderScoreboard">
-                <i class="bi bi-flag"></i>
-                @ViewData["NavbarTitle"]
-            </a>
+<a class="navbar-brand" asp-controller="Scoreboard" asp-action="RenderScoreboard">
+    <i class="bi bi-flag"></i>
+    @ViewData["NavbarTitle"]
+</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="@_localizer["ToggleNavbar"]">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="@_localizer["ToggleNavbar"]">
+    <span class="navbar-toggler-icon"></span>
+</button>
 
-            <div class="collapse navbar-collapse" id="navbar-content">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    @if(currentUser != null)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "active" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">
-                                @_localizer["MenuItems:Scoreboard"]
-                            </a>
-                        </li>
-                        if(currentUser.Group != null)
+<div class="collapse navbar-collapse" id="navbar-content">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        @if(currentUser != null)
+        {
+            <li class="nav-item">
+                <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "active" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">
+                    @_localizer["MenuItems:Scoreboard"]
+                </a>
+            </li>
+            if(currentUser.Group != null)
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage">
+                        @_localizer["MenuItems:Dashboard"]
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "active" : "")" asp-controller="Authentication" asp-action="ShowGroupForm">
+                        @_localizer["MenuItems:CreateGroup"]
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+
+    @if(currentUser != null)
+    {
+        bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration
+                               || activeMenuItem == MenuItems.AdminExercises
+                               || activeMenuItem == MenuItems.AdminFlags
+                               || activeMenuItem == MenuItems.AdminGroups
+                               || activeMenuItem == MenuItems.AdminLabExecutions
+                               || activeMenuItem == MenuItems.AdminLabs
+                               || activeMenuItem == MenuItems.AdminScoreboard
+                               || activeMenuItem == MenuItems.AdminSlots
+                               || activeMenuItem == MenuItems.AdminUsers;
+
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            @if(currentUser.Privileges != UserPrivileges.Default)
+            {
+                <li class="nav-item dropdown me-4">
+                    <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" id="admin-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @_localizer["MenuItems:Admin"]
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="admin-dropdown">
+                        @{
+                            bool adminMenuItemAdminScoreboard = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard);
+                            bool adminMenuItemUsers = currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewUsers | UserPrivileges.Admin);
+                            bool adminMenuItemGroups = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewGroups);
+                            bool adminMenuItemLabs = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewLabs);
+                            bool adminMenuItemSlots = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewSlots);
+                            bool adminMenuItemLabExecutions = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewLabExecutions);
+                            bool adminMenuItemConfiguration = currentUser.Privileges.HasPrivileges(UserPrivileges.EditConfiguration);
+
+                            // For deciding whether to insert a divider
+                            bool lastWasDivider = true;
+                        }
+                        @if(adminMenuItemAdminScoreboard)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage">
-                                    @_localizer["MenuItems:Dashboard"]
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">
+                                    <i class="bi bi-bookmark-star text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:AdminScoreboard"]
+                                </a>
+                            </li>
+
+                            lastWasDivider = false;
+                        }
+                        @if(!lastWasDivider && (adminMenuItemUsers || adminMenuItemGroups))
+                        {
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            lastWasDivider = true;
+                        }
+                        @if(adminMenuItemUsers)
+                        {
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" asp-controller="AdminUsers" asp-action="RenderUserList">
+                                    <i class="bi bi-person text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:Users"]
+                                </a>
+                            </li>
+
+                            lastWasDivider = false;
+                        }
+                        @if(adminMenuItemGroups)
+                        {
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" asp-controller="AdminGroups" asp-action="RenderGroupList">
+                                    <i class="bi bi-people text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:Groups"]
+                                </a>
+                            </li>
+
+                            lastWasDivider = false;
+                        }
+                        @if(!lastWasDivider && (adminMenuItemLabs || adminMenuItemSlots))
+                        {
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            lastWasDivider = true;
+                        }
+                        @if(adminMenuItemLabs)
+                        {
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">
+                                    <i class="bi bi-book text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:Labs"]
+                                </a>
+                            </li>
+
+                            lastWasDivider = false;
+                        }
+                        @if(adminMenuItemSlots)
+                        {
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" asp-controller="AdminSlots" asp-action="RenderSlotList">
+                                    <i class="bi bi-calendar-day text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:Slots"]
+                                </a>
+                            </li>
+
+                            lastWasDivider = false;
+                        }
+                        @if(!lastWasDivider && adminMenuItemLabExecutions)
+                        {
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            lastWasDivider = true;
+                        }
+                        @if(adminMenuItemLabExecutions)
+                        {
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">
+                                    <i class="bi bi-calendar-range text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:LabExecutions"]
+                                </a>
+                            </li>
+
+                            lastWasDivider = false;
+                        }
+                        @if(!lastWasDivider && adminMenuItemConfiguration)
+                        {
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                        }
+                        @if(adminMenuItemConfiguration)
+                        {
+                            <li>
+                                <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="Render">
+                                    <i class="bi bi-gear text-secondary"></i>
+                                    @_localizer["MenuItems:Admin:Configuration"]
                                 </a>
                             </li>
                         }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link @(activeMenuItem == MenuItems.Authentication ? "active" : "")" asp-controller="Authentication" asp-action="ShowGroupForm">
-                                    @_localizer["MenuItems:CreateGroup"]
-                                </a>
-                            </li>
-                        }
-                    }
-                </ul>
-
-                @if(currentUser != null)
-                {
-                    bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration
-                                           || activeMenuItem == MenuItems.AdminExercises
-                                           || activeMenuItem == MenuItems.AdminFlags
-                                           || activeMenuItem == MenuItems.AdminGroups
-                                           || activeMenuItem == MenuItems.AdminLabExecutions
-                                           || activeMenuItem == MenuItems.AdminLabs
-                                           || activeMenuItem == MenuItems.AdminScoreboard
-                                           || activeMenuItem == MenuItems.AdminSlots
-                                           || activeMenuItem == MenuItems.AdminUsers;
-
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        @if(currentUser.Privileges != UserPrivileges.Default)
-                        {
-                            <li class="nav-item dropdown me-4">
-                                <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" id="admin-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    @_localizer["MenuItems:Admin"]
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="admin-dropdown">
-                                    @{
-                                        bool adminMenuItemAdminScoreboard = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard);
-                                        bool adminMenuItemUsers = currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewUsers | UserPrivileges.Admin);
-                                        bool adminMenuItemGroups = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewGroups);
-                                        bool adminMenuItemLabs = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewLabs);
-                                        bool adminMenuItemSlots = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewSlots);
-                                        bool adminMenuItemLabExecutions = currentUser.Privileges.HasPrivileges(UserPrivileges.ViewLabExecutions);
-                                        bool adminMenuItemConfiguration = currentUser.Privileges.HasPrivileges(UserPrivileges.EditConfiguration);
-
-                                        // For deciding whether to insert a divider
-                                        bool lastWasDivider = true;
-                                    }
-                                    @if(adminMenuItemAdminScoreboard)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">
-                                                <i class="bi bi-bookmark-star text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:AdminScoreboard"]
-                                            </a>
-                                        </li>
-
-                                        lastWasDivider = false;
-                                    }
-                                    @if(!lastWasDivider && (adminMenuItemUsers || adminMenuItemGroups))
-                                    {
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-
-                                        lastWasDivider = true;
-                                    }
-                                    @if(adminMenuItemUsers)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminUsers ? "text-primary" : "")" asp-controller="AdminUsers" asp-action="RenderUserList">
-                                                <i class="bi bi-person text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:Users"]
-                                            </a>
-                                        </li>
-
-                                        lastWasDivider = false;
-                                    }
-                                    @if(adminMenuItemGroups)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminGroups ? "text-primary" : "")" asp-controller="AdminGroups" asp-action="RenderGroupList">
-                                                <i class="bi bi-people text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:Groups"]
-                                            </a>
-                                        </li>
-
-                                        lastWasDivider = false;
-                                    }
-                                    @if(!lastWasDivider && (adminMenuItemLabs || adminMenuItemSlots))
-                                    {
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-
-                                        lastWasDivider = true;
-                                    }
-                                    @if(adminMenuItemLabs)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabs || activeMenuItem == MenuItems.AdminExercises || activeMenuItem == MenuItems.AdminFlags ? "text-primary" : "")" asp-controller="AdminLabs" asp-action="RenderLabList">
-                                                <i class="bi bi-book text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:Labs"]
-                                            </a>
-                                        </li>
-
-                                        lastWasDivider = false;
-                                    }
-                                    @if(adminMenuItemSlots)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminSlots ? "text-primary" : "")" asp-controller="AdminSlots" asp-action="RenderSlotList">
-                                                <i class="bi bi-calendar-day text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:Slots"]
-                                            </a>
-                                        </li>
-
-                                        lastWasDivider = false;
-                                    }
-                                    @if(!lastWasDivider && adminMenuItemLabExecutions)
-                                    {
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-
-                                        lastWasDivider = true;
-                                    }
-                                    @if(adminMenuItemLabExecutions)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminLabExecutions ? "text-primary" : "")" asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList">
-                                                <i class="bi bi-calendar-range text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:LabExecutions"]
-                                            </a>
-                                        </li>
-
-                                        lastWasDivider = false;
-                                    }
-                                    @if(!lastWasDivider && adminMenuItemConfiguration)
-                                    {
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                    }
-                                    @if(adminMenuItemConfiguration)
-                                    {
-                                        <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="Render">
-                                                <i class="bi bi-gear text-secondary"></i>
-                                                @_localizer["MenuItems:Admin:Configuration"]
-                                            </a>
-                                        </li>
-                                    }
-                                </ul>
-                            </li>
-                        }
-
-                        <!-- Profile -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle fw-bold @(activeMenuItem == MenuItems.Authentication ? "active" : "")" href="#" id="auth-dropdown" role="button" data-bs-toggle="dropdown">
-                                @currentUser.DisplayName
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="auth-dropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
-                                        <i class="bi bi-door-closed text-secondary"></i>
-                                        @_localizer["MenuItems:Logout"]
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
                     </ul>
-                }
-            </div>
-        </div>
-    </nav>
+                </li>
+            }
+
+            <!-- Profile -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle fw-bold @(activeMenuItem == MenuItems.Authentication ? "active" : "")" href="#" id="auth-dropdown" role="button" data-bs-toggle="dropdown">
+                    @currentUser.DisplayName
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="auth-dropdown">
+                    <li>
+                        <a class="dropdown-item" asp-controller="Authentication" asp-action="ShowSettingsForm">
+                            <i class="bi bi-sliders text-secondary"></i>
+                            @_localizer["MenuItems:Settings"]
+                        </a>
+                    </li>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
+                            <i class="bi bi-door-closed text-secondary"></i>
+                            @_localizer["MenuItems:Logout"]
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    }
+</div>
+</div>
+</nav>
 </header>
 
 @if(statusMessages.Any())

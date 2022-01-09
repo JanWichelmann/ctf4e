@@ -24,6 +24,10 @@ public class UserEntity
     [Required]
     public UserPrivileges Privileges { get; set; }
     
+    [Required(AllowEmptyStrings = true)]
+    [StringLength(200)]
+    public string PasswordHash { get; set; }
+    
     public bool IsTutor { get; set; }
 
     [Required]

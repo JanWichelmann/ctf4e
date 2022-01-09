@@ -70,6 +70,24 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create group.
+        /// </summary>
+        internal static string HtmlTitle_GroupSelection {
+            get {
+                return ResourceManager.GetString("HtmlTitle:GroupSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account settings.
+        /// </summary>
+        internal static string HtmlTitle_Settings {
+            get {
+                return ResourceManager.GetString("HtmlTitle:Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Redirecting....
         /// </summary>
         internal static string Redirecting {

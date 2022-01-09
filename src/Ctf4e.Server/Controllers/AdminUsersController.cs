@@ -48,7 +48,7 @@ public class AdminUsersController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            var user = await _userService.FindByIdAsync(id.Value, HttpContext.RequestAborted);
+            var user = await _userService.FindUserByIdAsync(id.Value, HttpContext.RequestAborted);
             if(user == null)
             {
                 AddStatusMessage(_localizer["ShowEditUserFormAsync:NotFound"], StatusMessageTypes.Error);
@@ -116,7 +116,7 @@ public class AdminUsersController : ControllerBase
         try
         {
             // Retrieve edited user from database and apply changes
-            var user = await _userService.FindByIdAsync(userData.Id, HttpContext.RequestAborted);
+            var user = await _userService.FindUserByIdAsync(userData.Id, HttpContext.RequestAborted);
             user.DisplayName = userData.DisplayName;
             user.IsTutor = userData.IsTutor;
             user.GroupFindingCode = userData.GroupFindingCode;

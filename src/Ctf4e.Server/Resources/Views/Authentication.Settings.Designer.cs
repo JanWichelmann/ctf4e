@@ -22,14 +22,14 @@ namespace Ctf4e.Server.Resources.Views {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Authentication_DevLogin_de {
+    internal class Authentication_Settings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Authentication_DevLogin_de() {
+        internal Authentication_Settings() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Ctf4e.Server.Resources.Views {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ctf4e.Server.Resources.Views.Authentication.DevLogin.de", typeof(Authentication_DevLogin_de).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ctf4e.Server.Resources.Views.Authentication.Settings", typeof(Authentication_Settings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,43 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Anmelden.
+        ///   Looks up a localized string similar to User name.
+        /// </summary>
+        internal static string Form_MoodleName {
+            get {
+                return ResourceManager.GetString("Form:MoodleName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New password (at least 8 characters).
+        /// </summary>
+        internal static string Form_NewPassword {
+            get {
+                return ResourceManager.GetString("Form:NewPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repeat new password.
+        /// </summary>
+        internal static string Form_NewPassword2 {
+            get {
+                return ResourceManager.GetString("Form:NewPassword2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Old password (only needed when a password is already set).
+        /// </summary>
+        internal static string Form_OldPassword {
+            get {
+                return ResourceManager.GetString("Form:OldPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update settings.
         /// </summary>
         internal static string Form_Submit {
             get {
@@ -70,16 +106,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Benutzer auswählen.
-        /// </summary>
-        internal static string Form_UserId {
-            get {
-                return ResourceManager.GetString("Form:UserId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Entwickler-Login.
+        ///   Looks up a localized string similar to Account settings.
         /// </summary>
         internal static string Title {
             get {

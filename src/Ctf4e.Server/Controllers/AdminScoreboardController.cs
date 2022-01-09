@@ -190,7 +190,7 @@ public class AdminScoreboardController : ControllerBase
         }
 
         // Build authentication string
-        var user = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
+        var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         var group = user.GroupId == null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1, HttpContext.RequestAborted);
         var authData = new UserLoginRequest
         {

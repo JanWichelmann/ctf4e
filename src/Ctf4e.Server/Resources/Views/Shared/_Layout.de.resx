@@ -62,4 +62,7 @@
         <value>Navigation umschalten</value>
         <comment>ToggleNavbar</comment>
     </data>
+    <data name="MenuItems:Settings" xml:space="preserve">
+        <value>Einstellungen</value>
+    </data>
 </root>

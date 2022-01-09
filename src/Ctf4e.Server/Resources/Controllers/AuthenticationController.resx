@@ -42,10 +42,6 @@
         <value>The group was created successfully.</value>
         <comment>HandleGroupSelectionAsync:Success</comment>
     </data>
-    <data name="RenderAsync:MoodleOnly" xml:space="preserve">
-        <value>Login is only possible via the Moodle course.</value>
-        <comment>MoodleOnly</comment>
-    </data>
     <data name="AdminLoginAsUserAsync:Success" xml:space="preserve">
         <value>Login as {0} successful.</value>
         <comment>AdminLoginAsUserAsync:Success</comment>
@@ -66,10 +62,6 @@
         <value>An error has occured.</value>
         <comment>HandleGroupSelectionAsync:UnknownError</comment>
     </data>
-    <data name="HandleGroupSelectionAsync:SuccessInfo" xml:space="preserve">
-        <value>Please login again, to complete the registration.</value>
-        <comment>HandleGroupSelectionAsync:SuccessInfo</comment>
-    </data>
     <data name="LoginMoodleAsync:InvalidLogin" xml:space="preserve">
         <value>Invalid login.</value>
         <comment>LoginMoodleAsync:InvalidLogin</comment>
@@ -81,5 +73,26 @@
     <data name="LoginMoodleAsync:Success" xml:space="preserve">
         <value>Login successful.</value>
         <comment>LoginMoodleAsync:Success</comment>
+    </data>
+    <data name="ChangeSettingsAsync:WrongOldPassword" xml:space="preserve">
+        <value>The old password is incorrect.</value>
+    </data>
+    <data name="ChangeSettingsAsync:PasswordsDoNotMatch" xml:space="preserve">
+        <value>The new passwords do not match.</value>
+    </data>
+    <data name="ChangeSettingsAsync:WrongPasswordFormat" xml:space="preserve">
+        <value>The new password must be non-empty and at least 8 characters long.</value>
+    </data>
+    <data name="ChangeSettingsAsync:Success" xml:space="preserve">
+        <value>Updating settings successful.</value>
+    </data>
+    <data name="PasswordLoginAsync:RateLimited" xml:space="preserve">
+        <value>Allowed number of login attempts exceeded. Please wait for a few minutes, or try to login via Moodle.</value>
+    </data>
+    <data name="PasswordLoginAsync:WrongPassword" xml:space="preserve">
+        <value>This username/password combination is invalid.</value>
+    </data>
+    <data name="PasswordLoginAsync:Success" xml:space="preserve">
+        <value>Login successful.</value>
     </data>
 </root>

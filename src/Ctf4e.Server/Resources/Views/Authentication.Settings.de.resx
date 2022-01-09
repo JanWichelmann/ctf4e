@@ -19,15 +19,21 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Title" xml:space="preserve">
-        <value>Entwickler-Login</value>
-        <comment>Title</comment>
+        <value>Einstellungen</value>
     </data>
-    <data name="Form:UserId" xml:space="preserve">
-        <value>Benutzer auswählen</value>
-        <comment>Form:UserId</comment>
+    <data name="Form:NewPassword" xml:space="preserve">
+        <value>Neues Passwort (mindestens 8 Zeichen)</value>
+    </data>
+    <data name="Form:NewPassword2" xml:space="preserve">
+        <value>Neues Passwort wiederholen</value>
+    </data>
+    <data name="Form:OldPassword" xml:space="preserve">
+        <value>Altes Passwort (nur notwendig wenn bereits ein Passwort gesetzt ist)</value>
     </data>
     <data name="Form:Submit" xml:space="preserve">
-        <value>Anmelden</value>
-        <comment>Form:Submit</comment>
+        <value>Änderungen speichern</value>
+    </data>
+    <data name="Form:MoodleName" xml:space="preserve">
+        <value>Benutzername</value>
     </data>
 </root>

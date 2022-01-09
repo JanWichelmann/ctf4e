@@ -59,7 +59,7 @@
         <comment>Form:ShowInScoreboard:Description</comment>
     </data>
     <data name="Form:FinalText" xml:space="preserve">
-        <value>Done? Great! Please check all inputs once again. After the group has been created, you will be logged out and need to login again. Then, you will have access to your group dashboard.</value>
+        <value>Done? Great! Please check all inputs once again. If everything looks fine, you can click "Create group". The system will then create a new group and redirect you to the lab dashboard.</value>
         <comment>Form:FinalText</comment>
     </data>
     <data name="Form:Submit" xml:space="preserve">

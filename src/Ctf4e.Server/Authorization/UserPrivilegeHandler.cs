@@ -31,7 +31,7 @@ public class UserPrivilegeHandler : IAuthorizationHandler
         if(userIdClaim == null)
             return;
         int userId = int.Parse(userIdClaim.Value);
-        var user = await userService.FindByIdAsync(userId, (context.Resource as HttpContext)?.RequestAborted ?? CancellationToken.None);
+        var user = await userService.FindUserByIdAsync(userId, (context.Resource as HttpContext)?.RequestAborted ?? CancellationToken.None);
 
         // If the user does not exist, deny all access
         if(user == null)

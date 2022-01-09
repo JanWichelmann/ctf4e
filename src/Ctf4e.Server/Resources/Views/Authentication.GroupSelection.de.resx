@@ -59,7 +59,7 @@
         <comment>Form:ShowInScoreboard:Description</comment>
     </data>
     <data name="Form:FinalText" xml:space="preserve">
-        <value>Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben. Nach erfolgreichem Erstellen der Gruppe werden Sie automatisch ausgeloggt und müssen sich einmal erneut einloggen. Im Anschluss haben Sie Zugriff auf den Arbeitsbereich Ihrer Gruppe.</value>
+        <value>Alles ausgefüllt? Super! Bitte überprüfen Sie sicherheitshalber nochmal alle Angaben. Anschließend klicken Sie auf "Gruppe erstellen". Das System wird dann eine neue Gruppe anlegen und Sie zum Arbeitsbereich Ihrer neuen Gruppe weiterleiten.</value>
         <comment>Form:FinalText</comment>
     </data>
     <data name="Form:Submit" xml:space="preserve">

@@ -11,32 +11,41 @@
     var currentUser = (User)ViewData["CurrentUser"];
 }
 
-<div class="container">
-    @if(viewType == AuthenticationController.ViewType.Blank)
+@if(viewType == AuthenticationController.ViewType.Redirect)
+{
+    if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
     {
-        // Status messages only
-
-        // In development mode, show admin login
-        <environment include="Development">
-            <partial name="Authentication.DevLogin.cshtml" />
-        </environment>
-    }
-    else if(viewType == AuthenticationController.ViewType.Redirect)
-    {
-        if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-        {
+        <div class="container">
             <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">@_localizer["Redirecting"]</a>
-        }
-        else
-        {
-            <a asp-controller="UserDashboard" asp-action="RenderLabPage">@_localizer["Redirecting"]</a>
-        }
+        </div>
     }
-    else if(viewType == AuthenticationController.ViewType.GroupSelection)
+    else
     {
-        <partial name="Authentication.GroupSelection.cshtml" />
+        <div class="container">
+            <a asp-controller="UserDashboard" asp-action="RenderLabPage">@_localizer["Redirecting"]</a>
+        </div>
     }
-</div>
+}
+else if(viewType == AuthenticationController.ViewType.Login)
+{
+    <partial name="Authentication.Login.cshtml" />
+}
+else if(viewType == AuthenticationController.ViewType.GroupSelection)
+{
+    ViewData["Title"] = _localizer["HtmlTitle:GroupSelection"];
+
+    <div class="container">
+        <partial name="Authentication.GroupSelection.cshtml" />
+    </div>
+}
+else if(viewType == AuthenticationController.ViewType.Settings)
+{
+    ViewData["Title"] = _localizer["HtmlTitle:Settings"];
+
+    <div class="container">
+        <partial name="Authentication.Settings.cshtml" />
+    </div>
+}
 
 @section ScriptsHead
 {

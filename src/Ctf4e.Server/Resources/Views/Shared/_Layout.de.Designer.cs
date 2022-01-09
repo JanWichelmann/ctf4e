@@ -178,6 +178,15 @@ namespace Ctf4e.Server.Resources.Views.Shared {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Einstellungen.
+        /// </summary>
+        internal static string MenuItems_Settings {
+            get {
+                return ResourceManager.GetString("MenuItems:Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Navigation umschalten.
         /// </summary>
         internal static string ToggleNavbar {

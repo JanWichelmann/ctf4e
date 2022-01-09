@@ -26,4 +26,10 @@
         <value>Redirecting...</value>
         <comment>Redirecting</comment>
     </data>
+    <data name="HtmlTitle:Settings" xml:space="preserve">
+        <value>Account settings</value>
+    </data>
+    <data name="HtmlTitle:GroupSelection" xml:space="preserve">
+        <value>Create group</value>
+    </data>
 </root>

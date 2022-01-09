@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
-using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,9 +17,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
-
-// TODO settings form
-// TODO no re-login after creating a group
 
 [Route("auth")]
 public partial class AuthenticationController : ControllerBase
@@ -51,21 +46,40 @@ public partial class AuthenticationController : ControllerBase
         ViewData["ViewType"] = viewType;
         return RenderViewAsync(MenuItems.Authentication, model);
     }
-
+    
     [HttpGet]
-    public async Task<IActionResult> RenderAsync()
+    public async Task<IActionResult> ShowLoginFormAsync(string returnUrl)
     {
         // Logged in?
         var currentUser = await GetCurrentUserAsync();
+        if(currentUser != null) 
+            return await ShowRedirectAsync(null); // Redirect to any page the user has access to
+        
+        if(!string.IsNullOrWhiteSpace(returnUrl))
+            ViewData["Referer"] = returnUrl;
+        return await RenderAsync(ViewType.Login);
+
+    }
+
+    private async Task<IActionResult> ShowRedirectAsync(string redirectUrl)
+    {
+        // Redirect to the given URL. If no URL is specified, try to pick a valid one, depending on the user's privileges
+        var currentUser = await GetCurrentUserAsync();
         if(currentUser == null)
+            return await ShowLoginFormAsync(null);
+
+        if(redirectUrl == null)
         {
-            AddStatusMessage(_localizer["RenderAsync:MoodleOnly"], StatusMessageTypes.Info);
-            return await RenderAsync(ViewType.Blank);
+            if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
+                redirectUrl = Url.Action("RenderScoreboard", "AdminScoreboard");
+            else if(currentUser.GroupId == null)
+                redirectUrl = Url.Action("ShowGroupForm", "Authentication");
+            else
+                redirectUrl = Url.Action("RenderLabPage", "UserDashboard");
         }
 
-        // Assigned to group?
-        if(currentUser.Group == null)
-            return RedirectToAction("ShowGroupForm", "Authentication"); // Cookie is already set, so redirection is safe
+        ViewData["RedirectUrl"] = redirectUrl;
+
         return await RenderAsync(ViewType.Redirect);
     }
 
@@ -80,14 +94,14 @@ public partial class AuthenticationController : ControllerBase
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser != null)
-            return await RenderAsync(ViewType.Redirect);
+            return await ShowRedirectAsync(null); // Redirect to any page the user has access to
 
         // Find user
-        var user = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
+        var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
             AddStatusMessage(_localizer["DevLoginAsync:NotFound"], StatusMessageTypes.Error);
-            return await RenderAsync(ViewType.Blank);
+            return await RenderAsync(ViewType.Login);
         }
 
         // Sign in user
@@ -95,30 +109,26 @@ public partial class AuthenticationController : ControllerBase
 
         // Done
         AddStatusMessage(_localizer["DevLoginAsync:Success"], StatusMessageTypes.Success);
-        if(user.Group == null)
-            return await ShowGroupFormAsync();
-        return await RenderAsync(ViewType.Redirect);
+        return await ShowRedirectAsync(null); // Redirect to any page the user has access to
     }
 
     [HttpGet("login/as")]
     public async Task<IActionResult> AdminLoginAsUserAsync(int userId)
     {
         // Try to retrieve user
-        var user = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
+        var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
             AddStatusMessage(_localizer["AdminLoginAsUserAsync:NotFound"], StatusMessageTypes.Error);
-            return await RenderAsync(ViewType.Blank);
+            return await RenderAsync(ViewType.Login);
         }
 
-        // Sign in again, as given user
+        // Sign in again, but as another user
         await DoLoginAsync(user);
 
         // Done
         AddStatusMessage(_localizer["AdminLoginAsUserAsync:Success", user.DisplayName], StatusMessageTypes.Success);
-        if(user.Group == null)
-            return await ShowGroupFormAsync();
-        return await RenderAsync(ViewType.Redirect);
+        return await ShowRedirectAsync(null); // Redirect to any page the user has access to
     }
 #endif
 
@@ -156,102 +166,14 @@ public partial class AuthenticationController : ControllerBase
 
         // Done
         AddStatusMessage(_localizer["LogoutAsync:Success"], StatusMessageTypes.Success);
-        return await RenderAsync(ViewType.Blank);
-    }
-
-    private async Task<IActionResult> ShowGroupFormAsync(GroupSelection groupSelection)
-    {
-        // Pass slots
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
-
-        return await RenderAsync(ViewType.GroupSelection, groupSelection);
-    }
-
-    [HttpGet("selgroup")]
-    [Authorize]
-    public Task<IActionResult> ShowGroupFormAsync()
-    {
-        return ShowGroupFormAsync(null);
-    }
-
-    [HttpPost("selgroup")]
-    [Authorize]
-    public async Task<IActionResult> HandleGroupSelectionAsync(GroupSelection groupSelection)
-    {
-        // Some input validation
-        if(!ModelState.IsValid)
-        {
-            AddStatusMessage(_localizer["HandleGroupSelectionAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowGroupFormAsync(groupSelection);
-        }
-            
-        // Does the user already have a group?
-        var currentUser = await GetCurrentUserAsync();
-        if(currentUser.Group != null)
-            return RedirectToAction("RenderScoreboard", "Scoreboard");
-
-        // Try to create group
-        try
-        {
-            // Filter group codes
-            var groupSizeMin = await _configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted);
-            var groupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted);
-            var codes = groupSelection.OtherUserCodes
-                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-                .Where(c => !string.IsNullOrWhiteSpace(c))
-                .Append(currentUser.GroupFindingCode)
-                .Select(c => c.Trim())
-                .Distinct()
-                .ToList();
-            if(codes.Count < groupSizeMin)
-            {
-                AddStatusMessage(_localizer["HandleGroupSelectionAsync:TooFewCodes", groupSizeMin], StatusMessageTypes.Error);
-                return await ShowGroupFormAsync(groupSelection);
-            }
-            if(codes.Count > groupSizeMax)
-            {
-                AddStatusMessage(_localizer["HandleGroupSelectionAsync:TooManyCodes", groupSizeMax], StatusMessageTypes.Error);
-                return await ShowGroupFormAsync(groupSelection);
-            }
-                
-            // Create group
-            // The service method will do further error checking (i.e., validity of codes, whether users are already in a group, ...)
-            var group = new Group
-            {
-                DisplayName = groupSelection.DisplayName,
-                SlotId = groupSelection.SlotId,
-                ShowInScoreboard = groupSelection.ShowInScoreboard
-            };
-            await _userService.CreateGroupAsync(group, codes, HttpContext.RequestAborted);
-        }
-        catch(ArgumentException)
-        {
-            AddStatusMessage(_localizer["HandleGroupSelectionAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowGroupFormAsync(groupSelection);
-        }
-        catch(InvalidOperationException)
-        {
-            AddStatusMessage(_localizer["HandleGroupSelectionAsync:CodeAlreadyAssigned"], StatusMessageTypes.Error);
-            return await ShowGroupFormAsync(groupSelection);
-        }
-        catch(Exception ex)
-        {
-            // Should only happen on larger database failures or when users mess around with the input model
-            _logger.LogError(ex, "Create group");
-            AddStatusMessage(_localizer["HandleGroupSelectionAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowGroupFormAsync(groupSelection);
-        }
-
-        // Success
-        AddStatusMessage(_localizer["HandleGroupSelectionAsync:Success"], StatusMessageTypes.Success);
-        AddStatusMessage(_localizer["HandleGroupSelectionAsync:SuccessInfo"], StatusMessageTypes.Info);
-        return await LogoutAsync();
+        return await RenderAsync(ViewType.Login);
     }
 
     public enum ViewType
     {
-        Blank,
+        Login,
         GroupSelection,
+        Settings,
         Redirect
     }
 }

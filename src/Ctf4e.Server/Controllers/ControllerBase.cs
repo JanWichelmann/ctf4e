@@ -49,7 +49,7 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     /// <returns></returns>
     protected async Task HandleUserLoginAsync(int userId)
     {
-        _currentUser = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
+        _currentUser = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
         {
             // Retrieve user data
             int userId = int.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserId).Value);
-            _currentUser = await _userService.FindByIdAsync(userId, HttpContext.RequestAborted);
+            _currentUser = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         }
     }
 
