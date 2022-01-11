@@ -28,13 +28,13 @@
     <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">@_localizer["SwitchScoreboard:Lab"]</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-control">
+            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-select">
                 <option value="" disabled selected>@_localizer["SwitchScoreboard:Lab:Placeholder"]</option>
             </select>
         </div>
         <div class="mb-3">
             <label class="form-label" for="input-slot-id">@_localizer["SwitchScoreboard:Slot"]</label>
-            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-control">
+            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-select">
                 <option value="" disabled selected>@_localizer["SwitchScoreboard:Slot:Placeholder"]</option>
             </select>
         </div>

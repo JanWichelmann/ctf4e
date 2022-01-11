@@ -82,7 +82,7 @@
 
                         <div class="mb-3">
                             <label class="form-label" for="input-user-id">@_localizer["DevLogin:UserId"]</label>
-                            <select id="input-user-id" name="userId" class="form-control">
+                            <select id="input-user-id" name="userId" class="form-select">
                                 @foreach(var user in users.OrderBy(u => u.Id))
                                 {
                                     <option value="@user.Id">#@user.Id: @user.DisplayName</option>

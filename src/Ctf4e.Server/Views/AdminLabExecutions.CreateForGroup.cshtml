@@ -15,13 +15,13 @@
 <form asp-controller="AdminLabExecutions" asp-action="CreateLabExecutionForGroup" method="post">
     <div class="mb-3">
         <label class="form-label" asp-for="LabExecution.LabId">@_localizer["Form:LabId"]</label>
-        <select asp-for="LabExecution.LabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-control">
+        <select asp-for="LabExecution.LabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-select">
             <option value="" disabled selected>@_localizer["Form:LabId:Placeholder"]</option>
         </select>
     </div>
     <div class="mb-3">
         <label class="form-label" asp-for="LabExecution.GroupId">@_localizer["Form:GroupId"]</label>
-        <select asp-for="LabExecution.GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
+        <select asp-for="LabExecution.GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-select">
             <option value="" disabled selected>@_localizer["Form:GroupId:Placeholder"]</option>
         </select>
     </div>

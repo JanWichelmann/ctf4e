@@ -196,13 +196,13 @@
         }
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">@_localizer["SelectScoreboard"]</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-control">
+            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-select">
                 <option value="" selected>@_localizer["AllLabs"]</option>
             </select>
         </div>
         <div class="mb-3">
             <label class="form-label" for="input-slot-id">@_localizer["SelectSlot"]</label>
-            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-control">
+            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-select">
                 <option value="" selected>@_localizer["AllSlots"]</option>
             </select>
         </div>

@@ -37,7 +37,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label" asp-for="GroupId">@_localizer["Form:GroupId"]</label>
-        <select asp-for="GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-control">
+        <select asp-for="GroupId" asp-items="@(new SelectList(groups, nameof(Group.Id), nameof(Group.DisplayName)))" class="form-select">
             <option value="" selected>@_localizer["Form:GroupId:None"]</option>
         </select>
     </div>

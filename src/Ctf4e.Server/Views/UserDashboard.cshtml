@@ -254,7 +254,7 @@
     <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">@_localizer["Lab"]</label>
-            <select id="input-lab-id" name="labId" class="form-control" onchange="this.form.submit()">
+            <select id="input-lab-id" name="labId" class="form-select" onchange="this.form.submit()">
                 @foreach(var lab in userScoreboard.Labs)
                 {
                     if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs))
