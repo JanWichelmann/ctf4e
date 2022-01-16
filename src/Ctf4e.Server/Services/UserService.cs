@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -41,6 +42,8 @@ public class UserService : IUserService
 {
     private readonly CtfDbContext _dbContext;
     private readonly IMapper _mapper;
+
+    private ConcurrentDictionary<int, User> _cachedUsers = new();
 
     public UserService(CtfDbContext dbContext, IMapper mapper)
     {
@@ -89,14 +92,19 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken)
     {
-        // TODO cache users, labs, ...?
-        return _dbContext.Users.AsNoTracking()
+        if(_cachedUsers.TryGetValue(id, out var user))
+            return user;
+        
+        user = await _dbContext.Users.AsNoTracking()
             .Include(u => u.Group)
             .Where(u => u.Id == id)
             .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
             .FirstOrDefaultAsync(cancellationToken);
+
+        _cachedUsers.TryAdd(id, user);
+        return user;
     }
 
     public Task<User> FindUserByMoodleNameAsync(string moodleName, CancellationToken cancellationToken)
@@ -154,6 +162,9 @@ public class UserService : IUserService
 
         // Apply changes
         await _dbContext.SaveChangesAsync(cancellationToken);
+        
+        // Invalidate cache
+        _cachedUsers.TryRemove(user.Id, out _);
     }
 
     public IAsyncEnumerable<Group> GetGroupsAsync()

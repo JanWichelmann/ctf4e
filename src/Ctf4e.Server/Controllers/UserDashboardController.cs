@@ -53,7 +53,7 @@ public class UserDashboardController : ControllerBase
             labId = currentLabExecution.LabId;
         }
         
-        // Retrieve lab data
+        // Check whether user may access this lab, if it even exists
         var lab = await _labService.GetLabAsync(labId.Value, HttpContext.RequestAborted);
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
@@ -117,7 +117,7 @@ public class UserDashboardController : ControllerBase
             return await RenderViewAsync();
         }
             
-        // Retrieve lab data
+        // Retrieve lab data and check access
         var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {

@@ -49,7 +49,7 @@ public class AdminLabsController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            lab = await _labService.GetLabAsync(id.Value, HttpContext.RequestAborted);
+            lab = await _labService.GetFullLabAsync(id.Value, HttpContext.RequestAborted);
             if(lab == null)
             {
                 AddStatusMessage(_localizer["ShowEditLabFormAsync:NotFound"], StatusMessageTypes.Error);
@@ -160,7 +160,7 @@ public class AdminLabsController : ControllerBase
     public async Task<IActionResult> DeleteLabAsync(int id)
     {
         // Input check
-        var lab = await _labService.GetLabAsync(id, HttpContext.RequestAborted);
+        var lab = await _labService.GetFullLabAsync(id, HttpContext.RequestAborted);
         if(lab == null)
         {
             AddStatusMessage(_localizer["DeleteLabAsync:NotFound"], StatusMessageTypes.Error);

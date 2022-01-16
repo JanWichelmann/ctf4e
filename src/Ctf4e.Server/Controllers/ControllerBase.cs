@@ -21,16 +21,26 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     /// Version of this assembly.
     /// </summary>
     private static string _buildVersion = null;
+    
+    /// <summary>
+    /// ID of the currently logged in user.
+    /// </summary>
+    private int? _currentUserId = null;
+
+    /// <summary>
+    /// Stores whether the current user ID has already been read from the session.
+    /// Ensures that the user ID is not read twice, especially after logging out.
+    /// </summary>
+    private bool _currentUserIdExtractedFromSession = false;
 
     private readonly IUserService _userService;
-    private User _currentUser = null;
-    private bool _currentUserHasLoggedOut = false;
 
     protected ControllerBase(string viewPath, IUserService userService)
         : base(viewPath)
     {
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-
+        
+        // Read build version
         if(_buildVersion == null)
         {
             _buildVersion = Assembly.GetExecutingAssembly()
@@ -47,9 +57,10 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     /// </summary>
     /// <param name="userId">The ID of the currently logged in user.</param>
     /// <returns></returns>
-    protected async Task HandleUserLoginAsync(int userId)
+    protected void HandleUserLogin(int userId)
     {
-        _currentUser = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
+        _currentUserId = userId;
+        _currentUserIdExtractedFromSession = true;
     }
 
     /// <summary>
@@ -59,24 +70,8 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     /// <returns></returns>
     protected void HandleUserLogout()
     {
-        _currentUser = null;
-        _currentUserHasLoggedOut = true;
-    }
-
-    /// <summary>
-    /// Updates the internal current user variable.
-    /// </summary>
-    /// <returns></returns>
-    private async Task ReadCurrentUserFromSessionAsync()
-    {
-        // User authenticated?
-        bool isAuthenticated = User.Identities.Any(i => i.IsAuthenticated);
-        if(isAuthenticated)
-        {
-            // Retrieve user data
-            int userId = int.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserId).Value);
-            _currentUser = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
-        }
+        _currentUserId = null;
+        _currentUserIdExtractedFromSession = true;
     }
 
     /// <summary>
@@ -85,12 +80,18 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
     /// <returns></returns>
     protected async Task<User> GetCurrentUserAsync()
     {
-        // Cached user data?
-        if(_currentUser != null || _currentUserHasLoggedOut)
-            return _currentUser;
+        if(!_currentUserIdExtractedFromSession)
+        {
+            // Retrieve ID of currently authenticated user
+            bool isAuthenticated = User.Identities.Any(i => i.IsAuthenticated);
+            if(isAuthenticated)
+                _currentUserId = int.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserId).Value);
+        }
+        
+        if(_currentUserId == null)
+            return null;
 
-        await ReadCurrentUserFromSessionAsync();
-        return _currentUser;
+        return await _userService.FindUserByIdAsync(_currentUserId.Value, HttpContext.RequestAborted);
     }
 
     /// <summary>

@@ -17,6 +17,7 @@ public interface ILabService
     IAsyncEnumerable<Lab> GetLabsAsync();
     IAsyncEnumerable<Lab> GetFullLabsAsync();
     Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken);
+    Task<Lab> GetFullLabAsync(int id, CancellationToken cancellationToken);
     Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken);
     Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken);
     Task UpdateLabAsync(Lab lab, CancellationToken cancellationToken);
@@ -51,12 +52,21 @@ public class LabService : ILabService
             .ProjectTo<Lab>(_mapper.ConfigurationProvider, l => l.Exercises, l => l.Flags, l => l.Executions)
             .AsAsyncEnumerable();
     }
-
+    
     public Task<Lab> GetLabAsync(int id, CancellationToken cancellationToken)
+    {
+        return _dbContext.Labs.AsNoTracking()
+            .Where(l => l.Id == id)
+            .ProjectTo<Lab>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<Lab> GetFullLabAsync(int id, CancellationToken cancellationToken)
     {
         return _dbContext.Labs.AsNoTracking()
             .Include(l => l.Exercises)
             .Include(l => l.Flags)
+            .Include(l => l.Executions)
             .Where(l => l.Id == id)
             .ProjectTo<Lab>(_mapper.ConfigurationProvider, l => l.Exercises, l => l.Flags, l => l.Executions)
             .FirstOrDefaultAsync(cancellationToken);

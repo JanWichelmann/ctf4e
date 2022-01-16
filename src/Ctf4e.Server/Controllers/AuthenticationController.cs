@@ -151,7 +151,7 @@ public partial class AuthenticationController : ControllerBase
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
 
         // Make sure the current user is set correctly
-        await HandleUserLoginAsync(user.Id);
+        HandleUserLogin(user.Id);
     }
 
     [HttpGet("logout")]

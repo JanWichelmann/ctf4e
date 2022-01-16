@@ -35,7 +35,7 @@ public class AdminFlagsController : ControllerBase
         var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
-        ViewData["Lab"] = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        ViewData["Lab"] = lab;
 
         ViewData["ViewType"] = viewType;
         return await RenderViewAsync(MenuItems.AdminFlags, model);
