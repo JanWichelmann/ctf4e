@@ -1,4 +1,5 @@
 ﻿// Toggles between full client-side evaluation of the scoreboard and a partial, slow database-side evaluation.
+
 #define CLIENT_SIDE_SCOREBOARD
 
 using System;
@@ -666,33 +667,17 @@ public class ScoreboardService : IScoreboardService
             .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
             .ToDictionaryAsync(e => e.Id, cancellationToken);
 
-        // Initialize scoreboard entries with group data and latest submission timestamps
+        // Initialize scoreboard entries with group data
         var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
-                    SELECT
-                      g.`Id` AS 'GroupId',
-                      g.`DisplayName` AS 'GroupName',
-                      g.`ScoreboardAnnotation` AS 'GroupAnnotation',
-                      g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
-                      g.`SlotId`, (
-                        SELECT MAX((
-                          SELECT MAX(fs.`SubmissionTime`)
-                          FROM `FlagSubmissions` fs
-                          INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
-                          WHERE fs.`UserId` = u2.`Id`
-                            AND EXISTS(
-                              SELECT 1
-                              FROM `LabExecutions` le2
-                              WHERE le2.`GroupId` = g.`Id`
-                                AND le2.`LabId` = f.`LabId`
-                                AND le2.`PreStart` <= fs.`SubmissionTime`
-                                AND fs.`SubmissionTime` < le2.`End`
-                            )
-                        ))
-                        FROM `Users` u2
-                        WHERE u2.`GroupId` = g.`Id`
-                      ) AS 'LastFlagSubmissionTime'
-                    FROM `Groups` g
-                    WHERE g.`ShowInScoreboard`"))
+                SELECT
+                  g.`Id` AS `GroupId`,
+                  g.`DisplayName` AS `GroupName`,
+                  g.`ScoreboardAnnotation` AS `GroupAnnotation`,
+                  g.`ScoreboardAnnotationHoverText` AS `GroupAnnotationHoverText`,
+                  g.`SlotId`
+                FROM `Groups` g
+                WHERE g.`ShowInScoreboard` = 1
+                "))
             .ToList();
 
         Dictionary<int, List<(int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>> validExerciseSubmissions = new();
@@ -735,7 +720,7 @@ public class ScoreboardService : IScoreboardService
                     ++i;
                     continue;
                 }
-                
+
                 if(currentSubmission.ExercisePassed)
                 {
                     if(!validExerciseSubmissions.TryGetValue(groupId, out var groupExerciseSubmissions))
@@ -743,8 +728,9 @@ public class ScoreboardService : IScoreboardService
                         groupExerciseSubmissions = new List<(int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>();
                         validExerciseSubmissions.Add(groupId, groupExerciseSubmissions);
                     }
+
                     groupExerciseSubmissions.Add((exerciseId, currentSubmission.LabId, weightSum, currentSubmission.SubmissionTime));
-                    
+
                     // Skip remaining submissions for this exercise
                     handled = true;
                     ++i;
@@ -804,23 +790,24 @@ public class ScoreboardService : IScoreboardService
 
         // Compute submission counts and current points of all flags over all slots
         var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
-                        SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
-                        FROM `Flags` f
-                        LEFT JOIN(
-                          `FlagSubmissions` s
-                          INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                          INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                        ) ON s.`FlagId` = f.`Id`
-                          AND g.`ShowInScoreboard` = 1
-                          AND EXISTS(
-                            SELECT 1
-                            FROM `LabExecutions` le
-                            WHERE le.`GroupId` = g.`Id`
-                              AND le.`LabId` = f.`LabId`
-                              AND le.`PreStart` <= s.`SubmissionTime`
-                              AND s.`SubmissionTime` < le.`End`
-                          )
-                        GROUP BY f.`Id`",
+                    SELECT f.*,
+                           COUNT(DISTINCT g.`Id`) AS `SubmissionCount`
+                    FROM `Flags` f
+                    LEFT JOIN(
+                      `FlagSubmissions` s
+                      JOIN `Users` u ON u.`Id` = s.`UserId`
+                      JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
+                    ) ON s.`FlagId` = f.`Id`
+                      AND EXISTS(
+	                    SELECT 1
+	                    FROM `LabExecutions` le
+	                    WHERE le.`GroupId` = g.`Id`
+	                      AND le.`LabId` = f.`LabId`
+	                      AND le.`PreStart` <= s.`SubmissionTime`
+	                      AND s.`SubmissionTime` < le.`End`
+                      )
+                    GROUP BY f.`Id`
+                 ",
                 (flag, submissionCount) => new ScoreboardFlagEntry
                 {
                     Flag = _mapper.Map<Flag>(flag),
@@ -832,22 +819,20 @@ public class ScoreboardService : IScoreboardService
             f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
 
         // Get valid submissions for flags
-        var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId)>(@"
-                    SELECT g.`Id` AS 'GroupId', f.Id AS 'FlagId', f.LabId
+        var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId, DateTime MinSubmissionTime)>(@"
+                    SELECT u.`GroupId`,
+                           s.`FlagId`,
+                           f.`LabId`,
+                           MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
                     FROM `FlagSubmissions` s
-                    INNER JOIN `Flags` f ON f.`Id` = s.`FlagId`
-                    INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                    INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                    WHERE g.`ShowInScoreboard` = 1
-                      AND EXISTS(
-                        SELECT 1
-                        FROM `LabExecutions` le
-                        WHERE le.`GroupId` = g.`Id`
-                          AND le.`LabId` = f.`LabId`
-                          AND le.`PreStart` <= s.`SubmissionTime`
-                          AND s.`SubmissionTime` < le.`End`
-                      )
-                    GROUP BY g.`Id`, f.`Id`"))
+                    JOIN `Flags` f ON f.`Id` = s.`FlagId`
+                    JOIN `Users` u ON u.`Id` = s.`UserId`
+                    JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
+                    JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = f.`LabId`
+                    WHERE le.`PreStart` <= s.`SubmissionTime`
+                      AND s.`SubmissionTime` < le.`End`
+                    GROUP BY g.`Id`, f.`Id`
+                "))
             .ToList();
         var validFlagSubmissions = validFlagSubmissionsUngrouped
             .GroupBy(s => s.GroupId) // This must be an in-memory operation
@@ -885,11 +870,19 @@ public class ScoreboardService : IScoreboardService
                         if(!flagPointsPerLab.TryGetValue(s.LabId, out var fl))
                             fl = (0, 0, 0);
 
-                        // Treat bounties separately
                         if(flags[s.FlagId].Flag.IsBounty)
+                        {
+                            // Bug bounties are counted separately, as, in the full scoreboard, they are not subject to the lab point caps.
+                            
                             flagPointsPerLab[s.LabId] = (fl.FlagPoints, fl.BugBountyPoints + flags[s.FlagId].CurrentPoints, fl.FlagCount);
+                        }
                         else
+                        {
+                            if(s.MinSubmissionTime > entry.LastFlagSubmissionTime)
+                                entry.LastFlagSubmissionTime = s.MinSubmissionTime;
+                            
                             flagPointsPerLab[s.LabId] = (fl.FlagPoints + flags[s.FlagId].CurrentPoints, fl.BugBountyPoints, fl.FlagCount + 1);
+                        }
                     }
                 }
 
@@ -1017,40 +1010,17 @@ public class ScoreboardService : IScoreboardService
         if(!exercises.Any())
             return null; // No scoreboard for empty labs
 
-        // Initialize scoreboard entries with group data and latest submission timestamps
-        // Exclude bug bounties from submission time computation, as points do not exceed the cap
-        //     TODO Check this query, the MAX statement appears to be invalid
+        // Initialize scoreboard entries with group data
         var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
                 SELECT
-                  g.`Id` AS 'GroupId',
-                  g.`DisplayName` AS 'GroupName',
-                  g.`ScoreboardAnnotation` AS 'GroupAnnotation',
-                  g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
-                  g.`SlotId`,
-                  (
-                    SELECT MAX((
-                      SELECT MAX(fs.`SubmissionTime`)
-                      FROM `FlagSubmissions` fs
-                      INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
-                      WHERE f.`LabId` = @labId
-                        AND fs.`UserId` = u2.`Id`
-                        AND f.`IsBounty` = 0
-                        AND EXISTS(
-                          SELECT 1
-                          FROM `LabExecutions` le2
-                          WHERE le2.`GroupId` = g.`Id`
-                            AND le2.`LabId` = @labId
-                            AND le2.`PreStart` <= fs.`SubmissionTime`
-                            AND fs.`SubmissionTime` < le2.`End`
-                        )
-                    ))
-                    FROM `Users` u2
-                    WHERE u2.`GroupId` = g.`Id`
-                  ) AS 'LastFlagSubmissionTime'
+                  g.`Id` AS `GroupId`,
+                  g.`DisplayName` AS `GroupName`,
+                  g.`ScoreboardAnnotation` AS `GroupAnnotation`,
+                  g.`ScoreboardAnnotationHoverText` AS `GroupAnnotationHoverText`,
+                  g.`SlotId`
                 FROM `Groups` g
-                WHERE g.`ShowInScoreboard`
-                ",
-                new { labId }))
+                WHERE g.`ShowInScoreboard` = 1
+                "))
             .ToList();
 
         Dictionary<int, List<(int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>> validExerciseSubmissions = new();
@@ -1094,7 +1064,7 @@ public class ScoreboardService : IScoreboardService
                     ++i;
                     continue;
                 }
-                
+
                 if(currentSubmission.ExercisePassed)
                 {
                     if(!validExerciseSubmissions.TryGetValue(groupId, out var groupExerciseSubmissions))
@@ -1102,8 +1072,9 @@ public class ScoreboardService : IScoreboardService
                         groupExerciseSubmissions = new List<(int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>();
                         validExerciseSubmissions.Add(groupId, groupExerciseSubmissions);
                     }
+
                     groupExerciseSubmissions.Add((exerciseId, weightSum, currentSubmission.SubmissionTime));
-                    
+
                     // Skip remaining submissions for this exercise
                     handled = true;
                     ++i;
@@ -1166,50 +1137,27 @@ public class ScoreboardService : IScoreboardService
             .ToDictionary(s => s.Key);
 #endif
 
-        // Get valid submissions for flags
-        var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId)>(@"
-                    SELECT g.`Id` AS 'GroupId', f.Id AS 'FlagId', f.LabId
-                    FROM `FlagSubmissions` s
-                    INNER JOIN `Flags` f ON f.`Id` = s.`FlagId`
-                    INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                    INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                    WHERE g.`ShowInScoreboard` = 1
-                      AND f.`LabId` = @labId
-                      AND EXISTS(
-                        SELECT 1
-                        FROM `LabExecutions` le
-                        WHERE le.`GroupId` = g.`Id`
-                          AND le.`LabId` = @labId
-                          AND le.`PreStart` <= s.`SubmissionTime`
-                          AND s.`SubmissionTime` < le.`End`
-                      )
-                    GROUP BY g.`Id`, f.`Id`",
-                new { labId }))
-            .ToList();
-        var validFlagSubmissions = validFlagSubmissionsUngrouped
-            .GroupBy(s => s.GroupId) // This must be an in-memory operation
-            .ToDictionary(s => s.Key);
-
         // Compute submission counts and current points of all flags
         var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
-                        SELECT f.*, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
-                        FROM `Flags` f
-                        LEFT JOIN(
-                          `FlagSubmissions` s
-                          INNER JOIN `Users` u ON u.`Id` = s.`UserId`
-                          INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
-                        ) ON s.`FlagId` = f.`Id`
-                          AND g.`ShowInScoreboard` = 1
-                          AND EXISTS(
-                            SELECT 1
-                            FROM `LabExecutions` le
-                            WHERE le.`GroupId` = g.`Id`
-                              AND le.`LabId` = @labId
-                              AND le.`PreStart` <= s.`SubmissionTime`
-                              AND s.`SubmissionTime` < le.`End`
-                          )
-                        WHERE f.`LabId` = @labId
-                        GROUP BY f.`Id`",
+                    SELECT f.*,
+                           COUNT(DISTINCT g.`Id`) AS `SubmissionCount`
+                    FROM `Flags` f
+                    LEFT JOIN(
+                      `FlagSubmissions` s
+                      JOIN `Users` u ON u.`Id` = s.`UserId`
+                      JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
+                    ) ON s.`FlagId` = f.`Id`
+                      AND EXISTS(
+	                    SELECT 1
+	                    FROM `LabExecutions` le
+	                    WHERE le.`GroupId` = g.`Id`
+	                      AND le.`LabId` = @labId
+	                      AND le.`PreStart` <= s.`SubmissionTime`
+	                      AND s.`SubmissionTime` < le.`End`
+                      )
+                    WHERE f.`LabId` = @labId
+                    GROUP BY f.`Id`
+                 ",
                 (flag, submissionCount) => new ScoreboardFlagEntry
                 {
                     Flag = _mapper.Map<Flag>(flag),
@@ -1220,6 +1168,27 @@ public class ScoreboardService : IScoreboardService
             .ToDictionary(f => f.Flag.Id);
         foreach(var f in flags)
             f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
+
+        // Get valid submissions for flags
+        var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, DateTime MinSubmissionTime)>(@"
+                    SELECT u.`GroupId`,
+                           s.`FlagId`,
+                           MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
+                    FROM `FlagSubmissions` s
+                    JOIN `Flags` f ON f.`Id` = s.`FlagId`
+                    JOIN `Users` u ON u.`Id` = s.`UserId`
+                    JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
+                    JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = @labId
+                    WHERE f.`LabId` = @labId
+                      AND le.`PreStart` <= s.`SubmissionTime`
+                      AND s.`SubmissionTime` < le.`End`
+                    GROUP BY g.`Id`, f.`Id`
+                ",
+                new { labId }))
+            .ToList();
+        var validFlagSubmissions = validFlagSubmissionsUngrouped
+            .GroupBy(s => s.GroupId) // This must be an in-memory operation
+            .ToDictionary(s => s.Key);
 
         using(MiniProfiler.Current.Step("Loop scoreboard entries and compute points"))
         {
@@ -1245,9 +1214,18 @@ public class ScoreboardService : IScoreboardService
                     foreach(var s in groupFlagSubmissions)
                     {
                         if(flags[s.FlagId].Flag.IsBounty)
+                        {
+                            // Bug bounties are counted separately, so we can show a point breakdown.
+                            // However, for the lab scoreboard, they are subject to the same total point cap.
+                            // Bug bounty submission times do not affect scoreboard sorting.
+
                             entry.BugBountyPoints += flags[s.FlagId].CurrentPoints;
+                        }
                         else
                         {
+                            if(s.MinSubmissionTime > entry.LastFlagSubmissionTime)
+                                entry.LastFlagSubmissionTime = s.MinSubmissionTime;
+
                             entry.FlagPoints += flags[s.FlagId].CurrentPoints;
                             ++entry.FlagCount;
                         }
