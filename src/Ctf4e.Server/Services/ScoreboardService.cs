@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Toggles between full client-side evaluation of the scoreboard and a partial, slow database-side evaluation.
+#define CLIENT_SIDE_SCOREBOARD
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -692,8 +695,68 @@ public class ScoreboardService : IScoreboardService
                     WHERE g.`ShowInScoreboard`"))
             .ToList();
 
-        // Get valid submission counts for passed exercises
-        // TODO This is slow once again
+        Dictionary<int, List<(int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>> validExerciseSubmissions = new();
+#if CLIENT_SIDE_SCOREBOARD
+        // Get passed exercises and associated total penalty weight
+        var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int LabId, int Weight, bool ExercisePassed, DateTime SubmissionTime)>(@"
+	            SELECT u.`GroupId`,
+	                   s.`ExerciseId`,
+	                   e.`LabId`,
+	                   s.`Weight`,
+	                   s.`ExercisePassed`,
+	                   s.`SubmissionTime`
+                FROM `ExerciseSubmissions` s
+                JOIN `Users` u ON u.`Id` = s.`UserId`
+                JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
+                JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
+                JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = e.`LabId`
+                WHERE le.`PreStart` <= s.`SubmissionTime`
+                  AND s.`SubmissionTime` < le.`End`
+                ORDER BY u.`GroupId`, s.`ExerciseId`, s.`SubmissionTime`
+                "))
+            .ToList();
+        int i = 0;
+        while(i < validExerciseSubmissionsUngrouped.Count)
+        {
+            var currentSubmission = validExerciseSubmissionsUngrouped[i];
+
+            int groupId = currentSubmission.GroupId;
+            int exerciseId = currentSubmission.ExerciseId;
+            int weightSum = 0;
+
+            // Iterate through following submissions, until we find one that is passed
+            bool handled = false;
+            while(i < validExerciseSubmissionsUngrouped.Count
+                  && (currentSubmission = validExerciseSubmissionsUngrouped[i]).GroupId == groupId
+                  && currentSubmission.ExerciseId == exerciseId)
+            {
+                if(handled)
+                {
+                    ++i;
+                    continue;
+                }
+                
+                if(currentSubmission.ExercisePassed)
+                {
+                    if(!validExerciseSubmissions.TryGetValue(groupId, out var groupExerciseSubmissions))
+                    {
+                        groupExerciseSubmissions = new List<(int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>();
+                        validExerciseSubmissions.Add(groupId, groupExerciseSubmissions);
+                    }
+                    groupExerciseSubmissions.Add((exerciseId, currentSubmission.LabId, weightSum, currentSubmission.SubmissionTime));
+                    
+                    // Skip remaining submissions for this exercise
+                    handled = true;
+                    ++i;
+                    continue;
+                }
+
+                weightSum += currentSubmission.Weight;
+                ++i;
+            }
+        }
+#else
+        // Disabled for now, as the DB-only query is still too slow
         var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int LabId, int WeightSum, DateTime MinPassedSubmissionTime)>(@"
                 WITH
                   `ValidSubmissions` AS (
@@ -737,6 +800,7 @@ public class ScoreboardService : IScoreboardService
         var validExerciseSubmissions = validExerciseSubmissionsUngrouped
             .GroupBy(s => s.GroupId) // This must be an in-memory operation
             .ToDictionary(s => s.Key);
+#endif
 
         // Compute submission counts and current points of all flags over all slots
         var flags = (await _dbConn.QueryAsync<FlagEntity, long, ScoreboardFlagEntry>(@"
@@ -955,49 +1019,113 @@ public class ScoreboardService : IScoreboardService
 
         // Initialize scoreboard entries with group data and latest submission timestamps
         // Exclude bug bounties from submission time computation, as points do not exceed the cap
-        //     TODO Check this query anyway, the MAX statement appears to be invalid
+        //     TODO Check this query, the MAX statement appears to be invalid
         var scoreboardEntries = (await _dbConn.QueryAsync<ScoreboardEntry>(@"
-                    SELECT
-                      g.`Id` AS 'GroupId',
-                      g.`DisplayName` AS 'GroupName',
-                      g.`ScoreboardAnnotation` AS 'GroupAnnotation',
-                      g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
-                      g.`SlotId`,
-                      (
-                        SELECT MAX((
-                          SELECT MAX(fs.`SubmissionTime`)
-                          FROM `FlagSubmissions` fs
-                          INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
-                          WHERE f.`LabId` = @labId
-                            AND fs.`UserId` = u2.`Id`
-                            AND f.`IsBounty` = 0
-                            AND EXISTS(
-                              SELECT 1
-                              FROM `LabExecutions` le2
-                              WHERE le2.`GroupId` = g.`Id`
-                                AND le2.`LabId` = @labId
-                                AND le2.`PreStart` <= fs.`SubmissionTime`
-                                AND fs.`SubmissionTime` < le2.`End`
-                            )
-                        ))
-                        FROM `Users` u2
-                        WHERE u2.`GroupId` = g.`Id`
-                      ) AS 'LastFlagSubmissionTime'
-                    FROM `Groups` g
-                    WHERE g.`ShowInScoreboard`",
+                SELECT
+                  g.`Id` AS 'GroupId',
+                  g.`DisplayName` AS 'GroupName',
+                  g.`ScoreboardAnnotation` AS 'GroupAnnotation',
+                  g.`ScoreboardAnnotationHoverText` AS 'GroupAnnotationHoverText',
+                  g.`SlotId`,
+                  (
+                    SELECT MAX((
+                      SELECT MAX(fs.`SubmissionTime`)
+                      FROM `FlagSubmissions` fs
+                      INNER JOIN `Flags` f ON fs.`FlagId` = f.`Id`
+                      WHERE f.`LabId` = @labId
+                        AND fs.`UserId` = u2.`Id`
+                        AND f.`IsBounty` = 0
+                        AND EXISTS(
+                          SELECT 1
+                          FROM `LabExecutions` le2
+                          WHERE le2.`GroupId` = g.`Id`
+                            AND le2.`LabId` = @labId
+                            AND le2.`PreStart` <= fs.`SubmissionTime`
+                            AND fs.`SubmissionTime` < le2.`End`
+                        )
+                    ))
+                    FROM `Users` u2
+                    WHERE u2.`GroupId` = g.`Id`
+                  ) AS 'LastFlagSubmissionTime'
+                FROM `Groups` g
+                WHERE g.`ShowInScoreboard`
+                ",
                 new { labId }))
             .ToList();
 
-        // Get valid "failed" submission counts for passed exercises
+        Dictionary<int, List<(int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>> validExerciseSubmissions = new();
+#if CLIENT_SIDE_SCOREBOARD
+        // Get passed exercises and associated total penalty weight
+        var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int Weight, bool ExercisePassed, DateTime SubmissionTime)>(@"
+	            SELECT u.`GroupId`,
+	                   s.`ExerciseId`,
+	                   s.`Weight`,
+	                   s.`ExercisePassed`,
+	                   s.`SubmissionTime`
+                FROM `ExerciseSubmissions` s
+                JOIN `Users` u ON u.`Id` = s.`UserId`
+                JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
+                JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
+                JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = @labId
+                WHERE e.LabId = @labId
+                  AND le.`PreStart` <= s.`SubmissionTime`
+                  AND s.`SubmissionTime` < le.`End`
+                ORDER BY u.`GroupId`, s.`ExerciseId`, s.`SubmissionTime`
+                ",
+                new { labId }))
+            .ToList();
+        int i = 0;
+        while(i < validExerciseSubmissionsUngrouped.Count)
+        {
+            var currentSubmission = validExerciseSubmissionsUngrouped[i];
+
+            int groupId = currentSubmission.GroupId;
+            int exerciseId = currentSubmission.ExerciseId;
+            int weightSum = 0;
+
+            // Iterate through following submissions, until we find one that is passed
+            bool handled = false;
+            while(i < validExerciseSubmissionsUngrouped.Count
+                  && (currentSubmission = validExerciseSubmissionsUngrouped[i]).GroupId == groupId
+                  && currentSubmission.ExerciseId == exerciseId)
+            {
+                if(handled)
+                {
+                    ++i;
+                    continue;
+                }
+                
+                if(currentSubmission.ExercisePassed)
+                {
+                    if(!validExerciseSubmissions.TryGetValue(groupId, out var groupExerciseSubmissions))
+                    {
+                        groupExerciseSubmissions = new List<(int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>();
+                        validExerciseSubmissions.Add(groupId, groupExerciseSubmissions);
+                    }
+                    groupExerciseSubmissions.Add((exerciseId, weightSum, currentSubmission.SubmissionTime));
+                    
+                    // Skip remaining submissions for this exercise
+                    handled = true;
+                    ++i;
+                    continue;
+                }
+
+                weightSum += currentSubmission.Weight;
+                ++i;
+            }
+        }
+#else
+        // Disabled for now, as the DB-only query is still too slow
         var validExerciseSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int ExerciseId, int WeightSum, DateTime MinPassedSubmissionTime)>(@"
                 WITH
                   `ValidSubmissions` AS (
-                    SELECT s.*,
-	                       u.`GroupId` AS `GroupId`
-                    FROM `ExerciseSubmissions` s
+	                SELECT s.*,
+		                   u.`GroupId` AS `GroupId`,
+                          ROW_NUMBER() OVER (PARTITION BY u.`GroupId`, s.`ExerciseId`) AS `SubmissionNumber`
+	                FROM `ExerciseSubmissions` s
 	                INNER JOIN `Users` u ON u.`Id` = s.`UserId`
 	                INNER JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
-                    WHERE e.`LabId` = @labId
+	                WHERE e.`LabId` = @labId
 	                  AND EXISTS(
 		                SELECT 1
 		                FROM `LabExecutions` le
@@ -1006,32 +1134,37 @@ public class ScoreboardService : IScoreboardService
 		                  AND le.`PreStart` <= s.`SubmissionTime`
 		                  AND s.`SubmissionTime` < le.`End`
 	                  )
+	                ORDER BY s.`SubmissionTime`
                   ),
-                  `MinPassedSubmissionTimes` AS (
-	                SELECT s.`ExerciseId`, s.`GroupId`,
-	                       MIN(s.`SubmissionTime`) AS `MinSubmissionTime`
+                  `PassedSubmissionTimes` AS (
+	                SELECT s.`GroupId`,
+	                       s.`ExerciseId`,
+                           s.`SubmissionTime`,
+                           s.`SubmissionNumber`,
+                           ROW_NUMBER() OVER (PARTITION BY s.`ExerciseId`, s.`GroupId` ORDER BY s.`SubmissionTime`) AS `PassRank`
 	                FROM `ValidSubmissions` s
 	                WHERE s.`ExercisePassed` = 1
-	                GROUP BY s.`ExerciseId`, s.`GroupId`
                   )
 
                 SELECT st.`GroupId` AS `GroupId`,
 	                   st.`ExerciseId` AS `ExerciseId`,
 	                   COALESCE(SUM(s.`Weight`), 0) AS `WeightSum`,
-	                   st.`MinSubmissionTime` AS `MinPassedSubmissionTime`
-                FROM `MinPassedSubmissionTimes` st
+	                   st.`SubmissionTime` AS `MinPassedSubmissionTime`
+                FROM `PassedSubmissionTimes` st
                 INNER JOIN `Groups` g ON g.`Id` = st.`GroupId` AND g.`ShowInScoreboard` = 1
                 LEFT JOIN `ValidSubmissions` s
                   ON s.`ExerciseId` = st.`ExerciseId`
                   AND s.`GroupId` = st.`GroupId`
                   AND s.`ExercisePassed` = 0
-                  AND s.`SubmissionTime` <= st.`MinSubmissionTime`
+                  AND s.`SubmissionNumber` < st.`SubmissionNumber`
+                WHERE st.`PassRank` = 1
                 GROUP BY st.`GroupId`, st.`ExerciseId`
                 ", new { labId }))
             .ToList();
         var validExerciseSubmissions = validExerciseSubmissionsUngrouped
             .GroupBy(s => s.GroupId) // This must be an in-memory operation
             .ToDictionary(s => s.Key);
+#endif
 
         // Get valid submissions for flags
         var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId)>(@"
