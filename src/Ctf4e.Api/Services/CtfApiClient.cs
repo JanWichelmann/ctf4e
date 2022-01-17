@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Ctf4e.Api.Exceptions;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Options;
 using Microsoft.Extensions.Options;
@@ -52,7 +54,19 @@ namespace Ctf4e.Api.Services
             if(response.ErrorException != null)
                 throw response.ErrorException;
             if(!response.IsSuccessful)
-                throw new WebException("The server returned an error status code: " + response.StatusDescription);
+            {
+                // Throw an exception which contains the entire response data, for easier debugging
+
+                StringBuilder exceptionContentBuilder = new StringBuilder();
+                exceptionContentBuilder.AppendLine($"Resource: {resource}");
+                exceptionContentBuilder.AppendLine($"Status: {(int)response.StatusCode} {response.StatusDescription}");
+
+                exceptionContentBuilder.AppendLine();
+                exceptionContentBuilder.AppendLine("-- Response content: --");
+                exceptionContentBuilder.AppendLine(response.Content ?? "(none)");
+
+                throw new CtfApiException($"The server returned an error status code: {response.StatusCode} {response.StatusDescription}", exceptionContentBuilder.ToString());
+            }
         }
     }
 }

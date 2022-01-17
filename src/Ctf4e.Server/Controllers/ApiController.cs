@@ -9,6 +9,7 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
@@ -20,14 +21,16 @@ public class ApiController : Controller
     private readonly IExerciseService _exerciseService;
     private readonly IUserService _userService;
     private readonly ILabExecutionService _labExecutionService;
+    private readonly ILogger<ApiController> _logger;
 
 
-    public ApiController(ILabService labService, IExerciseService exerciseService, IUserService userService, ILabExecutionService labExecutionService)
+    public ApiController(ILabService labService, IExerciseService exerciseService, IUserService userService, ILabExecutionService labExecutionService, ILogger<ApiController> logger)
     {
         _labService = labService ?? throw new ArgumentNullException(nameof(labService));
         _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpPost("exercisesubmission/create")]
@@ -38,7 +41,7 @@ public class ApiController : Controller
             // Resolve lab
             var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
-                return BadRequest();
+                return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
             // Decode request
             var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lab.ApiCode));
@@ -74,11 +77,13 @@ public class ApiController : Controller
         }
         catch(CryptographicException ex)
         {
-            return StatusCode(StatusCodes.Status401Unauthorized, new { error = ex.ToString() });
+            _logger.LogError(ex, "Create exercise submission for user");
+            return StatusCode(StatusCodes.Status401Unauthorized, new { error = "Could not decode the request packet" });
         }
         catch(Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.ToString() });
+            _logger.LogError(ex, "Create exercise submission for user");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An internal error occured during processing of the request" });
         }
     }
 
@@ -90,7 +95,7 @@ public class ApiController : Controller
             // Resolve lab
             var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
-                return BadRequest();
+                return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
             // Decode request
             var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lab.ApiCode));
@@ -111,11 +116,13 @@ public class ApiController : Controller
         }
         catch(CryptographicException ex)
         {
-            return StatusCode(StatusCodes.Status401Unauthorized, new { error = ex.ToString() });
+            _logger.LogError(ex, "Clear exercise submissions of user");
+            return StatusCode(StatusCodes.Status401Unauthorized, new { error = "Could not decode the request packet" });
         }
         catch(Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.ToString() });
+            _logger.LogError(ex, "Create exercise submissions of user");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An internal error occured during processing of the request" });
         }
     }
 
@@ -127,7 +134,7 @@ public class ApiController : Controller
             // Resolve lab
             var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
-                return BadRequest();
+                return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
             // Decode request
             var apiExerciseSubmission = request.Decode<ApiGroupExerciseSubmission>(new CryptoService(lab.ApiCode));
@@ -172,11 +179,13 @@ public class ApiController : Controller
         }
         catch(CryptographicException ex)
         {
-            return StatusCode(StatusCodes.Status401Unauthorized, new { error = ex.ToString() });
+            _logger.LogError(ex, "Create exercise submission for group");
+            return StatusCode(StatusCodes.Status401Unauthorized, new { error = "Could not decode the request packet" });
         }
         catch(Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.ToString() });
+            _logger.LogError(ex, "Create exercise submission for group");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An internal error occured during processing of the request" });
         }
     }
 
@@ -188,7 +197,7 @@ public class ApiController : Controller
             // Resolve lab
             var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
-                return BadRequest();
+                return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
             // Decode request
             var apiExerciseSubmission = request.Decode<ApiGroupExerciseSubmission>(new CryptoService(lab.ApiCode));
@@ -213,11 +222,13 @@ public class ApiController : Controller
         }
         catch(CryptographicException ex)
         {
-            return StatusCode(StatusCodes.Status401Unauthorized, new { error = ex.ToString() });
+            _logger.LogError(ex, "Clear exercise submission of group");
+            return StatusCode(StatusCodes.Status401Unauthorized, new { error = "Could not decode the request packet" });
         }
         catch(Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.ToString() });
+            _logger.LogError(ex, "Clear exercise submission of group");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An internal error occured during processing of the request" });
         }
     }
 }

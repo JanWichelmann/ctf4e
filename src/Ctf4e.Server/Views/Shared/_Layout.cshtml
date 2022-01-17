@@ -9,7 +9,7 @@
 @inject IOptionsSnapshot<MainOptions> _mainOptions
 @{
     // Retrieve status messages
-    var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
+    var statusMessages = (List<(string Message, StatusMessageTypes Type, bool Preformatted)>)ViewData["StatusMessages"];
 
     string StatusMessageTypeToColor(StatusMessageTypes messageType)
     {

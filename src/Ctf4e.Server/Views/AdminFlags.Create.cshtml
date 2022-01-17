@@ -14,7 +14,7 @@
 <form asp-controller="AdminFlags" asp-action="CreateFlag" method="post">
     <div class="mb-3">
         <label class="form-label" asp-for="Code">@_localizer["Form:Code"]</label>
-        <input asp-for="Code" class="form-control" value="CTF{1n5er7-f14g-c0de-here-@RandomStringGenerator.GetRandomString(6)}">
+        <input asp-for="Code" class="form-control font-monospace" value="CTF{1n5er7-f14g-c0de-here-@RandomStringGenerator.GetRandomString(6)}">
         <span asp-validation-for="Code" class="text-danger"></span>
     </div>
     <div class="mb-3">

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ctf4e.Api.Exceptions;
 using Ctf4e.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +59,7 @@ public class GroupController : ControllerBase
     {
         // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            
+
         // Get current user
         int userId = GetCurrentUser().UserId;
 
@@ -89,13 +90,13 @@ public class GroupController : ControllerBase
         try
         {
             ViewData["LastStringInput"] = inputData;
-                
+
             if(!ModelState.IsValid)
             {
                 AddStatusMessage(_localizer["CheckStringInputAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
-                
+
             // Check input
             if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
             {
@@ -106,10 +107,29 @@ public class GroupController : ControllerBase
             AddStatusMessage(_localizer["CheckStringInputAsync:Success"], StatusMessageTypes.Success);
             return await RenderAsync();
         }
+        catch(CtfApiException ex)
+        {
+            _logger.LogError(ex, "CTF error");
+
+            if(GetAdminMode())
+            {
+                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
+                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+            }
+            else
+                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
+            
+            return await RenderAsync();
+        }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Check string input");
             AddStatusMessage(_localizer["CheckStringInputAsync:UnknownError"], StatusMessageTypes.Error);
+
+            // Show more details for admins, so they can debug the issue
+            if(GetAdminMode())
+                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+
             return await RenderAsync();
         }
     }
@@ -121,13 +141,13 @@ public class GroupController : ControllerBase
         try
         {
             ViewData["LastMultipleChoiceInput"] = inputData;
-                
+
             if(!ModelState.IsValid)
             {
                 AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
-                
+
             // Check input
             if(!await CheckInputAsync(inputData.ExerciseId, inputData.SelectedOptions))
             {
@@ -138,10 +158,29 @@ public class GroupController : ControllerBase
             AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:Success"], StatusMessageTypes.Success);
             return await RenderAsync();
         }
+        catch(CtfApiException ex)
+        {
+            _logger.LogError(ex, "CTF error");
+
+            if(GetAdminMode())
+            {
+                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
+                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+            }
+            else
+                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
+            
+            return await RenderAsync();
+        }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Check multiple choice input");
             AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:UnknownError"], StatusMessageTypes.Error);
+
+            // Show more details for admins, so they can debug the issue
+            if(GetAdminMode())
+                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+
             return await RenderAsync();
         }
     }
@@ -153,13 +192,13 @@ public class GroupController : ControllerBase
         try
         {
             ViewData["LastScriptInput"] = inputData;
-                
+
             if(!ModelState.IsValid)
             {
                 AddStatusMessage(_localizer["CheckScriptInputAsync:InvalidInput"], StatusMessageTypes.Error);
                 return await RenderAsync();
             }
-                
+
             // Check input
             if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
             {
@@ -170,10 +209,29 @@ public class GroupController : ControllerBase
             AddStatusMessage(_localizer["CheckScriptInputAsync:Success"], StatusMessageTypes.Success);
             return await RenderAsync();
         }
+        catch(CtfApiException ex)
+        {
+            _logger.LogError(ex, "CTF error");
+
+            if(GetAdminMode())
+            {
+                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
+                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+            }
+            else
+                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
+            
+            return await RenderAsync();
+        }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Check script input");
             AddStatusMessage(_localizer["CheckScriptInputAsync:UnknownError"], StatusMessageTypes.Error);
+
+            // Show more details for admins, so they can debug the issue
+            if(GetAdminMode())
+                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+
             return await RenderAsync();
         }
     }
@@ -213,10 +271,29 @@ public class GroupController : ControllerBase
             AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:NotFound"], StatusMessageTypes.Error);
             return await RenderAsync();
         }
+        catch(CtfApiException ex)
+        {
+            _logger.LogError(ex, "CTF error");
+
+            if(GetAdminMode())
+            {
+                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
+                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+            }
+            else
+                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
+            
+            return await RenderAsync();
+        }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Mark exercise as solved");
             AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:UnknownError"], StatusMessageTypes.Error);
+
+            // Show more details for admins, so they can debug the issue
+            if(GetAdminMode())
+                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+
             return await RenderAsync();
         }
     }
@@ -242,10 +319,29 @@ public class GroupController : ControllerBase
             AddStatusMessage(_localizer["ResetExerciseStatusAsync:NotFound"], StatusMessageTypes.Error);
             return await RenderAsync();
         }
+        catch(CtfApiException ex)
+        {
+            _logger.LogError(ex, "CTF error");
+
+            if(GetAdminMode())
+            {
+                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
+                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+            }
+            else
+                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
+            
+            return await RenderAsync();
+        }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Reset exercise");
             AddStatusMessage(_localizer["ResetExerciseStatusAsync:UnknownError"], StatusMessageTypes.Error);
+
+            // Show more details for admins, so they can debug the issue
+            if(GetAdminMode())
+                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+
             return await RenderAsync();
         }
     }

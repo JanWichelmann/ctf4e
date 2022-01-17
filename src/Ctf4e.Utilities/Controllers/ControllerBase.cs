@@ -9,12 +9,12 @@ namespace Ctf4e.Utilities.Controllers;
 public abstract class ControllerBase : Controller
 {
     private readonly string _viewPath;
-    private readonly List<(string Message, StatusMessageTypes Type)> _statusMessages;
+    private readonly List<(string Message, StatusMessageTypes Type, bool Preformatted)> _statusMessages;
 
     protected ControllerBase(string viewPath)
     {
         _viewPath = viewPath;
-        _statusMessages = new List<(string, StatusMessageTypes)>();
+        _statusMessages = new List<(string, StatusMessageTypes, bool)>();
     }
 
     /// <summary>
@@ -22,9 +22,10 @@ public abstract class ControllerBase : Controller
     /// </summary>
     /// <param name="message">The message to be displayed.</param>
     /// <param name="messageType">Sets the status message type.</param>
-    protected void AddStatusMessage(string message, StatusMessageTypes messageType)
+    /// <param name="preformatted">Controls whether the message is preformatted (i.e., whether it should be rendered in a monospace font).</param>
+    protected void AddStatusMessage(string message, StatusMessageTypes messageType, bool preformatted = false)
     {
-        _statusMessages.Add((message, messageType));
+        _statusMessages.Add((message, messageType, preformatted));
     }
 
     /// <summary>

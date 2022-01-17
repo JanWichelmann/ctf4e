@@ -35,7 +35,7 @@ public class UserStateLogContainer : IEnumerable<(DateTime timestamp, string mes
     /// Adds a new log message.
     /// </summary>
     /// <param name="message">Message.</param>
-    /// <param name="data">Data accompanying the message. Maybe used for user-provided inputs or error messages.</param>
+    /// <param name="data">Data accompanying the message. May be used for user-provided inputs or error messages.</param>
     public void AddMessage(string message, string data)
     {
         // If the buffer is full, remove one entry to keep maximum size

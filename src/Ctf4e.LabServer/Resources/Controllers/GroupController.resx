@@ -90,4 +90,14 @@
         <value>The exercise was marked as "solved" successfully.</value>
         <comment>MarkExerciseAsSolvedAsync:Success</comment>
     </data>
+    <data name="CtfError:Default" xml:space="preserve">
+        <value>An error occured.</value>
+    </data>
+    <data name="CtfError:Admin" xml:space="preserve">
+        <value>An error occured while communicating with the CTF server. See below for details.</value>
+    </data>
+    <data name="ExceptionMessage" xml:space="preserve">
+        <value>An error occured. Error message: {0}</value>
+        <comment>ExceptionMessage</comment>
+    </data>
 </root>

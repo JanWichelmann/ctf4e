@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,12 +64,22 @@ public interface IStateService
     /// <param name="userId">User ID.</param>
     /// <returns></returns>
     Task<UserScoreboard> GetUserScoreboardAsync(int userId);
+
+    /// <summary>
+    /// Adds a new log message to the given user's state object.
+    /// </summary>
+    /// <param name="userId">User ID.</param>
+    /// <param name="message">Message.</param>
+    /// <param name="data">Data accompanying the message. May be used for user-provided inputs or error messages.</param>
+    Task AddUserLogMessage(int userId, string message, string data);
+
+    void Dispose();
 }
 
 /// <summary>
 /// Contains and manages the lab state.
 /// </summary>
-public class StateService : IStateService, IDisposable
+public class StateService : IDisposable, IStateService
 {
     private readonly IOptions<LabOptions> _options;
     private readonly ILabConfigurationService _labConfiguration;
@@ -117,7 +129,7 @@ public class StateService : IStateService, IDisposable
         var userStateDirectory = new DirectoryInfo(_options.Value.UserStateDirectory);
         if(!userStateDirectory.Exists)
             userStateDirectory.Create();
-            
+
         // Read user data
         _userStates = new ConcurrentDictionary<int, UserState>();
         Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
@@ -371,7 +383,24 @@ public class StateService : IStateService, IDisposable
         var userState = _userStates[userId];
 
         // Log input
-        userState.Log.AddMessage($"Checking input for exercise #{exerciseId}", input?.ToString());
+        if(input is string)
+        {
+            userState.Log.AddMessage($"Checking input for exercise #{exerciseId}", input.ToString());
+        }
+        else if(input is IEnumerable inputEnumerable)
+        {
+            StringBuilder formattedInput = new StringBuilder();
+            bool first = true;
+            foreach(var entry in inputEnumerable)
+            {
+                if(first) first = false;
+                else formattedInput.Append(", ");
+                
+                formattedInput.Append(entry);
+            }
+
+            userState.Log.AddMessage($"Checking input for exercise #{exerciseId}", formattedInput.ToString());
+        }
 
         // There can only be one grading operation per user at once
         await userState.Lock.WaitAsync(cancellationToken);
@@ -540,6 +569,34 @@ public class StateService : IStateService, IDisposable
 
             // Done
             return scoreboard;
+        }
+        finally
+        {
+            userState.Lock.Release();
+        }
+    }
+
+    /// <summary>
+    /// Adds a new log message to the given user's state object.
+    /// </summary>
+    /// <param name="userId">User ID.</param>
+    /// <param name="message">Message.</param>
+    /// <param name="data">Data accompanying the message. May be used for user-provided inputs or error messages.</param>
+    public async Task AddUserLogMessage(int userId, string message, string data)
+    {
+        // Ensure synchronized access
+        using var configReadLock = await _configLock.ReaderLockAsync();
+
+        // Check input values
+        if(!_userStates.ContainsKey(userId))
+            throw new ArgumentException();
+
+        // Get state object
+        var userState = _userStates[userId];
+        await userState.Lock.WaitAsync();
+        try
+        {
+            userState.Log.AddMessage(message, data);
         }
         finally
         {

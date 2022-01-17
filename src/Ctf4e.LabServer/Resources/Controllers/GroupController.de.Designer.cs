@@ -169,6 +169,33 @@ namespace Ctf4e.LabServer.Resources.Controllers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bei der Kommunikation mit dem CTF-System ist ein Fehler aufgetreten. Siehe unten für weitere Details..
+        /// </summary>
+        internal static string CtfError_Admin {
+            get {
+                return ResourceManager.GetString("CtfError:Admin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ein Fehler ist aufgetreten..
+        /// </summary>
+        internal static string CtfError_Default {
+            get {
+                return ResourceManager.GetString("CtfError:Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ein Fehler ist aufgetreten. Fehlermeldung: {0}.
+        /// </summary>
+        internal static string ExceptionMessage {
+            get {
+                return ResourceManager.GetString("ExceptionMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Diese Aufgabe existiert nicht..
         /// </summary>
         internal static string MarkExerciseAsSolvedAsync_NotFound {

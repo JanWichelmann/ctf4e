@@ -187,7 +187,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dies legt fest, ob das Praktikum im Scoreboard und in der Praktikumsübersicht aufgelistet wird. Es wird weiterhin bewertet und ist auch für alle Teilnehmer zugreifbar, sofern diese die URL erraten..
+        ///   Looks up a localized string similar to Dies legt fest, ob das Praktikum im Scoreboard und in der Praktikumsübersicht aufgelistet wird. Es wird weiterhin bewertet..
         /// </summary>
         internal static string Form_Visible_Description {
             get {

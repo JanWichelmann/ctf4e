@@ -7,7 +7,7 @@
 @inject IViewLocalizer _localizer
 @{
     // Retrieve status messages
-    var statusMessages = (List<(string Message, StatusMessageTypes Type)>)ViewData["StatusMessages"];
+    var statusMessages = (List<(string Message, StatusMessageTypes Type, bool Preformatted)>)ViewData["StatusMessages"];
 
     string StatusMessageTypeToColor(StatusMessageTypes messageType)
     {
@@ -57,17 +57,20 @@
 </head>
 <body class="d-flex flex-column">
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom px-2">
         <div class="container">
-            <button class="navbar-toggler mt-3 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Navigation umschalten">
+
+            <a class="navbar-brand" asp-controller="Group" asp-action="RenderPage">
+                <i class="bi bi-hdd-network"></i>
+                @labConfiguration.NavbarTitle
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Navigation umschalten">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbar-content">
-                <a class="navbar-brand" asp-controller="Group" asp-action="RenderPage">
-                    <i class="bi bi-hdd-network"></i>
-                    @labConfiguration.NavbarTitle
-                </a>
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "scoreboard"))">
                             @_localizer["MenuItems:Scoreboard"]
@@ -90,16 +93,17 @@
 
                 @if(currentUser != null)
                 {
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         @if(adminMode)
                         {
                             bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration;
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" data-bs-toggle="dropdown">
+                            <li class="nav-item dropdown me-4">
+                                <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" id="admin-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     @_localizer["MenuItems:Admin"]
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end mt-0">
+                                <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="admin-dropdown">
                                     <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">
+                                        <i class="bi bi-gear text-secondary"></i>
                                         @_localizer["MenuItems:Admin:Configuration"]
                                     </a>
                                 </ul>
@@ -108,16 +112,14 @@
 
                         <!-- Profile -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <strong>
-                                    @currentUser.UserDisplayName
-                                </strong>
+                            <a class="nav-link dropdown-toggle fw-bold @(activeMenuItem == MenuItems.Authentication ? "active" : "")" href="#" id="auth-dropdown" role="button" data-bs-toggle="dropdown">
+                                @currentUser.UserDisplayName
                             </a>
 
-                            <ul class="dropdown-menu dropdown-menu-end mt-0">
+                            <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="auth-dropdown">
                                 <li>
                                     <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
-                                        <i class="bi bi-door-closed"></i>
+                                        <i class="bi bi-door-closed text-secondary"></i>
                                         @_localizer["MenuItems:Logout"]
                                     </a>
                                 </li>
@@ -158,7 +160,14 @@
                                     }
                                 </span>
 
-                                @statusMessage.Message
+                                @if(statusMessage.Preformatted)
+                                {
+                                    <pre>@statusMessage.Message</pre>
+                                }
+                                else
+                                {
+                                    @statusMessage.Message
+                                }
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         </div>

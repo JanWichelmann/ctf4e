@@ -45,10 +45,10 @@
     <div class="card mb-3">
         <div class="card-header container">
             <div class="row">
-                <div class="col col-auto fs-5 cursor-link exercise-card-heading @(exercise.Solved ? "collapsed" : "") pe-0" data-bs-toggle="collapse" data-bs-target="#exercise-@exercise.Exercise.Id-card">
+                <div class="col col-auto fs-3 cursor-link exercise-card-heading @(exercise.Solved ? "collapsed" : "") pe-0" data-bs-toggle="collapse" data-bs-target="#exercise-@exercise.Exercise.Id-card">
 
                 </div>
-                <div class="col fs-5">
+                <div class="col fs-3">
                     @if(exercise.Solved)
                     {
                         <i class="bi bi-check-circle-fill text-success" title="@_localizer["Exercises:Solved"]"></i>
@@ -264,8 +264,8 @@
         @_localizer["Log:InfoText", _labOptions.Value.UserStateLogSize]
     </p>
 
-    <table class="table table-striped" id="log-table">
-        <tr>
+    <table class="table" id="log-table">
+        <tr class="bg-light">
             <th scope="col">@_localizer["Log:Entries:Timestamp"]</th>
             <th scope="col">@_localizer["Log:Entries:Message"]</th>
         </tr>
