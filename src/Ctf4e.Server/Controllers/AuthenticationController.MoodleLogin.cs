@@ -50,6 +50,7 @@ public partial class AuthenticationController
                 DisplayName = authData.FullName,
                 MoodleUserId = authData.UserId,
                 MoodleName = authData.LoginName,
+                PasswordHash = "",
                 GroupFindingCode = RandomStringGenerator.GetRandomString(10),
                 IsTutor = firstUser,
                 Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default
