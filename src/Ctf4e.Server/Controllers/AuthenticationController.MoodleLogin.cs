@@ -2,6 +2,7 @@ using System.Security;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace Ctf4e.Server.Controllers;
 public partial class AuthenticationController
 {
     [HttpPost("login/moodle")]
-    public async Task<IActionResult> LoginMoodleAsync([FromServices] IOptions<MoodleLtiOptions> moodleLtiOptions)
+    public async Task<IActionResult> LoginMoodleAsync([FromServices] IOptions<MoodleLtiOptions> moodleLtiOptions, [FromServices] ILoginRateLimiter loginRateLimiter)
     {
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
@@ -53,7 +54,7 @@ public partial class AuthenticationController
                 PasswordHash = "",
                 GroupFindingCode = RandomStringGenerator.GetRandomString(10),
                 IsTutor = firstUser,
-                Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default
+                Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default      
             };
             user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
             AddStatusMessage(_localizer["LoginMoodleAsync:AccountCreationSuccess"], StatusMessageTypes.Success);
@@ -61,6 +62,9 @@ public partial class AuthenticationController
 
         // Sign in user
         await DoLoginAsync(user);
+
+        // Reset rate limit
+        loginRateLimiter.ResetRateLimit(user.Id);
 
         // Done
         AddStatusMessage(_localizer["LoginMoodleAsync:Success"], StatusMessageTypes.Success);
