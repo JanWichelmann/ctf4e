@@ -86,6 +86,8 @@ public abstract class ControllerBase : Utilities.Controllers.ControllerBase
             bool isAuthenticated = User.Identities.Any(i => i.IsAuthenticated);
             if(isAuthenticated)
                 _currentUserId = int.Parse(User.Claims.First(c => c.Type == AuthenticationStrings.ClaimUserId).Value);
+			
+			_currentUserIdExtractedFromSession = true;
         }
         
         if(_currentUserId == null)
