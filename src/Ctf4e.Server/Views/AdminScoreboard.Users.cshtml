@@ -516,10 +516,13 @@ else
     </script>
 }
 
-<a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submissions">
-    <i class="bi bi-trash"></i>
-    @_localizer["DeleteSelected"]
-</a>
+@if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
+{
+    <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submissions">
+        <i class="bi bi-trash"></i>
+        @_localizer["DeleteSelected"]
+    </a>
+}
 
 <!-- Exercise and Flag submission modals -->
 <div class="modal fade" id="modal-delete-exercise-submission" tabindex="-1" role="dialog">
@@ -535,7 +538,7 @@ else
                 </p>
             </div>
             <div class="modal-footer">
-                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" method="post">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
                     <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteExerciseSubmission:Submit"]</button>
@@ -558,7 +561,7 @@ else
                 </p>
             </div>
             <div class="modal-footer">
-                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmissions" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" method="post">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmissions" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                     <div id="modal-delete-exercise-submissions-inputlist"></div>
 
                     <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteExerciseSubmissions:Submit"]</button>
@@ -571,7 +574,7 @@ else
 <div class="modal fade" id="modal-add-exercise-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form asp-controller="AdminScoreboard" asp-action="CreateExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" method="post">
+            <form asp-controller="AdminScoreboard" asp-action="CreateExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">@_localizer["Modal:CreateExerciseSubmission:Title"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -616,7 +619,7 @@ else
                 </p>
             </div>
             <div class="modal-footer">
-                <form asp-controller="AdminScoreboard" asp-action="DeleteFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" method="post">
+                <form asp-controller="AdminScoreboard" asp-action="DeleteFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
@@ -630,7 +633,7 @@ else
 <div class="modal fade" id="modal-add-flag-submission" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form asp-controller="AdminScoreboard" asp-action="CreateFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" method="post">
+            <form asp-controller="AdminScoreboard" asp-action="CreateFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">@_localizer["Modal:CreateFlagSubmission:Title"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
