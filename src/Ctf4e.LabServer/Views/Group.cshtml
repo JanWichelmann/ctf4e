@@ -45,7 +45,7 @@
     <div class="card mb-3">
         <div class="card-header container">
             <div class="row">
-                <div class="col col-auto fs-3 cursor-link exercise-card-heading @(exercise.Solved ? "collapsed" : "") pe-0" data-bs-toggle="collapse" data-bs-target="#exercise-@exercise.Exercise.Id-card">
+                <div class="col col-auto fs-3 cursor-link exercise-card-heading @(exercise.Solved || (exercise.SolvedByGroupMember && labConfiguration.PassAsGroup)  ? "collapsed" : "") pe-0" data-bs-toggle="collapse" data-bs-target="#exercise-@exercise.Exercise.Id-card">
 
                 </div>
                 <div class="col fs-3">
@@ -111,7 +111,7 @@
                 </div>
             </div>
         </div>
-        <div class="collapse @(exercise.Solved ? "" : "show")" id="exercise-@exercise.Exercise.Id-card">
+        <div class="collapse @(exercise.Solved || (exercise.SolvedByGroupMember && labConfiguration.PassAsGroup) ? "" : "show")" id="exercise-@exercise.Exercise.Id-card">
             @if(exercise.Solved && !string.IsNullOrEmpty(exercise.Exercise.FlagCode))
             {
                 <div class="card-body border-bottom">
@@ -154,7 +154,8 @@
                         <button type="submit" class="btn btn-primary">
                             @_localizer["Exercises:Form:Submit"]
                         </button>
-                    </form>                }
+                    </form>
+                }
                 else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.MultipleChoice)
                 {
                     var exerciseData = (LabConfigurationMultipleChoiceExerciseEntry)exercise.Exercise;
@@ -184,7 +185,8 @@
                         <button type="submit" class="btn btn-primary">
                             @_localizer["Exercises:Form:Submit"]
                         </button>
-                    </form>                }
+                    </form>
+                }
                 else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.Script)
                 {
                     var exerciseData = (LabConfigurationScriptExerciseEntry)exercise.Exercise;
@@ -215,7 +217,8 @@
                         <button type="submit" class="btn btn-primary">
                             @_localizer["Exercises:Form:Submit"]
                         </button>
-                    </form>                }
+                    </form>
+                }
             </div>
         </div>
     </div>
