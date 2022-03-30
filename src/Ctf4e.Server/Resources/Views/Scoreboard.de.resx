@@ -75,7 +75,7 @@
         <comment>AdminsOnly</comment>
     </data>
     <data name="ResetCache" xml:space="preserve">
-        <value>Cache umgehen und Scoreboard vollständig aus der Datenbank laden</value>
+        <value>Cache zurücksetzen und Scoreboard vollständig aus der Datenbank laden</value>
         <comment>ResetCache</comment>
     </data>
     <data name="AutoReload" xml:space="preserve">
@@ -105,5 +105,25 @@
     <data name="SelectScoreboard:HiddenLab" xml:space="preserve">
         <value>(versteckt)</value>
         <comment>SelectScoreboard:HiddenLab</comment>
+    </data>
+    <data name="Scoreboard:EditGroup" xml:space="preserve">
+        <value>Gruppe bearbeiten</value>
+        <comment>Scoreboard:EditGroup</comment>
+    </data>
+    <data name="Scoreboard:AdminScoreboard:Group" xml:space="preserve">
+        <value>Gruppe im Admin-Scoreboard ansehen</value>
+        <comment>Scoreboard:AdminScoreboard:Group</comment>
+    </data>
+    <data name="Scoreboard:AllEntries:ExercisePoints" xml:space="preserve">
+        <value>Aufgabenpunkte</value>
+        <comment>Scoreboard:AllEntries:ExercisePoints</comment>
+    </data>
+    <data name="Scoreboard:AllEntries:FlagPoints" xml:space="preserve">
+        <value>Flagpunkte</value>
+        <comment>Scoreboard:AllEntries:FlagPoints</comment>
+    </data>
+    <data name="Scoreboard:AllEntries:BugBountyPoints" xml:space="preserve">
+        <value>Bug-Bounty-Punkte</value>
+        <comment>Scoreboard:AllEntries:BugBountyPoints</comment>
     </data>
 </root>

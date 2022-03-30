@@ -3,7 +3,9 @@
 @using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Services
 @inject IViewLocalizer _localizer
+@inject IUserService _userService;
 @{
     ViewData["Title"] = "Scoreboard";
 
@@ -17,95 +19,206 @@
     bool resetCache = ViewData.ContainsKey("ResetCache") && (bool)ViewData["ResetCache"];
 
     var currentUser = (User)ViewData["CurrentUser"];
+
+    // User list, only used when "show all entries" is set
+    Dictionary<int, IEnumerable<User>> users = new();
+    if(showAllEntries)
+    {
+        users = (await _userService.GetUsersAsync().ToListAsync())
+            .Where(u => u.GroupId != null)
+            .GroupBy(u => u.GroupId)
+            .ToDictionary(u => u.Key!.Value, u => u.Select(ug => ug));
+    }
 }
 
 <div class="container">
-    @if(viewType == ScoreboardController.ViewType.Blank)
-    {
-        <!-- Status messages only -->
-    }
-    else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
-    {
-        <h1 class="header">
-            @if(scoreboard.AllLabs)
-            {
-                @_localizer["Title:ScoreboardAll"]
-            }
-            else
-            {
-                @_localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
-            }
-        </h1>
-        <h2 class="subheader">
-            @if(scoreboard.SlotId == null)
-            {
-                @_localizer["Title:AllSlots"]
-            }
-            else
-            {
-                @_localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
-            }
-        </h2>
-        <hr class="header">
+@if(viewType == ScoreboardController.ViewType.Blank)
+{
+    <!-- Status messages only -->
+}
+else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
+{
+    <h1 class="header">
+        @if(scoreboard.AllLabs)
+        {
+            @_localizer["Title:ScoreboardAll"]
+        }
+        else
+        {
+            @_localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
+        }
+    </h1>
+    <h2 class="subheader">
+        @if(scoreboard.SlotId == null)
+        {
+            @_localizer["Title:AllSlots"]
+        }
+        else
+        {
+            @_localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
+        }
+    </h2>
+    <hr class="header">
 
-        <table class="table table-sm text-nowrap mt-4" id="flags-table">
-            <thead>
-            <tr>
-                <th style="min-width: 5%;" scope="col">#</th>
-                <th style="min-width: 10%;" scope="col">@_localizer["Scoreboard:Points"]</th>
-                <th style="min-width: 10%;" scope="col">@_localizer["Scoreboard:Flags"]</th>
-                <th style="min-width: 5%;" scope="col"></th>
-                <th style="max-width: 70%;" scope="col">@_localizer["Scoreboard:Group"]</th>
-            </tr>
-            </thead>
-            <tbody>
-            @{
-                int lastRank = 0;
-                int entryCount = 0;
-                bool currentGroupShown = false;
-            }
-            @foreach(var entry in scoreboard.Entries)
+    <table class="table table-sm text-nowrap mt-4" id="flags-table">
+        <thead>
+        <tr>
+            <th style="min-width: 5%;" scope="col">#</th>
+            <th style="min-width: 10%;" scope="col">@_localizer["Scoreboard:Points"]</th>
+            <th style="min-width: 10%;" scope="col">@_localizer["Scoreboard:Flags"]</th>
+            <th style="min-width: 5%;" scope="col"></th>
+            <th style="max-width: 70%;" scope="col">@_localizer["Scoreboard:Group"]</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            int lastRank = 0;
+            int entryCount = 0;
+            bool currentGroupShown = false;
+        }
+        @foreach(var entry in scoreboard.Entries)
+        {
+            if(entryCount >= scoreboard.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
             {
-                if(entryCount >= scoreboard.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
-                {
-                    break;
-                }
-                bool isCurrentGroup = entry.GroupId == currentUser.GroupId;
-                currentGroupShown |= isCurrentGroup;
-                <tr class="@(isCurrentGroup ? "table-active" : "")">
-                    <th scope="row">
-                        @if(entry.Rank != lastRank)
+                break;
+            }
+            bool isCurrentGroup = entry.GroupId == currentUser.GroupId;
+            currentGroupShown |= isCurrentGroup;
+            <tr class="@(isCurrentGroup ? "table-active" : "")">
+                <th scope="row">
+                    @if(entry.Rank != lastRank)
+                    {
+                        @entry.Rank
+                        @if(entry.Rank == 1)
                         {
-                            @entry.Rank
-                            @if(entry.Rank == 1)
-                            {
-                                <i class="bi bi-award-fill" style="color: rgb(255, 204, 1);"></i>
-                            }
-                            else if(entry.Rank == 2)
-                            {
-                                <i class="bi bi-award-fill" style="color: rgb(180, 184, 188);"></i>
-                            }
-                            else if(entry.Rank == 3)
-                            {
-                                <i class="bi bi-award-fill" style="color: rgb(209, 166, 132);"></i>
-                            }
+                            <i class="bi bi-award-fill" style="color: rgb(255, 204, 1);"></i>
                         }
-                    </th>
-                    <td title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
-                        @entry.TotalPoints
-                        @if(isCurrentGroup || showAllEntries)
+                        else if(entry.Rank == 2)
                         {
-                            <span class="text-muted">
-                                @if(entry.BugBountyPoints == 0)
-                                {
-                                    @_localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
-                                }
-                                else
-                                {
-                                    @_localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
-                                }
+                            <i class="bi bi-award-fill" style="color: rgb(180, 184, 188);"></i>
+                        }
+                        else if(entry.Rank == 3)
+                        {
+                            <i class="bi bi-award-fill" style="color: rgb(209, 166, 132);"></i>
+                        }
+                    }
+                </th>
+                <td>
+                    <span class="cursor-help" title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
+                        @entry.TotalPoints
+                    </span>
+                    @if(isCurrentGroup && !showAllEntries)
+                    {
+                        <span class="text-muted">
+                            @if(entry.BugBountyPoints == 0)
+                            {
+                                @_localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
+                            }
+                            else
+                            {
+                                @_localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
+                            }
+                        </span>
+                    }
+                    @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                    {
+                        <i class="bi bi-bug-fill text-primary" title="@_localizer["Scoreboard:GotBugBounty"]"></i>
+                    }
+                </td>
+                <td>
+                    @entry.FlagCount
+                </td>
+                <td>
+                    @if(entry.GroupAnnotation != null)
+                    {
+                        <span title="@(entry.GroupAnnotationHoverText ?? "")" class="cursor-help">@entry.GroupAnnotation</span>
+                    }
+                </td>
+                <td>
+                    @if(showAllEntries)
+                    {
+                        // Offer tooltip with user names
+                        string userNames = "";
+                        foreach(var user in users[entry.GroupId])
+                        {
+                            if(userNames == "")
+                                userNames = user.DisplayName;
+                            else
+                                userNames += ", " + user.DisplayName;
+                        }
+
+                        <span title="@userNames" class="cursor-help">
+                            @entry.GroupName
+                        </span>
+                    }
+                    else
+                    {
+                        @entry.GroupName
+                    }
+                </td>
+                <td>
+                    @if(showAllEntries)
+                    {
+                        <span class="badge bg-opacity-100 bg-secondary cursor-help" style="min-width: 3rem" title="@_localizer["Scoreboard:AllEntries:ExercisePoints"]">
+                            @entry.ExercisePoints
+                        </span>
+                        <span class="badge bg-opacity-75 bg-secondary cursor-help" style="min-width: 3rem" title="@_localizer["Scoreboard:AllEntries:FlagPoints"]">
+                            @entry.FlagPoints
+                        </span>
+                        @if(entry.BugBountyPoints != 0)
+                        {
+                            <span class="badge bg-opacity-75 bg-secondary cursor-help" style="min-width: 3rem" title="@_localizer["Scoreboard:AllEntries:BugBountyPoints"]">
+                                @entry.BugBountyPoints
                             </span>
                         }
+                    }
+                </td>
+                <td class="text-end">
+                    @if(showAllEntries)
+                    {
+                        if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditGroups))
+                        {
+                            <a asp-controller="AdminGroups" asp-action="ShowEditGroupForm" asp-route-id="@entry.GroupId" class="text-decoration-none" title="@_localizer["Scoreboard:EditGroup"]">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        }
+                        if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
+                        {
+                            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-labId="@scoreboard.LabId" asp-route-slotId="@scoreboard.SlotId" asp-route-groupMode="true" asp-fragment="@("group" + entry.GroupId)" class="text-decoration-none" title="@_localizer["Scoreboard:AdminScoreboard:Group"]">
+                                <i class="bi bi-bookmark-star"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+            ++entryCount;
+            lastRank = entry.Rank;
+        }
+        @if(!currentGroupShown && currentUser.GroupId != null)
+        {
+            var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
+            if(entry != null)
+            {
+                <tr class="table-active">
+                    <th scope="row">
+                        @entry.Rank
+                    </th>
+                    <td>
+                        <span class="cursor-help" title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
+                            @entry.TotalPoints
+                        </span>
+                        <span class="text-muted">
+                            @if(entry.BugBountyPoints == 0)
+                            {
+                                @_localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
+                            }
+                            else
+                            {
+                                @_localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
+                            }
+                        </span>
                         @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
                         {
                             <i class="bi bi-bug-fill text-primary" title="@_localizer["Scoreboard:GotBugBounty"]"></i>
@@ -117,131 +230,90 @@
                     <td>
                         @if(entry.GroupAnnotation != null)
                         {
-                            <span title="@(entry.GroupAnnotationHoverText ?? "")">@entry.GroupAnnotation</span>
+                            <span title="@(entry.GroupAnnotationHoverText ?? "")" class="cursor-help">@entry.GroupAnnotation</span>
                         }
                     </td>
                     <td>
                         @entry.GroupName
                     </td>
+                    <td></td>
+                    <td></td>
                 </tr>
-                ++entryCount;
-                lastRank = entry.Rank;
             }
-            @if(!currentGroupShown && currentUser.GroupId != null)
+        }
+        </tbody>
+    </table>
+}
+
+<hr class="header-secondary mt-4">
+
+<form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
+    @{
+        // Handle visible/hidden labs
+        IEnumerable<Lab> filteredLabs;
+        if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
+        {
+            filteredLabs = labs.OrderBy(l => l.Name).ToList();
+            foreach(var l in filteredLabs)
             {
-                var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
-                if(entry != null)
+                if(!l.Visible)
                 {
-                    <tr class="table-active">
-                        <th scope="row">
-                            @entry.Rank
-                        </th>
-                        <td title="@_localizer["Scoreboard:LastSubmission", entry.LastSubmissionTime.ToString(DateTimeFormats.DateAndTimeSeconds)]">
-                            @entry.TotalPoints
-                            <span class="text-muted">
-                                @if(entry.BugBountyPoints == 0)
-                                {
-                                    @_localizer["Scoreboard:DetailedPoints", entry.ExercisePoints, entry.FlagPoints]
-                                }
-                                else
-                                {
-                                    @_localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
-                                }
-                            </span>
-                            @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
-                            {
-                                <i class="bi bi-bug-fill text-primary" title="@_localizer["Scoreboard:GotBugBounty"]"></i>
-                            }
-                        </td>
-                        <td>
-                            @entry.FlagCount
-                        </td>
-                        <td>
-                            @if(entry.GroupAnnotation != null)
-                            {
-                                <span title="@(entry.GroupAnnotationHoverText ?? "")">@entry.GroupAnnotation</span>
-                            }
-                        </td>
-                        <td>
-                            @entry.GroupName
-                        </td>
-                    </tr>
+                    l.Name += " " + _localizer.GetString("SelectScoreboard:HiddenLab");
                 }
             }
-            </tbody>
-        </table>
+        }
+        else
+        {
+            filteredLabs = labs.Where(l => l.Visible).OrderBy(l => l.Name).ToList();
+        }
+    }
+    <div class="mb-3">
+        <label class="form-label" for="input-lab-id">@_localizer["SelectScoreboard"]</label>
+        <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-select">
+            <option value="" selected>@_localizer["AllLabs"]</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="input-slot-id">@_localizer["SelectSlot"]</label>
+        <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-select">
+            <option value="" selected>@_localizer["AllSlots"]</option>
+        </select>
+    </div>
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
+    {
+        <div class="mb-3">
+            <label class="form-label" for="input-reload">
+                @_localizer["AutoReload"]
+            </label>
+            <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
+        </div>
+    }
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
+    {
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
+                <label for="input-showAllEntries" class="form-check-label">
+                    @_localizer["ShowAllEntries"]
+                </label>
+            </div>
+        </div>
+    }
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
+    {
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
+                <label for="input-resetCache" class="form-check-label">
+                    @_localizer["ResetCache"]
+                </label>
+            </div>
+        </div>
     }
 
-    <hr class="header-secondary mt-4">
-
-    <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
-        @{
-            // Handle visible/hidden labs
-            IEnumerable<Lab> filteredLabs;
-            if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-            {
-                filteredLabs = labs.OrderBy(l => l.Name).ToList();
-                foreach(var l in filteredLabs)
-                {
-                    if(!l.Visible)
-                    {
-                        l.Name += " " + _localizer.GetString("SelectScoreboard:HiddenLab");
-                    }
-                }
-            }
-            else
-            {
-                filteredLabs = labs.Where(l => l.Visible).OrderBy(l => l.Name).ToList();
-            }
-        }
-        <div class="mb-3">
-            <label class="form-label" for="input-lab-id">@_localizer["SelectScoreboard"]</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-select">
-                <option value="" selected>@_localizer["AllLabs"]</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="input-slot-id">@_localizer["SelectSlot"]</label>
-            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-select">
-                <option value="" selected>@_localizer["AllSlots"]</option>
-            </select>
-        </div>
-        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-        {
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
-                    <label for="input-showAllEntries" class="form-check-label">
-                        @_localizer["ShowAllEntries"]
-                        <i class="bi bi-star-fill" style="color: rgb(209, 166, 132);" title="@_localizer["TutorsAndAdminsOnly"]"></i>
-                    </label>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label" for="input-reload">
-                    @_localizer["AutoReload"]
-                    <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["AdminsOnly"]"></i>
-                </label>
-                <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
-            </div>
-        }
-        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
-        {
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
-                    <label for="input-resetCache" class="form-check-label">
-                        @_localizer["ResetCache"]
-                        <i class="bi bi-star-fill" style="color: rgb(255, 204, 1);" title="@_localizer["AdminsOnly"]"></i>
-                    </label>
-                </div>
-            </div>
-        }
-        
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-arrow-return-right"></i>
-            @_localizer["ShowSelectedScoreboard"]
-        </button>
-    </form>
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-arrow-return-right"></i>
+        @_localizer["ShowSelectedScoreboard"]
+    </button>
+</form>
 </div>

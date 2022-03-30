@@ -97,11 +97,47 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalidate cache and reload from database.
+        ///   Looks up a localized string similar to Invalidate cache and reload entire scoreboard from database.
         /// </summary>
         internal static string ResetCache {
             get {
                 return ResourceManager.GetString("ResetCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View group in admin scoreboard.
+        /// </summary>
+        internal static string Scoreboard_AdminScoreboard_Group {
+            get {
+                return ResourceManager.GetString("Scoreboard:AdminScoreboard:Group", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bug bounty points.
+        /// </summary>
+        internal static string Scoreboard_AllEntries_BugBountyPoints {
+            get {
+                return ResourceManager.GetString("Scoreboard:AllEntries:BugBountyPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exercise points.
+        /// </summary>
+        internal static string Scoreboard_AllEntries_ExercisePoints {
+            get {
+                return ResourceManager.GetString("Scoreboard:AllEntries:ExercisePoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag points.
+        /// </summary>
+        internal static string Scoreboard_AllEntries_FlagPoints {
+            get {
+                return ResourceManager.GetString("Scoreboard:AllEntries:FlagPoints", resourceCulture);
             }
         }
         
@@ -120,6 +156,15 @@ namespace Ctf4e.Server.Resources.Views {
         internal static string Scoreboard_DetailedPointsWithBugs {
             get {
                 return ResourceManager.GetString("Scoreboard:DetailedPointsWithBugs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit group.
+        /// </summary>
+        internal static string Scoreboard_EditGroup {
+            get {
+                return ResourceManager.GetString("Scoreboard:EditGroup", resourceCulture);
             }
         }
         
