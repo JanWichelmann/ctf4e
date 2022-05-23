@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server;
 
@@ -40,5 +41,11 @@ public static class Program
                 if(configFile == null)
                     throw new Exception("No configuration file specified.");
                 config.AddJsonFile(configFile);
+            }).ConfigureLogging((_, builder) =>
+            {
+                builder.AddSimpleConsole(options =>
+                {
+                    options.IncludeScopes = true;
+                });
             });
 }
