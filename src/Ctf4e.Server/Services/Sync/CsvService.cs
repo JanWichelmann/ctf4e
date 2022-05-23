@@ -54,8 +54,6 @@ public class CsvService : ICsvService
 
         // Get mapping of users and groups
         var users = await _dbContext.Users.AsNoTracking()
-            .Where(u => !u.IsTutor
-                        && u.GroupId != null)
             .OrderBy(u => u.DisplayName)
             .ToListAsync(cancellationToken);
         var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId);
@@ -76,6 +74,7 @@ public class CsvService : ICsvService
 
         // Get passed exercise counts per student and lab
         var students = users
+            .Where(u => !u.IsTutor && u.GroupId != null)
             .ToDictionary(u => u.Id, u => new
             {
                 User = u,
