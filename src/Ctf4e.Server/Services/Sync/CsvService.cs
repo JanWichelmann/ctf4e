@@ -81,7 +81,16 @@ public class CsvService : ICsvService
                 LabStates = passedExerciseSubmissions
                     .Where(es => passAsGroup ? groupIdLookup[es.UserId] == u.GroupId : es.UserId == u.Id)
                     .GroupBy(es => es.LabId)
-                    .ToDictionary(esg => esg.Key, esg => esg.Count() == labs.First(l => l.LabId == esg.Key).MandatoryExerciseCount)
+                    .ToDictionary(
+                        esg => esg.Key,
+                        esg => esg
+                                   .Select(esge => esge.ExerciseId)
+                                   .Distinct()
+                                   .Count()
+                               == labs
+                                   .First(l => l.LabId == esg.Key)
+                                   .MandatoryExerciseCount
+                    )
             });
 
         // Create CSV columns
