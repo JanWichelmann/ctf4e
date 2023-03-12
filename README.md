@@ -1,4 +1,4 @@
-[![Build](https://img.shields.io/github/workflow/status/JanWichelmann/ctf4e/Build)](https://github.com/JanWichelmann/ctf4e/actions?query=workflow%3ABuild) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ctf4e/ctf4e-server?label=docker&sort=date)](https://hub.docker.com/r/ctf4e/ctf4e-server/tags)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/JanWichelmann/ctf4e/build.yml) [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ctf4e/ctf4e-server)](https://hub.docker.com/r/ctf4e/ctf4e-server/tags)
 
 
 # CTF4E: Capture the Flag for Education
@@ -26,7 +26,7 @@ For easy scalability, the system is separated into two major components: First, 
 - Integration with [Moodle](https://moodle.org/) for login and synchronizing results
 
 ## Ctf4e.Server
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ctf4e/ctf4e-server?label=docker&sort=date)](https://hub.docker.com/r/ctf4e/ctf4e-server/tags)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ctf4e/ctf4e-server)](https://hub.docker.com/r/ctf4e/ctf4e-server/tags)
 
 This is the main application, which keeps track of exercise results, flag submissions and the scoreboard. It links to the corresponding lab servers.
 
@@ -40,7 +40,7 @@ A new instance of the CTF server can be created by following these steps:
 Finally, open a browser and navigate to the specified host/port.
 
 ## Ctf4e.LabServer
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/ctf4e/ctf4e-labserver?label=docker&sort=date)](https://hub.docker.com/r/ctf4e/ctf4e-labserver/tags)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/ctf4e/ctf4e-labserver)](https://hub.docker.com/r/ctf4e/ctf4e-labserver/tags)
 
 This is a generic lab server implementation, suitable for most common tasks. A lab server offers an interface for entering exercise solutions, and sends its verdicts ("passed"/"not passed") to the CTF server.
 
