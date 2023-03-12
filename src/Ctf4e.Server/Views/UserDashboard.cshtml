@@ -114,7 +114,7 @@
                             <th scope="col" class="text-end">@_localizer["ExerciseSubmissions:Points"]</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="table-group-divider">
                         @{
                             bool sawPassedSolution = false;
                         }
@@ -220,7 +220,7 @@
                         <th scope="col">@_localizer["FlagSubmissions:GroupMember"]</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-group-divider">
                     @foreach(var flagSubmission in userScoreboard.Flags)
                     {
                         <tr>

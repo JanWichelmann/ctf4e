@@ -120,7 +120,7 @@
                                     }
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="table-group-divider">
                                 @{
                                     bool sawPassedSolution = false;
                                 }
@@ -198,7 +198,7 @@
                         <th scope="col">@_localizer["Flags:Valid"]</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-group-divider">
                     @foreach(var flag in group.Flags)
                     {
                         <tr>
@@ -379,7 +379,7 @@ else
                                     }
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="table-group-divider">
                                 @foreach(var submission in exercise.Submissions)
                                 {
                                     <tr>
@@ -439,7 +439,7 @@ else
                         }
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="table-group-divider">
                     @foreach(var flag in user.Flags)
                     {
                         <tr>
