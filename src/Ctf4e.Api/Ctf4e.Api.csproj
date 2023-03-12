@@ -3,8 +3,8 @@
   <PropertyGroup>
     <Description>Provides methods and types for communication with the CTF4E API.</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <LangVersion>9</LangVersion>
-    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <LangVersion>10</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
