@@ -100,9 +100,11 @@ namespace Ctf4e.Server.Resources.Views {
         ///    Praktikumsausführungen steuern, wann ein Praktikumstermin startet und endet. Hierfür gibt es folgende Regeln:
         ///&lt;/p&gt;
         ///&lt;ul&gt;
-        ///    &lt;li&gt;&lt;strong&gt;Vorbereitungsphase:&lt;/strong&gt; Ab diesem Zeitpunkt können bestimmte Aufgaben bearbeitet und sämtliche Flags eingelöst werden.&lt;/li&gt;
         ///    &lt;li&gt;&lt;strong&gt;Beginn:&lt;/strong&gt; Ab diesem Zeitpunkt sind sämtliche Aufgaben freigeschaltet. Die Gruppen können in diesem Zeitraum das Praktikum bestehen.&lt;/li&gt;
-        ///    &lt;li&gt;&lt;strong&gt;Ende:&lt;/strong&gt; Nach diesem Zeitpunkt können zwar noch Auf [rest of string was truncated]&quot;;.
+        ///    &lt;li&gt;&lt;strong&gt;Ende:&lt;/strong&gt; Nach diesem Zeitpunkt können zwar noch Aufgaben bearbeitet werden, diese werden jedoch nicht mehr im Scoreboard gewertet. Flags können nicht mehr eingelöst werden.&lt;/li&gt;
+        ///&lt;/ul&gt;
+        ///&lt;p&gt;
+        ///    Di [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Explanation {
             get {

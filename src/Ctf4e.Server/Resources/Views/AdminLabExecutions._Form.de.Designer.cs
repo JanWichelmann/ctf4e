@@ -60,7 +60,7 @@ namespace Ctf4e.Server.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;strong&gt;Hinweis:&lt;/strong&gt; Die Daten dürfen nicht exakt gleich sein, d.h. es muss Vorbereitungsphase &amp;lt; Beginn &amp;lt; Ende gelten..
+        ///   Looks up a localized string similar to &lt;strong&gt;Hinweis:&lt;/strong&gt; Die Daten dürfen nicht exakt gleich sein, d.h. es muss Beginn &amp;lt; Ende gelten..
         /// </summary>
         internal static string Form_DateNotes {
             get {

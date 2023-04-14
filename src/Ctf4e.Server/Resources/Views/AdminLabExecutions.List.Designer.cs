@@ -100,10 +100,12 @@ namespace Ctf4e.Server.Resources.Views {
         ///    Lab executions control when a lab starts and ends. The following rules apply:
         ///&lt;/p&gt;
         ///&lt;ul&gt;
-        ///    &lt;li&gt;&lt;strong&gt;Preparatory phase:&lt;/strong&gt; At this point, certain exercises can be solved and all flags can be submitted.&lt;/li&gt;
         ///    &lt;li&gt;&lt;strong&gt;Begin:&lt;/strong&gt; All exercises can be solved and all flags can be submitted. Participants can pass the lab.&lt;/li&gt;
         ///    &lt;li&gt;&lt;strong&gt;End:&lt;/strong&gt; Participants can still solve exercises and submit flags, but those no longer influence the grade or the scoreboard.&lt;/li&gt;
-        ///&lt;/ [rest of string was truncated]&quot;;.
+        ///&lt;/ul&gt;
+        ///&lt;p&gt;
+        ///    The given dates need to always be in the given order and must not be identical.
+        ///&lt;/p&gt;.
         /// </summary>
         internal static string Explanation {
             get {

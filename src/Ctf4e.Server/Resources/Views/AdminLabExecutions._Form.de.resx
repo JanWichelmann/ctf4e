@@ -27,7 +27,7 @@
         <comment>Form:End</comment>
     </data>
     <data name="Form:DateNotes" xml:space="preserve">
-        <value>&lt;strong&gt;Hinweis:&lt;/strong&gt; Die Daten dürfen nicht exakt gleich sein, d.h. es muss Vorbereitungsphase &amp;lt; Beginn &amp;lt; Ende gelten.</value>
+        <value>&lt;strong&gt;Hinweis:&lt;/strong&gt; Die Daten dürfen nicht exakt gleich sein, d.h. es muss Beginn &amp;lt; Ende gelten.</value>
         <comment>Form:DateNotes</comment>
     </data>
 </root>
