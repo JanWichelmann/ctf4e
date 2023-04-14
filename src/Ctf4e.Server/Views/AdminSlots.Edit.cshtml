@@ -1,6 +1,13 @@
 @model Ctf4e.Server.Models.Slot
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Services
+@inject IViewLocalizer Localizer 
+@inject ILabService LabService
+@{
+    var labs = await LabService.GetLabsAsync().ToListAsync(Context.RequestAborted);
+}
 
 <h1 class="header">
     @Localizer["Title"]
@@ -12,8 +19,21 @@
         <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
         <input asp-for="Name" class="form-control">
         <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
+    </div>                     
 
+    <div class="mb-3">
+        <label class="form-label" asp-for="DefaultExecuteLabId">@Localizer["Form:DefaultExecuteLabId"]</label>
+        <select asp-for="DefaultExecuteLabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-select">
+            <option value="" selected>@Localizer["Form:DefaultExecuteLabId:Placeholder"]</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label" asp-for="DefaultExecuteLabEnd">@Localizer["Form:DefaultExecuteLabEnd"]</label>
+        <input asp-for="DefaultExecuteLabEnd" id="datetime-end" type="text" class="form-control" />
+        <span asp-validation-for="DefaultExecuteLabEnd" class="text-danger"></span>
+    </div>
+    
     @if(Model.Groups?.Any() == true)
     {
         <div class="mb-3">
@@ -41,4 +61,18 @@
 
     <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
     <a asp-controller="AdminSlots" asp-action="RenderSlotList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
-</form>
+</form>   
+
+<script>
+    flatpickr.localize(flatpickr.l10ns.de);
+    
+    options = {
+                 "altInput": true,
+                 "altFormat": "Y-m-d H:i:S",
+                 "enableTime": true,
+                 "enableSeconds": true,
+                 "allowInput": true,
+                 "minuteIncrement": 1
+             };
+    flatpickr(document.getElementById("datetime-end"), options);
+</script>

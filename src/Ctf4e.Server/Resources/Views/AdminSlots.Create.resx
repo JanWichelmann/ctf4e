@@ -34,4 +34,16 @@
         <value>Cancel</value>
         <comment>Form:Cancel</comment>
     </data>
+    <data name="Form:DefaultExecuteLabId" xml:space="preserve">
+        <value>Automatically started lab on group creation</value>
+        <comment>Form:DefaultExecuteLabId</comment>
+    </data>
+    <data name="Form:DefaultExecuteLabId:Placeholder" xml:space="preserve">
+        <value>(none)</value>
+        <comment>Form:DefaultExecuteLabId:Placeholder</comment>
+    </data>
+    <data name="Form:DefaultExecuteLabEnd" xml:space="preserve">
+        <value>End of the automatically started lab</value>
+        <comment>Form:DefaultExecuteLabEnd</comment>
+    </data>
 </root>

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,7 @@ public partial class AuthenticationController
     [HttpPost("selgroup")]
     [ValidateAntiForgeryToken]
     [Authorize]
-    public async Task<IActionResult> HandleGroupSelectionAsync(GroupSelection groupSelection)
+    public async Task<IActionResult> HandleGroupSelectionAsync(GroupSelection groupSelection, [FromServices] ILabExecutionService labExecutionService)
     {
         // Some input validation
         if(!ModelState.IsValid)
@@ -45,6 +46,7 @@ public partial class AuthenticationController
             return await ShowRedirectAsync(null);
 
         // Try to create group
+        int groupId = 0;
         try
         {
             // Filter group codes
@@ -77,7 +79,7 @@ public partial class AuthenticationController
                 SlotId = groupSelection.SlotId,
                 ShowInScoreboard = groupSelection.ShowInScoreboard
             };
-            await _userService.CreateGroupAsync(group, codes, HttpContext.RequestAborted);
+            groupId = await _userService.CreateGroupAsync(group, codes, HttpContext.RequestAborted);
         }
         catch(ArgumentException)
         {
@@ -95,6 +97,33 @@ public partial class AuthenticationController
             _logger.LogError(ex, "Create group");
             AddStatusMessage(_localizer["HandleGroupSelectionAsync:UnknownError"], StatusMessageTypes.Error);
             return await ShowGroupFormAsync(groupSelection);
+        }
+
+        try
+        {
+            // Start default lab if specified in the slot configuration
+            var slot = await _slotService.GetSlotAsync(groupSelection.SlotId, HttpContext.RequestAborted);
+            if(slot is { DefaultExecuteLabId: { }, DefaultExecuteLabEnd: { } })
+            {
+                var startTime = DateTime.Now;
+                if(startTime < slot.DefaultExecuteLabEnd)
+                {
+                    var labExecution = new LabExecution
+                    {
+                        GroupId = groupId,
+                        LabId = slot.DefaultExecuteLabId.Value,
+                        Start = startTime,
+                        End = slot.DefaultExecuteLabEnd.Value
+                    };
+                    await labExecutionService.CreateLabExecutionAsync(labExecution, false, HttpContext.RequestAborted);
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Start default lab on group creation");
+            AddStatusMessage(_localizer["HandleGroupSelectionAsync:DefaultLabStartError"], StatusMessageTypes.Error);
+            return await ShowRedirectAsync(null);
         }
 
         // Success

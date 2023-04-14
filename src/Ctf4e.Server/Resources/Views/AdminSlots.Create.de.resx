@@ -34,4 +34,16 @@
         <value>Abbrechen</value>
         <comment>Form:Cancel</comment>
     </data>
+    <data name="Form:DefaultExecuteLabId" xml:space="preserve">
+        <value>Automatisch gestartetes Praktikum bei Gruppengründung</value>
+        <comment>Form:DefaultExecuteLabId</comment>
+    </data>
+    <data name="Form:DefaultExecuteLabId:Placeholder" xml:space="preserve">
+        <value>(kein)</value>
+        <comment>Form:DefaultExecuteLabId:Placeholder</comment>
+    </data>
+    <data name="Form:DefaultExecuteLabEnd" xml:space="preserve">
+        <value>Ende des automatisch gestarteten Praktikums</value>
+        <comment>Form:DefaultExecuteLabEnd</comment>
+    </data>
 </root>

@@ -95,4 +95,8 @@
     <data name="PasswordLoginAsync:WrongPassword" xml:space="preserve">
         <value>Diese Kombination aus Benutzername und Passwort ist ungültig.</value>
     </data>
+    <data name="HandleGroupSelectionAsync:DefaultLabStartError" xml:space="preserve">
+        <value>Die Gruppe wurde erfolgreich erstellt, es konnte allerdings kein Praktikum gestartet werden. Bitte kontaktiere die Betreuer.</value>
+        <comment>HandleGroupSelectionAsync:DefaultLabStartError</comment>
+    </data>
 </root>

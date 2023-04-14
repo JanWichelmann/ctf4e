@@ -89,6 +89,8 @@ public class AdminSlotsController : ControllerBase
             // Retrieve edited slot from database and apply changes
             var slot = await _slotService.GetSlotAsync(slotData.Id, HttpContext.RequestAborted);
             slot.Name = slotData.Name;
+            slot.DefaultExecuteLabId = slotData.DefaultExecuteLabId;
+            slot.DefaultExecuteLabEnd = slotData.DefaultExecuteLabEnd;
             await _slotService.UpdateSlotAsync(slot, HttpContext.RequestAborted);
 
             AddStatusMessage(_localizer["EditSlotAsync:Success"], StatusMessageTypes.Success);
@@ -127,7 +129,9 @@ public class AdminSlotsController : ControllerBase
             // Create slot
             var slot = new Slot
             {
-                Name = slotData.Name
+                Name = slotData.Name,
+                DefaultExecuteLabId = slotData.DefaultExecuteLabId,
+                DefaultExecuteLabEnd = slotData.DefaultExecuteLabEnd
             };
             await _slotService.CreateSlotAsync(slot, HttpContext.RequestAborted);
 

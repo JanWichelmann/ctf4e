@@ -32,7 +32,7 @@ public interface IUserService
     IAsyncEnumerable<Group> GetGroupsInSlotAsync(int slotId);
     Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken);
     Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken);
-    Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken);
+    Task<int> CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken);
     Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken);
     Task UpdateGroupAsync(Group group, CancellationToken cancellationToken);
     Task DeleteGroupAsync(int id, CancellationToken cancellationToken);
@@ -204,7 +204,7 @@ public class UserService : IUserService
             .AnyAsync(cancellationToken);
     }
 
-    public async Task CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken)
+    public async Task<int> CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken)
     {
         // Retrieve affected users
         var userEntities = await _dbContext.Users.AsQueryable()
@@ -236,6 +236,8 @@ public class UserService : IUserService
 
         // Apply changes
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return groupEntity.Id;
     }
 
     public async Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken)

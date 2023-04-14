@@ -95,4 +95,8 @@
     <data name="PasswordLoginAsync:Success" xml:space="preserve">
         <value>Login successful.</value>
     </data>
+    <data name="HandleGroupSelectionAsync:DefaultLabStartError" xml:space="preserve">
+        <value>Group creation successful, but the automated lab start failed. Please contact the tutors.</value>
+        <comment>HandleGroupSelectionAsync:DefaultLabStartError</comment>
+    </data>
 </root>

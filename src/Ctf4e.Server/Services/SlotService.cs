@@ -64,6 +64,8 @@ public class SlotService : ISlotService
         var slotEntity = _dbContext.Slots.Add(new SlotEntity
         {
             Name = slot.Name,
+            DefaultExecuteLabId = slot.DefaultExecuteLabId,
+            DefaultExecuteLabEnd = slot.DefaultExecuteLabEnd,
             Groups = new List<GroupEntity>()
         }).Entity;
 
@@ -81,6 +83,8 @@ public class SlotService : ISlotService
 
         // Update entry
         slotEntity.Name = slot.Name;
+        slotEntity.DefaultExecuteLabId = slot.DefaultExecuteLabId;
+        slotEntity.DefaultExecuteLabEnd = slot.DefaultExecuteLabEnd;
 
         // Apply changes
         await _dbContext.SaveChangesAsync(cancellationToken);
