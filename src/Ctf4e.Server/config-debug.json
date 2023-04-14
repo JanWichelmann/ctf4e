@@ -6,6 +6,7 @@
   },
   "CtfDbOptions": {
     "Server": "localhost",
+    "ServerVersion": "8.0.21-mysql",
     "Database": "ctf4e",
     "User": "ctf4e",
     "Password": "ctf4e"

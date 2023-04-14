@@ -73,7 +73,7 @@ public class Startup
         services.AddDbContextPool<CtfDbContext>(options =>
         {
             options.UseMySql($"Server={dbOptions.Server};Database={dbOptions.Database};User={dbOptions.User};Password={dbOptions.Password};",
-                ServerVersion.Parse("10.5.8-mariadb"), mysqlOptions => mysqlOptions.EnableRetryOnFailure(3));
+                ServerVersion.Parse(dbOptions.ServerVersion), mysqlOptions => mysqlOptions.EnableRetryOnFailure(3));
             if(_environment.IsDevelopment())
             {
                 options.UseLoggerFactory(_debugLoggerFactory)

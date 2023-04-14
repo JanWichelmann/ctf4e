@@ -3,6 +3,8 @@
 public class CtfDbOptions
 {
     public string Server { get; set; }
+    
+    public string ServerVersion { get; set; }
 
     public string Database { get; set; }
 
