@@ -70,10 +70,6 @@
         <value>Mandatory</value>
         <comment>Exercises:Mandatory</comment>
     </data>
-    <data name="Exercises:PreStart" xml:space="preserve">
-        <value>Preparatory exercise</value>
-        <comment>Exercises:PreStart</comment>
-    </data>
     <data name="Modal:DeleteExercise:Submit" xml:space="preserve">
         <value>Delete exercise</value>
         <comment>Modal:DeleteExercise:Submit</comment>

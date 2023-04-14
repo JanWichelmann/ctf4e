@@ -42,10 +42,6 @@
         <value>Pflichtaufgabe</value>
         <comment>Form:IsMandatory</comment>
     </data>
-    <data name="Form:IsPreStartAvailable" xml:space="preserve">
-        <value>In Vorbereitungsphase einreichbar&lt;br&gt;&lt;small&gt;Dies steuert lediglich, ob diese Aufgabe in der Vorbereitungsphase eingereicht werden kann. Bereits bestehende Einreichungen bleiben unangetastet und werden immer gewertet, sofern sie zwischen Vor-Beginn und Ende liegen.&lt;/small&gt;</value>
-        <comment>Form:IsPreStartAvailable</comment>
-    </data>
     <data name="Form:Submit" xml:space="preserve">
         <value>Aufgabe erstellen</value>
         <comment>Form:Submit</comment>

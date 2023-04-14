@@ -15,8 +15,6 @@ public class LabExecutionEntity
 
     public int LabId { get; set; }
 
-    public DateTime PreStart { get; set; }
-
     public DateTime Start { get; set; }
 
     public DateTime End { get; set; }

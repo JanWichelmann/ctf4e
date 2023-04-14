@@ -22,8 +22,6 @@ public class Exercise
 
     public bool IsMandatory { get; set; }
 
-    public bool IsPreStartAvailable { get; set; }
-
     [Range(0, int.MaxValue)]
     public int BasePoints { get; set; }
 

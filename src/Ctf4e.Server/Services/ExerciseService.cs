@@ -71,7 +71,6 @@ public class ExerciseService : IExerciseService
             ExerciseNumber = exercise.ExerciseNumber,
             Name = exercise.Name,
             IsMandatory = exercise.IsMandatory,
-            IsPreStartAvailable = exercise.IsPreStartAvailable,
             BasePoints = exercise.BasePoints,
             PenaltyPoints = exercise.PenaltyPoints,
             Submissions = new List<ExerciseSubmissionEntity>()
@@ -94,7 +93,6 @@ public class ExerciseService : IExerciseService
         exerciseEntity.ExerciseNumber = exercise.ExerciseNumber;
         exerciseEntity.Name = exercise.Name;
         exerciseEntity.IsMandatory = exercise.IsMandatory;
-        exerciseEntity.IsPreStartAvailable = exercise.IsPreStartAvailable;
         exerciseEntity.BasePoints = exercise.BasePoints;
         exerciseEntity.PenaltyPoints = exercise.PenaltyPoints;
 

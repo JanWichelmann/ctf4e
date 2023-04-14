@@ -42,10 +42,6 @@
         <value>Mandatory exercise</value>
         <comment>Form:IsMandatory</comment>
     </data>
-    <data name="Form:IsPreStartAvailable" xml:space="preserve">
-        <value>Can be submitted in preparatory phase&lt;br&gt;&lt;small&gt;This controls whether the exercise can be submitted in the preparatory phase. Existing submission are not affected by this and will be graded as specified.&lt;/small&gt;</value>
-        <comment>Form:IsPreStartAvailable</comment>
-    </data>
     <data name="Form:Submit" xml:space="preserve">
         <value>Create exercise</value>
         <comment>Form:Submit</comment>

@@ -71,7 +71,7 @@ public class MoodleService : IMoodleService
             .Where(s => s.ExercisePassed
                         && s.Exercise.IsMandatory
                         && s.User.Group.LabExecutions
-                            .Any(le => le.LabId == s.Exercise.LabId && le.PreStart <= s.SubmissionTime && s.SubmissionTime < le.End))
+                            .Any(le => le.LabId == s.Exercise.LabId && le.Start <= s.SubmissionTime && s.SubmissionTime < le.End))
             .Select(s => new
             {
                 s.ExerciseId,

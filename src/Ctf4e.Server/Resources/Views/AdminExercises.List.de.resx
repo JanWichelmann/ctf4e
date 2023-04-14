@@ -70,10 +70,6 @@
         <value>Pflicht</value>
         <comment>Exercises:Mandatory</comment>
     </data>
-    <data name="Exercises:PreStart" xml:space="preserve">
-        <value>Vorbereitungsaufgabe</value>
-        <comment>Exercises:PreStart</comment>
-    </data>
     <data name="Modal:DeleteExercise:Submit" xml:space="preserve">
         <value>Aufgabe löschen</value>
         <comment>Modal:DeleteExercise:Submit</comment>

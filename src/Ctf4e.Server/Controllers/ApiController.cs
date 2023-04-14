@@ -55,12 +55,8 @@ public class ApiController : Controller
             // This will also automatically check whether the given user exists
             var labExecution = await _labExecutionService.GetLabExecutionForUserAsync(apiExerciseSubmission.UserId, lab.Id, HttpContext.RequestAborted);
             var now = DateTime.Now;
-            if(labExecution == null || now < labExecution.PreStart)
+            if(labExecution == null || now < labExecution.Start)
                 return NotFound(new { error = "Lab is not active for this user" });
-
-            // Some exercises may only be submitted after the pre-start phase has ended
-            if(!exercise.IsPreStartAvailable && now < labExecution.Start)
-                return NotFound(new { error = "This exercise may not be submitted in the pre-start phase" });
 
             // Create submission
             var submission = new ExerciseSubmission
@@ -148,12 +144,8 @@ public class ApiController : Controller
             // This will also automatically check whether the given group exists
             var labExecution = await _labExecutionService.GetLabExecutionAsync(apiExerciseSubmission.GroupId, lab.Id, HttpContext.RequestAborted);
             var now = DateTime.Now;
-            if(labExecution == null || now < labExecution.PreStart)
+            if(labExecution == null || now < labExecution.Start)
                 return NotFound(new { error = "Lab is not active for this group" });
-
-            // Some exercises may only be submitted after the pre-start phase has ended
-            if(!exercise.IsPreStartAvailable && now < labExecution.Start)
-                return NotFound(new { error = "This exercise may not be submitted in the pre-start phase" });
 
             // Create submission for each group member
             var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId).ToListAsync(HttpContext.RequestAborted);

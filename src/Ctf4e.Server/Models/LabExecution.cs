@@ -16,9 +16,6 @@ public class LabExecution
     public Lab Lab { get; set; }
 
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:s}")]
-    public DateTime PreStart { get; set; }
-
-    [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:s}")]
     public DateTime Start { get; set; }
 
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:s}")]

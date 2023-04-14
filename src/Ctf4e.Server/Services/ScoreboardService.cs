@@ -174,7 +174,7 @@ public class ScoreboardService : IScoreboardService
                             FROM `LabExecutions` le
                             WHERE le.`GroupId` = g.`Id`
                               AND le.`LabId` = @labId
-                              AND le.`PreStart` <= s.`SubmissionTime`
+                              AND le.`Start` <= s.`SubmissionTime`
                               AND s.`SubmissionTime` < le.`End`
                           )
                         WHERE f.`LabId` = @labId
@@ -528,10 +528,8 @@ public class ScoreboardService : IScoreboardService
         if(labExecution == null)
             return ScoreboardGroupStatus.Undefined;
 
-        if(time < labExecution.PreStart)
-            return ScoreboardGroupStatus.BeforePreStart;
-        if(labExecution.PreStart <= time && time < labExecution.Start)
-            return ScoreboardGroupStatus.PreStart;
+        if(time < labExecution.Start)
+            return ScoreboardGroupStatus.BeforeStart;
         if(labExecution.Start <= time && time < labExecution.End)
             return ScoreboardGroupStatus.Start;
         if(labExecution.End <= time)
@@ -564,7 +562,7 @@ public class ScoreboardService : IScoreboardService
         foreach(var submission in submissions)
         {
             // Check submission validity
-            if(submission.SubmissionTime < labExecution.PreStart || labExecution.End <= submission.SubmissionTime)
+            if(submission.SubmissionTime < labExecution.Start || labExecution.End <= submission.SubmissionTime)
                 continue;
             ++tries;
 
@@ -596,7 +594,7 @@ public class ScoreboardService : IScoreboardService
         if(labExecution == null)
             return false;
 
-        return labExecution.PreStart <= flagSubmission.SubmissionTime && flagSubmission.SubmissionTime < labExecution.End;
+        return labExecution.Start <= flagSubmission.SubmissionTime && flagSubmission.SubmissionTime < labExecution.End;
     }
 
     /// <summary>
@@ -695,7 +693,7 @@ public class ScoreboardService : IScoreboardService
                 JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
                 JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
                 JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = e.`LabId`
-                WHERE le.`PreStart` <= s.`SubmissionTime`
+                WHERE le.`Start` <= s.`SubmissionTime`
                   AND s.`SubmissionTime` < le.`End`
                 ORDER BY u.`GroupId`, s.`ExerciseId`, s.`SubmissionTime`
                 "))
@@ -757,7 +755,7 @@ public class ScoreboardService : IScoreboardService
 		                FROM `LabExecutions` le
 		                WHERE u.`GroupId` = le.`GroupId`
 		                  AND le.`LabId` = e.`LabId`
-		                  AND le.`PreStart` <= s.`SubmissionTime`
+		                  AND le.`Start` <= s.`SubmissionTime`
 		                  AND s.`SubmissionTime` < le.`End`
 	                  )
                   ),
@@ -803,7 +801,7 @@ public class ScoreboardService : IScoreboardService
 	                    FROM `LabExecutions` le
 	                    WHERE le.`GroupId` = g.`Id`
 	                      AND le.`LabId` = f.`LabId`
-	                      AND le.`PreStart` <= s.`SubmissionTime`
+	                      AND le.`Start` <= s.`SubmissionTime`
 	                      AND s.`SubmissionTime` < le.`End`
                       )
                     GROUP BY f.`Id`
@@ -829,7 +827,7 @@ public class ScoreboardService : IScoreboardService
                     JOIN `Users` u ON u.`Id` = s.`UserId`
                     JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
                     JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = f.`LabId`
-                    WHERE le.`PreStart` <= s.`SubmissionTime`
+                    WHERE le.`Start` <= s.`SubmissionTime`
                       AND s.`SubmissionTime` < le.`End`
                     GROUP BY g.`Id`, f.`Id`
                 "))
@@ -1038,7 +1036,7 @@ public class ScoreboardService : IScoreboardService
                 JOIN `Exercises` e ON e.`Id` = s.`ExerciseId`
                 JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = @labId
                 WHERE e.LabId = @labId
-                  AND le.`PreStart` <= s.`SubmissionTime`
+                  AND le.`Start` <= s.`SubmissionTime`
                   AND s.`SubmissionTime` < le.`End`
                 ORDER BY u.`GroupId`, s.`ExerciseId`, s.`SubmissionTime`
                 ",
@@ -1102,7 +1100,7 @@ public class ScoreboardService : IScoreboardService
 		                FROM `LabExecutions` le
 		                WHERE u.`GroupId` = le.`GroupId`
 		                  AND le.`LabId` = @labId
-		                  AND le.`PreStart` <= s.`SubmissionTime`
+		                  AND le.`Start` <= s.`SubmissionTime`
 		                  AND s.`SubmissionTime` < le.`End`
 	                  )
 	                ORDER BY s.`SubmissionTime`
@@ -1152,7 +1150,7 @@ public class ScoreboardService : IScoreboardService
 	                    FROM `LabExecutions` le
 	                    WHERE le.`GroupId` = g.`Id`
 	                      AND le.`LabId` = @labId
-	                      AND le.`PreStart` <= s.`SubmissionTime`
+	                      AND le.`Start` <= s.`SubmissionTime`
 	                      AND s.`SubmissionTime` < le.`End`
                       )
                     WHERE f.`LabId` = @labId
@@ -1180,7 +1178,7 @@ public class ScoreboardService : IScoreboardService
                     JOIN `Groups` g ON g.`Id` = u.`GroupId` AND g.`ShowInScoreboard` = 1
                     JOIN `LabExecutions` le ON le.`GroupId` = u.`GroupId` AND le.`LabId` = @labId
                     WHERE f.`LabId` = @labId
-                      AND le.`PreStart` <= s.`SubmissionTime`
+                      AND le.`Start` <= s.`SubmissionTime`
                       AND s.`SubmissionTime` < le.`End`
                     GROUP BY g.`Id`, f.`Id`
                 ",
@@ -1333,7 +1331,7 @@ public class ScoreboardService : IScoreboardService
                 LabId = l.Id,
                 Name = l.Name,
                 ServerBaseUrl = l.ServerBaseUrl,
-                Active = l.Executions.Any(le => le.GroupId == groupId && le.PreStart <= now && now < le.End),
+                Active = l.Executions.Any(le => le.GroupId == groupId && le.Start <= now && now < le.End),
                 Visible = l.Visible
             })
             .ToListAsync(cancellationToken);
@@ -1377,7 +1375,7 @@ public class ScoreboardService : IScoreboardService
             .Select(fs => new UserScoreboardFlagEntry
             {
                 Valid = fs.User.Group.LabExecutions
-                    .Any(le => le.LabId == labId && le.PreStart <= fs.SubmissionTime && fs.SubmissionTime < le.End),
+                    .Any(le => le.LabId == labId && le.Start <= fs.SubmissionTime && fs.SubmissionTime < le.End),
                 FlagId = fs.FlagId,
                 UserId = fs.UserId,
                 SubmissionTime = fs.SubmissionTime
@@ -1429,7 +1427,7 @@ public class ScoreboardService : IScoreboardService
                 // If passing as group is disabled, do another check whether this user has a valid passing submission
                 bool passed = groupMemberHasPassed;
                 if(!passAsGroup)
-                    passed = submissions.Any(s => s.ExercisePassed && s.UserId == userId && labExecution.PreStart <= s.SubmissionTime && s.SubmissionTime < labExecution.End);
+                    passed = submissions.Any(s => s.ExercisePassed && s.UserId == userId && labExecution.Start <= s.SubmissionTime && s.SubmissionTime < labExecution.End);
 
                 scoreboard.Exercises.Add(new UserScoreboardExerciseEntry
                 {

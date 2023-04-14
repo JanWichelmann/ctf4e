@@ -34,21 +34,13 @@
         <value>This lab is not yet enabled. You can neither work on exercises nor submit flags.</value>
         <comment>LabExecutionStatus:Undefined:Text</comment>
     </data>
-    <data name="LabExecutionStatus:BeforePreStart:Title" xml:space="preserve">
+    <data name="LabExecutionStatus:BeforeStart:Title" xml:space="preserve">
         <value>Waiting for start</value>
-        <comment>LabExecutionStatus:BeforePreStart:Title</comment>
+        <comment>LabExecutionStatus:BeforeStart:Title</comment>
     </data>
-    <data name="LabExecutionStatus:BeforePreStart:Text" xml:space="preserve">
+    <data name="LabExecutionStatus:BeforeStart:Text" xml:space="preserve">
         <value>This lab has not yet started. You can neither work on exercises nor submit flags.&lt;br&gt;The lab is scheduled to start at &lt;strong&gt;{0:g}&lt;/strong&gt;.</value>
-        <comment>LabExecutionStatus:BeforePreStart:Text</comment>
-    </data>
-    <data name="LabExecutionStatus:PreStart:Title" xml:space="preserve">
-        <value>Preparatory phase</value>
-        <comment>LabExecutionStatus:PreStart:Title</comment>
-    </data>
-    <data name="LabExecutionStatus:PreStart:Text" xml:space="preserve">
-        <value>This lab is in the preparatory phase. You can work on certain selected exercises and submit all flags.&lt;br&gt;Begin of main working time: &lt;strong&gt;{0:g}&lt;/strong&gt;.</value>
-        <comment>LabExecutionStatus:PreStart:Text</comment>
+        <comment>LabExecutionStatus:BeforeStart:Text</comment>
     </data>
     <data name="LabExecutionStatus:Start:Title" xml:space="preserve">
         <value>Active</value>

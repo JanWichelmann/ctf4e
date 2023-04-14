@@ -98,8 +98,7 @@ public class AdminScoreboardGroupEntry
 public enum ScoreboardGroupStatus
 {
     Undefined,
-    BeforePreStart,
-    PreStart,
+    BeforeStart,
     Start,
     End
 }

@@ -23,8 +23,6 @@ public class ExerciseEntity
 
     public bool IsMandatory { get; set; }
 
-    public bool IsPreStartAvailable { get; set; }
-
     public int BasePoints { get; set; }
 
     public int PenaltyPoints { get; set; }

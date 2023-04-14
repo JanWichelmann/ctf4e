@@ -26,17 +26,13 @@
         <value>Not passed</value>
         <comment>NotPassed</comment>
     </data>
-    <data name="LabExecutionStatus:BeforePreStart:Text" xml:space="preserve">
-        <value>Waiting for preparatory phase</value>
-        <comment>LabExecutionStatus:BeforePreStart:Text</comment>
+    <data name="LabExecutionStatus:BeforeStart:Text" xml:space="preserve">
+        <value>Waiting for lab start</value>
+        <comment>LabExecutionStatus:BeforeStart:Text</comment>
     </data>
-    <data name="LabExecutionStatus:BeforePreStart:Title" xml:space="preserve">
-        <value>Before preparatory</value>
-        <comment>LabExecutionStatus:BeforePreStart:Title</comment>
-    </data>
-    <data name="LabExecutionStatus:PreStart:Text" xml:space="preserve">
-        <value>Preparatory Phase</value>
-        <comment>LabExecutionStatus:PreStart:Text</comment>
+    <data name="LabExecutionStatus:BeforeStart:Title" xml:space="preserve">
+        <value>Before start</value>
+        <comment>LabExecutionStatus:BeforeStart:Title</comment>
     </data>
     <data name="LabExecutionStatus:Start:Title" xml:space="preserve">
         <value>Lab active</value>
@@ -45,10 +41,6 @@
     <data name="LabExecutionStatus:End:Text" xml:space="preserve">
         <value>Lab ended</value>
         <comment>LabExecutionStatus:End:Text</comment>
-    </data>
-    <data name="LabExecutionStatus:PreStart:Title" xml:space="preserve">
-        <value>Preparatory Phase</value>
-        <comment>LabExecutionStatus:PreStart:Title</comment>
     </data>
     <data name="LabExecutionStatus:Start:Text" xml:space="preserve">
         <value>Lab active</value>

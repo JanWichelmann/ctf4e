@@ -38,7 +38,6 @@
         <th scope="col">@_localizer["Exercises:BasePoints"]</th>
         <th scope="col">@_localizer["Exercises:PenaltyPoints"]</th>
         <th scope="col">@_localizer["Exercises:Mandatory"]</th>
-        <th scope="col">@_localizer["Exercises:PreStart"]</th>
         <th scope="col">@_localizer["Actions"]</th>
     </tr>
     </thead>
@@ -53,16 +52,6 @@
             <td>@e.PenaltyPoints</td>
             <td>
                 @if(e.IsMandatory)
-                {
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                }
-                else
-                {
-                    <i class="bi bi-x-circle-fill text-danger"></i>
-                }
-            </td>
-            <td>
-                @if(e.IsPreStartAvailable)
                 {
                     <i class="bi bi-check-circle-fill text-success"></i>
                 }

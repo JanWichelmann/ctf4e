@@ -46,7 +46,6 @@
             @_localizer["LabExecutions:Lab"]
             <input type="text" id="input-filter-lab" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="@_localizer["LabExecutions:Lab:Filter"]">
         </th>
-        <th scope="col">@_localizer["LabExecutions:PreStart"]</th>
         <th scope="col">@_localizer["LabExecutions:Begin"]</th>
         <th scope="col">@_localizer["LabExecutions:End"]</th>
         <th scope="col">@_localizer["Actions"]</th>
@@ -58,7 +57,6 @@
         <tr>
             <td data-content="group">#@l.GroupId: @l.Group.DisplayName</td>
             <td data-content="lab">@l.Lab.Name</td>
-            <td>@l.PreStart.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>@l.Start.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>@l.End.ToString(DateTimeFormats.DateAndTimeMinutes)</td>
             <td>

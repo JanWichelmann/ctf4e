@@ -28,14 +28,6 @@
                     <span class="ms-2">@group.GroupName</span>
                 </div>
                 <div class="col-auto ms-auto">
-                    @if(group.Status == ScoreboardGroupStatus.BeforePreStart)
-                    {
-                        <span class="badge bg-info" title="@_localizer["LabExecutionStatus:BeforePreStart:Text"]">@_localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
-                    }
-                    else if(group.Status == ScoreboardGroupStatus.PreStart)
-                    {
-                        <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:PreStart:Text"]">@_localizer["LabExecutionStatus:PreStart:Title"]</span>
-                    }
                     else if(group.Status == ScoreboardGroupStatus.Start)
                     {
                         <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:Start:Text"]">@_localizer["LabExecutionStatus:Start:Title"]</span>
@@ -275,13 +267,9 @@ else
                     <span class="ms-2">@user.UserName</span>
                 </div>
                 <div class="col-auto ms-auto">
-                    @if(user.Status == ScoreboardGroupStatus.BeforePreStart)
+                    @if(user.Status == ScoreboardGroupStatus.BeforeStart)
                     {
-                        <span class="badge bg-info" title="@_localizer["LabExecutionStatus:BeforePreStart:Text"]">@_localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
-                    }
-                    else if(user.Status == ScoreboardGroupStatus.PreStart)
-                    {
-                        <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:PreStart:Text"]">@_localizer["LabExecutionStatus:PreStart:Title"]</span>
+                        <span class="badge bg-info" title="@_localizer["LabExecutionStatus:BeforeStart:Text"]">@_localizer["LabExecutionStatus:BeforeStart:Title"]</span>
                     }
                     else if(user.Status == ScoreboardGroupStatus.Start)
                     {

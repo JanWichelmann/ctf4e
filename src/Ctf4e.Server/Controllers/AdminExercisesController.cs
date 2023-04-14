@@ -91,7 +91,6 @@ public class AdminExercisesController : ControllerBase
             exercise.ExerciseNumber = exerciseData.ExerciseNumber;
             exercise.Name = exerciseData.Name;
             exercise.IsMandatory = exerciseData.IsMandatory;
-            exercise.IsPreStartAvailable = exerciseData.IsPreStartAvailable;
             exercise.BasePoints = exerciseData.BasePoints;
             exercise.PenaltyPoints = exerciseData.PenaltyPoints;
             await _exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
@@ -135,7 +134,6 @@ public class AdminExercisesController : ControllerBase
                 ExerciseNumber = exerciseData.ExerciseNumber,
                 Name = exerciseData.Name,
                 IsMandatory = exerciseData.IsMandatory,
-                IsPreStartAvailable = exerciseData.IsPreStartAvailable,
                 BasePoints = exerciseData.BasePoints,
                 PenaltyPoints = exerciseData.PenaltyPoints
             };

@@ -128,7 +128,7 @@ public class UserDashboardController : ControllerBase
         // Check whether lab is accessible by given group
         DateTime now = DateTime.Now;
         var labExecution = await _labExecutionService.GetLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
-        if(labExecution == null || now < labExecution.PreStart)
+        if(labExecution == null || now < labExecution.Start)
         {
             AddStatusMessage(_localizer["CallLabServerAsync:LabNotActive"], StatusMessageTypes.Error);
             return await RenderAsync(labId);

@@ -93,8 +93,7 @@ public class AdminLabExecutionsController : ControllerBase
     public async Task<IActionResult> EditLabExecutionAsync(AdminLabExecution labExecutionData)
     {
         // Check input
-        if(!ModelState.IsValid || !(labExecutionData.LabExecution.PreStart < labExecutionData.LabExecution.Start &&
-                                    labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
+        if(!ModelState.IsValid || !(labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
         {
             AddStatusMessage(_localizer["EditLabExecutionAsync:InvalidInput"], StatusMessageTypes.Error);
             return await ShowEditLabExecutionFormAsync(null, null, labExecutionData);
@@ -104,7 +103,6 @@ public class AdminLabExecutionsController : ControllerBase
         {
             // Retrieve edited labExecution from database and apply changes
             var labExecution = await _labExecutionService.GetLabExecutionAsync(labExecutionData.LabExecution.GroupId, labExecutionData.LabExecution.LabId, HttpContext.RequestAborted);
-            labExecution.PreStart = labExecutionData.LabExecution.PreStart;
             labExecution.Start = labExecutionData.LabExecution.Start;
             labExecution.End = labExecutionData.LabExecution.End;
             await _labExecutionService.UpdateLabExecutionAsync(labExecution, HttpContext.RequestAborted);
@@ -141,8 +139,7 @@ public class AdminLabExecutionsController : ControllerBase
         if(!ModelState.IsValid
            || !await _labService.LabExistsAsync(labExecutionData.LabExecution.LabId, HttpContext.RequestAborted)
            || !await _slotService.SlotExistsAsync(labExecutionData.SlotId, HttpContext.RequestAborted)
-           || !(labExecutionData.LabExecution.PreStart < labExecutionData.LabExecution.Start &&
-                labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
+           || !(labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
         {
             AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:InvalidInput"], StatusMessageTypes.Error);
             return await ShowCreateLabExecutionForSlotFormAsync(labExecutionData);
@@ -159,7 +156,6 @@ public class AdminLabExecutionsController : ControllerBase
                     {
                         GroupId = group.Id,
                         LabId = labExecutionData.LabExecution.LabId,
-                        PreStart = labExecutionData.LabExecution.PreStart,
                         Start = labExecutionData.LabExecution.Start,
                         End = labExecutionData.LabExecution.End
                     };
@@ -204,8 +200,7 @@ public class AdminLabExecutionsController : ControllerBase
         if(!ModelState.IsValid
            || !await _labService.LabExistsAsync(labExecutionData.LabExecution.LabId, HttpContext.RequestAborted)
            || !await _userService.GroupExistsAsync(labExecutionData.LabExecution.GroupId, HttpContext.RequestAborted)
-           || !(labExecutionData.LabExecution.PreStart < labExecutionData.LabExecution.Start &&
-                labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
+           || !(labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
         {
             AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:InvalidInput"], StatusMessageTypes.Error);
             return await ShowCreateLabExecutionForGroupFormAsync(labExecutionData);
@@ -218,7 +213,6 @@ public class AdminLabExecutionsController : ControllerBase
             {
                 GroupId = labExecutionData.LabExecution.GroupId,
                 LabId = labExecutionData.LabExecution.LabId,
-                PreStart = labExecutionData.LabExecution.PreStart,
                 Start = labExecutionData.LabExecution.Start,
                 End = labExecutionData.LabExecution.End
             };

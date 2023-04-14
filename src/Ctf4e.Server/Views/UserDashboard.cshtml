@@ -1,9 +1,7 @@
-﻿@using Ctf4e.Server.Services
-@using Ctf4e.Server.ViewModels
+﻿@using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.Authorization
-@inject IConfigurationService _configurationService
 @inject IViewLocalizer _localizer
 @{
     ViewData["Title"] = _localizer["HtmlTitle"];
@@ -41,13 +39,9 @@
             <span class="badge bg-secondary">@_localizer["LabExecutionStatus:Undefined:Title"]</span>
             <p>@_localizer["LabExecutionStatus:Undefined:Text"]</p>
             break;
-        case ScoreboardGroupStatus.BeforePreStart:
-            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:BeforePreStart:Title"]</span>
-            <p>@_localizer["LabExecutionStatus:BeforePreStart:Text", userScoreboard.LabExecution.PreStart]</p>
-            break;
-        case ScoreboardGroupStatus.PreStart:
-            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:PreStart:Title"]</span>
-            <p>@_localizer["LabExecutionStatus:PreStart:Text", userScoreboard.LabExecution.Start]</p>
+        case ScoreboardGroupStatus.BeforeStart:
+            <span class="badge bg-secondary">@_localizer["LabExecutionStatus:BeforeStart:Title"]</span>
+            <p>@_localizer["LabExecutionStatus:BeforeStart:Text", userScoreboard.LabExecution.Start]</p>
             break;
         case ScoreboardGroupStatus.Start:
             <span class="badge bg-secondary">@_localizer["LabExecutionStatus:Start:Title"]</span>
@@ -59,7 +53,7 @@
             break;
     }
 
-    if(userScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && userScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforePreStart)
+    if(userScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && userScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforeStart)
     {
         <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@userScoreboard.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
@@ -123,7 +117,7 @@
                             <tr>
                                 <td>
                                     @submission.SubmissionTime.ToString("G")
-                                    @if(submission.SubmissionTime < (userScoreboard.LabExecution?.PreStart ?? DateTime.MinValue) || submission.SubmissionTime >= (userScoreboard.LabExecution?.End ?? DateTime.MinValue))
+                                    @if(submission.SubmissionTime < (userScoreboard.LabExecution?.Start ?? DateTime.MinValue) || submission.SubmissionTime >= (userScoreboard.LabExecution?.End ?? DateTime.MinValue))
                                     {
                                         <span class="badge bg-warning" title="@_localizer["ExerciseSubmissions:Invalid"]">@_localizer["Invalid"]</span>
                                     }

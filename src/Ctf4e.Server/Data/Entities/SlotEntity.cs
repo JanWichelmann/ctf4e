@@ -13,6 +13,6 @@ public class SlotEntity
     [Required]
     [StringLength(50)]
     public string Name { get; set; }
-
+    
     public ICollection<GroupEntity> Groups { get; set; }
 }

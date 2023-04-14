@@ -72,10 +72,6 @@
         <value>Lab</value>
         <comment>LabExecutions:Lab</comment>
     </data>
-    <data name="LabExecutions:PreStart" xml:space="preserve">
-        <value>Preparatory phase</value>
-        <comment>LabExecutions:PreStart</comment>
-    </data>
     <data name="LabExecutions:Begin" xml:space="preserve">
         <value>Begin</value>
         <comment>LabExecutions:Begin</comment>

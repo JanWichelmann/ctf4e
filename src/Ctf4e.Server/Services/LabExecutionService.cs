@@ -82,8 +82,8 @@ public class LabExecutionService : ILabExecutionService
         var now = DateTime.Now;
         return _dbContext.LabExecutions.AsNoTracking()
             .Where(l => l.GroupId == groupId)
-            .OrderByDescending(l => l.PreStart <= now && now < l.End) // Pick an active one...
-            .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.PreStart, now))) // ...and/or the one with the most recent pre start time
+            .OrderByDescending(l => l.Start <= now && now < l.End) // Pick an active one...
+            .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.Start, now))) // ...and/or the one with the most recent pre start time
             .ProjectTo<LabExecution>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -93,8 +93,8 @@ public class LabExecutionService : ILabExecutionService
         var now = DateTime.Now;
         return _dbContext.LabExecutions.AsNoTracking()
             .Include(l => l.Group)
-            .OrderByDescending(l => l.PreStart <= now && now < l.End) // Pick an active one...
-            .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.PreStart, now))) // ...and/or the one with the most recent pre start time
+            .OrderByDescending(l => l.Start <= now && now < l.End) // Pick an active one...
+            .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.Start, now))) // ...and/or the one with the most recent pre start time
             .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Group)
             .FirstOrDefaultAsync(cancellationToken);
     }
@@ -105,7 +105,6 @@ public class LabExecutionService : ILabExecutionService
         LabExecutionEntity labExecutionEntity;
         if(updateExisting && (labExecutionEntity = await _dbContext.LabExecutions.FindAsync(new object[] { labExecution.GroupId, labExecution.LabId }, cancellationToken)) != null)
         {
-            labExecutionEntity.PreStart = labExecution.PreStart;
             labExecutionEntity.Start = labExecution.Start;
             labExecutionEntity.End = labExecution.End;
         }
@@ -116,7 +115,6 @@ public class LabExecutionService : ILabExecutionService
             {
                 GroupId = labExecution.GroupId,
                 LabId = labExecution.LabId,
-                PreStart = labExecution.PreStart,
                 Start = labExecution.Start,
                 End = labExecution.End
             }).Entity;
@@ -135,7 +133,6 @@ public class LabExecutionService : ILabExecutionService
             throw new InvalidOperationException("Diese Ausführung existiert nicht");
 
         // Update entry
-        labExecutionEntity.PreStart = labExecution.PreStart;
         labExecutionEntity.Start = labExecution.Start;
         labExecutionEntity.End = labExecution.End;
 

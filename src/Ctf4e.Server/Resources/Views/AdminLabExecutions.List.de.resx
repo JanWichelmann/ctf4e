@@ -72,10 +72,6 @@
         <value>Praktikum</value>
         <comment>LabExecutions:Lab</comment>
     </data>
-    <data name="LabExecutions:PreStart" xml:space="preserve">
-        <value>Vorbereitungsphase</value>
-        <comment>LabExecutions:PreStart</comment>
-    </data>
     <data name="LabExecutions:Begin" xml:space="preserve">
         <value>Beginn</value>
         <comment>LabExecutions:Begin</comment>

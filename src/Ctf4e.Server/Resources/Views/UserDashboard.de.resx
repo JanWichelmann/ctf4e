@@ -34,21 +34,13 @@
         <value>Dieses Praktikum ist bisher nicht freigeschaltet worden. Es können weder Aufgaben bearbeitet noch Flags eingelöst werden.</value>
         <comment>LabExecutionStatus:Undefined:Text</comment>
     </data>
-    <data name="LabExecutionStatus:BeforePreStart:Title" xml:space="preserve">
+    <data name="LabExecutionStatus:BeforeStart:Title" xml:space="preserve">
         <value>Noch nicht gestartet</value>
-        <comment>LabExecutionStatus:BeforePreStart:Title</comment>
+        <comment>LabExecutionStatus:BeforeStart:Title</comment>
     </data>
-    <data name="LabExecutionStatus:BeforePreStart:Text" xml:space="preserve">
+    <data name="LabExecutionStatus:BeforeStart:Text" xml:space="preserve">
         <value>Dieses Praktikum hat noch nicht begonnen. Es können weder Aufgaben bearbeitet noch Flags eingelöst werden.&lt;br&gt;Startzeitpunkt: &lt;strong&gt;{0:g}&lt;/strong&gt;</value>
-        <comment>LabExecutionStatus:BeforePreStart:Text</comment>
-    </data>
-    <data name="LabExecutionStatus:PreStart:Title" xml:space="preserve">
-        <value>Vorbereitungsphase</value>
-        <comment>LabExecutionStatus:PreStart:Title</comment>
-    </data>
-    <data name="LabExecutionStatus:PreStart:Text" xml:space="preserve">
-        <value>Dieses Praktikum ist in der Vorbereitungsphase. Es können einige ausgewählte Aufgaben bearbeitet und alle Flags eingelöst werden.&lt;br&gt;Beginn der Haupt-Bearbeitungsphase: &lt;strong&gt;{0:g}&lt;/strong&gt;</value>
-        <comment>LabExecutionStatus:PreStart:Text</comment>
+        <comment>LabExecutionStatus:BeforeStart:Text</comment>
     </data>
     <data name="LabExecutionStatus:Start:Title" xml:space="preserve">
         <value>Aktiv</value>
