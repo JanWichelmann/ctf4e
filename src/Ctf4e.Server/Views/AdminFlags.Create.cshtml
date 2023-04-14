@@ -1,45 +1,45 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @model Flag
 @{
     var lab = (Lab)ViewData["Lab"];
 }
 
 <h1 class="header">
-    @_localizer["Title"]
+    @Localizer["Title"]
 </h1>
 <hr class="header">
 
 <form asp-controller="AdminFlags" asp-action="CreateFlag" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="Code">@_localizer["Form:Code"]</label>
+        <label class="form-label" asp-for="Code">@Localizer["Form:Code"]</label>
         <input asp-for="Code" class="form-control font-monospace" value="CTF{1n5er7-f14g-c0de-here-@RandomStringGenerator.GetRandomString(6)}">
         <span asp-validation-for="Code" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="Description">@_localizer["Form:Description"]</label>
+        <label class="form-label" asp-for="Description">@Localizer["Form:Description"]</label>
         <input asp-for="Description" class="form-control">
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="BasePoints">@_localizer["Form:BasePoints"]</label>
+        <label class="form-label" asp-for="BasePoints">@Localizer["Form:BasePoints"]</label>
         <input asp-for="BasePoints" class="form-control">
         <span asp-validation-for="BasePoints" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsBounty" class="form-check-input">
-            <label asp-for="IsBounty" class="form-check-label">@_localizer["Form:IsBounty"]</label>
+            <label asp-for="IsBounty" class="form-check-label">@Localizer["Form:IsBounty"]</label>
             <small class="form-text text-muted">
-                @_localizer["Form:IsBounty:Description"]
+                @Localizer["Form:IsBounty:Description"]
             </small>
         </div>
     </div>
 
     <input asp-for="LabId" type="hidden" value="@lab.Id">
 
-    <button type="submit" class="btn btn-primary">@_localizer["Form:Submit"]</button>
-    <button type="submit" class="btn btn-primary" name="returnToForm" value="returnToForm">@_localizer["Form:SubmitAndContinue"]</button>
-    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@lab.Id" class="btn btn-secondary">@_localizer["Form:Cancel"]</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <button type="submit" class="btn btn-primary" name="returnToForm" value="returnToForm">@Localizer["Form:SubmitAndContinue"]</button>
+    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@lab.Id" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

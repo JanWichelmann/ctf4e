@@ -1,47 +1,47 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @model Ctf4e.Server.Models.Exercise
 @{
     var lab = (Lab)ViewData["Lab"];
 }
 
 <h1 class="header">
-    @_localizer["Title"]
+    @Localizer["Title"]
 </h1>
 <hr class="header">
 
 <form asp-controller="AdminExercises" asp-action="CreateExercise" method="post">
     <div class="mb-3">
-        <label class="form-label" asp-for="ExerciseNumber">@_localizer["Form:ExerciseNumber"]</label>
+        <label class="form-label" asp-for="ExerciseNumber">@Localizer["Form:ExerciseNumber"]</label>
         <input asp-for="ExerciseNumber" class="form-control">
         <span asp-validation-for="ExerciseNumber" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="Name">@_localizer["Form:Name"]</label>
+        <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
         <input asp-for="Name" class="form-control">
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="BasePoints">@_localizer["Form:BasePoints"]</label>
+        <label class="form-label" asp-for="BasePoints">@Localizer["Form:BasePoints"]</label>
         <input asp-for="BasePoints" class="form-control">
         <span asp-validation-for="BasePoints" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label class="form-label" asp-for="PenaltyPoints">@_localizer["Form:PenaltyPoints"]</label>
+        <label class="form-label" asp-for="PenaltyPoints">@Localizer["Form:PenaltyPoints"]</label>
         <input asp-for="PenaltyPoints" class="form-control">
         <span asp-validation-for="PenaltyPoints" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <div class="form-check">
             <input asp-for="IsMandatory" class="form-check-input">
-            <label asp-for="IsMandatory" class="form-check-label">@_localizer["Form:IsMandatory"]</label>
+            <label asp-for="IsMandatory" class="form-check-label">@Localizer["Form:IsMandatory"]</label>
         </div>
     </div>
 
     <input asp-for="LabId" type="hidden" value="@lab.Id">
 
-    <button type="submit" class="btn btn-primary">@_localizer["Form:Submit"]</button>
-    <button type="submit" class="btn btn-primary" name="returnToForm" value="returnToForm">@_localizer["Form:SubmitAndContinue"]</button>
-    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@lab.Id" class="btn btn-secondary">@_localizer["Form:Cancel"]</a>
+    <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    <button type="submit" class="btn btn-primary" name="returnToForm" value="returnToForm">@Localizer["Form:SubmitAndContinue"]</button>
+    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@lab.Id" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
 </form>

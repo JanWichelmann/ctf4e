@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Authorization
 @model Ctf4e.Server.ViewModels.AdminScoreboard
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @{
     var currentUser = (User)ViewData["CurrentUser"];
 }
@@ -19,37 +19,37 @@
                 <div class="col">
                     @if(group.HasPassed)
                     {
-                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Passed"]"></i>
+                        <i class="bi bi-check-circle-fill text-success" title="@Localizer["Passed"]"></i>
                     }
                     else
                     {
-                        <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotPassed"]"></i>
+                        <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotPassed"]"></i>
                     }
                     <span class="ms-2">@group.GroupName</span>
                 </div>
                 <div class="col-auto ms-auto">
                     else if(group.Status == ScoreboardGroupStatus.Start)
                     {
-                        <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:Start:Text"]">@_localizer["LabExecutionStatus:Start:Title"]</span>
+                        <span class="badge bg-warning" title="@Localizer["LabExecutionStatus:Start:Text"]">@Localizer["LabExecutionStatus:Start:Title"]</span>
                     }
                     else if(group.Status == ScoreboardGroupStatus.End)
                     {
-                        <span class="badge bg-success" title="@_localizer["LabExecutionStatus:End:Text"]">@_localizer["LabExecutionStatus:End:Title"]</span>
+                        <span class="badge bg-success" title="@Localizer["LabExecutionStatus:End:Text"]">@Localizer["LabExecutionStatus:End:Title"]</span>
                     }
                     else if(group.Status == ScoreboardGroupStatus.Undefined)
                     {
-                        <span class="badge bg-danger" title="@_localizer["LabExecutionStatus:Undefined:Text"]">@_localizer["LabExecutionStatus:Undefined:Title"]</span>
+                        <span class="badge bg-danger" title="@Localizer["LabExecutionStatus:Undefined:Text"]">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
                     }
-                    <span class="badge bg-primary" title="@_localizer["Statistics:MandatoryExercises"]">@group.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
-                    <span class="badge bg-secondary" title="@_localizer["Statistics:OptionalExercises"]">@group.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
-                    <span class="badge bg-info" title="@_localizer["Statistics:FoundFlags"]">@group.FoundFlagsCount / @Model.FlagCount</span>
+                    <span class="badge bg-primary" title="@Localizer["Statistics:MandatoryExercises"]">@group.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
+                    <span class="badge bg-secondary" title="@Localizer["Statistics:OptionalExercises"]">@group.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
+                    <span class="badge bg-info" title="@Localizer["Statistics:FoundFlags"]">@group.FoundFlagsCount / @Model.FlagCount</span>
                 </div>
             </div>
         </div>
         <div id="group@(group.GroupId)-card" class="collapse">
             <div class="card-body">
                 <p>
-                    <span class="fw-bold">@_localizer["Members"]:</span>
+                    <span class="fw-bold">@Localizer["Members"]:</span>
                     @{
                         bool first = true;
                     }
@@ -76,19 +76,19 @@
                                     @exercise.Exercise.Name
                                     @if(exercise.Exercise.IsMandatory)
                                     {
-                                        <span class="badge bg-info">@_localizer["Mandatory"]</span>
+                                        <span class="badge bg-info">@Localizer["Mandatory"]</span>
                                     }
                                 </div>
                                 <div class="col-auto ms-auto">
-                                    <span class="badge bg-light text-dark" title="@_localizer["Exercises:Tries:Text"]">@_localizer["Exercises:Tries:Value", exercise.ValidTries, exercise.Tries]</span>
+                                    <span class="badge bg-light text-dark" title="@Localizer["Exercises:Tries:Text"]">@Localizer["Exercises:Tries:Value", exercise.ValidTries, exercise.Tries]</span>
                                     @if(exercise.Passed)
                                     {
-                                        <span class="badge bg-primary">@_localizer["Points", exercise.Points]</span>
-                                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Solved"]"></i>
+                                        <span class="badge bg-primary">@Localizer["Points", exercise.Points]</span>
+                                        <i class="bi bi-check-circle-fill text-success" title="@Localizer["Solved"]"></i>
                                     }
                                     else
                                     {
-                                        <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotSolved"]"></i>
+                                        <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotSolved"]"></i>
                                     }
                                 </div>
                             </div>
@@ -101,14 +101,14 @@
                                         <input type="checkbox" class="form-check-input" name="es-checkbox-select-all">
                                     </th>
                                     <th></th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Solved"]</th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:SubmittedBy"]</th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Weight"]</th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Points"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Solved"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Timestamp"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:SubmittedBy"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Weight"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Points"]</th>
                                     @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                     {
-                                        <th scope="col">@_localizer["ExerciseSubmissions:Actions"]</th>
+                                        <th scope="col">@Localizer["ExerciseSubmissions:Actions"]</th>
                                     }
                                 </tr>
                                 </thead>
@@ -164,7 +164,7 @@
                                             <td>
                                                 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@Model.UserNames[submission.UserId]">
                                                     <i class="bi bi-trash"></i>
-                                                    @_localizer["Delete"]
+                                                    @Localizer["Delete"]
                                                 </a>
                                             </td>
                                         }
@@ -184,10 +184,10 @@
                 <table class="table table-sm mt-3">
                     <thead>
                     <tr>
-                        <th>@_localizer["Flags:Flag"]</th>
-                        <th scope="col">@_localizer["Flags:Description"]</th>
-                        <th scope="col">@_localizer["Flags:Submitted"]</th>
-                        <th scope="col">@_localizer["Flags:Valid"]</th>
+                        <th>@Localizer["Flags:Flag"]</th>
+                        <th scope="col">@Localizer["Flags:Description"]</th>
+                        <th scope="col">@Localizer["Flags:Submitted"]</th>
+                        <th scope="col">@Localizer["Flags:Valid"]</th>
                     </tr>
                     </thead>
                     <tbody class="table-group-divider">
@@ -199,7 +199,7 @@
                                 @flag.Flag.Description
                                 @if(flag.Flag.IsBounty)
                                 {
-                                    <i class="bi bi-bug-fill text-primary" title="@_localizer["BugBounty"]"></i>
+                                    <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
                                 }
                             </td>
                             <td>
@@ -214,7 +214,7 @@
                                     if(flag.Valid)
                                     {
                                         <i class="bi bi-check-circle-fill text-success"></i>
-                                        <span class="badge bg-primary">@_localizer["Points", flag.CurrentPoints]</span>
+                                        <span class="badge bg-primary">@Localizer["Points", flag.CurrentPoints]</span>
                                     }
                                     else
                                     {
@@ -258,34 +258,34 @@ else
                 <div class="col">
                     @if(user.HasPassed)
                     {
-                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Passed"]"></i>
+                        <i class="bi bi-check-circle-fill text-success" title="@Localizer["Passed"]"></i>
                     }
                     else
                     {
-                        <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotPassed"]"></i>
+                        <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotPassed"]"></i>
                     }
                     <span class="ms-2">@user.UserName</span>
                 </div>
                 <div class="col-auto ms-auto">
                     @if(user.Status == ScoreboardGroupStatus.BeforeStart)
                     {
-                        <span class="badge bg-info" title="@_localizer["LabExecutionStatus:BeforeStart:Text"]">@_localizer["LabExecutionStatus:BeforeStart:Title"]</span>
+                        <span class="badge bg-info" title="@Localizer["LabExecutionStatus:BeforeStart:Text"]">@Localizer["LabExecutionStatus:BeforeStart:Title"]</span>
                     }
                     else if(user.Status == ScoreboardGroupStatus.Start)
                     {
-                        <span class="badge bg-warning" title="@_localizer["LabExecutionStatus:Start:Text"]">@_localizer["LabExecutionStatus:Start:Title"]</span>
+                        <span class="badge bg-warning" title="@Localizer["LabExecutionStatus:Start:Text"]">@Localizer["LabExecutionStatus:Start:Title"]</span>
                     }
                     else if(user.Status == ScoreboardGroupStatus.End)
                     {
-                        <span class="badge bg-success" title="@_localizer["LabExecutionStatus:End:Text"]">@_localizer["LabExecutionStatus:End:Title"]</span>
+                        <span class="badge bg-success" title="@Localizer["LabExecutionStatus:End:Text"]">@Localizer["LabExecutionStatus:End:Title"]</span>
                     }
                     else if(user.Status == ScoreboardGroupStatus.Undefined)
                     {
-                        <span class="badge bg-danger" title="@_localizer["LabExecutionStatus:Undefined:Text"]">@_localizer["LabExecutionStatus:Undefined:Title"]</span>
+                        <span class="badge bg-danger" title="@Localizer["LabExecutionStatus:Undefined:Text"]">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
                     }
-                    <span class="badge bg-primary" title="@_localizer["Statistics:MandatoryExercises"]">@user.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
-                    <span class="badge bg-secondary" title="@_localizer["Statistics:OptionalExercises"]">@user.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
-                    <span class="badge bg-info" title="@_localizer["Statistics:FoundFlags"]">@user.FoundFlagsCount / @Model.FlagCount</span>
+                    <span class="badge bg-primary" title="@Localizer["Statistics:MandatoryExercises"]">@user.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
+                    <span class="badge bg-secondary" title="@Localizer["Statistics:OptionalExercises"]">@user.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
+                    <span class="badge bg-info" title="@Localizer["Statistics:FoundFlags"]">@user.FoundFlagsCount / @Model.FlagCount</span>
                 </div>
             </div>
         </div>
@@ -294,7 +294,7 @@ else
                 @if(user.GroupId != null)
                 {
                     <p>
-                        <span class="fw-bold">@_localizer["Group"]:</span>
+                        <span class="fw-bold">@Localizer["Group"]:</span>
                         <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-groupMode="true" asp-route-includeTutors="true" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-fragment="@("group" + user.GroupId)">
                             @(Model.GroupNames[user.GroupId!.Value])
                         </a>
@@ -306,7 +306,7 @@ else
                     <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@user.UserId" target="_blank">
                         <i class="bi bi-arrow-return-right"></i>
                         <i class="bi bi-hdd-network"></i>
-                        @_localizer["LabServerButtonText"]
+                        @Localizer["LabServerButtonText"]
                     </a>
                 }
 
@@ -319,24 +319,24 @@ else
                                     @exercise.Exercise.Name
                                     @if(exercise.Exercise.IsMandatory)
                                     {
-                                        <span class="badge bg-info">@_localizer["Mandatory"]</span>
+                                        <span class="badge bg-info">@Localizer["Mandatory"]</span>
                                     }
                                 </div>
                                 <div class="col-auto ms-auto">
-                                    <span class="badge bg-light text-dark" title="@_localizer["Exercises:Tries:Text"]">@_localizer["Exercises:Tries:Value", exercise.ValidTries, exercise.Tries]</span>
+                                    <span class="badge bg-light text-dark" title="@Localizer["Exercises:Tries:Text"]">@Localizer["Exercises:Tries:Value", exercise.ValidTries, exercise.Tries]</span>
                                     @if(exercise.Passed)
                                     {
                                         // Only show the points if group mode is active
                                         // Else the submission list is lacking the submissions of other group members, rendering the displayed points meaningless
                                         if(Model.PassAsGroup)
                                         {
-                                            <span class="badge bg-primary">@_localizer["Points", exercise.Points]</span>
+                                            <span class="badge bg-primary">@Localizer["Points", exercise.Points]</span>
                                         }
-                                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Solved"]"></i>
+                                        <i class="bi bi-check-circle-fill text-success" title="@Localizer["Solved"]"></i>
                                     }
                                     else
                                     {
-                                        <i class="bi bi-x-circle-fill text-danger" title="@_localizer["NotSolved"]"></i>
+                                        <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotSolved"]"></i>
                                     }
                                 </div>
                             </div>
@@ -349,19 +349,19 @@ else
                                         <input type="checkbox" class="form-check-input" name="es-checkbox-select-all">
                                     </th>
                                     <th></th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Solved"]</th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Timestamp"]</th>
-                                    <th scope="col">@_localizer["ExerciseSubmissions:Weight"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Solved"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Timestamp"]</th>
+                                    <th scope="col">@Localizer["ExerciseSubmissions:Weight"]</th>
                                     @if(Model.PassAsGroup)
                                     {
-                                        <th scope="col">@_localizer["ExerciseSubmissions:SubmittedBy"]</th>
+                                        <th scope="col">@Localizer["ExerciseSubmissions:SubmittedBy"]</th>
                                     }
                                     @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                                     {
                                         <th>
                                             <a role="button" class="btn btn-sm btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exerciseid="@exercise.Exercise.Id" data-userid="@user.UserId">
                                                 <i class="bi bi-plus"></i>
-                                                @_localizer["Add"]
+                                                @Localizer["Add"]
                                             </a>
                                         </th>
                                     }
@@ -402,7 +402,7 @@ else
                                             <td>
                                                 <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission" data-submissionid="@submission.Id" data-exercisename="@exercise.Exercise.Name" data-username="@user.UserName">
                                                     <i class="bi bi-trash"></i>
-                                                    @_localizer["Delete"]
+                                                    @Localizer["Delete"]
                                                 </a>
                                             </td>
                                         }
@@ -417,13 +417,13 @@ else
                 <table class="table table-sm mt-3">
                     <thead>
                     <tr>
-                        <th>@_localizer["Flags:Flag"]</th>
-                        <th scope="col">@_localizer["Flags:Description"]</th>
-                        <th scope="col">@_localizer["Flags:Submitted"]</th>
-                        <th scope="col">@_localizer["Flags:Valid"]</th>
+                        <th>@Localizer["Flags:Flag"]</th>
+                        <th scope="col">@Localizer["Flags:Description"]</th>
+                        <th scope="col">@Localizer["Flags:Submitted"]</th>
+                        <th scope="col">@Localizer["Flags:Valid"]</th>
                         @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                         {
-                            <th scope="col">@_localizer["Flags:Actions"]</th>
+                            <th scope="col">@Localizer["Flags:Actions"]</th>
                         }
                     </tr>
                     </thead>
@@ -436,7 +436,7 @@ else
                                 @flag.Flag.Description
                                 @if(flag.Flag.IsBounty)
                                 {
-                                    <i class="bi bi-bug-fill text-primary" title="@_localizer["BugBounty"]"></i>
+                                    <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
                                 }
                             </td>
                             <td>
@@ -451,7 +451,7 @@ else
                                     if(flag.Valid)
                                     {
                                         <i class="bi bi-check-circle-fill text-success"></i>
-                                        <span class="badge bg-primary">@_localizer["Points", flag.CurrentPoints]</span>
+                                        <span class="badge bg-primary">@Localizer["Points", flag.CurrentPoints]</span>
                                     }
                                     else
                                     {
@@ -466,14 +466,14 @@ else
                                     {
                                         <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-flag-submission" data-flagid="@flag.Flag.Id" data-userid="@user.UserId" data-username="@user.UserName">
                                             <i class="bi bi-trash"></i>
-                                            @_localizer["Reset"]
+                                            @Localizer["Reset"]
                                         </a>
                                     }
                                     else
                                     {
                                         <a role="button" class="btn btn-sm btn-success" href="#" data-bs-toggle="modal" data-bs-target="#modal-add-flag-submission" data-flagid="@flag.Flag.Id" data-userid="@user.UserId">
                                             <i class="bi bi-flag-fill"></i>
-                                            @_localizer["Submit"]
+                                            @Localizer["Submit"]
                                         </a>
                                     }
                                 </td>
@@ -508,7 +508,7 @@ else
 {
     <a role="button" class="btn btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submissions">
         <i class="bi bi-trash"></i>
-        @_localizer["DeleteSelected"]
+        @Localizer["DeleteSelected"]
     </a>
 }
 
@@ -517,20 +517,20 @@ else
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@_localizer["Modal:DeleteExerciseSubmission:Title"]</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteExerciseSubmission:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
-                    @_localizer["Modal:DeleteExerciseSubmission:Body"]
+                    @Localizer["Modal:DeleteExerciseSubmission:Body"]
                 </p>
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                     <input type="hidden" data-replace="submission-id" name="submissionId" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteExerciseSubmission:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteExerciseSubmission:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>
@@ -540,20 +540,20 @@ else
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@_localizer["Modal:DeleteExerciseSubmissions:Title"]</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteExerciseSubmissions:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
-                    @_localizer["Modal:DeleteExerciseSubmissions:Body"]
+                    @Localizer["Modal:DeleteExerciseSubmissions:Body"]
                 </p>
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminScoreboard" asp-action="DeleteExerciseSubmissions" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                     <div id="modal-delete-exercise-submissions-inputlist"></div>
 
-                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteExerciseSubmissions:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteExerciseSubmissions:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>
@@ -564,22 +564,22 @@ else
         <div class="modal-content">
             <form asp-controller="AdminScoreboard" asp-action="CreateExerciseSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                 <div class="modal-header">
-                    <h5 class="modal-title">@_localizer["Modal:CreateExerciseSubmission:Title"]</h5>
+                    <h5 class="modal-title">@Localizer["Modal:CreateExerciseSubmission:Title"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label" for="input-add-exercise-submission-time">@_localizer["Modal:CreateExerciseSubmission:Timestamp"]</label>
+                        <label class="form-label" for="input-add-exercise-submission-time">@Localizer["Modal:CreateExerciseSubmission:Timestamp"]</label>
                         <input id="input-add-exercise-submission-time" name="submissionTime" type="text" class="form-control" />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="input-add-exercise-submission-weight">@_localizer["Modal:CreateExerciseSubmission:Weight"]</label>
+                        <label class="form-label" for="input-add-exercise-submission-weight">@Localizer["Modal:CreateExerciseSubmission:Weight"]</label>
                         <input id="input-add-exercise-submission-weight" name="weight" type="number" min="0" value="1" class="form-control" />
                     </div>
                     <div class="mb-3">
                         <div class="form-check">
                             <input id="input-add-exercise-submission-passed" type="checkbox" name="passed" class="form-check-input" checked value="true">
-                            <label for="input-add-exercise-submission-passed" class="form-check-label">@_localizer["Passed"]</label>
+                            <label for="input-add-exercise-submission-passed" class="form-check-label">@Localizer["Passed"]</label>
                         </div>
                     </div>
                 </div>
@@ -587,8 +587,8 @@ else
                     <input type="hidden" data-replace="exercise-id" name="exerciseId" value="">
                     <input type="hidden" data-replace="user-id" name="userId" value="">
 
-                    <button type="submit" class="btn btn-outline-primary">@_localizer["Modal:CreateExerciseSubmission:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-primary">@Localizer["Modal:CreateExerciseSubmission:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </div>
             </form>
         </div>
@@ -598,12 +598,12 @@ else
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@_localizer["Modal:DeleteFlagSubmission:Title"]</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteFlagSubmission:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>
-                    @_localizer["Modal:DeleteFlagSubmission:Body"]
+                    @Localizer["Modal:DeleteFlagSubmission:Body"]
                 </p>
             </div>
             <div class="modal-footer">
@@ -611,8 +611,8 @@ else
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteFlagSubmission:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteFlagSubmission:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>
@@ -623,12 +623,12 @@ else
         <div class="modal-content">
             <form asp-controller="AdminScoreboard" asp-action="CreateFlagSubmission" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="@Model.GroupMode" asp-route-includeTutors="@Model.IncludeTutors" method="post">
                 <div class="modal-header">
-                    <h5 class="modal-title">@_localizer["Modal:CreateFlagSubmission:Title"]</h5>
+                    <h5 class="modal-title">@Localizer["Modal:CreateFlagSubmission:Title"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label" for="input-add-flag-submission-time">@_localizer["Modal:CreateFlagSubmission:Timestamp"]</label>
+                        <label class="form-label" for="input-add-flag-submission-time">@Localizer["Modal:CreateFlagSubmission:Timestamp"]</label>
                         <input id="input-add-flag-submission-time" name="submissionTime" type="text" class="form-control" />
                     </div>
                 </div>
@@ -636,8 +636,8 @@ else
                     <input type="hidden" data-replace="user-id" name="userId" value="">
                     <input type="hidden" data-replace="flag-id" name="flagId" value="">
 
-                    <button type="submit" class="btn btn-outline-primary">@_localizer["Modal:CreateFlagSubmission:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-primary">@Localizer["Modal:CreateFlagSubmission:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </div>
             </form>
         </div>

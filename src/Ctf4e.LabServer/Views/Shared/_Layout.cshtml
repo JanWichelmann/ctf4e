@@ -4,7 +4,7 @@
 @using Ctf4e.LabServer.Options
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @{
     // Retrieve status messages
     var statusMessages = (List<(string Message, StatusMessageTypes Type, bool Preformatted)>)ViewData["StatusMessages"];
@@ -73,19 +73,19 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "scoreboard"))">
-                            @_localizer["MenuItems:Scoreboard"]
+                            @Localizer["MenuItems:Scoreboard"]
                         </a>
                     </li>
                     @if(currentUser != null)
                     {
                         <li class="nav-item">
                             <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "dashboard"))">
-                                @_localizer["MenuItems:Dashboard"]
+                                @Localizer["MenuItems:Dashboard"]
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Group" asp-action="RenderPage">
-                                @_localizer["MenuItems:Exercises"]
+                                @Localizer["MenuItems:Exercises"]
                             </a>
                         </li>
                     }
@@ -99,12 +99,12 @@
                             bool visitsAdminPage = activeMenuItem == MenuItems.AdminConfiguration;
                             <li class="nav-item dropdown me-4">
                                 <a class="nav-link dropdown-toggle @(visitsAdminPage ? "active" : "")" href="#" role="button" id="admin-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    @_localizer["MenuItems:Admin"]
+                                    @Localizer["MenuItems:Admin"]
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="admin-dropdown">
                                     <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">
                                         <i class="bi bi-gear text-secondary"></i>
-                                        @_localizer["MenuItems:Admin:Configuration"]
+                                        @Localizer["MenuItems:Admin:Configuration"]
                                     </a>
                                 </ul>
                             </li>
@@ -120,7 +120,7 @@
                                 <li>
                                     <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
                                         <i class="bi bi-door-closed text-secondary"></i>
-                                        @_localizer["MenuItems:Logout"]
+                                        @Localizer["MenuItems:Logout"]
                                     </a>
                                 </li>
                             </ul>
@@ -207,7 +207,7 @@
                             currentLanguage = "en-US";
                         }
                     }
-                    <a class="dropdown-toggle link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@_localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
+                    <a class="dropdown-toggle link-footer cursor-link" id="language-menu-button" data-bs-toggle="dropdown" aria-expanded="false" title="@Localizer["ChangeLanguage"]">@supportedLanguages[currentLanguage]</a>
                     <ul class="dropdown-menu" aria-labelledby="language-menu-button">
                         @foreach(var language in supportedLanguages)
                         {

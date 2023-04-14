@@ -2,9 +2,9 @@
 @using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Authorization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = _localizer["HtmlTitle"];
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var viewType = (AuthenticationController.ViewType)ViewData["ViewType"];
 
@@ -16,13 +16,13 @@
     if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
     {
         <div class="container">
-            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">@_localizer["Redirecting"]</a>
+            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard">@Localizer["Redirecting"]</a>
         </div>
     }
     else
     {
         <div class="container">
-            <a asp-controller="UserDashboard" asp-action="RenderLabPage">@_localizer["Redirecting"]</a>
+            <a asp-controller="UserDashboard" asp-action="RenderLabPage">@Localizer["Redirecting"]</a>
         </div>
     }
 }
@@ -32,7 +32,7 @@ else if(viewType == AuthenticationController.ViewType.Login)
 }
 else if(viewType == AuthenticationController.ViewType.GroupSelection)
 {
-    ViewData["Title"] = _localizer["HtmlTitle:GroupSelection"];
+    ViewData["Title"] = Localizer["HtmlTitle:GroupSelection"];
 
     <div class="container">
         <partial name="Authentication.GroupSelection.cshtml" />
@@ -40,7 +40,7 @@ else if(viewType == AuthenticationController.ViewType.GroupSelection)
 }
 else if(viewType == AuthenticationController.ViewType.Settings)
 {
-    ViewData["Title"] = _localizer["HtmlTitle:Settings"];
+    ViewData["Title"] = Localizer["HtmlTitle:Settings"];
 
     <div class="container">
         <partial name="Authentication.Settings.cshtml" />

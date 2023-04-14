@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = _localizer["HtmlTitle"];
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     string configuration = ViewData.ContainsKey("Configuration") ? (string)ViewData["Configuration"] : null;
     bool writable = ViewData.ContainsKey("Writable") && (bool)ViewData["Writable"];
@@ -11,12 +11,12 @@
     @if(configuration != null)
     {
         <h1 class="header">
-            @_localizer["Title"]
+            @Localizer["Title"]
         </h1>
         <hr class="header">
 
         <p class="text-danger font-weight-bold">
-            @_localizer["WarningText"]
+            @Localizer["WarningText"]
         </p>
 
         <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
@@ -27,7 +27,7 @@
             @if(writable)
             {
                 <button type="submit" class="btn btn-outline-danger">
-                    @_localizer["Form:Submit"]
+                    @Localizer["Form:Submit"]
                 </button>
             }
         </form>

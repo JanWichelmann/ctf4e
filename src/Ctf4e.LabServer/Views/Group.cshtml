@@ -5,10 +5,10 @@
 @using Ctf4e.LabServer.Options
 @using Microsoft.Extensions.Options
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer _localizer
-@inject IOptionsSnapshot<LabOptions> _labOptions
+@inject IViewLocalizer Localizer
+@inject IOptionsSnapshot<LabOptions> LabOptions
 @{
-    ViewData["Title"] = _localizer["HtmlTitle"];
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var userScoreboard = (UserScoreboard)ViewData["Scoreboard"];
     var adminMode = (bool)ViewData["AdminMode"];
@@ -22,21 +22,21 @@
     {
         <a class="btn btn-sm btn-outline-primary" href="#docker-credentials">
             <i class="bi bi-chevron-down"></i>
-            @_localizer["Credentials"]
+            @Localizer["Credentials"]
         </a>
     }
     @if(adminMode)
     {
         <a class="btn btn-sm btn-outline-primary" href="#log-table">
             <i class="bi bi-chevron-down"></i>
-            @_localizer["Log"]
+            @Localizer["Log"]
         </a>
     }
     @* ReSharper restore Html.IdNotResolved *@
 </div>
 
 <h1 class="header">
-    @_localizer["Title"]
+    @Localizer["Title"]
 </h1>
 <hr class="header">
 
@@ -51,22 +51,22 @@
                 <div class="col fs-3">
                     @if(exercise.Solved)
                     {
-                        <i class="bi bi-check-circle-fill text-success" title="@_localizer["Exercises:Solved"]"></i>
+                        <i class="bi bi-check-circle-fill text-success" title="@Localizer["Exercises:Solved"]"></i>
                     }
                     else if(exercise.SolvedByGroupMember)
                     {
                         if(labConfiguration.PassAsGroup)
                         {
-                            <i class="bi bi-check-circle text-success" title="@_localizer["Exercises:SolvedByGroupMemberAndPassed"]"></i>
+                            <i class="bi bi-check-circle text-success" title="@Localizer["Exercises:SolvedByGroupMemberAndPassed"]"></i>
                         }
                         else
                         {
-                            <i class="bi bi-x-circle text-success" title="@_localizer["Exercises:SolvedByGroupMemberAndNotPassed"]"></i>
+                            <i class="bi bi-x-circle text-success" title="@Localizer["Exercises:SolvedByGroupMemberAndNotPassed"]"></i>
                         }
                     }
                     else
                     {
-                        <i class="bi bi-x-circle text-secondary" title="@_localizer["Exercises:Pending"]"></i>
+                        <i class="bi bi-x-circle text-secondary" title="@Localizer["Exercises:Pending"]"></i>
                     }
 
                     @if(string.IsNullOrEmpty(exercise.Exercise.Link)) // "IsNullOrEmpty" instead of "== null" is a used as a workaround for https://github.com/dotnet/runtime/issues/36510
@@ -76,7 +76,7 @@
                     else
                     {
                         <a href="@exercise.Exercise.Link" target="_blank">@exercise.Exercise.Title</a>
-                        <i class="bi bi-link-45deg" title="@_localizer["Exercises:TitleIsLink"]"></i>
+                        <i class="bi bi-link-45deg" title="@Localizer["Exercises:TitleIsLink"]"></i>
                     }
                 </div>
                 <div class="col-auto ms-auto">
@@ -99,13 +99,13 @@
                                 </span>
                             }
                         </span>
-                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal-mark-exercise-solved" data-exerciseid="@exercise.Exercise.Id" data-exercisename="@exercise.Exercise.Title" title="@_localizer["Exercises:Admin:Pass:Text"]">
+                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal-mark-exercise-solved" data-exerciseid="@exercise.Exercise.Id" data-exercisename="@exercise.Exercise.Title" title="@Localizer["Exercises:Admin:Pass:Text"]">
                             <i class="bi bi-check-circle-fill"></i>
-                            @_localizer["Exercises:Admin:Pass"]
+                            @Localizer["Exercises:Admin:Pass"]
                         </button>
-                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modal-reset-exercise" data-exerciseid="@exercise.Exercise.Id" data-exercisename="@exercise.Exercise.Title" title="@_localizer["Exercises:Admin:Reset:Text"]">
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modal-reset-exercise" data-exerciseid="@exercise.Exercise.Id" data-exercisename="@exercise.Exercise.Title" title="@Localizer["Exercises:Admin:Reset:Text"]">
                             <i class="bi bi-x-circle-fill"></i>
-                            @_localizer["Exercises:Admin:Reset"]
+                            @Localizer["Exercises:Admin:Reset"]
                         </button>
                     }
                 </div>
@@ -141,18 +141,18 @@
                         <div class="mb-3">
                             @if(exerciseData.Multiline)
                             {
-                                <textarea class="form-control font-monospace" name="input" placeholder="@_localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
+                                <textarea class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
                             }
                             else
                             {
-                                <input type="text" class="form-control font-monospace" name="input" placeholder="@_localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
+                                <input type="text" class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
                             }
                         </div>
 
                         <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
 
                         <button type="submit" class="btn btn-primary">
-                            @_localizer["Exercises:Form:Submit"]
+                            @Localizer["Exercises:Form:Submit"]
                         </button>
                     </form>
                 }
@@ -183,7 +183,7 @@
                         <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
 
                         <button type="submit" class="btn btn-primary">
-                            @_localizer["Exercises:Form:Submit"]
+                            @Localizer["Exercises:Form:Submit"]
                         </button>
                     </form>
                 }
@@ -203,11 +203,11 @@
                             <div class="mb-3">
                                 @if(exerciseData.Multiline)
                                 {
-                                    <textarea class="form-control" name="input" placeholder="@_localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
+                                    <textarea class="form-control" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
                                 }
                                 else
                                 {
-                                    <input type="text" class="form-control text-monospace" name="input" placeholder="@_localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
+                                    <input type="text" class="form-control text-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" value="@(lastInput?.Input ?? "")">
                                 }
                             </div>
                         }
@@ -215,7 +215,7 @@
                         <input type="hidden" name="exerciseId" value="@exercise.Exercise.Id">
 
                         <button type="submit" class="btn btn-primary">
-                            @_localizer["Exercises:Form:Submit"]
+                            @Localizer["Exercises:Form:Submit"]
                         </button>
                     </form>
                 }
@@ -226,23 +226,23 @@
 
 @if(userScoreboard.DockerUserName != null && userScoreboard.DockerPassword != null)
 {
-    <h2 class="header">@_localizer["Docker:Title"]</h2>
+    <h2 class="header">@Localizer["Docker:Title"]</h2>
     <hr class="header-secondary">
 
     <div class="mb-3" id="docker-credentials">
-        <label for="input-docker-username">@_localizer["Docker:Username"]</label>
+        <label for="input-docker-username">@Localizer["Docker:Username"]</label>
         <div class="input-group">
             <input id="input-docker-username" type="text" class="form-control font-monospace" readonly value="@userScoreboard.DockerUserName">
-            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-placement="bottom" title="@_localizer["Copy"]" data-clipboard-target="#input-docker-username">
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-placement="bottom" title="@Localizer["Copy"]" data-clipboard-target="#input-docker-username">
                 <i class="bi bi-nomargin bi-clipboard"></i>
             </button>
         </div>
     </div>
     <div class="mb-3">
-        <label for="input-docker-password">@_localizer["Docker:Password"]</label>
+        <label for="input-docker-password">@Localizer["Docker:Password"]</label>
         <div class="input-group">
             <input id="input-docker-password" type="text" class="form-control font-monospace" readonly value="@userScoreboard.DockerPassword">
-            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-placement="bottom" title="@_localizer["Copy"]" data-clipboard-target="#input-docker-password">
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="tooltip" data-placement="bottom" title="@Localizer["Copy"]" data-clipboard-target="#input-docker-password">
                 <i class="bi bi-nomargin bi-clipboard"></i>
             </button>
         </div>
@@ -260,17 +260,17 @@
 
 @if(adminMode)
 {
-    <h2 class="header">@_localizer["Log:Title"]</h2>
+    <h2 class="header">@Localizer["Log:Title"]</h2>
     <hr class="header-secondary">
 
     <p>
-        @_localizer["Log:InfoText", _labOptions.Value.UserStateLogSize]
+        @Localizer["Log:InfoText", LabOptions.Value.UserStateLogSize]
     </p>
 
     <table class="table" id="log-table">
         <tr class="bg-light">
-            <th scope="col">@_localizer["Log:Entries:Timestamp"]</th>
-            <th scope="col">@_localizer["Log:Entries:Message"]</th>
+            <th scope="col">@Localizer["Log:Entries:Timestamp"]</th>
+            <th scope="col">@Localizer["Log:Entries:Message"]</th>
         </tr>
         @foreach(var entry in userScoreboard.Log)
         {
@@ -293,17 +293,17 @@
             <div class="modal-content">
                 <form asp-controller="Group" asp-action="MarkExerciseAsSolved" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title">@_localizer["Modal:MarkExerciseSolved:Title"]</h5>
+                        <h5 class="modal-title">@Localizer["Modal:MarkExerciseSolved:Title"]</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        @_localizer["Modal:MarkExerciseSolved:Body"]
+                        @Localizer["Modal:MarkExerciseSolved:Body"]
                     </div>
                     <div class="modal-footer">
                         <input type="hidden" name="exerciseId" data-replace="exercise-id">
 
-                        <button type="submit" class="btn btn-outline-success">@_localizer["Modal:MarkExerciseSolved:Submit"]</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                        <button type="submit" class="btn btn-outline-success">@Localizer["Modal:MarkExerciseSolved:Submit"]</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                     </div>
                 </form>
             </div>
@@ -314,17 +314,17 @@
             <div class="modal-content">
                 <form asp-controller="Group" asp-action="ResetExerciseStatus" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title">@_localizer["Modal:ResetExercise:Title"]</h5>
+                        <h5 class="modal-title">@Localizer["Modal:ResetExercise:Title"]</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        @_localizer["Modal:ResetExercise:Body"]
+                        @Localizer["Modal:ResetExercise:Body"]
                     </div>
                     <div class="modal-footer">
                         <input type="hidden" name="exerciseId" data-replace="exercise-id">
 
-                        <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:ResetExercise:Submit"]</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                        <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:ResetExercise:Submit"]</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                     </div>
                 </form>
             </div>

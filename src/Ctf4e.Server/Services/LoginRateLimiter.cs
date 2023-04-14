@@ -23,7 +23,7 @@ public interface ILoginRateLimiter
 public class LoginRateLimiter : ILoginRateLimiter
 {
     private readonly TimeSpan _maxTriesPeriod = TimeSpan.FromMinutes(30);
-    private const int MaxTries = 10;
+    private const int _maxTries = 10;
 
     private readonly ConcurrentDictionary<int, RateLimitData> _rateLimitData = new();
 
@@ -45,7 +45,7 @@ public class LoginRateLimiter : ILoginRateLimiter
 
             // Now the queue only contains items that are less than _maxTriesPeriod minutes old
             // If the queue is still full, hit the rate limit
-            if(rateLimitData.LoginAttempts.Count >= MaxTries)
+            if(rateLimitData.LoginAttempts.Count >= _maxTries)
             {
                 return true;
             }

@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.Authorization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @{
     var currentUser = (User)ViewData["CurrentUser"];
 }
@@ -12,13 +12,13 @@
     {
         <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowCreateSlotForm">
             <i class="bi bi-plus"></i>
-            @_localizer["CreateSlot"]
+            @Localizer["CreateSlot"]
         </a>
     }
 </div>
 
 <h1 class="header">
-    @_localizer["Title"]
+    @Localizer["Title"]
 </h1>
 <hr class="header">
 
@@ -26,10 +26,10 @@
 <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
     <thead>
     <tr>
-        <th scope="col">@_localizer["Slots:ID"]</th>
-        <th scope="col">@_localizer["Slots:Name"]</th>
-        <th scope="col">@_localizer["Slots:Groups"]</th>
-        <th scope="col">@_localizer["Actions"]</th>
+        <th scope="col">@Localizer["Slots:ID"]</th>
+        <th scope="col">@Localizer["Slots:Name"]</th>
+        <th scope="col">@Localizer["Slots:Groups"]</th>
+        <th scope="col">@Localizer["Actions"]</th>
     </tr>
     </thead>
     <tbody class="table-group-divider">
@@ -44,13 +44,13 @@
                 {
                     <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowEditSlotForm" asp-route-id="@s.Id">
                         <i class="bi bi-pencil"></i>
-                        @_localizer["Edit"]
+                        @Localizer["Edit"]
                     </a>
                     @if(!s.Groups.Any())
                     {
                         <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slotid="@s.Id" data-slotname="@s.Name">
                             <i class="bi bi-trash"></i>
-                            @_localizer["Delete"]
+                            @Localizer["Delete"]
                         </a>
                     }
                 }
@@ -64,18 +64,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@_localizer["Modal:DeleteSlot:Title"]</h5>
+                <h5 class="modal-title">@Localizer["Modal:DeleteSlot:Title"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @_localizer["Modal:DeleteSlot:Body"]
+                @Localizer["Modal:DeleteSlot:Body"]
             </div>
             <div class="modal-footer">
                 <form asp-controller="AdminSlots" asp-action="DeleteSlot" method="post">
                     <input type="hidden" data-replace="slot-id" name="id" value="">
 
-                    <button type="submit" class="btn btn-outline-danger">@_localizer["Modal:DeleteSlot:Submit"]</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@_localizer["Cancel"]</button>
+                    <button type="submit" class="btn btn-outline-danger">@Localizer["Modal:DeleteSlot:Submit"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
                 </form>
             </div>
         </div>

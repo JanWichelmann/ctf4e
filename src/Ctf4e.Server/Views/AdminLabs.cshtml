@@ -1,8 +1,8 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer _localizer
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = _localizer["HtmlTitle"];
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     var viewType = (AdminLabsController.ViewType)ViewData["ViewType"];
 }
