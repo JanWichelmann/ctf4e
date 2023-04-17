@@ -28,7 +28,7 @@
                     <span class="ms-2">@group.GroupName</span>
                 </div>
                 <div class="col-auto ms-auto">
-                    else if(group.Status == ScoreboardGroupStatus.Start)
+                    @if(group.Status == ScoreboardGroupStatus.Start)
                     {
                         <span class="badge bg-warning" title="@Localizer["LabExecutionStatus:Start:Text"]">@Localizer["LabExecutionStatus:Start:Title"]</span>
                     }
