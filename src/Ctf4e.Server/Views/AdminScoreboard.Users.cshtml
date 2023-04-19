@@ -238,7 +238,7 @@
                 return;
             
             let cardIdMatch = window.location.hash.match(/^#(group[0-9]+)$/);
-            if(cardIdMatch.length === 2)
+            if(cardIdMatch && cardIdMatch.length === 2)
             {
                 let card = document.getElementById(cardIdMatch[1] + "-card");
                 if(card)
