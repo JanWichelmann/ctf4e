@@ -28,29 +28,32 @@
     <form asp-controller="AdminScoreboard" asp-action="RenderScoreboard" method="get">
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">@Localizer["SwitchScoreboard:Lab"]</label>
-            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-select">
+            <select id="input-lab-id" name="labId" asp-items="@(new SelectList(Model.Labs, nameof(Lab.Id), nameof(Lab.Name), Model.LabId))" class="form-select" onchange="this.form.submit()">
                 <option value="" disabled selected>@Localizer["SwitchScoreboard:Lab:Placeholder"]</option>
             </select>
         </div>
         <div class="mb-3">
             <label class="form-label" for="input-slot-id">@Localizer["SwitchScoreboard:Slot"]</label>
-            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-select">
+            <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(Model.Slots, nameof(Slot.Id), nameof(Slot.Name), Model.SlotId))" class="form-select" onchange="this.form.submit()">
                 <option value="" disabled selected>@Localizer["SwitchScoreboard:Slot:Placeholder"]</option>
             </select>
         </div>
         <div class="mb-3">
-            <div class="form-check">
-                <input type="checkbox" value="true" id="input-group-mode" name="groupMode" class="form-check-input" @(Model.GroupMode ? "checked" : "")>
+            <div class="form-check form-switch">
+                <input type="checkbox" value="true" id="input-group-mode" name="groupMode" class="form-check-input" @(Model.GroupMode ? "checked" : "") onchange="this.form.submit()">
                 <label for="input-group-mode" class="form-check-label">@Localizer["SwitchScoreboard:GroupMode"]</label>
             </div>
         </div>
         <div class="mb-3">
-            <div class="form-check">
-                <input type="checkbox" value="true" id="input-include-tutors" name="includeTutors" class="form-check-input" @(Model.IncludeTutors ? "checked" : "")>
+            <div class="form-check form-switch">
+                <input type="checkbox" value="true" id="input-include-tutors" name="includeTutors" class="form-check-input" @(Model.IncludeTutors ? "checked" : "") onchange="this.form.submit()">
                 <label for="input-include-tutors" class="form-check-label">@Localizer["SwitchScoreboard:IncludeTutors"]</label>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">@Localizer["SwitchScoreboard:Submit"]</button>
+        <button type="submit" class="btn btn-primary">       
+            <i class="bi bi-arrow-return-right"></i>
+            @Localizer["SwitchScoreboard:Submit"]
+        </button>
     </form>
 
     <hr class="header-secondary">
