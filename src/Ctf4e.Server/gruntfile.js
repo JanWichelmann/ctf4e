@@ -21,7 +21,7 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     {expand: true, flatten: true, src: ['node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'], dest: 'wwwroot/lib/bootstrap/js/'},
-                    {expand: true, flatten: true, src: ['node_modules/chart.js/dist/chart.min.js'], dest: 'wwwroot/lib/chartjs/js/'},
+                    {expand: true, flatten: true, src: ['node_modules/chart.js/dist/chart.umd.js'], dest: 'wwwroot/lib/chartjs/js/'},
                     {expand: true, flatten: true, src: ['node_modules/@popperjs/core/dist/umd/popper.min.js'], dest: 'wwwroot/lib/popper/js/'},
                     {expand: true, flatten: true, src: ['node_modules/flatpickr/dist/flatpickr.min.js'], dest: 'wwwroot/lib/flatpickr/js/'},
                     {expand: true, flatten: true, src: ['node_modules/flatpickr/dist/l10n/de.js'], dest: 'wwwroot/lib/flatpickr/js/l10n/'},
