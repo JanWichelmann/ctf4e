@@ -4,12 +4,9 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "CTF4E_CONFIG_FILE": "config-debug.json",
-        "ASPNETCORE_Kestrel__Certificates__Default__Path": "debug.pfx",
-        "ASPNETCORE_Kestrel__Certificates__Default__Password": "ctf4e"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:5000"
+      "applicationUrl": "http://localhost:5000"
     }
   }
 }

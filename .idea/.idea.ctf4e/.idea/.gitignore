@@ -8,3 +8,5 @@
 /projectSettingsUpdater.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+# GitHub Copilot persisted chat sessions
+/copilot/chatSessions

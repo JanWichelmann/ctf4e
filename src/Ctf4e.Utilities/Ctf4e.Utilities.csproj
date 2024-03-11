@@ -3,8 +3,8 @@
   <PropertyGroup>
     <Description>Utility functions for the CTF4E server implementations.</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <LangVersion>10</LangVersion>
-    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>12</LangVersion>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

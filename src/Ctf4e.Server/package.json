@@ -3,17 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
-    "bootstrap": "^5.2.3",
-    "bootstrap-icons": "^1.10.3",
-    "chart.js": "^4.2.1",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.2",
     "flatpickr": "^4.6.13"
   },
   "devDependencies": {
     "grunt": "^1.6.1",
-    "grunt-cli": "^1.4.0",
+    "grunt-cli": "^1.4.3",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-sass": "^2.0.0",
-    "sass": "^1.59.2"
+    "sass": "^1.71.1"
   }
 }
