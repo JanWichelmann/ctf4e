@@ -31,7 +31,7 @@ namespace Ctf4e.Api.Services
     /// </summary>
     public class CryptoService : ICryptoService
     {
-        private static readonly TimeSpan _timestampValidityDuration = new TimeSpan(0, 3, 0);
+        private static readonly TimeSpan _timestampValidityDuration = new(0, 3, 0);
 
         private readonly byte[] _key;
 
@@ -44,7 +44,7 @@ namespace Ctf4e.Api.Services
         {
             // Derive key
             // We rely on the randomness of the API code here
-            using var keyGen = new Rfc2898DeriveBytes(labApiCode, new byte[8], 10);
+            using var keyGen = new Rfc2898DeriveBytes(labApiCode, new byte[8], 32, HashAlgorithmName.SHA256);
             _key = keyGen.GetBytes(16);
         }
 
@@ -79,7 +79,7 @@ namespace Ctf4e.Api.Services
             RandomNumberGenerator.Fill(nonce);
 
             // Encrypt
-            using var aesGcm = new AesGcm(_key);
+            using var aesGcm = new AesGcm(_key, tagSize);
             aesGcm.Encrypt(nonce, plainBytes.AsSpan(), cipherBytes, tag);
 
             // Encode
@@ -108,7 +108,7 @@ namespace Ctf4e.Api.Services
             var cipherBytes = encryptedData.Slice(4 + nonceSize + 4 + tagSize, cipherSize);
 
             // Decrypt
-            using var aesGcm = new AesGcm(_key);
+            using var aesGcm = new AesGcm(_key, tagSize);
             Span<byte> plainBytes = cipherSize < 1024 ? stackalloc byte[cipherSize] : new byte[cipherSize];
             aesGcm.Decrypt(nonce, cipherBytes, tag, plainBytes);
 
