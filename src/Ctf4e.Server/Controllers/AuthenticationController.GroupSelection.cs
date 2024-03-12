@@ -46,7 +46,7 @@ public partial class AuthenticationController
             return await ShowRedirectAsync(null);
 
         // Try to create group
-        int groupId = 0;
+        int groupId;
         try
         {
             // Filter group codes

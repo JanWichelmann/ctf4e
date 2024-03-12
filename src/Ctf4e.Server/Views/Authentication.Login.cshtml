@@ -85,7 +85,7 @@
                             <select id="input-user-id" name="userId" class="form-select">
                                 @foreach(var user in users.OrderBy(u => u.Id))
                                 {
-                                    <option value="@user.Id">#@user.Id: @user.DisplayName</option>
+                                    <!option value="@user.Id">#@user.Id: @user.DisplayName</!option>
                                 }
                             </select>
                         </div>

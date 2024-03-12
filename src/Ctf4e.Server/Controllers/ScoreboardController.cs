@@ -75,7 +75,7 @@ public class ScoreboardController : ControllerBase
         ViewData["ResetCache"] = resetCache && currentUser.Privileges.HasPrivileges(UserPrivileges.Admin);
 
         if(reload > 0 && currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-            Response.Headers.Add("Refresh", reload.ToString());
+            Response.Headers["Refresh"] = reload.ToString();
 
         return await RenderAsync(ViewType.Scoreboard);
     }
