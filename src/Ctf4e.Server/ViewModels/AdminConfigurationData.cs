@@ -20,9 +20,11 @@ public class AdminConfigurationData
     public bool PassAsGroup { get; set; }
 
     [Required(AllowEmptyStrings = false)]
+    [StringLength(50)]
     public string PageTitle { get; set; }
 
     [Required(AllowEmptyStrings = false)]
+    [StringLength(50)]
     public string NavbarTitle { get; set; }
 
     [Required]
@@ -33,5 +35,6 @@ public class AdminConfigurationData
         
     [Required(AllowEmptyStrings = true)]
     [DisplayFormat(ConvertEmptyStringToNull = false)]
+    [StringLength(5000)]
     public string GroupSelectionPageText { get; set; }
 }

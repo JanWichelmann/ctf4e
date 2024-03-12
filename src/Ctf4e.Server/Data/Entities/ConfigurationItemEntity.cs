@@ -8,5 +8,6 @@ public class ConfigurationItemEntity
     [StringLength(255)]
     public string Key { get; set; }
 
+    [StringLength(5000)]
     public string Value { get; set; }
 }
