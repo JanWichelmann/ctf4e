@@ -1,4 +1,5 @@
 ﻿using Ctf4e.Server.Data.Entities;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Data;
@@ -6,12 +7,14 @@ namespace Ctf4e.Server.Data;
 /// <summary>
 ///     Database context.
 /// </summary>
-public class CtfDbContext : DbContext
+public class CtfDbContext : DbContext, IDataProtectionKeyContext
 {
     public CtfDbContext(DbContextOptions<CtfDbContext> options)
         : base(options)
     {
     }
+    
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     public DbSet<UserEntity> Users { get; set; }
 

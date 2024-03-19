@@ -36,12 +36,9 @@ var builder = WebApplication.CreateBuilder(args);
     var mainOptions = configurationSection.GetSection(nameof(MainOptions)).Get<MainOptions>() ?? throw new Exception("Could not find main configuration.");
     builder.Services.AddOptions<MainOptions>().Bind(configurationSection.GetSection(nameof(MainOptions)));
 
-    // Key persistence
-    if(mainOptions.SecretsDirectory != null)
-    {
-        builder.Services.AddDataProtection()
-            .PersistKeysToFileSystem(new DirectoryInfo(mainOptions.SecretsDirectory));
-    }
+    // Secret storage
+    builder.Services.AddDataProtection()
+        .PersistKeysToDbContext<CtfDbContext>();
 
     // Moodle connection
     builder.Services.AddHttpClient();

@@ -7,5 +7,4 @@ public class MainOptions
     public string ProxyNetworkAddress { get; set; }
     public int ProxyNetworkPrefix { get; set; }
     public string DefaultCulture { get; set; }
-    public string SecretsDirectory { get; set; }
 }
