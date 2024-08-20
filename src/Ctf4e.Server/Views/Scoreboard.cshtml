@@ -24,7 +24,7 @@
     Dictionary<int, IEnumerable<User>> users = new();
     if(showAllEntries)
     {
-        users = (await UserService.GetUsersAsync().ToListAsync())
+        users = (await UserService.GetUsersAsync(Context.RequestAborted))
             .Where(u => u.GroupId != null)
             .GroupBy(u => u.GroupId)
             .ToDictionary(u => u.Key!.Value, u => u.Select(ug => ug));

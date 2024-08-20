@@ -17,53 +17,43 @@ namespace Ctf4e.Server.Services;
 
 public interface ILabExecutionService
 {
-    IAsyncEnumerable<LabExecution> GetLabExecutionsAsync();
-    Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
-    Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken);
-    Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken);
-    Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken);
+    Task<List<LabExecution>> GetLabExecutionsAsync(CancellationToken cancellationToken);
+    Task<bool> AnyLabExecutionsForLabAsync(int labId, CancellationToken cancellationToken);
+    Task<LabExecution> FindLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
+    Task<LabExecution> FindLabExecutionByUserAndLabAsync(int userId, int labId, CancellationToken cancellationToken);
+    Task<LabExecution> FindMostRecentLabExecutionByGroupAsync(int groupId, CancellationToken cancellationToken);
+    Task<LabExecution> FindMostRecentLabExecutionAsync(CancellationToken cancellationToken);
     Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken);
     Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken);
     Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
     Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken);
 }
 
-public class LabExecutionService : ILabExecutionService
+public class LabExecutionService(CtfDbContext dbContext, IMapper mapper, GenericCrudService<CtfDbContext> genericCrudService) : ILabExecutionService
 {
-    private readonly CtfDbContext _dbContext;
-    private readonly IMapper _mapper;
-
-    public LabExecutionService(CtfDbContext dbContext, IMapper mapper)
+    public Task<List<LabExecution>> GetLabExecutionsAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public IAsyncEnumerable<LabExecution> GetLabExecutionsAsync()
-    {
-        return _dbContext.LabExecutions.AsNoTracking()
-            .Include(l => l.Lab)
-            .Include(l => l.Group)
+        return dbContext.LabExecutions.AsNoTracking()
             .OrderBy(l => l.LabId)
             .ThenBy(l => l.Group.DisplayName)
-            .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Lab, l => l.Group)
-            .AsAsyncEnumerable();
+            .ProjectTo<LabExecution>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<LabExecution> GetLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken)
+    public Task<bool> AnyLabExecutionsForLabAsync(int labId, CancellationToken cancellationToken)
     {
-        return _dbContext.LabExecutions.AsNoTracking()
-            .Include(l => l.Lab)
-            .Include(l => l.Group)
-            .Where(l => l.GroupId == groupId && l.LabId == labId)
-            .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Lab, l => l.Group)
-            .FirstOrDefaultAsync(cancellationToken);
+        return dbContext.LabExecutions.AsNoTracking()
+            .Where(l => l.LabId == labId)
+            .AnyAsync(cancellationToken);
     }
 
-    public async Task<LabExecution> GetLabExecutionForUserAsync(int userId, int labId, CancellationToken cancellationToken)
+    public Task<LabExecution> FindLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken)
+        => genericCrudService.FindAsync<LabExecution, LabExecutionEntity>(l => l.GroupId == groupId && l.LabId == labId, cancellationToken);
+
+    public async Task<LabExecution> FindLabExecutionByUserAndLabAsync(int userId, int labId, CancellationToken cancellationToken)
     {
-        // We have to match against user IDs, which does not seem to be supported by EF
-        var dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
+        // We have to first convert user ID to group ID, which does not seem to be supported by EF
+        var dbConn = new ProfiledDbConnection(dbContext.Database.GetDbConnection(), MiniProfiler.Current);
         var labExecutionEntity = (await dbConn.QueryAsync<LabExecutionEntity>(@"
                  SELECT le.*
                  FROM `LabExecutions` le
@@ -73,29 +63,28 @@ public class LabExecutionService : ILabExecutionService
                      SELECT u.`GroupId`
                      FROM `Users` u
                      WHERE u.`Id` = @userId
-                 )", new {labId, userId})).FirstOrDefault();
-        return _mapper.Map<LabExecutionEntity, LabExecution>(labExecutionEntity);
+                 )", new { labId, userId })).FirstOrDefault();
+        return mapper.Map<LabExecutionEntity, LabExecution>(labExecutionEntity);
     }
 
-    public Task<LabExecution> GetMostRecentLabExecutionAsync(int groupId, CancellationToken cancellationToken)
+    public Task<LabExecution> FindMostRecentLabExecutionByGroupAsync(int groupId, CancellationToken cancellationToken)
     {
         var now = DateTime.Now;
-        return _dbContext.LabExecutions.AsNoTracking()
+        return dbContext.LabExecutions.AsNoTracking()
             .Where(l => l.GroupId == groupId)
             .OrderByDescending(l => l.Start <= now && now < l.End) // Pick an active one...
             .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.Start, now))) // ...and/or the one with the most recent pre start time
-            .ProjectTo<LabExecution>(_mapper.ConfigurationProvider)
+            .ProjectTo<LabExecution>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<LabExecution> GetMostRecentLabExecutionAsync(CancellationToken cancellationToken)
+    public Task<LabExecution> FindMostRecentLabExecutionAsync(CancellationToken cancellationToken)
     {
         var now = DateTime.Now;
-        return _dbContext.LabExecutions.AsNoTracking()
-            .Include(l => l.Group)
+        return dbContext.LabExecutions.AsNoTracking()
             .OrderByDescending(l => l.Start <= now && now < l.End) // Pick an active one...
             .ThenBy(l => Math.Abs(EF.Functions.DateDiffMicrosecond(l.Start, now))) // ...and/or the one with the most recent pre start time
-            .ProjectTo<LabExecution>(_mapper.ConfigurationProvider, l => l.Group)
+            .ProjectTo<LabExecution>(mapper.ConfigurationProvider, l => l.Group)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -103,65 +92,28 @@ public class LabExecutionService : ILabExecutionService
     {
         // Update existing one?
         LabExecutionEntity labExecutionEntity;
-        if(updateExisting && (labExecutionEntity = await _dbContext.LabExecutions.FindAsync(new object[] { labExecution.GroupId, labExecution.LabId }, cancellationToken)) != null)
-        {
-            labExecutionEntity.Start = labExecution.Start;
-            labExecutionEntity.End = labExecution.End;
-        }
+        if(updateExisting && (labExecutionEntity = await dbContext.LabExecutions.FindAsync([labExecution.GroupId, labExecution.LabId], cancellationToken)) != null)
+            mapper.Map(labExecution, labExecutionEntity);
         else
-        {
-            // Create new labExecution
-            labExecutionEntity = _dbContext.LabExecutions.Add(new LabExecutionEntity
-            {
-                GroupId = labExecution.GroupId,
-                LabId = labExecution.LabId,
-                Start = labExecution.Start,
-                End = labExecution.End
-            }).Entity;
-        }
+            labExecutionEntity = dbContext.LabExecutions.Add(mapper.Map<LabExecutionEntity>(labExecution)).Entity;
 
         // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<LabExecution>(labExecutionEntity);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return mapper.Map<LabExecution>(labExecutionEntity);
     }
 
-    public async Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken)
-    {
-        // Try to retrieve existing entity
-        var labExecutionEntity = await _dbContext.LabExecutions.FindAsync(new object[] { labExecution.GroupId, labExecution.LabId }, cancellationToken);
-        if(labExecutionEntity == null)
-            throw new InvalidOperationException("Diese Ausführung existiert nicht");
+    public Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken)
+        => genericCrudService.UpdateAsync<LabExecution, LabExecutionEntity>(labExecution, cancellationToken);
 
-        // Update entry
-        labExecutionEntity.Start = labExecution.Start;
-        labExecutionEntity.End = labExecution.End;
-
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Delete entry
-            _dbContext.LabExecutions.Remove(new LabExecutionEntity { GroupId = groupId, LabId = labId });
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
-        {
-            // Most likely a non-existent entry, just forward the exception
-            throw;
-        }
-    }
+    public Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken)
+        => genericCrudService.DeleteAsync<LabExecutionEntity>([groupId, labId], cancellationToken);
 
     public Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken)
     {
         // Delete all matching entries
-        var labExecutionsInSlot = _dbContext.LabExecutions
-            .Include(l => l.Group)
+        var labExecutionsInSlot = dbContext.LabExecutions
             .Where(l => l.LabId == labId && l.Group.SlotId == slotId);
-        _dbContext.LabExecutions.RemoveRange(labExecutionsInSlot);
-        return _dbContext.SaveChangesAsync(cancellationToken);
+        dbContext.LabExecutions.RemoveRange(labExecutionsInSlot);
+        return dbContext.SaveChangesAsync(cancellationToken);
     }
 }

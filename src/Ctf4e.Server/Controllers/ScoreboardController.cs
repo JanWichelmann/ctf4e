@@ -34,8 +34,8 @@ public class ScoreboardController : ControllerBase
 
     private async Task<IActionResult> RenderAsync(ViewType viewType)
     {
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync(HttpContext.RequestAborted);
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync(HttpContext.RequestAborted);
+        ViewData["Labs"] = await _labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         ViewData["ViewType"] = viewType;
         return await RenderViewAsync(MenuItems.Scoreboard);

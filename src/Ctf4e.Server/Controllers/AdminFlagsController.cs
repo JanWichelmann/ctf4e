@@ -32,7 +32,7 @@ public class AdminFlagsController : ControllerBase
 
     private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
     {
-        var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        var lab = await _labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
         ViewData["Lab"] = lab;
@@ -44,7 +44,7 @@ public class AdminFlagsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> RenderFlagListAsync(int labId)
     {
-        var flags = await _flagService.GetFlagsAsync(labId).ToListAsync();
+        var flags = await _flagService.GetFlagsAsync(labId, HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, labId, flags);
     }
@@ -54,7 +54,7 @@ public class AdminFlagsController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            flag = await _flagService.GetFlagAsync(id.Value, HttpContext.RequestAborted);
+            flag = await _flagService.FindFlagByIdAsync(id.Value, HttpContext.RequestAborted);
             if(flag == null)
                 return RedirectToAction("RenderLabList", "AdminLabs");
         }
@@ -87,7 +87,7 @@ public class AdminFlagsController : ControllerBase
         try
         {
             // Retrieve edited flag from database and apply changes
-            var flag = await _flagService.GetFlagAsync(flagData.Id, HttpContext.RequestAborted);
+            var flag = await _flagService.FindFlagByIdAsync(flagData.Id, HttpContext.RequestAborted);
             flag.Code = flagData.Code;
             flag.Description = flagData.Description;
             flag.BasePoints = flagData.BasePoints;
@@ -157,7 +157,7 @@ public class AdminFlagsController : ControllerBase
     public async Task<IActionResult> DeleteFlagAsync(int id)
     {
         // Input check
-        var flag = await _flagService.GetFlagAsync(id, HttpContext.RequestAborted);
+        var flag = await _flagService.FindFlagByIdAsync(id, HttpContext.RequestAborted);
         if(flag == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
 

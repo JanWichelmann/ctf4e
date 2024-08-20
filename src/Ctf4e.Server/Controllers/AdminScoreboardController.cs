@@ -47,7 +47,7 @@ public class AdminScoreboardController : ControllerBase
         if(labId == null || slotId == null)
         {
             // Show the most recently executed lab and slot as default
-            var recentLabExecution = await labExecutionService.GetMostRecentLabExecutionAsync(HttpContext.RequestAborted);
+            var recentLabExecution = await labExecutionService.FindMostRecentLabExecutionAsync(HttpContext.RequestAborted);
             if(recentLabExecution != null)
             {
                 labId = recentLabExecution.LabId;
@@ -182,7 +182,7 @@ public class AdminScoreboardController : ControllerBase
     public async Task<IActionResult> CallLabServerAsync([FromServices] ILabService labService, int labId, int userId)
     {
         // Retrieve lab data
-        var lab = await labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        var lab = await labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
         {
             AddStatusMessage(_localizer["CallLabServerAsync:NotFound"], StatusMessageTypes.Error);
@@ -191,7 +191,7 @@ public class AdminScoreboardController : ControllerBase
 
         // Build authentication string
         var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
-        var group = user.GroupId == null ? null : await _userService.GetGroupAsync(user.GroupId ?? -1, HttpContext.RequestAborted);
+        var group = user.GroupId == null ? null : await _userService.FindGroupByIdAsync(user.GroupId ?? -1, HttpContext.RequestAborted);
         var authData = new UserLoginRequest
         {
             UserId = userId,

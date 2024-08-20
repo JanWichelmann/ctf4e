@@ -38,7 +38,7 @@ public class AdminSlotsController : ControllerBase
     public async Task<IActionResult> RenderSlotListAsync()
     {
         // Pass slots
-        var slots = await _slotService.GetSlotsAsync().ToListAsync();
+        var slots = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, slots);
     }
@@ -48,7 +48,7 @@ public class AdminSlotsController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            slot = await _slotService.GetSlotAsync(id.Value, HttpContext.RequestAborted);
+            slot = await _slotService.FindSlotByIdAsync(id.Value, HttpContext.RequestAborted);
             if(slot == null)
             {
                 AddStatusMessage(_localizer["ShowEditSlotFormAsync:NotFound"], StatusMessageTypes.Error);
@@ -87,7 +87,7 @@ public class AdminSlotsController : ControllerBase
         try
         {
             // Retrieve edited slot from database and apply changes
-            var slot = await _slotService.GetSlotAsync(slotData.Id, HttpContext.RequestAborted);
+            var slot = await _slotService.FindSlotByIdAsync(slotData.Id, HttpContext.RequestAborted);
             slot.Name = slotData.Name;
             slot.DefaultExecuteLabId = slotData.DefaultExecuteLabId;
             slot.DefaultExecuteLabEnd = slotData.DefaultExecuteLabEnd;
@@ -153,7 +153,7 @@ public class AdminSlotsController : ControllerBase
     public async Task<IActionResult> DeleteSlotAsync(int id)
     {
         // Input check
-        var slot = await _slotService.GetSlotAsync(id, HttpContext.RequestAborted);
+        var slot = await _slotService.FindSlotByIdAsync(id, HttpContext.RequestAborted);
         if(slot == null)
         {
             AddStatusMessage(_localizer["DeleteSlotAsync:NotFound"], StatusMessageTypes.Error);

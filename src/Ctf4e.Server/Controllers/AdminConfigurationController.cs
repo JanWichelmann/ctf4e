@@ -46,7 +46,7 @@ public class AdminConfigurationController : ControllerBase
             GroupSelectionPageText = await _configurationService.GetGroupSelectionPageTextAsync(HttpContext.RequestAborted)
         };
 
-        int groupCount = await _userService.GetGroupsAsync().CountAsync(HttpContext.RequestAborted);
+        int groupCount = await _userService.GetGroupsCountAsync(HttpContext.RequestAborted);
         ViewData["GroupCount"] = groupCount;
 
         return await RenderViewAsync(MenuItems.AdminConfiguration, config);

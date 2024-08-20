@@ -39,7 +39,7 @@ public class ApiController : Controller
         try
         {
             // Resolve lab
-            var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
+            var lab = await _labService.FindLabByIdAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
                 return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
@@ -47,13 +47,13 @@ public class ApiController : Controller
             var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lab.ApiCode));
 
             // Resolve exercise
-            var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+            var exercise = await _exerciseService.FindExerciseByNumberAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
             if(exercise == null)
                 return NotFound(new { error = "Exercise not found" });
 
             // Check lab execution
             // This will also automatically check whether the given user exists
-            var labExecution = await _labExecutionService.GetLabExecutionForUserAsync(apiExerciseSubmission.UserId, lab.Id, HttpContext.RequestAborted);
+            var labExecution = await _labExecutionService.FindLabExecutionByUserAndLabAsync(apiExerciseSubmission.UserId, lab.Id, HttpContext.RequestAborted);
             var now = DateTime.Now;
             if(labExecution == null || now < labExecution.Start)
                 return NotFound(new { error = "Lab is not active for this user" });
@@ -89,7 +89,7 @@ public class ApiController : Controller
         try
         {
             // Resolve lab
-            var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
+            var lab = await _labService.FindLabByIdAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
                 return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
@@ -97,7 +97,7 @@ public class ApiController : Controller
             var apiExerciseSubmission = request.Decode<ApiExerciseSubmission>(new CryptoService(lab.ApiCode));
 
             // Resolve exercise
-            var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+            var exercise = await _exerciseService.FindExerciseByNumberAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
             if(exercise == null)
                 return NotFound(new { error = "Exercise not found" });
 
@@ -128,7 +128,7 @@ public class ApiController : Controller
         try
         {
             // Resolve lab
-            var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
+            var lab = await _labService.FindLabByIdAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
                 return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
@@ -136,19 +136,19 @@ public class ApiController : Controller
             var apiExerciseSubmission = request.Decode<ApiGroupExerciseSubmission>(new CryptoService(lab.ApiCode));
 
             // Resolve exercise
-            var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+            var exercise = await _exerciseService.FindExerciseByNumberAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
             if(exercise == null)
                 return NotFound(new { error = "Exercise not found" });
 
             // Check lab execution
             // This will also automatically check whether the given group exists
-            var labExecution = await _labExecutionService.GetLabExecutionAsync(apiExerciseSubmission.GroupId, lab.Id, HttpContext.RequestAborted);
+            var labExecution = await _labExecutionService.FindLabExecutionAsync(apiExerciseSubmission.GroupId, lab.Id, HttpContext.RequestAborted);
             var now = DateTime.Now;
             if(labExecution == null || now < labExecution.Start)
                 return NotFound(new { error = "Lab is not active for this group" });
 
             // Create submission for each group member
-            var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId).ToListAsync(HttpContext.RequestAborted);
+            var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId, HttpContext.RequestAborted);
             foreach(var groupMember in groupMembers)
             {
                 var submission = new ExerciseSubmission
@@ -187,7 +187,7 @@ public class ApiController : Controller
         try
         {
             // Resolve lab
-            var lab = await _labService.GetLabAsync(request.LabId, HttpContext.RequestAborted);
+            var lab = await _labService.FindLabByIdAsync(request.LabId, HttpContext.RequestAborted);
             if(lab == null)
                 return BadRequest(new { error = $"Could not resolve requested lab {request.LabId}"});
 
@@ -195,12 +195,12 @@ public class ApiController : Controller
             var apiExerciseSubmission = request.Decode<ApiGroupExerciseSubmission>(new CryptoService(lab.ApiCode));
 
             // Resolve exercise
-            var exercise = await _exerciseService.FindExerciseAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
+            var exercise = await _exerciseService.FindExerciseByNumberAsync(lab.Id, apiExerciseSubmission.ExerciseNumber, HttpContext.RequestAborted);
             if(exercise == null)
                 return NotFound(new { error = "Exercise not found" });
 
             // Get group members
-            var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId).ToListAsync(HttpContext.RequestAborted);
+            var groupMembers = await _userService.GetGroupMembersAsync(apiExerciseSubmission.GroupId, HttpContext.RequestAborted);
             if(!groupMembers.Any())
                 return NotFound(new { error = "Empty or not existing group" });
 

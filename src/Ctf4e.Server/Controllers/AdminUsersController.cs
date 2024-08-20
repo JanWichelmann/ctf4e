@@ -38,7 +38,7 @@ public class AdminUsersController : ControllerBase
     public async Task<IActionResult> RenderUserListAsync()
     {
         // Pass users
-        var users = await _userService.GetUsersWithGroupsAsync().ToListAsync();
+        var users = await _userService.GetUsersWithGroupsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, users);
     }
@@ -88,7 +88,7 @@ public class AdminUsersController : ControllerBase
         }
 
         // Pass list of groups
-        ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
+        ViewData["Groups"] = await _userService.GetGroupsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.Edit, userData);
     }

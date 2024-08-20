@@ -43,7 +43,7 @@ public class UserDashboardController : ControllerBase
         // Show group's most recent lab
         if(labId == null)
         {
-            var currentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(currentUser.GroupId.Value, HttpContext.RequestAborted);
+            var currentLabExecution = await _labExecutionService.FindMostRecentLabExecutionByGroupAsync(currentUser.GroupId.Value, HttpContext.RequestAborted);
             if(currentLabExecution == null)
             {
                 AddStatusMessage(_localizer["RenderAsync:NoActiveLab"], StatusMessageTypes.Info);
@@ -54,7 +54,7 @@ public class UserDashboardController : ControllerBase
         }
         
         // Check whether user may access this lab, if it even exists
-        var lab = await _labService.GetLabAsync(labId.Value, HttpContext.RequestAborted);
+        var lab = await _labService.FindLabByIdAsync(labId.Value, HttpContext.RequestAborted);
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
             AddStatusMessage(_localizer["RenderAsync:LabNotFound"], StatusMessageTypes.Error);
@@ -92,13 +92,20 @@ public class UserDashboardController : ControllerBase
             return await RenderLabPageAsync(labId);
         }
 
-        // Try to submit flag
-        bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
-        if(success)
+        try
         {
-            AddStatusMessage(_localizer["SubmitFlagAsync:Success"], StatusMessageTypes.Success);
+            // Try to submit flag
+            bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
+            if(success)
+            {
+                AddStatusMessage(_localizer["SubmitFlagAsync:Success"], StatusMessageTypes.Success);
+            }
+            else
+            {
+                AddStatusMessage(_localizer["SubmitFlagAsync:Error"], StatusMessageTypes.Error);
+            }
         }
-        else
+        catch(Exception ex)
         {
             AddStatusMessage(_localizer["SubmitFlagAsync:Error"], StatusMessageTypes.Error);
         }
@@ -118,7 +125,7 @@ public class UserDashboardController : ControllerBase
         }
             
         // Retrieve lab data and check access
-        var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        var lab = await _labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
             AddStatusMessage(_localizer["CallLabServerAsync:LabNotFound"], StatusMessageTypes.Error);
@@ -127,7 +134,7 @@ public class UserDashboardController : ControllerBase
 
         // Check whether lab is accessible by given group
         DateTime now = DateTime.Now;
-        var labExecution = await _labExecutionService.GetLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
+        var labExecution = await _labExecutionService.FindLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
         if(labExecution == null || now < labExecution.Start)
         {
             AddStatusMessage(_localizer["CallLabServerAsync:LabNotActive"], StatusMessageTypes.Error);

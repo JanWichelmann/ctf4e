@@ -16,7 +16,7 @@ public partial class AuthenticationController
     private async Task<IActionResult> ShowGroupFormAsync(GroupSelection groupSelection)
     {
         // Pass slots
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.GroupSelection, groupSelection);
     }
@@ -79,7 +79,7 @@ public partial class AuthenticationController
                 SlotId = groupSelection.SlotId,
                 ShowInScoreboard = groupSelection.ShowInScoreboard
             };
-            groupId = await _userService.CreateGroupAsync(group, codes, HttpContext.RequestAborted);
+            groupId = await _userService.CreateGroupFromCodesAsync(group, codes, HttpContext.RequestAborted);
         }
         catch(ArgumentException)
         {
@@ -102,7 +102,7 @@ public partial class AuthenticationController
         try
         {
             // Start default lab if specified in the slot configuration
-            var slot = await _slotService.GetSlotAsync(groupSelection.SlotId, HttpContext.RequestAborted);
+            var slot = await _slotService.FindSlotByIdAsync(groupSelection.SlotId, HttpContext.RequestAborted);
             if(slot is { DefaultExecuteLabId: { }, DefaultExecuteLabEnd: { } })
             {
                 var startTime = DateTime.Now;

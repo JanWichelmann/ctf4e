@@ -32,7 +32,7 @@ public class AdminExercisesController : ControllerBase
 
     private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
     {
-        var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        var lab = await _labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
         ViewData["Lab"] = lab;
@@ -44,7 +44,7 @@ public class AdminExercisesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> RenderExerciseListAsync(int labId)
     {
-        var exercises = await _exerciseService.GetExercisesAsync(labId).ToListAsync();
+        var exercises = await _exerciseService.GetExercisesAsync(labId, HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, labId, exercises);
     }
@@ -54,7 +54,7 @@ public class AdminExercisesController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            exercise = await _exerciseService.GetExerciseAsync(id.Value, HttpContext.RequestAborted);
+            exercise = await _exerciseService.FindExerciseByIdAsync(id.Value, HttpContext.RequestAborted);
             if(exercise == null)
                 return RedirectToAction("RenderLabList", "AdminLabs");
         }
@@ -87,7 +87,7 @@ public class AdminExercisesController : ControllerBase
         try
         {
             // Retrieve edited exercise from database and apply changes
-            var exercise = await _exerciseService.GetExerciseAsync(exerciseData.Id, HttpContext.RequestAborted);
+            var exercise = await _exerciseService.FindExerciseByIdAsync(exerciseData.Id, HttpContext.RequestAborted);
             exercise.ExerciseNumber = exerciseData.ExerciseNumber;
             exercise.Name = exerciseData.Name;
             exercise.IsMandatory = exerciseData.IsMandatory;
@@ -159,7 +159,7 @@ public class AdminExercisesController : ControllerBase
     public async Task<IActionResult> DeleteExerciseAsync(int id)
     {
         // Input check
-        var exercise = await _exerciseService.GetExerciseAsync(id, HttpContext.RequestAborted);
+        var exercise = await _exerciseService.FindExerciseByIdAsync(id, HttpContext.RequestAborted);
         if(exercise == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
 

@@ -45,9 +45,9 @@ public class AdminLabExecutionsController : ControllerBase
     public async Task<IActionResult> RenderLabExecutionListAsync()
     {
         // Pass data
-        var labExecutions = await _labExecutionService.GetLabExecutionsAsync().ToListAsync();
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        var labExecutions = await _labExecutionService.GetLabExecutionsAsync(HttpContext.RequestAborted);
+        ViewData["Labs"] = await _labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, labExecutions);
     }
@@ -59,7 +59,7 @@ public class AdminLabExecutionsController : ControllerBase
         {
             labExecutionData = new AdminLabExecution
             {
-                LabExecution = await _labExecutionService.GetLabExecutionAsync(groupId.Value, labId.Value, HttpContext.RequestAborted)
+                LabExecution = await _labExecutionService.FindLabExecutionAsync(groupId.Value, labId.Value, HttpContext.RequestAborted)
             };
             if(labExecutionData.LabExecution == null)
             {
@@ -102,7 +102,7 @@ public class AdminLabExecutionsController : ControllerBase
         try
         {
             // Retrieve edited labExecution from database and apply changes
-            var labExecution = await _labExecutionService.GetLabExecutionAsync(labExecutionData.LabExecution.GroupId, labExecutionData.LabExecution.LabId, HttpContext.RequestAborted);
+            var labExecution = await _labExecutionService.FindLabExecutionAsync(labExecutionData.LabExecution.GroupId, labExecutionData.LabExecution.LabId, HttpContext.RequestAborted);
             labExecution.Start = labExecutionData.LabExecution.Start;
             labExecution.End = labExecutionData.LabExecution.End;
             await _labExecutionService.UpdateLabExecutionAsync(labExecution, HttpContext.RequestAborted);
@@ -124,8 +124,8 @@ public class AdminLabExecutionsController : ControllerBase
     public async Task<IActionResult> ShowCreateLabExecutionForSlotFormAsync(AdminLabExecution labExecutionData = null)
     {
         // Pass lists
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        ViewData["Labs"] = await _labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.CreateForSlot, labExecutionData);
     }
@@ -148,7 +148,7 @@ public class AdminLabExecutionsController : ControllerBase
         try
         {
             // Start lab for each of the groups
-            foreach(var group in await _userService.GetGroupsInSlotAsync(labExecutionData.SlotId).ToListAsync())
+            foreach(var group in await _userService.GetGroupsInSlotAsync(labExecutionData.SlotId, HttpContext.RequestAborted))
             {
                 try
                 {
@@ -185,8 +185,8 @@ public class AdminLabExecutionsController : ControllerBase
     public async Task<IActionResult> ShowCreateLabExecutionForGroupFormAsync(AdminLabExecution labExecutionData = null)
     {
         // Pass lists
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
-        ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
+        ViewData["Labs"] = await _labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Groups"] = await _userService.GetGroupsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.CreateForGroup, labExecutionData);
     }
@@ -236,7 +236,7 @@ public class AdminLabExecutionsController : ControllerBase
     public async Task<IActionResult> DeleteLabExecutionForGroupAsync(int groupId, int labId)
     {
         // Input check
-        var labExecution = await _labExecutionService.GetLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
+        var labExecution = await _labExecutionService.FindLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
         if(labExecution == null)
         {
             AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:NotFound"], StatusMessageTypes.Error);

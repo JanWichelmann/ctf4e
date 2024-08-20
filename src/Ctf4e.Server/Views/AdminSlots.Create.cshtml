@@ -6,7 +6,7 @@
 @inject IViewLocalizer Localizer 
 @inject ILabService LabService
 @{
-    var labs = await LabService.GetLabsAsync().ToListAsync(Context.RequestAborted);
+    var labs = await LabService.GetLabsAsync(Context.RequestAborted);
 }
 
 <h1 class="header">

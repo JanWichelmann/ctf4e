@@ -75,7 +75,7 @@
                 }
                 <div class="tab-pane fade show" id="dev-login-pane" role="tabpanel" aria-labelledby="dev-login-tab">
                     @{
-                        var users = await UserService.GetUsersAsync().ToListAsync(Context.RequestAborted);
+                        var users = await UserService.GetUsersAsync(Context.RequestAborted);
                     }
                     <form asp-controller="Authentication" asp-action="DevLogin" method="get">
                         <h1 class="mb-3 fw-normal">@Localizer["DevLogin:Title"]</h1>

@@ -18,9 +18,9 @@ namespace Ctf4e.Server.Services;
 /// </summary>
 public interface IUserService
 {
-    IAsyncEnumerable<User> GetUsersAsync();
-    IAsyncEnumerable<User> GetUsersWithGroupsAsync();
-    IAsyncEnumerable<User> GetGroupMembersAsync(int groupId);
+    Task<List<User>> GetUsersAsync(CancellationToken cancellationToken);
+    Task<List<User>> GetUsersWithGroupsAsync(CancellationToken cancellationToken);
+    Task<List<User>> GetGroupMembersAsync(int groupId, CancellationToken cancellationToken);
     Task<bool> AnyUsers(CancellationToken cancellationToken);
     Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken);
     Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken);
@@ -28,186 +28,123 @@ public interface IUserService
     Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken);
     Task<User> CreateUserAsync(User user, CancellationToken cancellationToken);
     Task UpdateUserAsync(User user, CancellationToken cancellationToken);
-    IAsyncEnumerable<Group> GetGroupsAsync();
-    IAsyncEnumerable<Group> GetGroupsInSlotAsync(int slotId);
-    Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken);
+    Task<List<Group>> GetGroupsAsync(CancellationToken cancellationToken);
+    Task<int> GetGroupsCountAsync(CancellationToken cancellationToken);
+    Task<List<Group>> GetGroupsInSlotAsync(int slotId, CancellationToken cancellationToken);
+    Task<Group> FindGroupByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken);
-    Task<int> CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken);
+    Task<int> CreateGroupFromCodesAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken);
     Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken);
     Task UpdateGroupAsync(Group group, CancellationToken cancellationToken);
     Task DeleteGroupAsync(int id, CancellationToken cancellationToken);
 }
 
-public class UserService : IUserService
+public class UserService(CtfDbContext dbContext, IMapper mapper, GenericCrudService<CtfDbContext> genericCrudService) : IUserService
 {
-    private readonly CtfDbContext _dbContext;
-    private readonly IMapper _mapper;
+    private readonly ConcurrentDictionary<int, User> _cachedUsers = new();
 
-    private ConcurrentDictionary<int, User> _cachedUsers = new();
-
-    public UserService(CtfDbContext dbContext, IMapper mapper)
+    public Task<List<User>> GetUsersAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public IAsyncEnumerable<User> GetUsersAsync()
-    {
-        return _dbContext.Users.AsNoTracking()
+        return dbContext.Users.AsNoTracking()
             .OrderBy(u => u.DisplayName)
-            .ProjectTo<User>(_mapper.ConfigurationProvider)
-            .AsAsyncEnumerable();
+            .ProjectTo<User>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 
-    public IAsyncEnumerable<User> GetUsersWithGroupsAsync()
+    public Task<List<User>> GetUsersWithGroupsAsync(CancellationToken cancellationToken)
     {
-        return _dbContext.Users.AsNoTracking()
-            .Include(u => u.Group)
+        return dbContext.Users.AsNoTracking()
             .OrderBy(u => u.DisplayName)
-            .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
-            .AsAsyncEnumerable();
+            .ProjectTo<User>(mapper.ConfigurationProvider, u => u.Group)
+            .ToListAsync(cancellationToken);
     }
 
-    public IAsyncEnumerable<User> GetGroupMembersAsync(int groupId)
+    public Task<List<User>> GetGroupMembersAsync(int groupId, CancellationToken cancellationToken)
     {
-        return _dbContext.Users.AsNoTracking()
+        return dbContext.Users.AsNoTracking()
             .Where(u => u.GroupId == groupId)
             .OrderBy(u => u.DisplayName)
-            .ProjectTo<User>(_mapper.ConfigurationProvider)
-            .AsAsyncEnumerable();
+            .ProjectTo<User>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 
     public Task<bool> AnyUsers(CancellationToken cancellationToken)
-    {
-        return _dbContext.Users.AsNoTracking()
-            .AnyAsync(cancellationToken);
-    }
-
-    public Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken)
-    {
-        return _dbContext.Users.AsNoTracking()
-            .Include(u => u.Group)
-            .Where(u => u.MoodleUserId == moodleUserId)
-            .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
+        => genericCrudService.AnyAsync<UserEntity>(cancellationToken);
 
     public async Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken)
     {
         if(_cachedUsers.TryGetValue(id, out var user))
             return user;
-        
-        user = await _dbContext.Users.AsNoTracking()
-            .Include(u => u.Group)
+
+        // We often also need the group, so include it here
+        user = await dbContext.Users.AsNoTracking()
             .Where(u => u.Id == id)
-            .ProjectTo<User>(_mapper.ConfigurationProvider, u => u.Group)
+            .ProjectTo<User>(mapper.ConfigurationProvider, u => u.Group)
             .FirstOrDefaultAsync(cancellationToken);
 
         _cachedUsers.TryAdd(id, user);
         return user;
     }
 
+    public Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken)
+        => genericCrudService.FindAsync<User, UserEntity>(u => u.MoodleUserId == moodleUserId, cancellationToken);
+
     public Task<User> FindUserByMoodleNameAsync(string moodleName, CancellationToken cancellationToken)
-    {
-        return _dbContext.Users.AsNoTracking()
-            .Where(u => u.MoodleName == moodleName)
-            .ProjectTo<User>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
+        => genericCrudService.FindAsync<User, UserEntity>(u => u.MoodleName == moodleName, cancellationToken);
 
     public Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken)
     {
-        return _dbContext.Users.AsNoTracking()
+        return dbContext.Users.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<User> CreateUserAsync(User user, CancellationToken cancellationToken)
-    {
-        // Create new user
-        var userEntity = _dbContext.Users.Add(new UserEntity
-        {
-            DisplayName = user.DisplayName,
-            MoodleUserId = user.MoodleUserId,
-            MoodleName = user.MoodleName,
-            PasswordHash = user.PasswordHash,
-            Privileges = user.Privileges,
-            IsTutor = user.IsTutor,
-            GroupFindingCode = user.GroupFindingCode,
-            ExerciseSubmissions = new List<ExerciseSubmissionEntity>(),
-            FlagSubmissions = new List<FlagSubmissionEntity>()
-        }).Entity;
-
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<User>(userEntity);
-    }
+    public Task<User> CreateUserAsync(User user, CancellationToken cancellationToken)
+        => genericCrudService.CreateAsync<User, UserEntity>(user, cancellationToken);
 
     public async Task UpdateUserAsync(User user, CancellationToken cancellationToken)
     {
-        // Try to retrieve existing user entity
-        var userEntity = await _dbContext.Users.FindAsync(new object[] { user.Id }, cancellationToken);
-        if(userEntity == null)
-            throw new ArgumentException("This user does not exist.", nameof(user));
+        await genericCrudService.UpdateAsync<User, UserEntity>(user, cancellationToken);
 
-        // Update entry
-        userEntity.DisplayName = user.DisplayName;
-        userEntity.MoodleUserId = user.MoodleUserId;
-        userEntity.MoodleName = user.MoodleName;
-        userEntity.Privileges = user.Privileges;
-        userEntity.PasswordHash = user.PasswordHash;
-        userEntity.IsTutor = user.IsTutor;
-        userEntity.GroupFindingCode = user.GroupFindingCode;
-        userEntity.GroupId = user.GroupId;
-
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        
         // Invalidate cache
         _cachedUsers.TryRemove(user.Id, out _);
     }
 
-    public IAsyncEnumerable<Group> GetGroupsAsync()
+    public Task<List<Group>> GetGroupsAsync(CancellationToken cancellationToken)
     {
-        return _dbContext.Groups.AsNoTracking()
+        return dbContext.Groups.AsNoTracking()
             .OrderBy(g => g.SlotId)
             .ThenBy(g => g.DisplayName)
-            .ProjectTo<Group>(_mapper.ConfigurationProvider, g => g.Slot, g => g.Members)
-            .AsAsyncEnumerable();
+            .ProjectTo<Group>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
+    
+    public Task<int> GetGroupsCountAsync(CancellationToken cancellationToken)
+        => dbContext.Groups.AsNoTracking().CountAsync(cancellationToken);
 
-    public IAsyncEnumerable<Group> GetGroupsInSlotAsync(int slotId)
+    public Task<List<Group>> GetGroupsInSlotAsync(int slotId, CancellationToken cancellationToken)
     {
-        return _dbContext.Groups.AsNoTracking()
-            .Include(g => g.Slot)
-            .Include(g => g.Members)
+        return dbContext.Groups.AsNoTracking()
             .Where(g => g.SlotId == slotId)
             .OrderBy(g => g.DisplayName)
-            .ProjectTo<Group>(_mapper.ConfigurationProvider, g => g.Slot, g => g.Members)
-            .AsAsyncEnumerable();
+            .ProjectTo<Group>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<Group> GetGroupAsync(int id, CancellationToken cancellationToken)
-    {
-        return _dbContext.Groups.AsNoTracking()
-            .Include(g => g.Slot)
-            .Include(g => g.Members)
-            .Where(g => g.Id == id)
-            .ProjectTo<Group>(_mapper.ConfigurationProvider, g => g.Slot, g => g.Members)
-            .FirstOrDefaultAsync(cancellationToken);
-    }
+    public Task<Group> FindGroupByIdAsync(int id, CancellationToken cancellationToken)
+        => genericCrudService.FindAsync<Group, GroupEntity>(g => g.Id == id, cancellationToken);
 
     public Task<bool> GroupExistsAsync(int id, CancellationToken cancellationToken)
     {
-        return _dbContext.Groups.AsNoTracking()
+        return dbContext.Groups.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<int> CreateGroupAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken)
+    public async Task<int> CreateGroupFromCodesAsync(Group group, List<string> groupFindingCodes, CancellationToken cancellationToken)
     {
         // Retrieve affected users
-        var userEntities = await _dbContext.Users.AsQueryable()
+        var userEntities = await dbContext.Users
             .Where(u => groupFindingCodes.Contains(u.GroupFindingCode))
             .Include(u => u.Group)
             .ToListAsync(cancellationToken);
@@ -217,15 +154,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("At least one user is already assigned to a group.");
 
         // Create new group
-        var groupEntity = _dbContext.Groups.Add(new GroupEntity
-        {
-            SlotId = group.SlotId,
-            DisplayName = group.DisplayName,
-            ScoreboardAnnotation = group.ScoreboardAnnotation,
-            ScoreboardAnnotationHoverText = group.ScoreboardAnnotationHoverText,
-            ShowInScoreboard = group.ShowInScoreboard,
-            Members = new List<UserEntity>()
-        }).Entity;
+        var groupEntity = dbContext.Groups.Add(mapper.Map<GroupEntity>(group)).Entity;
 
         // Update users
         foreach(var userEntity in userEntities)
@@ -235,59 +164,17 @@ public class UserService : IUserService
         }
 
         // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return groupEntity.Id;
     }
 
-    public async Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken)
-    {
-        // Create new group
-        var groupEntity = _dbContext.Groups.Add(new GroupEntity
-        {
-            SlotId = group.SlotId,
-            DisplayName = group.DisplayName,
-            ScoreboardAnnotation = group.ScoreboardAnnotation,
-            ScoreboardAnnotationHoverText = group.ScoreboardAnnotationHoverText,
-            ShowInScoreboard = group.ShowInScoreboard,
-            Members = new List<UserEntity>()
-        }).Entity;
+    public Task<Group> CreateGroupAsync(Group group, CancellationToken cancellationToken)
+        => genericCrudService.CreateAsync<Group, GroupEntity>(group, cancellationToken);
 
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<Group>(groupEntity);
-    }
+    public Task UpdateGroupAsync(Group group, CancellationToken cancellationToken)
+        => genericCrudService.UpdateAsync<Group, GroupEntity>(group, cancellationToken);
 
-    public async Task UpdateGroupAsync(Group group, CancellationToken cancellationToken)
-    {
-        // Try to retrieve existing user entity
-        var groupEntity = await _dbContext.Groups.FindAsync(new object[] { group.Id }, cancellationToken);
-        if(groupEntity == null)
-            throw new ArgumentException("The group does not exist.", nameof(group));
-
-        // Update entry
-        groupEntity.DisplayName = group.DisplayName;
-        groupEntity.ScoreboardAnnotation = group.ScoreboardAnnotation;
-        groupEntity.ScoreboardAnnotationHoverText = group.ScoreboardAnnotationHoverText;
-        groupEntity.SlotId = group.SlotId;
-        groupEntity.ShowInScoreboard = group.ShowInScoreboard;
-
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task DeleteGroupAsync(int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Delete entry
-            _dbContext.Groups.Remove(new GroupEntity { Id = id });
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
-        {
-            // Most likely a non-existent entry, just forward the exception
-            throw;
-        }
-    }
+    public Task DeleteGroupAsync(int id, CancellationToken cancellationToken)
+        => genericCrudService.DeleteAsync<GroupEntity>([id], cancellationToken);
 }

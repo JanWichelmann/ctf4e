@@ -69,7 +69,8 @@ var builder = WebApplication.CreateBuilder(args);
     // Memory cache
     builder.Services.AddMemoryCache();
 
-    // Model/database builder.Services
+    // Model/database service
+    builder.Services.AddScoped<GenericCrudService<CtfDbContext>>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<ISlotService, SlotService>();
     builder.Services.AddScoped<ILabService, LabService>();
@@ -84,7 +85,7 @@ var builder = WebApplication.CreateBuilder(args);
     // Configuration service
     builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
 
-    // Export/sync builder.Services
+    // Export/sync services
     builder.Services.AddScoped<IMoodleService, MoodleService>();
     builder.Services.AddScoped<ICsvService, CsvService>();
     builder.Services.AddScoped<IDumpService, DumpService>();

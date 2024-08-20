@@ -42,7 +42,7 @@ public class AdminGroupsController : ControllerBase
     public async Task<IActionResult> RenderGroupListAsync()
     {
         // Pass groups
-        var groups = await _userService.GetGroupsAsync().ToListAsync();
+        var groups = await _userService.GetGroupsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, groups);
     }
@@ -52,7 +52,7 @@ public class AdminGroupsController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            group = await _userService.GetGroupAsync(id.Value, HttpContext.RequestAborted);
+            group = await _userService.FindGroupByIdAsync(id.Value, HttpContext.RequestAborted);
             if(group == null)
             {
                 AddStatusMessage(_localizer["ShowEditGroupFormAsync:NotFound"], StatusMessageTypes.Error);
@@ -67,7 +67,7 @@ public class AdminGroupsController : ControllerBase
         }
 
         // Pass list of slots
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.Edit, group);
     }
@@ -94,7 +94,7 @@ public class AdminGroupsController : ControllerBase
         try
         {
             // Retrieve edited group from database and apply changes
-            var group = await _userService.GetGroupAsync(groupData.Id, HttpContext.RequestAborted);
+            var group = await _userService.FindGroupByIdAsync(groupData.Id, HttpContext.RequestAborted);
             group.DisplayName = groupData.DisplayName;
             group.ScoreboardAnnotation = groupData.ScoreboardAnnotation;
             group.ScoreboardAnnotationHoverText = groupData.ScoreboardAnnotationHoverText;
@@ -119,7 +119,7 @@ public class AdminGroupsController : ControllerBase
     public async Task<IActionResult> ShowCreateGroupFormAsync(Group group = null)
     {
         // Pass list of slots
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.Create, group);
     }
@@ -167,7 +167,7 @@ public class AdminGroupsController : ControllerBase
     public async Task<IActionResult> DeleteGroupAsync(int id)
     {
         // Input check
-        var group = await _userService.GetGroupAsync(id, HttpContext.RequestAborted);
+        var group = await _userService.FindGroupByIdAsync(id, HttpContext.RequestAborted);
         if(group == null)
         {
             AddStatusMessage(_localizer["DeleteGroupAsync:NotFound"], StatusMessageTypes.Error);

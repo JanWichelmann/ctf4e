@@ -39,7 +39,7 @@ public class AdminLabsController : ControllerBase
     public async Task<IActionResult> RenderLabListAsync()
     {
         // Pass labs
-        var labs = await _labService.GetFullLabsAsync().ToListAsync();
+        var labs = await _labService.GetFullLabsAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, labs);
     }
@@ -49,7 +49,7 @@ public class AdminLabsController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            lab = await _labService.GetFullLabAsync(id.Value, HttpContext.RequestAborted);
+            lab = await _labService.FindLabByIdAsync(id.Value, HttpContext.RequestAborted);
             if(lab == null)
             {
                 AddStatusMessage(_localizer["ShowEditLabFormAsync:NotFound"], StatusMessageTypes.Error);
@@ -88,7 +88,7 @@ public class AdminLabsController : ControllerBase
         try
         {
             // Retrieve edited lab from database and apply changes
-            var lab = await _labService.GetLabAsync(labData.Id, HttpContext.RequestAborted);
+            var lab = await _labService.FindLabByIdAsync(labData.Id, HttpContext.RequestAborted);
             lab.Name = labData.Name;
             lab.ApiCode = labData.ApiCode;
             lab.ServerBaseUrl = labData.ServerBaseUrl;
@@ -157,17 +157,17 @@ public class AdminLabsController : ControllerBase
     [HttpPost("delete")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> DeleteLabAsync(int id)
+    public async Task<IActionResult> DeleteLabAsync(int id, [FromServices] ILabExecutionService labExecutionService)
     {
         // Input check
-        var lab = await _labService.GetFullLabAsync(id, HttpContext.RequestAborted);
+        var lab = await _labService.FindLabByIdAsync(id, HttpContext.RequestAborted);
         if(lab == null)
         {
             AddStatusMessage(_localizer["DeleteLabAsync:NotFound"], StatusMessageTypes.Error);
             return await RenderLabListAsync();
         }
 
-        if(lab.Executions.Any())
+        if(await labExecutionService.AnyLabExecutionsForLabAsync(id, HttpContext.RequestAborted))
         {
             AddStatusMessage(_localizer["DeleteLabAsync:HasExecutions"], StatusMessageTypes.Error);
             return await RenderLabListAsync();
