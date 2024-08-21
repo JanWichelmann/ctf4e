@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -19,32 +20,17 @@ using Microsoft.Extensions.Logging;
 namespace Ctf4e.Server.Controllers;
 
 [Route("auth")]
-public partial class AuthenticationController : ControllerBase
+public partial class AuthenticationController(IUserService userService, IConfigurationService configurationService)
+    : ControllerBase<AuthenticationController>(userService)
 {
-    private readonly IUserService _userService;
-    private readonly IStringLocalizer<AuthenticationController> _localizer;
-    private readonly ILogger<AuthenticationController> _logger;
-    private readonly ISlotService _slotService;
-    private readonly IConfigurationService _configurationService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly IServiceProvider _serviceProvider;
+    protected override MenuItems ActiveMenuItem => MenuItems.Authentication;
+    
+    private readonly IUserService _userService = userService;
 
-    public AuthenticationController(IUserService userService, IStringLocalizer<AuthenticationController> localizer, ILogger<AuthenticationController> logger, ISlotService slotService, IConfigurationService configurationService, IWebHostEnvironment webHostEnvironment, IServiceProvider serviceProvider)
-        : base("~/Views/Authentication.cshtml", userService)
-    {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
-        _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-        _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-    }
-
-    private Task<IActionResult> RenderAsync(ViewType viewType, object model = null)
+    private Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, object model = null)
     {
         ViewData["ViewType"] = viewType;
-        return RenderViewAsync(MenuItems.Authentication, model);
+        return RenderViewAsync(viewPath, model);
     }
     
     [HttpGet]
@@ -57,7 +43,7 @@ public partial class AuthenticationController : ControllerBase
         
         if(!string.IsNullOrWhiteSpace(returnUrl))
             ViewData["Referer"] = returnUrl;
-        return await RenderAsync(ViewType.Login);
+        return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
 
     }
 
@@ -80,7 +66,7 @@ public partial class AuthenticationController : ControllerBase
 
         ViewData["RedirectUrl"] = redirectUrl;
 
-        return await RenderAsync(ViewType.Redirect);
+        return await RenderAsync(ViewType.Redirect, "~/Views/Authentication.cshtml");
     }
 
 #if DEBUG
@@ -88,7 +74,8 @@ public partial class AuthenticationController : ControllerBase
     public async Task<IActionResult> DevLoginAsync(int userId)
     {
         // Only allow this in development mode
-        if(!_webHostEnvironment.IsDevelopment())
+        var webHostEnvironment = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+        if(!webHostEnvironment.IsDevelopment())
             return Forbid();
             
         // Already logged in?
@@ -100,15 +87,15 @@ public partial class AuthenticationController : ControllerBase
         var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
-            AddStatusMessage(_localizer["DevLoginAsync:NotFound"], StatusMessageTypes.Error);
-            return await RenderAsync(ViewType.Login);
+            AddStatusMessage(StatusMessageType.Error, Localizer["DevLoginAsync:NotFound"]);
+            return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
         }
 
         // Sign in user
         await DoLoginAsync(user);
 
         // Done
-        AddStatusMessage(_localizer["DevLoginAsync:Success"], StatusMessageTypes.Success);
+        AddStatusMessage(StatusMessageType.Success, Localizer["DevLoginAsync:Success"]);
         return await ShowRedirectAsync(null); // Redirect to any page the user has access to
     }
 
@@ -119,15 +106,15 @@ public partial class AuthenticationController : ControllerBase
         var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
-            AddStatusMessage(_localizer["AdminLoginAsUserAsync:NotFound"], StatusMessageTypes.Error);
-            return await RenderAsync(ViewType.Login);
+            AddStatusMessage(StatusMessageType.Error, Localizer["AdminLoginAsUserAsync:NotFound"]);
+            return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
         }
 
         // Sign in again, but as another user
         await DoLoginAsync(user);
 
         // Done
-        AddStatusMessage(_localizer["AdminLoginAsUserAsync:Success", user.DisplayName], StatusMessageTypes.Success);
+        AddStatusMessage(StatusMessageType.Success, Localizer["AdminLoginAsUserAsync:Success", user.DisplayName]);
         return await ShowRedirectAsync(null); // Redirect to any page the user has access to
     }
 #endif
@@ -151,7 +138,7 @@ public partial class AuthenticationController : ControllerBase
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authProperties);
 
         // Make sure the current user is set correctly
-        HandleUserLogin(user.Id);
+        await HandleUserLoginAsync(user.Id);
     }
 
     [HttpGet("logout")]
@@ -165,8 +152,8 @@ public partial class AuthenticationController : ControllerBase
         HandleUserLogout();
 
         // Done
-        AddStatusMessage(_localizer["LogoutAsync:Success"], StatusMessageTypes.Success);
-        return await RenderAsync(ViewType.Login);
+        AddStatusMessage(StatusMessageType.Success, Localizer["LogoutAsync:Success"]);
+        return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
     }
 
     public enum ViewType

@@ -9,7 +9,6 @@ using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -18,37 +17,24 @@ namespace Ctf4e.LabServer.Controllers;
 
 [Route("admin/config")]
 [Authorize(Policy = AuthenticationStrings.PolicyAdminMode)]
-public class AdminConfigurationController : ControllerBase
+public class AdminConfigurationController(IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, IStateService stateService)
+    : ControllerBase<AdminConfigurationController>
 {
-    private readonly IOptionsSnapshot<LabOptions> _labOptions;
-    private readonly ILabConfigurationService _labConfiguration;
-    private readonly IStringLocalizer<AdminConfigurationController> _localizer;
-    private readonly ILogger<AdminConfigurationController> _logger;
-    private readonly IStateService _stateService;
-
-    public AdminConfigurationController(IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, IStringLocalizer<AdminConfigurationController> localizer, ILogger<AdminConfigurationController> logger, IStateService stateService)
-        : base("~/Views/AdminConfiguration.cshtml", labOptions, labConfiguration)
-    {
-        _labOptions = labOptions;
-        _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
-    }
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminConfiguration;
 
     private async Task<IActionResult> RenderAsync(string configuration = null)
     {
         try
         {
             // Open configuration file
-            var configFile = new FileInfo(_labOptions.Value.LabConfigurationFile);
+            var configFile = new FileInfo(labOptions.Value.LabConfigurationFile);
             await using var configFileStream = configFile.Open(FileMode.Open);
 
             // Check whether configuration file is writable by this application
             bool writable = configFileStream.CanWrite;
             ViewData["Writable"] = writable;
             if(!writable)
-                AddStatusMessage(_localizer["RenderAsync:ConfigNonWritable"], StatusMessageTypes.Warning);
+                AddStatusMessage(StatusMessageType.Warning, Localizer["RenderAsync:ConfigNonWritable"]);
 
             // Read configuration
             if(configuration == null)
@@ -61,12 +47,11 @@ public class AdminConfigurationController : ControllerBase
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Read configuration file");
-            AddStatusMessage(_localizer["RenderAsync:UnknownError"], StatusMessageTypes.Error);
-            return RenderView(MenuItems.AdminConfiguration);
+            GetLogger().LogError(ex, "Read configuration file");
+            AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:UnknownError"]);
         }
 
-        return RenderView(MenuItems.AdminConfiguration);
+        return RenderView("~/Views/AdminConfiguration.cshtml");
     }
 
     [HttpGet("")]
@@ -91,7 +76,7 @@ public class AdminConfigurationController : ControllerBase
                 // Make sure that exercise IDs are unique
                 if(exerciseIds.Contains(exercise.Id))
                 {
-                    AddStatusMessage(_localizer["UpdateConfigurationAsync:DuplicateExerciseId", exercise.Id], StatusMessageTypes.Error);
+                    AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:DuplicateExerciseId", exercise.Id]);
                     error = true;
                 }
 
@@ -100,39 +85,39 @@ public class AdminConfigurationController : ControllerBase
                 // Run exercise self-check
                 if(!exercise.Validate(out string errorMessage))
                 {
-                    AddStatusMessage(_localizer["UpdateConfigurationAsync:ValidationError", errorMessage], StatusMessageTypes.Error);
+                    AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ValidationError", errorMessage]);
                     error = true;
                 }
             }
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Parse new configuration");
-            AddStatusMessage(_localizer["UpdateConfigurationAsync:ErrorParsingNewConfig"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Parse new configuration");
+            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ErrorParsingNewConfig"]);
             error = true;
         }
 
         if(error)
         {
-            AddStatusMessage(_localizer["UpdateConfigurationAsync:Error"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:Error"]);
             return await RenderAsync(configuration);
         }
 
         try
         {
             // Update configuration
-            await System.IO.File.WriteAllTextAsync(_labOptions.Value.LabConfigurationFile, configuration);
+            await System.IO.File.WriteAllTextAsync(labOptions.Value.LabConfigurationFile, configuration);
                 
             // Reload
-            await _labConfiguration.ReadConfigurationAsync();
-            _stateService.Reload();
+            await labConfiguration.ReadConfigurationAsync();
+            stateService.Reload();
                 
-            AddStatusMessage(_localizer["UpdateConfigurationAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["UpdateConfigurationAsync:Success"]);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Update configuration");
-            AddStatusMessage(_localizer["UpdateConfigurationAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Update configuration");
+            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:UnknownError"]);
         }
 
         return await RenderAsync();

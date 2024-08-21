@@ -6,6 +6,8 @@
     ViewData["Title"] = "Konfiguration";
 
     int groupCount = (int)ViewData["GroupCount"];
+    
+    string buildVersion = (string)ViewData["BuildVersion"];
 }
 
 <div class="container">
@@ -197,7 +199,8 @@
         @Localizer["Status:Title"]
     </h1>
     <hr class="header-secondary">
-
+                                                                                                     
+    <p>@Localizer["Status:BuildVersion"]: @buildVersion</p>
     <p>@Localizer["Status:CurrentCulture"]: @CultureInfo.CurrentCulture.ToString()</p>
     <p>@Localizer["Status:Timezone"]: @TimeZoneInfo.Local.ToString()</p>
     <p>@Localizer["Status:Now"]: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
@@ -208,5 +211,5 @@
 
 @section ScriptsHead
 {
-    <script src="~/lib/chartjs/js/chart.umd.js"></script>
+    <script asp-src-include="~/lib/chartjs/js/chart.umd.js" asp-append-version="true"></script>
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
@@ -7,46 +6,37 @@ using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/exercises")]
 [AnyUserPrivilege(UserPrivileges.ViewLabs)]
-public class AdminExercisesController : ControllerBase
+public class AdminExercisesController(IUserService userService, IExerciseService exerciseService)
+    : ControllerBase<AdminExercisesController>(userService)
 {
-    private readonly IStringLocalizer<AdminExercisesController> _localizer;
-    private readonly ILogger<AdminExercisesController> _logger;
-    private readonly IExerciseService _exerciseService;
-    private readonly ILabService _labService;
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminExercises;
 
-    public AdminExercisesController(IUserService userService, IStringLocalizer<AdminExercisesController> localizer, ILogger<AdminExercisesController> logger, IExerciseService exerciseService, ILabService labService)
-        : base("~/Views/AdminExercises.cshtml", userService)
+    private async Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, int labId, object model)
     {
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _exerciseService = exerciseService ?? throw new ArgumentNullException(nameof(exerciseService));
-        _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-    }
-
-    private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
-    {
-        var lab = await _labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
+        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
+        
+        var lab = await labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
         ViewData["Lab"] = lab;
 
         ViewData["ViewType"] = viewType;
-        return await RenderViewAsync(MenuItems.AdminExercises, model);
+        return await RenderViewAsync(viewPath, model);
     }
 
     [HttpGet]
     public async Task<IActionResult> RenderExerciseListAsync(int labId)
     {
-        var exercises = await _exerciseService.GetExercisesAsync(labId, HttpContext.RequestAborted);
+        var exercises = await exerciseService.GetExercisesAsync(labId, HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, labId, exercises);
+        return await RenderAsync(ViewType.List, "~/Views/AdminExercises.cshtml", labId, exercises);
     }
 
     private async Task<IActionResult> ShowEditExerciseFormAsync(int? id, Exercise exercise = null)
@@ -54,7 +44,7 @@ public class AdminExercisesController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            exercise = await _exerciseService.FindExerciseByIdAsync(id.Value, HttpContext.RequestAborted);
+            exercise = await exerciseService.FindExerciseByIdAsync(id.Value, HttpContext.RequestAborted);
             if(exercise == null)
                 return RedirectToAction("RenderLabList", "AdminLabs");
         }
@@ -62,7 +52,7 @@ public class AdminExercisesController : ControllerBase
         if(exercise == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
 
-        return await RenderAsync(ViewType.Edit, exercise.LabId, exercise);
+        return await RenderAsync(ViewType.Edit, "~/Views/AdminExercises.cshtml", exercise.LabId, exercise);
     }
 
     [HttpGet("edit")]
@@ -80,28 +70,28 @@ public class AdminExercisesController : ControllerBase
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["EditExerciseAsync:InvalidInput"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditExerciseAsync:InvalidInput"]);
             return await ShowEditExerciseFormAsync(null, exerciseData);
         }
 
         try
         {
             // Retrieve edited exercise from database and apply changes
-            var exercise = await _exerciseService.FindExerciseByIdAsync(exerciseData.Id, HttpContext.RequestAborted);
+            var exercise = await exerciseService.FindExerciseByIdAsync(exerciseData.Id, HttpContext.RequestAborted);
             exercise.ExerciseNumber = exerciseData.ExerciseNumber;
             exercise.Name = exerciseData.Name;
             exercise.IsMandatory = exerciseData.IsMandatory;
             exercise.BasePoints = exerciseData.BasePoints;
             exercise.PenaltyPoints = exerciseData.PenaltyPoints;
-            await _exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
+            await exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["EditExerciseAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["EditExerciseAsync:Success"]);
             return await RenderExerciseListAsync(exercise.LabId);
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Edit exercise");
-            AddStatusMessage(_localizer["EditExerciseAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Edit exercise");
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditExerciseAsync:UnknownError"]);
             return await ShowEditExerciseFormAsync(null, exerciseData);
         }
     }
@@ -110,7 +100,7 @@ public class AdminExercisesController : ControllerBase
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> ShowCreateExerciseFormAsync(int labId, Exercise exercise = null)
     {
-        return await RenderAsync(ViewType.Create, labId, exercise);
+        return await RenderAsync(ViewType.Create, "~/Views/AdminExercises.cshtml", labId, exercise);
     }
 
     [HttpPost("create")]
@@ -121,7 +111,7 @@ public class AdminExercisesController : ControllerBase
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["CreateExerciseAsync:InvalidInput"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseAsync:InvalidInput"]);
             return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
         }
 
@@ -137,9 +127,9 @@ public class AdminExercisesController : ControllerBase
                 BasePoints = exerciseData.BasePoints,
                 PenaltyPoints = exerciseData.PenaltyPoints
             };
-            await _exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
+            await exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["CreateExerciseAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["CreateExerciseAsync:Success"]);
                 
             if(!string.IsNullOrEmpty(returnToForm))
                 return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
@@ -147,8 +137,8 @@ public class AdminExercisesController : ControllerBase
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Create exercise");
-            AddStatusMessage(_localizer["CreateExerciseAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Create exercise");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseAsync:UnknownError"]);
             return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
         }
     }
@@ -159,21 +149,21 @@ public class AdminExercisesController : ControllerBase
     public async Task<IActionResult> DeleteExerciseAsync(int id)
     {
         // Input check
-        var exercise = await _exerciseService.FindExerciseByIdAsync(id, HttpContext.RequestAborted);
+        var exercise = await exerciseService.FindExerciseByIdAsync(id, HttpContext.RequestAborted);
         if(exercise == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
 
         try
         {
             // Delete exercise
-            await _exerciseService.DeleteExerciseAsync(id, HttpContext.RequestAborted);
+            await exerciseService.DeleteExerciseAsync(id, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["DeleteExerciseAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteExerciseAsync:Success"]);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Delete exercise");
-            AddStatusMessage(_localizer["DeleteExerciseAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Delete exercise");
+            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseAsync:UnknownError"]);
         }
 
         return await RenderExerciseListAsync(exercise.LabId);

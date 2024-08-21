@@ -150,4 +150,8 @@
         <value>Aktuelle Uhrzeit (UTC)</value>
         <comment>Status:NowUtc</comment>
     </data>
+    <data name="Status:BuildVersion" xml:space="preserve">
+        <value>Version</value>
+        <comment>Status:BuildVersion</comment>
+    </data>
 </root>

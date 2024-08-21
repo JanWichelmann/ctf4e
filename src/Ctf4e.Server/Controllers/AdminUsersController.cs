@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
@@ -7,31 +6,24 @@ using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/users")]
 [AnyUserPrivilege(UserPrivileges.Admin | UserPrivileges.ViewUsers)]
-public class AdminUsersController : ControllerBase
+public class AdminUsersController(IUserService userService)
+    : ControllerBase<AdminUsersController>(userService)
 {
-    private readonly IUserService _userService;
-    private readonly IStringLocalizer<AdminUsersController> _localizer;
-    private readonly ILogger<AdminUsersController> _logger;
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminUsers;
+    
+    private readonly IUserService _userService = userService;
 
-    public AdminUsersController(IUserService userService, IStringLocalizer<AdminUsersController> localizer, ILogger<AdminUsersController> logger)
-        : base("~/Views/AdminUsers.cshtml", userService)
-    {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
-    private Task<IActionResult> RenderAsync(ViewType viewType, object model)
+    private Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, object model)
     {
         ViewData["ViewType"] = viewType;
-        return RenderViewAsync(MenuItems.AdminUsers, model);
+        return RenderViewAsync(viewPath, model);
     }
 
     [HttpGet]
@@ -40,7 +32,7 @@ public class AdminUsersController : ControllerBase
         // Pass users
         var users = await _userService.GetUsersWithGroupsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, users);
+        return await RenderAsync(ViewType.List, "~/Views/AdminUsers.cshtml", users);
     }
 
     private async Task<IActionResult> ShowEditUserFormAsync(int? id, AdminEditUserData userData = null)
@@ -51,7 +43,7 @@ public class AdminUsersController : ControllerBase
             var user = await _userService.FindUserByIdAsync(id.Value, HttpContext.RequestAborted);
             if(user == null)
             {
-                AddStatusMessage(_localizer["ShowEditUserFormAsync:NotFound"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditUserFormAsync:NotFound"]);
                 return await RenderUserListAsync();
             }
 
@@ -83,14 +75,15 @@ public class AdminUsersController : ControllerBase
 
         if(userData == null)
         {
-            AddStatusMessage(_localizer["ShowEditUserFormAsync:MissingParameter"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditUserFormAsync:MissingParameter"]);
             return await RenderUserListAsync();
         }
 
         // Pass list of groups
-        ViewData["Groups"] = await _userService.GetGroupsAsync(HttpContext.RequestAborted);
+        var groupService = HttpContext.RequestServices.GetRequiredService<IGroupService>();
+        ViewData["Groups"] = await groupService.GetGroupsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.Edit, userData);
+        return await RenderAsync(ViewType.Edit, "~/Views/AdminUsers.cshtml", userData);
     }
 
     [HttpGet("edit")]
@@ -108,7 +101,7 @@ public class AdminUsersController : ControllerBase
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["EditUserAsync:InvalidInput"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditUserAsync:InvalidInput"]);
             return await ShowEditUserFormAsync(null, userData);
         }
 
@@ -170,12 +163,12 @@ public class AdminUsersController : ControllerBase
 
             await _userService.UpdateUserAsync(user, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["EditUserAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["EditUserAsync:Success"]);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Edit user");
-            AddStatusMessage(_localizer["EditUserAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Edit user");
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditUserAsync:UnknownError"]);
             return await ShowEditUserFormAsync(null, userData);
         }
 

@@ -28,10 +28,10 @@ public partial class AuthenticationController
             // Check rate limit
             if(loginRateLimiter.CheckRateLimitHit(user.Id))
             {
-                AddStatusMessage(_localizer["PasswordLoginAsync:RateLimited"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["PasswordLoginAsync:RateLimited"]);
                 ViewData["LoginFormUsername"] = username;
                 ViewData["Referer"] = referer;
-                return await RenderAsync(ViewType.Login);
+                return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
             }
 
             // Check password
@@ -51,10 +51,10 @@ public partial class AuthenticationController
         // Return to login form, if the login attempt failed
         if(!success)
         {
-            AddStatusMessage(_localizer["PasswordLoginAsync:WrongPassword"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["PasswordLoginAsync:WrongPassword"]);
             ViewData["LoginFormUsername"] = username;
             ViewData["Referer"] = referer;
-            return await RenderAsync(ViewType.Login);
+            return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
         }
 
         // Sign in user
@@ -64,7 +64,7 @@ public partial class AuthenticationController
         loginRateLimiter.ResetRateLimit(user.Id);
 
         // Done
-        AddStatusMessage(_localizer["PasswordLoginAsync:Success"], StatusMessageTypes.Success);
+        AddStatusMessage(StatusMessageType.Success, Localizer["PasswordLoginAsync:Success"]);
         return await ShowRedirectAsync(referer);
     }
 }

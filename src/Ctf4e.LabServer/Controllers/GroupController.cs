@@ -6,13 +6,10 @@ using Ctf4e.Api.Exceptions;
 using Ctf4e.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.InputModels;
-using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.LabServer.Controllers;
@@ -20,23 +17,10 @@ namespace Ctf4e.LabServer.Controllers;
 [Route("")]
 [Route("group")]
 [Authorize]
-public class GroupController : ControllerBase
+public class GroupController(IStateService stateService, ICtfApiClient ctfApiClient, ILabConfigurationService labConfiguration)
+    : ControllerBase<GroupController>
 {
-    private readonly IStateService _stateService;
-    private readonly ICtfApiClient _ctfApiClient;
-    private readonly ILabConfigurationService _labConfiguration;
-    private readonly IStringLocalizer<GroupController> _localizer;
-    private readonly ILogger<GroupController> _logger;
-
-    public GroupController(IStateService stateService, ICtfApiClient ctfApiClient, IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, IStringLocalizer<GroupController> localizer, ILogger<GroupController> logger)
-        : base("~/Views/Group.cshtml", labOptions, labConfiguration)
-    {
-        _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
-        _ctfApiClient = ctfApiClient ?? throw new ArgumentNullException(nameof(ctfApiClient));
-        _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    protected override MenuItems ActiveMenuItem => MenuItems.Group;
 
     private async Task<IActionResult> RenderAsync()
     {
@@ -44,9 +28,9 @@ public class GroupController : ControllerBase
         int userId = GetCurrentUser().UserId;
 
         // Pass user scoreboard
-        ViewData["Scoreboard"] = await _stateService.GetUserScoreboardAsync(userId);
+        ViewData["Scoreboard"] = await stateService.GetUserScoreboardAsync(userId);
 
-        return RenderView(MenuItems.Group);
+        return RenderView("~/Views/Group.cshtml");
     }
 
     [HttpGet("")]
@@ -64,13 +48,13 @@ public class GroupController : ControllerBase
         int userId = GetCurrentUser().UserId;
 
         // Check input
-        bool correct = await _stateService.CheckInputAsync(exerciseId, userId, input, cts.Token);
+        bool correct = await stateService.CheckInputAsync(exerciseId, userId, input, cts.Token);
 
         // Notify CTF system
-        int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
+        int? exerciseNumber = labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
         if(exerciseNumber != null)
         {
-            await _ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
+            await ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
             {
                 ExerciseNumber = exerciseNumber.Value,
                 UserId = userId,
@@ -93,42 +77,42 @@ public class GroupController : ControllerBase
 
             if(!ModelState.IsValid)
             {
-                AddStatusMessage(_localizer["CheckStringInputAsync:InvalidInput"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CheckStringInputAsync:InvalidInput"]);
                 return await RenderAsync();
             }
 
             // Check input
             if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
             {
-                AddStatusMessage(_localizer["CheckStringInputAsync:Wrong"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CheckStringInputAsync:Wrong"]);
                 return await RenderAsync();
             }
 
-            AddStatusMessage(_localizer["CheckStringInputAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["CheckStringInputAsync:Success"]);
             return await RenderAsync();
         }
         catch(CtfApiException ex)
         {
-            _logger.LogError(ex, "CTF error");
+            GetLogger().LogError(ex, "CTF error");
 
             if(GetAdminMode())
             {
-                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
-                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Admin"]);
+                StatusMessages.Add(new(StatusMessageType.Info, ex.FormattedResponseContent ?? "(none)") { Preformatted = true });
             }
             else
-                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
-            
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Default"]);
+
             return await RenderAsync();
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Check string input");
-            AddStatusMessage(_localizer["CheckStringInputAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Check string input");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CheckStringInputAsync:UnknownError"]);
 
             // Show more details for admins, so they can debug the issue
             if(GetAdminMode())
-                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+                AddStatusMessage(StatusMessageType.Info, Localizer["ExceptionMessage", ex.Message]);
 
             return await RenderAsync();
         }
@@ -144,42 +128,42 @@ public class GroupController : ControllerBase
 
             if(!ModelState.IsValid)
             {
-                AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:InvalidInput"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CheckMultipleChoiceInputAsync:InvalidInput"]);
                 return await RenderAsync();
             }
 
             // Check input
             if(!await CheckInputAsync(inputData.ExerciseId, inputData.SelectedOptions))
             {
-                AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:Wrong"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CheckMultipleChoiceInputAsync:Wrong"]);
                 return await RenderAsync();
             }
 
-            AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["CheckMultipleChoiceInputAsync:Success"]);
             return await RenderAsync();
         }
         catch(CtfApiException ex)
         {
-            _logger.LogError(ex, "CTF error");
+            GetLogger().LogError(ex, "CTF error");
 
             if(GetAdminMode())
             {
-                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
-                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Admin"]);
+                StatusMessages.Add(new(StatusMessageType.Info, ex.FormattedResponseContent ?? "(none)") { Preformatted = true });
             }
             else
-                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
-            
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Default"]);
+
             return await RenderAsync();
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Check multiple choice input");
-            AddStatusMessage(_localizer["CheckMultipleChoiceInputAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Check multiple choice input");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CheckMultipleChoiceInputAsync:UnknownError"]);
 
             // Show more details for admins, so they can debug the issue
             if(GetAdminMode())
-                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+                AddStatusMessage(StatusMessageType.Info, Localizer["ExceptionMessage", ex.Message]);
 
             return await RenderAsync();
         }
@@ -195,42 +179,42 @@ public class GroupController : ControllerBase
 
             if(!ModelState.IsValid)
             {
-                AddStatusMessage(_localizer["CheckScriptInputAsync:InvalidInput"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CheckScriptInputAsync:InvalidInput"]);
                 return await RenderAsync();
             }
 
             // Check input
             if(!await CheckInputAsync(inputData.ExerciseId, inputData.Input))
             {
-                AddStatusMessage(_localizer["CheckScriptInputAsync:Wrong"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CheckScriptInputAsync:Wrong"]);
                 return await RenderAsync();
             }
 
-            AddStatusMessage(_localizer["CheckScriptInputAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["CheckScriptInputAsync:Success"]);
             return await RenderAsync();
         }
         catch(CtfApiException ex)
         {
-            _logger.LogError(ex, "CTF error");
+            GetLogger().LogError(ex, "CTF error");
 
             if(GetAdminMode())
             {
-                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
-                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Admin"]);
+                StatusMessages.Add(new(StatusMessageType.Info, ex.FormattedResponseContent ?? "(none)") { Preformatted = true });
             }
             else
-                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
-            
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Default"]);
+
             return await RenderAsync();
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Check script input");
-            AddStatusMessage(_localizer["CheckScriptInputAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Check script input");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CheckScriptInputAsync:UnknownError"]);
 
             // Show more details for admins, so they can debug the issue
             if(GetAdminMode())
-                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+                AddStatusMessage(StatusMessageType.Info, Localizer["ExceptionMessage", ex.Message]);
 
             return await RenderAsync();
         }
@@ -247,13 +231,13 @@ public class GroupController : ControllerBase
             int userId = GetCurrentUser().UserId;
 
             // Set status
-            await _stateService.MarkExerciseSolvedAsync(exerciseId, userId);
+            await stateService.MarkExerciseSolvedAsync(exerciseId, userId);
 
             // Notify CTF system
-            int? exerciseNumber = _labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
+            int? exerciseNumber = labConfiguration.CurrentConfiguration.Exercises.FirstOrDefault(e => e.Id == exerciseId)?.CtfExerciseNumber;
             if(exerciseNumber != null)
             {
-                await _ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
+                await ctfApiClient.CreateExerciseSubmissionAsync(new Ctf4e.Api.Models.ApiExerciseSubmission
                 {
                     ExerciseNumber = exerciseNumber.Value,
                     UserId = userId,
@@ -263,36 +247,36 @@ public class GroupController : ControllerBase
                 }, CancellationToken.None);
             }
 
-            AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["MarkExerciseAsSolvedAsync:Success"]);
             return await RenderAsync();
         }
         catch(ArgumentException)
         {
-            AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:NotFound"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["MarkExerciseAsSolvedAsync:NotFound"]);
             return await RenderAsync();
         }
         catch(CtfApiException ex)
         {
-            _logger.LogError(ex, "CTF error");
+            GetLogger().LogError(ex, "CTF error");
 
             if(GetAdminMode())
             {
-                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
-                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Admin"]);
+                StatusMessages.Add(new(StatusMessageType.Info, ex.FormattedResponseContent ?? "(none)") { Preformatted = true });
             }
             else
-                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
-            
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Default"]);
+
             return await RenderAsync();
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Mark exercise as solved");
-            AddStatusMessage(_localizer["MarkExerciseAsSolvedAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Mark exercise as solved");
+            AddStatusMessage(StatusMessageType.Error, Localizer["MarkExerciseAsSolvedAsync:UnknownError"]);
 
             // Show more details for admins, so they can debug the issue
             if(GetAdminMode())
-                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+                AddStatusMessage(StatusMessageType.Info, Localizer["ExceptionMessage", ex.Message]);
 
             return await RenderAsync();
         }
@@ -309,38 +293,38 @@ public class GroupController : ControllerBase
             int userId = GetCurrentUser().UserId;
 
             // Reset status
-            await _stateService.ResetExerciseStatusAsync(exerciseId, userId);
+            await stateService.ResetExerciseStatusAsync(exerciseId, userId);
 
-            AddStatusMessage(_localizer["ResetExerciseStatusAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["ResetExerciseStatusAsync:Success"]);
             return await RenderAsync();
         }
         catch(ArgumentException)
         {
-            AddStatusMessage(_localizer["ResetExerciseStatusAsync:NotFound"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["ResetExerciseStatusAsync:NotFound"]);
             return await RenderAsync();
         }
         catch(CtfApiException ex)
         {
-            _logger.LogError(ex, "CTF error");
+            GetLogger().LogError(ex, "CTF error");
 
             if(GetAdminMode())
             {
-                AddStatusMessage(_localizer["CtfError:Admin"], StatusMessageTypes.Error);
-                AddStatusMessage(ex.FormattedResponseContent ?? "(none)", StatusMessageTypes.Info, true);
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Admin"]);
+                StatusMessages.Add(new(StatusMessageType.Info, ex.FormattedResponseContent ?? "(none)") { Preformatted = true });
             }
             else
-                AddStatusMessage(_localizer["CtfError:Default"], StatusMessageTypes.Error);
-            
+                AddStatusMessage(StatusMessageType.Error, Localizer["CtfError:Default"]);
+
             return await RenderAsync();
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Reset exercise");
-            AddStatusMessage(_localizer["ResetExerciseStatusAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Reset exercise");
+            AddStatusMessage(StatusMessageType.Error, Localizer["ResetExerciseStatusAsync:UnknownError"]);
 
             // Show more details for admins, so they can debug the issue
             if(GetAdminMode())
-                AddStatusMessage(_localizer["ExceptionMessage", ex.Message], StatusMessageTypes.Info);
+                AddStatusMessage(StatusMessageType.Info, Localizer["ExceptionMessage", ex.Message]);
 
             return await RenderAsync();
         }

@@ -1,55 +1,54 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Ctf4e.Server.Attributes;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/config")]
 [AnyUserPrivilege(UserPrivileges.EditConfiguration)]
-public class AdminConfigurationController : ControllerBase
+public class AdminConfigurationController(IUserService userService, IConfigurationService configurationService)
+    : ControllerBase<AdminConfigurationController>(userService)
 {
-    private readonly IUserService _userService;
-    private readonly IStringLocalizer<AdminConfigurationController> _localizer;
-    private readonly ILogger<AdminConfigurationController> _logger;
-    private readonly IConfigurationService _configurationService;
-
-    public AdminConfigurationController(IUserService userService, IStringLocalizer<AdminConfigurationController> localizer, ILogger<AdminConfigurationController> logger, IConfigurationService configurationService)
-        : base("~/Views/AdminConfiguration.cshtml", userService)
-    {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-    }
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminConfiguration;
 
     private async Task<IActionResult> RenderAsync(AdminConfigurationData configurationData)
     {
         var config = configurationData ?? new AdminConfigurationData
         {
-            FlagHalfPointsSubmissionCount = await _configurationService.GetFlagHalfPointsSubmissionCountAsync(HttpContext.RequestAborted),
-            FlagMinimumPointsDivisor = await _configurationService.GetFlagMinimumPointsDivisorAsync(HttpContext.RequestAborted),
-            ScoreboardEntryCount = await _configurationService.GetScoreboardEntryCountAsync(HttpContext.RequestAborted),
-            ScoreboardCachedSeconds = await _configurationService.GetScoreboardCachedSecondsAsync(HttpContext.RequestAborted),
-            PassAsGroup = await _configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
-            PageTitle = await _configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
-            NavbarTitle = await _configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
-            GroupSizeMin = await _configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted),
-            GroupSizeMax = await _configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted),
-            GroupSelectionPageText = await _configurationService.GetGroupSelectionPageTextAsync(HttpContext.RequestAborted)
+            FlagHalfPointsSubmissionCount = await configurationService.GetFlagHalfPointsSubmissionCountAsync(HttpContext.RequestAborted),
+            FlagMinimumPointsDivisor = await configurationService.GetFlagMinimumPointsDivisorAsync(HttpContext.RequestAborted),
+            ScoreboardEntryCount = await configurationService.GetScoreboardEntryCountAsync(HttpContext.RequestAborted),
+            ScoreboardCachedSeconds = await configurationService.GetScoreboardCachedSecondsAsync(HttpContext.RequestAborted),
+            PassAsGroup = await configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
+            PageTitle = await configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
+            NavbarTitle = await configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
+            GroupSizeMin = await configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted),
+            GroupSizeMax = await configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted),
+            GroupSelectionPageText = await configurationService.GetGroupSelectionPageTextAsync(HttpContext.RequestAborted)
         };
 
-        int groupCount = await _userService.GetGroupsCountAsync(HttpContext.RequestAborted);
-        ViewData["GroupCount"] = groupCount;
+        var groupService = HttpContext.RequestServices.GetRequiredService<IGroupService>();
+        ViewData["GroupCount"] = await groupService.GetGroupsCountAsync(HttpContext.RequestAborted);
+        
+        // Pass build version
+        string buildVersion = Assembly.GetExecutingAssembly()
+            .GetCustomAttributes<AssemblyBuildVersionAttribute>()
+            .FirstOrDefault()?.Version;
+        if(string.IsNullOrWhiteSpace(buildVersion))
+            buildVersion = "DEV";
+        ViewData["BuildVersion"] = buildVersion;
 
-        return await RenderViewAsync(MenuItems.AdminConfiguration, config);
+        return await RenderViewAsync("~/Views/AdminConfiguration.cshtml", config);
     }
 
     [HttpGet]
@@ -64,7 +63,7 @@ public class AdminConfigurationController : ControllerBase
     {
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["UpdateConfigAsync:InvalidInput"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigAsync:InvalidInput"]);
             return await RenderAsync(configurationData);
         }
 
@@ -73,40 +72,40 @@ public class AdminConfigurationController : ControllerBase
         {
             if(configurationData.FlagHalfPointsSubmissionCount <= 1)
                 configurationData.FlagHalfPointsSubmissionCount = 2;
-            await _configurationService.SetFlagHalfPointsSubmissionCountAsync(configurationData.FlagHalfPointsSubmissionCount, HttpContext.RequestAborted);
-                
+            await configurationService.SetFlagHalfPointsSubmissionCountAsync(configurationData.FlagHalfPointsSubmissionCount, HttpContext.RequestAborted);
+
             if(configurationData.FlagMinimumPointsDivisor <= 1)
                 configurationData.FlagMinimumPointsDivisor = 2;
-            await _configurationService.SetFlagMinimumPointsDivisorAsync(configurationData.FlagMinimumPointsDivisor, HttpContext.RequestAborted);
-                
+            await configurationService.SetFlagMinimumPointsDivisorAsync(configurationData.FlagMinimumPointsDivisor, HttpContext.RequestAborted);
+
             if(configurationData.ScoreboardEntryCount < 3)
                 configurationData.ScoreboardEntryCount = 3;
-            await _configurationService.SetScoreboardEntryCountAsync(configurationData.ScoreboardEntryCount, HttpContext.RequestAborted);
-                
+            await configurationService.SetScoreboardEntryCountAsync(configurationData.ScoreboardEntryCount, HttpContext.RequestAborted);
+
             if(configurationData.ScoreboardCachedSeconds < 0)
                 configurationData.ScoreboardCachedSeconds = 0;
-            await _configurationService.SetScoreboardCachedSecondsAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
-                
-            await _configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
-                
-            await _configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
-            await _configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
+            await configurationService.SetScoreboardCachedSecondsAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
+
+            await configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
+
+            await configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
+            await configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
 
             if(configurationData.GroupSizeMin <= 0)
                 configurationData.GroupSizeMin = 1;
             if(configurationData.GroupSizeMin > configurationData.GroupSizeMax)
                 configurationData.GroupSizeMax = configurationData.GroupSizeMin + 1;
-            await _configurationService.SetGroupSizeMinAsync(configurationData.GroupSizeMin, HttpContext.RequestAborted);
-            await _configurationService.SetGroupSizeMaxAsync(configurationData.GroupSizeMax, HttpContext.RequestAborted);
+            await configurationService.SetGroupSizeMinAsync(configurationData.GroupSizeMin, HttpContext.RequestAborted);
+            await configurationService.SetGroupSizeMaxAsync(configurationData.GroupSizeMax, HttpContext.RequestAborted);
 
-            await _configurationService.SetGroupSelectionPageTextAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
+            await configurationService.SetGroupSelectionPageTextAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["UpdateConfigAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["UpdateConfigAsync:Success"]);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Update configuration");
-            AddStatusMessage(_localizer["UpdateConfigAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Update configuration");
+            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigAsync:UnknownError"]);
             return await RenderAsync(configurationData);
         }
 

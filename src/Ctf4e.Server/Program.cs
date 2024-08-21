@@ -72,6 +72,7 @@ var builder = WebApplication.CreateBuilder(args);
     // Model/database service
     builder.Services.AddScoped<GenericCrudService<CtfDbContext>>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IGroupService, GroupService>();
     builder.Services.AddScoped<ISlotService, SlotService>();
     builder.Services.AddScoped<ILabService, LabService>();
     builder.Services.AddScoped<IExerciseService, ExerciseService>();

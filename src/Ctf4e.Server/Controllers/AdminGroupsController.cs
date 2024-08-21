@@ -9,42 +9,30 @@ using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/groups")]
 [AnyUserPrivilege(UserPrivileges.ViewGroups)]
-public class AdminGroupsController : ControllerBase
+public class AdminGroupsController(IUserService userService, IGroupService groupService, ISlotService slotService)
+    : ControllerBase<AdminGroupsController>(userService)
 {
-    private readonly IUserService _userService;
-    private readonly IStringLocalizer<AdminGroupsController> _localizer;
-    private readonly ILogger<AdminGroupsController> _logger;
-    private readonly ISlotService _slotService;
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminGroups;
 
-    public AdminGroupsController(IUserService userService, IStringLocalizer<AdminGroupsController> localizer, ILogger<AdminGroupsController> logger, ISlotService slotService)
-        : base("~/Views/AdminGroups.cshtml", userService)
-    {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
-    }
-
-    private Task<IActionResult> RenderAsync(ViewType viewType, object model)
+    private Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, object model)
     {
         ViewData["ViewType"] = viewType;
-        return RenderViewAsync(MenuItems.AdminGroups, model);
+        return RenderViewAsync(viewPath, model);
     }
 
     [HttpGet]
     public async Task<IActionResult> RenderGroupListAsync()
     {
         // Pass groups
-        var groups = await _userService.GetGroupsAsync(HttpContext.RequestAborted);
+        var groups = await groupService.GetGroupsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, groups);
+        return await RenderAsync(ViewType.List, "~/Views/AdminGroups.cshtml", groups);
     }
 
     private async Task<IActionResult> ShowEditGroupFormAsync(int? id, Group group = null)
@@ -52,24 +40,24 @@ public class AdminGroupsController : ControllerBase
         // Retrieve by ID, if no object from a failed POST was passed
         if(id != null)
         {
-            group = await _userService.FindGroupByIdAsync(id.Value, HttpContext.RequestAborted);
+            group = await groupService.FindGroupByIdAsync(id.Value, HttpContext.RequestAborted);
             if(group == null)
             {
-                AddStatusMessage(_localizer["ShowEditGroupFormAsync:NotFound"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditGroupFormAsync:NotFound"]);
                 return await RenderGroupListAsync();
             }
         }
 
         if(group == null)
         {
-            AddStatusMessage(_localizer["ShowEditGroupFormAsync:MissingParameter"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditGroupFormAsync:MissingParameter"]);
             return await RenderGroupListAsync();
         }
 
         // Pass list of slots
-        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.Edit, group);
+        return await RenderAsync(ViewType.Edit, "~/Views/AdminGroups.cshtml", group);
     }
 
     [HttpGet("edit")]
@@ -87,27 +75,27 @@ public class AdminGroupsController : ControllerBase
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["EditGroupAsync:InvalidInput"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditGroupAsync:InvalidInput"]);
             return await ShowEditGroupFormAsync(null, groupData);
         }
 
         try
         {
             // Retrieve edited group from database and apply changes
-            var group = await _userService.FindGroupByIdAsync(groupData.Id, HttpContext.RequestAborted);
+            var group = await groupService.FindGroupByIdAsync(groupData.Id, HttpContext.RequestAborted);
             group.DisplayName = groupData.DisplayName;
             group.ScoreboardAnnotation = groupData.ScoreboardAnnotation;
             group.ScoreboardAnnotationHoverText = groupData.ScoreboardAnnotationHoverText;
             group.SlotId = groupData.SlotId;
             group.ShowInScoreboard = groupData.ShowInScoreboard;
-            await _userService.UpdateGroupAsync(group, HttpContext.RequestAborted);
+            await groupService.UpdateGroupAsync(group, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["EditGroupAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["EditGroupAsync:Success"]);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Edit group");
-            AddStatusMessage(_localizer["EditGroupAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Edit group");
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditGroupAsync:UnknownError"]);
             return await ShowEditGroupFormAsync(null, groupData);
         }
 
@@ -119,9 +107,9 @@ public class AdminGroupsController : ControllerBase
     public async Task<IActionResult> ShowCreateGroupFormAsync(Group group = null)
     {
         // Pass list of slots
-        ViewData["Slots"] = await _slotService.GetSlotsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.Create, group);
+        return await RenderAsync(ViewType.Create, "~/Views/AdminGroups.cshtml", group);
     }
 
     [HttpPost("create")]
@@ -132,7 +120,7 @@ public class AdminGroupsController : ControllerBase
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["CreateGroupAsync:InvalidInput"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateGroupAsync:InvalidInput"]);
             return await ShowCreateGroupFormAsync(groupData);
         }
 
@@ -147,14 +135,14 @@ public class AdminGroupsController : ControllerBase
                 SlotId = groupData.SlotId,
                 ShowInScoreboard = groupData.ShowInScoreboard
             };
-            await _userService.CreateGroupAsync(group, HttpContext.RequestAborted);
+            await groupService.CreateGroupAsync(group, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["CreateGroupAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["CreateGroupAsync:Success"]);
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Create group");
-            AddStatusMessage(_localizer["CreateGroupAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Create group");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateGroupAsync:UnknownError"]);
             return await ShowCreateGroupFormAsync(groupData);
         }
 
@@ -167,30 +155,30 @@ public class AdminGroupsController : ControllerBase
     public async Task<IActionResult> DeleteGroupAsync(int id)
     {
         // Input check
-        var group = await _userService.FindGroupByIdAsync(id, HttpContext.RequestAborted);
+        var group = await groupService.FindGroupByIdAsync(id, HttpContext.RequestAborted);
         if(group == null)
         {
-            AddStatusMessage(_localizer["DeleteGroupAsync:NotFound"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteGroupAsync:NotFound"]);
             return await RenderGroupListAsync();
         }
 
         if(group.Members.Any())
         {
-            AddStatusMessage(_localizer["DeleteGroupAsync:GroupNotEmpty"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteGroupAsync:GroupNotEmpty"]);
             return await RenderGroupListAsync();
         }
 
         try
         {
             // Delete group
-            await _userService.DeleteGroupAsync(id, HttpContext.RequestAborted);
+            await groupService.DeleteGroupAsync(id, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["DeleteGroupAsync:Success"], StatusMessageTypes.Success);
+            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteGroupAsync:Success"]);
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Delete group");
-            AddStatusMessage(_localizer["DeleteGroupAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Delete group");
+            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteGroupAsync:UnknownError"]);
         }
 
         return await RenderGroupListAsync();
@@ -207,11 +195,10 @@ public class AdminGroupsController : ControllerBase
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Download as JSON");
-            AddStatusMessage(_localizer["DownloadAsJsonAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Download as JSON");
+            AddStatusMessage(StatusMessageType.Error, Localizer["DownloadAsJsonAsync:UnknownError"]);
+            return await RenderGroupListAsync();
         }
-
-        return await RenderAsync(0, 0);
     }
 
     public enum ViewType

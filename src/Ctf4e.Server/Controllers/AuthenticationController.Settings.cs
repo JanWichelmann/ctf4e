@@ -14,7 +14,7 @@ public partial class AuthenticationController
     [Authorize]
     public async Task<IActionResult> ShowSettingsFormAsync()
     {
-        return await RenderAsync(ViewType.Settings);
+        return await RenderAsync(ViewType.Settings, "~/Views/Authentication.cshtml");
     }
 
     [HttpPost("settings")]
@@ -34,22 +34,22 @@ public partial class AuthenticationController
             {
                 if(string.IsNullOrWhiteSpace(oldPassword) || passwordHasher.VerifyHashedPassword(user, user.PasswordHash, oldPassword) == PasswordVerificationResult.Failed)
                 {
-                    AddStatusMessage(_localizer["ChangeSettingsAsync:WrongOldPassword"], StatusMessageTypes.Error);
-                    return await RenderAsync(ViewType.Settings);
+                    AddStatusMessage(StatusMessageType.Error, Localizer["ChangeSettingsAsync:WrongOldPassword"]);
+                    return await RenderAsync(ViewType.Settings, "~/Views/Authentication.cshtml");
                 }
             }
 
             // Compare new passwords
             if(newPassword != newPassword2)
             {
-                AddStatusMessage(_localizer["ChangeSettingsAsync:PasswordsDoNotMatch"], StatusMessageTypes.Error);
-                return await RenderAsync(ViewType.Settings);
+                AddStatusMessage(StatusMessageType.Error, Localizer["ChangeSettingsAsync:PasswordsDoNotMatch"]);
+                return await RenderAsync(ViewType.Settings, "~/Views/Authentication.cshtml");
             }
 
             if(newPassword.Length < 8)
             {
-                AddStatusMessage(_localizer["ChangeSettingsAsync:WrongPasswordFormat"], StatusMessageTypes.Error);
-                return await RenderAsync(ViewType.Settings);
+                AddStatusMessage(StatusMessageType.Error, Localizer["ChangeSettingsAsync:WrongPasswordFormat"]);
+                return await RenderAsync(ViewType.Settings, "~/Views/Authentication.cshtml");
             }
 
             // Update password hash
@@ -59,7 +59,7 @@ public partial class AuthenticationController
         await _userService.UpdateUserAsync(user, CancellationToken.None);
 
         // Done
-        AddStatusMessage(_localizer["ChangeSettingsAsync:Success"], StatusMessageTypes.Success);
+        AddStatusMessage(StatusMessageType.Success, Localizer["ChangeSettingsAsync:Success"]);
         return await ShowSettingsFormAsync();
     }
 }
