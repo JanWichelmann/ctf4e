@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
+using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Services;
-using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,139 +17,130 @@ public class AdminUsersController(IUserService userService)
     : ControllerBase<AdminUsersController>(userService)
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminUsers;
-    
-    private readonly IUserService _userService = userService;
 
-    private Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, object model)
-    {
-        ViewData["ViewType"] = viewType;
-        return RenderViewAsync(viewPath, model);
-    }
+    private readonly IUserService _userService = userService;
 
     [HttpGet]
     public async Task<IActionResult> RenderUserListAsync()
     {
         // Pass users
-        var users = await _userService.GetUsersWithGroupsAsync(HttpContext.RequestAborted);
+        var users = await _userService.GetUserListAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, "~/Views/AdminUsers.cshtml", users);
+        return await RenderViewAsync("~/Views/Admin/Users/Index.cshtml", users);
     }
 
-    private async Task<IActionResult> ShowEditUserFormAsync(int? id, AdminEditUserData userData = null)
+    private async Task<IActionResult> ShowEditUserFormAsync(AdminUserInputModel userInput)
     {
-        // Retrieve by ID, if no object from a failed POST was passed
-        if(id != null)
-        {
-            var user = await _userService.FindUserByIdAsync(id.Value, HttpContext.RequestAborted);
-            if(user == null)
-            {
-                AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditUserFormAsync:NotFound"]);
-                return await RenderUserListAsync();
-            }
-
-            userData = new AdminEditUserData
-            {
-                Id = user.Id,
-                DisplayName = user.DisplayName,
-                IsTutor = user.IsTutor,
-                GroupFindingCode = user.GroupFindingCode,
-                GroupId = user.GroupId,
-                PrivilegeAdmin = user.Privileges.HasPrivileges(UserPrivileges.Admin),
-                PrivilegeViewUsers = user.Privileges.HasPrivileges(UserPrivileges.ViewUsers),
-                PrivilegeEditUsers = user.Privileges.HasPrivileges(UserPrivileges.EditUsers),
-                PrivilegeViewGroups = user.Privileges.HasPrivileges(UserPrivileges.ViewGroups),
-                PrivilegeEditGroups = user.Privileges.HasPrivileges(UserPrivileges.EditGroups),
-                PrivilegeViewLabs = user.Privileges.HasPrivileges(UserPrivileges.ViewLabs),
-                PrivilegeEditLabs = user.Privileges.HasPrivileges(UserPrivileges.EditLabs),
-                PrivilegeViewSlots = user.Privileges.HasPrivileges(UserPrivileges.ViewSlots),
-                PrivilegeEditSlots = user.Privileges.HasPrivileges(UserPrivileges.EditSlots),
-                PrivilegeViewLabExecutions = user.Privileges.HasPrivileges(UserPrivileges.ViewLabExecutions),
-                PrivilegeEditLabExecutions = user.Privileges.HasPrivileges(UserPrivileges.EditLabExecutions),
-                PrivilegeViewAdminScoreboard = user.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard),
-                PrivilegeEditAdminScoreboard = user.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard),
-                PrivilegeEditConfiguration = user.Privileges.HasPrivileges(UserPrivileges.EditConfiguration),
-                PrivilegeTransferResults = user.Privileges.HasPrivileges(UserPrivileges.TransferResults),
-                PrivilegeLoginAsLabServerAdmin = user.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin),
-            };
-        }
-
-        if(userData == null)
-        {
-            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditUserFormAsync:MissingParameter"]);
-            return await RenderUserListAsync();
-        }
-
         // Pass list of groups
         var groupService = HttpContext.RequestServices.GetRequiredService<IGroupService>();
         ViewData["Groups"] = await groupService.GetGroupsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.Edit, "~/Views/AdminUsers.cshtml", userData);
+        return await RenderViewAsync("~/Views/Admin/Users/Edit.cshtml", userInput);
     }
 
     [HttpGet("edit")]
     [AnyUserPrivilege(UserPrivileges.Admin | UserPrivileges.EditUsers)]
-    public Task<IActionResult> ShowEditUserFormAsync(int id)
+    public async Task<IActionResult> ShowEditUserFormAsync(int id)
     {
-        return ShowEditUserFormAsync(id, null);
+        var user = await _userService.FindUserByIdAsync(id, HttpContext.RequestAborted);
+        if(user == null)
+        {
+            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditUserFormAsync:NotFound"]);
+            return await RenderUserListAsync();
+        }
+
+        var userInputModel = new AdminUserInputModel
+        {
+            Id = user.Id,
+            DisplayName = user.DisplayName,
+            IsTutor = user.IsTutor,
+            GroupFindingCode = user.GroupFindingCode,
+            GroupId = user.GroupId,
+            PrivilegeAdmin = user.Privileges.HasPrivileges(UserPrivileges.Admin),
+            PrivilegeViewUsers = user.Privileges.HasPrivileges(UserPrivileges.ViewUsers),
+            PrivilegeEditUsers = user.Privileges.HasPrivileges(UserPrivileges.EditUsers),
+            PrivilegeViewGroups = user.Privileges.HasPrivileges(UserPrivileges.ViewGroups),
+            PrivilegeEditGroups = user.Privileges.HasPrivileges(UserPrivileges.EditGroups),
+            PrivilegeViewLabs = user.Privileges.HasPrivileges(UserPrivileges.ViewLabs),
+            PrivilegeEditLabs = user.Privileges.HasPrivileges(UserPrivileges.EditLabs),
+            PrivilegeViewSlots = user.Privileges.HasPrivileges(UserPrivileges.ViewSlots),
+            PrivilegeEditSlots = user.Privileges.HasPrivileges(UserPrivileges.EditSlots),
+            PrivilegeViewLabExecutions = user.Privileges.HasPrivileges(UserPrivileges.ViewLabExecutions),
+            PrivilegeEditLabExecutions = user.Privileges.HasPrivileges(UserPrivileges.EditLabExecutions),
+            PrivilegeViewAdminScoreboard = user.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard),
+            PrivilegeEditAdminScoreboard = user.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard),
+            PrivilegeEditConfiguration = user.Privileges.HasPrivileges(UserPrivileges.EditConfiguration),
+            PrivilegeTransferResults = user.Privileges.HasPrivileges(UserPrivileges.TransferResults),
+            PrivilegeLoginAsLabServerAdmin = user.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin),
+        };
+
+        return await ShowEditUserFormAsync(userInputModel);
     }
+
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.Admin | UserPrivileges.EditUsers)]
-    public async Task<IActionResult> EditUserAsync(AdminEditUserData userData)
+    public async Task<IActionResult> EditUserAsync(AdminUserInputModel userInput)
     {
         // Check input
         if(!ModelState.IsValid)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["EditUserAsync:InvalidInput"]);
-            return await ShowEditUserFormAsync(null, userData);
+            return await ShowEditUserFormAsync(userInput);
         }
 
         var currentUser = await GetCurrentUserAsync();
         try
         {
             // Retrieve edited user from database and apply changes
-            var user = await _userService.FindUserByIdAsync(userData.Id, HttpContext.RequestAborted);
-            user.DisplayName = userData.DisplayName;
-            user.IsTutor = userData.IsTutor;
-            user.GroupFindingCode = userData.GroupFindingCode;
-            user.GroupId = userData.GroupId;
+            var user = await _userService.FindUserByIdAsync(userInput.Id, HttpContext.RequestAborted);
+            if(user == null)
+            {
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["EditUserAsync:NotFound"]);
+                return RedirectToAction("RenderUserList");
+            }
+
+            user.DisplayName = userInput.DisplayName;
+            user.IsTutor = userInput.IsTutor;
+            user.GroupFindingCode = userInput.GroupFindingCode;
+            user.GroupId = userInput.GroupId;
 
             if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
             {
                 // Privileges
                 var privileges = UserPrivileges.Default;
-                if(userData.PrivilegeAdmin)
+                if(userInput.PrivilegeAdmin)
                     privileges |= UserPrivileges.Admin;
-                if(userData.PrivilegeViewUsers)
+                if(userInput.PrivilegeViewUsers)
                     privileges |= UserPrivileges.ViewUsers;
-                if(userData.PrivilegeEditUsers)
+                if(userInput.PrivilegeEditUsers)
                     privileges |= UserPrivileges.ViewUsers | UserPrivileges.EditUsers;
-                if(userData.PrivilegeViewGroups)
+                if(userInput.PrivilegeViewGroups)
                     privileges |= UserPrivileges.ViewGroups;
-                if(userData.PrivilegeEditGroups)
+                if(userInput.PrivilegeEditGroups)
                     privileges |= UserPrivileges.ViewGroups | UserPrivileges.EditGroups;
-                if(userData.PrivilegeViewLabs)
+                if(userInput.PrivilegeViewLabs)
                     privileges |= UserPrivileges.ViewLabs;
-                if(userData.PrivilegeEditLabs)
+                if(userInput.PrivilegeEditLabs)
                     privileges |= UserPrivileges.ViewLabs | UserPrivileges.EditLabs;
-                if(userData.PrivilegeViewSlots)
+                if(userInput.PrivilegeViewSlots)
                     privileges |= UserPrivileges.ViewSlots;
-                if(userData.PrivilegeEditSlots)
+                if(userInput.PrivilegeEditSlots)
                     privileges |= UserPrivileges.ViewSlots | UserPrivileges.EditSlots;
-                if(userData.PrivilegeViewLabExecutions)
+                if(userInput.PrivilegeViewLabExecutions)
                     privileges |= UserPrivileges.ViewLabExecutions;
-                if(userData.PrivilegeEditLabExecutions)
+                if(userInput.PrivilegeEditLabExecutions)
                     privileges |= UserPrivileges.ViewLabExecutions | UserPrivileges.EditLabExecutions;
-                if(userData.PrivilegeViewAdminScoreboard)
+                if(userInput.PrivilegeViewAdminScoreboard)
                     privileges |= UserPrivileges.ViewAdminScoreboard;
-                if(userData.PrivilegeEditAdminScoreboard)
+                if(userInput.PrivilegeEditAdminScoreboard)
                     privileges |= UserPrivileges.ViewAdminScoreboard | UserPrivileges.EditAdminScoreboard;
-                if(userData.PrivilegeEditConfiguration)
+                if(userInput.PrivilegeEditConfiguration)
                     privileges |= UserPrivileges.EditConfiguration;
-                if(userData.PrivilegeTransferResults)
+                if(userInput.PrivilegeTransferResults)
                     privileges |= UserPrivileges.TransferResults;
-                if(userData.PrivilegeLoginAsLabServerAdmin)
+                if(userInput.PrivilegeLoginAsLabServerAdmin)
                     privileges |= UserPrivileges.LoginAsLabServerAdmin;
 
                 // Ensure that admins don't accidentally lock out themselves
@@ -163,21 +154,14 @@ public class AdminUsersController(IUserService userService)
 
             await _userService.UpdateUserAsync(user, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["EditUserAsync:Success"]);
+            PostStatusMessage = new(StatusMessageType.Success, Localizer["EditUserAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderUserList");
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Edit user");
             AddStatusMessage(StatusMessageType.Error, Localizer["EditUserAsync:UnknownError"]);
-            return await ShowEditUserFormAsync(null, userData);
+            return await ShowEditUserFormAsync(userInput);
         }
-
-        return await RenderUserListAsync();
-    }
-
-    public enum ViewType
-    {
-        List,
-        Edit
     }
 }

@@ -65,6 +65,7 @@ public class MappingProfile : Profile
         GroupService.RegisterMappings(this);
         LabService.RegisterMappings(this);
         SlotService.RegisterMappings(this);
+        UserService.RegisterMappings(this);
         AdminExercisesController.RegisterMappings(this);
         AdminFlagsController.RegisterMappings(this);
         AdminGroupsController.RegisterMappings(this);

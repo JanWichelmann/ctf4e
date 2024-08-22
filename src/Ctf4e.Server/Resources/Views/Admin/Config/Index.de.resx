@@ -154,4 +154,7 @@
         <value>Version</value>
         <comment>Status:BuildVersion</comment>
     </data>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Konfiguration bearbeiten</value>
+    </data>
 </root>

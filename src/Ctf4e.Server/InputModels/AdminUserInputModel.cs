@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using Ctf4e.Server.Constants;
 
-namespace Ctf4e.Server.ViewModels;
+namespace Ctf4e.Server.InputModels;
 
-public class AdminEditUserData
+public class AdminUserInputModel
 {
     [Required]
     public int Id { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
+    [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
+    [DisplayFormat(ConvertEmptyStringToNull = false)]
     [StringLength(100)]
     public string DisplayName { get; set; }
     

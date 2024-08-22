@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Ctf4e.Server.Authorization;
-using Ctf4e.Server.Constants;
 
-namespace Ctf4e.Server.Models;
+namespace Ctf4e.Server.ViewModels;
 
-public class User
+public class AdminUserListEntry
 {
     public int Id { get; set; }
 
@@ -17,16 +14,10 @@ public class User
         
     public UserPrivileges Privileges { get; set; }
     
-    public string PasswordHash { get; set; }
-    
     public bool IsTutor { get; set; }
 
     public string GroupFindingCode { get; set; }
 
-    public ICollection<FlagSubmission> FlagSubmissions { get; set; }
-
-    public ICollection<ExerciseSubmission> ExerciseSubmissions { get; set; }
-
     public int? GroupId { get; set; }
-    public Group Group { get; set; }
+    public string GroupName { get; set; }
 }

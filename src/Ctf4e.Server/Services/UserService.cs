@@ -8,6 +8,7 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
@@ -18,7 +19,7 @@ namespace Ctf4e.Server.Services;
 public interface IUserService
 {
     Task<List<User>> GetUsersAsync(CancellationToken cancellationToken);
-    Task<List<User>> GetUsersWithGroupsAsync(CancellationToken cancellationToken);
+    Task<List<AdminUserListEntry>> GetUserListAsync(CancellationToken cancellationToken);
     Task<List<User>> GetGroupMembersAsync(int groupId, CancellationToken cancellationToken);
     Task<bool> AnyUsers(CancellationToken cancellationToken);
     Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken);
@@ -41,11 +42,11 @@ public class UserService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
             .ToListAsync(cancellationToken);
     }
 
-    public Task<List<User>> GetUsersWithGroupsAsync(CancellationToken cancellationToken)
+    public Task<List<AdminUserListEntry>> GetUserListAsync(CancellationToken cancellationToken)
     {
         return dbContext.Users.AsNoTracking()
             .OrderBy(u => u.DisplayName)
-            .ProjectTo<User>(mapper.ConfigurationProvider, u => u.Group)
+            .ProjectTo<AdminUserListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 
@@ -98,5 +99,11 @@ public class UserService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
 
         // Invalidate cache
         _cachedUsers.TryRemove(user.Id, out _);
+    }
+
+    public static void RegisterMappings(Profile mappingProfile)
+    {
+        mappingProfile.CreateMap<UserEntity, AdminUserListEntry>()
+            .ForMember(dst => dst.GroupName, opt => opt.MapFrom(src => src.Group.DisplayName));
     }
 }

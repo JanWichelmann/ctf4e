@@ -48,7 +48,7 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
             buildVersion = "DEV";
         ViewData["BuildVersion"] = buildVersion;
 
-        return await RenderViewAsync("~/Views/AdminConfiguration.cshtml", config);
+        return await RenderViewAsync("~/Views/Admin/Config/Index.cshtml", config);
     }
 
     [HttpGet]
@@ -100,7 +100,8 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
 
             await configurationService.SetGroupSelectionPageTextAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["UpdateConfigAsync:Success"]);
+            PostStatusMessage = new(StatusMessageType.Success, Localizer["UpdateConfigAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("Render");
         }
         catch(Exception ex)
         {
@@ -108,7 +109,5 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
             AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigAsync:UnknownError"]);
             return await RenderAsync(configurationData);
         }
-
-        return await RenderAsync(null);
     }
 }

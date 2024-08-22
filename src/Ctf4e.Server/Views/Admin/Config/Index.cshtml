@@ -3,11 +3,11 @@
 @model Ctf4e.Server.ViewModels.AdminConfigurationData
 @inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Konfiguration";
+    ViewData["Title"] = Localizer["HtmlTitle"];
 
     int groupCount = (int)ViewData["GroupCount"];
     
-    string buildVersion = (string)ViewData["BuildVersion"];
+    string buildVersion = (string)ViewData["BuildVersion"] ?? "Development build";
 }
 
 <div class="container">
