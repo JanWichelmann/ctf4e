@@ -1,0 +1,95 @@
+@using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Views.Shared
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<AdminFlagListEntry>
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+
+    var lab = (Lab)ViewData["Lab"];
+}
+
+<div class="container">
+
+    <div class="float-end">
+        <a class="btn btn-sm btn-secondary" asp-controller="AdminLabs" asp-action="RenderLabList">
+            <i class="bi bi-arrow-left"></i>
+            @Localizer["Back"]
+        </a>
+        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabs))
+        {
+            <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowCreateFlagForm" asp-route-labId="@lab.Id">
+                <i class="bi bi-plus"></i>
+                @Localizer["CreateFlag"]
+            </a>
+        }
+    </div>
+
+    <h1 class="header">
+        @Localizer["Title", lab.Name]
+    </h1>
+    <hr class="header">
+
+    <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
+        <thead>
+        <tr>
+            <th scope="col">@Localizer["Flags:ID"]</th>
+            <th scope="col">@Localizer["Flags:Code"]</th>
+            <th scope="col">@Localizer["Flags:Description"]</th>
+            <th scope="col">@Localizer["Flags:BasePoints"]</th>
+            <th scope="col">@Localizer["Flags:BugBounty"]</th>
+            <th scope="col">@Localizer["Actions"]</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        @foreach(var f in Model)
+        {
+        <tr>
+            <td>@f.Id</td>
+            <td>@f.Code</td>
+            <td>@f.Description</td>
+            <td>@f.BasePoints</td>
+            <td>
+                @if(f.IsBounty)
+                {
+                <i class="bi bi-check-circle-fill text-success"></i>
+                }
+                else
+                {
+                <i class="bi bi-x-circle-fill text-danger"></i>
+                }
+            </td>
+            <td>
+                @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabs))
+                {
+                <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminFlags" asp-action="ShowEditFlagForm" asp-route-id="@f.Id">
+                    <i class="bi bi-pencil"></i>
+                    @Localizer["Edit"]
+                </a>
+                <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-flag" data-flag-id="@f.Id">
+                    <i class="bi bi-trash"></i>
+                    @Localizer["Delete"]
+                </a>
+                }
+            </td>
+        </tr>
+        }
+        </tbody>
+    </table>
+
+</div>
+
+@{
+    var confirmDeletionDialogModel = new ConfirmDeletionDialogModel
+    {
+        ModalId = "modal-delete-flag",
+        PostUrl = Url.Action("DeleteFlag", "AdminFlags") ?? throw new InvalidOperationException("Could not generate URL for route"),
+        DeletedObjectName = "flag",
+        PostParameters = new List<(string postName, string buttonDataName)> { ("id", "flag-id") }
+    };
+}
+<partial name="~/Views/Shared/ConfirmDeletionDialog.cshtml" model="confirmDeletionDialogModel" />

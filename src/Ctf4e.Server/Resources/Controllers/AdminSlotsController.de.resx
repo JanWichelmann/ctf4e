@@ -66,4 +66,8 @@
         <value>Der Slot darf keine Gruppen enthalten.</value>
         <comment>DeleteSlotAsync:HasGroups</comment>
     </data>
+    <data name="EditSlotAsync:NotFound" xml:space="preserve">
+        <value>Dieser Terminslot existiert nicht.</value>
+        <comment>EditSlotAsync:NotFound</comment>
+    </data>
 </root>

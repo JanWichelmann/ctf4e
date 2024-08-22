@@ -66,7 +66,7 @@ public class AdminLabsController(IUserService userService, ILabService labServic
             var lab = await labService.FindLabByIdAsync(labInput.Id.Value, HttpContext.RequestAborted);
             if(lab == null)
             {
-                PostStatusMessage = new(StatusMessageType.Error, Localizer["EditLabAsync:NotFound"]) { AutoHide = true };
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["EditLabAsync:NotFound"]);
                 return RedirectToAction("RenderLabList");
             }
 

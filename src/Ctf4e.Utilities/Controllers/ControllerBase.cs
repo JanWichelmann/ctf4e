@@ -63,7 +63,7 @@ public abstract class ControllerBase<TController> : Controller
     /// </summary>
     /// <param name="viewPath">Path to the view file.</param>
     /// <param name="model">The model being shown/edited in this view.</param>
-    protected virtual IActionResult RenderView(string viewPath, object model = null)
+    protected IActionResult RenderViewInternal(string viewPath, object model = null)
     {
         // Pass status messages
         if(PostStatusMessage != null)

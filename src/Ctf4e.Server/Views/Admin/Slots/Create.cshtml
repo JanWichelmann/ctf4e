@@ -1,0 +1,28 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@model AdminSlotInputModel
+@inject IViewLocalizer Localizer
+@{
+    
+}                                                       
+
+<div class="container">
+    <h1 class="header">
+        @Localizer["Title"]
+    </h1>
+    <hr class="header">
+
+    <form asp-controller="AdminSlots" asp-action="CreateSlot" method="post">
+    
+        <partial name="InputForm.cshtml" model="Model" />
+
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <a asp-controller="AdminSlots" asp-action="RenderSlotList" role="button" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>
+
+@section ScriptsHead
+{
+    <link asp-href-include="~/lib/flatpickr/css/flatpickr.min.css" asp-append-version="true" rel="stylesheet" />
+    <script asp-src-include="~/lib/flatpickr/js/flatpickr.min.js" asp-append-version="true"></script>
+    <script asp-src-include="~/lib/flatpickr/js/l10n/de.js" asp-append-version="true"></script>
+}

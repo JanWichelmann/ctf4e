@@ -70,4 +70,7 @@
         <value>Beim Sammeln der Gruppendaten ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>DownloadAsJsonAsync:UnknownError</comment>
     </data>
+    <data name="EditGroupAsync:NotFound" xml:space="preserve">
+        <value>Diese Gruppe existiert nicht.</value>
+    </data>
 </root>

@@ -60,8 +60,15 @@ public class MappingProfile : Profile
         CreateMap<ExerciseSubmission, ExerciseSubmissionEntity>();
         
         // Other mappings
+        ExerciseService.RegisterMappings(this);
+        FlagService.RegisterMappings(this);
+        GroupService.RegisterMappings(this);
         LabService.RegisterMappings(this);
         SlotService.RegisterMappings(this);
+        AdminExercisesController.RegisterMappings(this);
+        AdminFlagsController.RegisterMappings(this);
+        AdminGroupsController.RegisterMappings(this);
         AdminLabsController.RegisterMappings(this);
+        AdminSlotsController.RegisterMappings(this);
     }
 }

@@ -108,9 +108,6 @@
     <Content Update="Views\AdminExercises.Edit.cshtml">
       <DependentUpon>AdminExercises.cshtml</DependentUpon>
     </Content>
-    <Content Update="Views\AdminExercises.List.cshtml">
-      <DependentUpon>AdminExercises.cshtml</DependentUpon>
-    </Content>
     <Content Update="Views\AdminFlags.Create.cshtml">
       <DependentUpon>AdminFlags.cshtml</DependentUpon>
     </Content>
@@ -202,6 +199,13 @@
   
   <ItemGroup>
     <Folder Include="Resources\Views\Admin\Labs\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AdditionalFiles Include="Views\Admin\Groups\Create.cshtml" />
+    <AdditionalFiles Include="Views\Admin\Groups\Edit.cshtml" />
+    <AdditionalFiles Include="Views\Admin\Groups\Index.cshtml" />
+    <AdditionalFiles Include="Views\Admin\Groups\InputForm.cshtml" />
   </ItemGroup>
 
 </Project>

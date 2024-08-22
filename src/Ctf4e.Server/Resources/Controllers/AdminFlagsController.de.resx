@@ -50,4 +50,13 @@
         <value>Beim Löschen der Flag ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>DeleteFlagAsync:UnknownError</comment>
     </data>
+    <data name="ShowEditFlagFormAsync:NotFound" xml:space="preserve">
+        <value>Diese Flag existiert nicht.</value>
+    </data>
+    <data name="EditFlagAsync:NotFound" xml:space="preserve">
+        <value>Diese Flag existiert nicht.</value>
+    </data>
+    <data name="DeleteFlagAsync:NotFound" xml:space="preserve">
+        <value>Diese Flag existiert nicht.</value>
+    </data>
 </root>

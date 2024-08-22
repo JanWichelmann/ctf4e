@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
+using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
@@ -18,128 +20,122 @@ public class AdminExercisesController(IUserService userService, IExerciseService
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminExercises;
 
-    private async Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, int labId, object model)
+    private async Task<IActionResult> RenderAsync(string viewPath, int labId, object model)
     {
         var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
-        
+
         var lab = await labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
         ViewData["Lab"] = lab;
 
-        ViewData["ViewType"] = viewType;
         return await RenderViewAsync(viewPath, model);
     }
 
     [HttpGet]
     public async Task<IActionResult> RenderExerciseListAsync(int labId)
     {
-        var exercises = await exerciseService.GetExercisesAsync(labId, HttpContext.RequestAborted);
+        var exercises = await exerciseService.GetExerciseListAsync(labId, HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, "~/Views/AdminExercises.cshtml", labId, exercises);
+        return await RenderAsync("~/Views/Admin/Exercises/Index.cshtml", labId, exercises);
     }
 
-    private async Task<IActionResult> ShowEditExerciseFormAsync(int? id, Exercise exercise = null)
+    private async Task<IActionResult> ShowEditExerciseFormAsync(AdminExerciseInputModel exerciseInput)
     {
-        // Retrieve by ID, if no object from a failed POST was passed
-        if(id != null)
-        {
-            exercise = await exerciseService.FindExerciseByIdAsync(id.Value, HttpContext.RequestAborted);
-            if(exercise == null)
-                return RedirectToAction("RenderLabList", "AdminLabs");
-        }
-
-        if(exercise == null)
-            return RedirectToAction("RenderLabList", "AdminLabs");
-
-        return await RenderAsync(ViewType.Edit, "~/Views/AdminExercises.cshtml", exercise.LabId, exercise);
+        return await RenderAsync("~/Views/Admin/Exercises/Edit.cshtml", exerciseInput.LabId, exerciseInput);
     }
 
     [HttpGet("edit")]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public Task<IActionResult> ShowEditExerciseFormAsync(int id)
+    public async Task<IActionResult> ShowEditExerciseFormAsync(int id, [FromServices] IMapper mapper)
     {
-        return ShowEditExerciseFormAsync(id, null);
+        var exercise = await exerciseService.FindExerciseByIdAsync(id, HttpContext.RequestAborted);
+        if(exercise == null)
+        {
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["ShowEditExerciseFormAsync:NotFound"]);
+            return RedirectToAction("RenderLabList", "AdminLabs");
+        }
+
+        var exerciseInput = mapper.Map<AdminExerciseInputModel>(exercise);
+        return await ShowEditExerciseFormAsync(exerciseInput);
     }
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> EditExerciseAsync(Exercise exerciseData)
+    public async Task<IActionResult> EditExerciseAsync(AdminExerciseInputModel exerciseInput, [FromServices] IMapper mapper)
     {
         // Check input
-        if(!ModelState.IsValid)
+        if(!ModelState.IsValid || exerciseInput.Id == null)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["EditExerciseAsync:InvalidInput"]);
-            return await ShowEditExerciseFormAsync(null, exerciseData);
+            return await ShowEditExerciseFormAsync(exerciseInput);
         }
 
         try
         {
             // Retrieve edited exercise from database and apply changes
-            var exercise = await exerciseService.FindExerciseByIdAsync(exerciseData.Id, HttpContext.RequestAborted);
-            exercise.ExerciseNumber = exerciseData.ExerciseNumber;
-            exercise.Name = exerciseData.Name;
-            exercise.IsMandatory = exerciseData.IsMandatory;
-            exercise.BasePoints = exerciseData.BasePoints;
-            exercise.PenaltyPoints = exerciseData.PenaltyPoints;
+            var exercise = await exerciseService.FindExerciseByIdAsync(exerciseInput.Id.Value, HttpContext.RequestAborted);
+            if(exercise == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["EditExerciseAsync:NotFound"]);
+                return RedirectToAction("RenderLabList", "AdminLabs");
+            }
+
+            mapper.Map(exerciseInput, exercise);
+
             await exerciseService.UpdateExerciseAsync(exercise, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["EditExerciseAsync:Success"]);
-            return await RenderExerciseListAsync(exercise.LabId);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["EditExerciseAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderExerciseList", new { labId = exercise.LabId });
         }
         catch(InvalidOperationException ex)
         {
             GetLogger().LogError(ex, "Edit exercise");
             AddStatusMessage(StatusMessageType.Error, Localizer["EditExerciseAsync:UnknownError"]);
-            return await ShowEditExerciseFormAsync(null, exerciseData);
+            return await ShowEditExerciseFormAsync(exerciseInput);
         }
+    }
+
+    private async Task<IActionResult> ShowCreateExerciseFormAsync(AdminExerciseInputModel exerciseInput)
+    {
+        return await RenderAsync("~/Views/Admin/Exercises/Create.cshtml", exerciseInput.LabId, exerciseInput);
     }
 
     [HttpGet("create")]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> ShowCreateExerciseFormAsync(int labId, Exercise exercise = null)
-    {
-        return await RenderAsync(ViewType.Create, "~/Views/AdminExercises.cshtml", labId, exercise);
-    }
+    public Task<IActionResult> ShowCreateExerciseFormAsync(int labId)
+        => ShowCreateExerciseFormAsync(new AdminExerciseInputModel { LabId = labId });
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> CreateExerciseAsync(Exercise exerciseData, string returnToForm)
+    public async Task<IActionResult> CreateExerciseAsync(AdminExerciseInputModel exerciseInput, string returnToForm, [FromServices] IMapper mapper)
     {
         // Check input
         if(!ModelState.IsValid)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseAsync:InvalidInput"]);
-            return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
+            return await ShowCreateExerciseFormAsync(exerciseInput);
         }
 
         try
         {
             // Create exercise
-            var exercise = new Exercise
-            {
-                LabId = exerciseData.LabId,
-                ExerciseNumber = exerciseData.ExerciseNumber,
-                Name = exerciseData.Name,
-                IsMandatory = exerciseData.IsMandatory,
-                BasePoints = exerciseData.BasePoints,
-                PenaltyPoints = exerciseData.PenaltyPoints
-            };
+            var exercise = mapper.Map<Exercise>(exerciseInput);
             await exerciseService.CreateExerciseAsync(exercise, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["CreateExerciseAsync:Success"]);
-                
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["CreateExerciseAsync:Success"]) { AutoHide = true };
+
             if(!string.IsNullOrEmpty(returnToForm))
-                return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
-            return await RenderExerciseListAsync(exerciseData.LabId);
+                return await ShowCreateExerciseFormAsync(exerciseInput);
+            return RedirectToAction("RenderExerciseList", new { labId = exercise.LabId });
         }
         catch(InvalidOperationException ex)
         {
             GetLogger().LogError(ex, "Create exercise");
             AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseAsync:UnknownError"]);
-            return await ShowCreateExerciseFormAsync(exerciseData.LabId, exerciseData);
+            return await ShowCreateExerciseFormAsync(exerciseInput);
         }
     }
 
@@ -148,31 +144,38 @@ public class AdminExercisesController(IUserService userService, IExerciseService
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> DeleteExerciseAsync(int id)
     {
-        // Input check
-        var exercise = await exerciseService.FindExerciseByIdAsync(id, HttpContext.RequestAborted);
-        if(exercise == null)
-            return RedirectToAction("RenderLabList", "AdminLabs");
-
+        int labId = -1;
         try
         {
+            // Input check
+            var exercise = await exerciseService.FindExerciseByIdAsync(id, HttpContext.RequestAborted);
+            if(exercise == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseAsync:NotFound"]);
+                return RedirectToAction("RenderLabList", "AdminLabs");
+            }
+
+            labId = exercise.LabId;
+
             // Delete exercise
             await exerciseService.DeleteExerciseAsync(id, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteExerciseAsync:Success"]);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DeleteExerciseAsync:Success"]) { AutoHide = true };
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Delete exercise");
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseAsync:UnknownError"]);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseAsync:UnknownError"]);
         }
 
-        return await RenderExerciseListAsync(exercise.LabId);
+        if(labId == -1)
+            return RedirectToAction("RenderLabList", "AdminLabs");
+        return RedirectToAction("RenderExerciseList", new { labId });
     }
-
-    public enum ViewType
+    
+    public static void RegisterMappings(Profile mappingProfile)
     {
-        List,
-        Edit,
-        Create
+        mappingProfile.CreateMap<Exercise, AdminExerciseInputModel>();
+        mappingProfile.CreateMap<AdminExerciseInputModel, Exercise>();
     }
 }

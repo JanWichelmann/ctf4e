@@ -1,0 +1,78 @@
+@using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Views.Shared
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<AdminSlotListEntry>
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+}
+
+<div class="container">
+
+    <div class="float-end">
+        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditSlots))
+        {
+            <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowCreateSlotForm">
+                <i class="bi bi-plus"></i>
+                @Localizer["CreateSlot"]
+            </a>
+        }
+    </div>
+
+    <h1 class="header">
+        @Localizer["Title"]
+    </h1>
+    <hr class="header">
+
+    <table class="table table-sm table-bordered table-hover align-middle text-nowrap mt-2">
+        <thead>
+        <tr>
+            <th scope="col">@Localizer["Slots:ID"]</th>
+            <th scope="col">@Localizer["Slots:Name"]</th>
+            <th scope="col">@Localizer["Slots:Groups"]</th>
+            <th scope="col">@Localizer["Actions"]</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        @foreach(var s in Model)
+        {
+            <tr>
+                <td>@s.Id</td>
+                <td>@s.Name</td>
+                <td>@s.GroupCount</td>
+                <td>
+                    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditSlots))
+                    {
+                        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminSlots" asp-action="ShowEditSlotForm" asp-route-id="@s.Id">
+                            <i class="bi bi-pencil"></i>
+                            @Localizer["Edit"]
+                        </a>
+                        @if(s.GroupCount == 0)
+                        {
+                            <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slot-id="@s.Id">
+                                <i class="bi bi-trash"></i>
+                                @Localizer["Delete"]
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@{
+    var confirmDeletionDialogModel = new ConfirmDeletionDialogModel
+    {
+        ModalId = "modal-delete-slot",
+        PostUrl = Url.Action("DeleteSlot", "AdminSlots") ?? throw new InvalidOperationException("Could not generate URL for route"),
+        DeletedObjectName = "slot",
+        PostParameters = new List<(string postName, string buttonDataName)> { ("id", "slot-id") }
+    };
+}
+<partial name="~/Views/Shared/ConfirmDeletionDialog.cshtml" model="confirmDeletionDialogModel" />

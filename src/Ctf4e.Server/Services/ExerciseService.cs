@@ -7,6 +7,7 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
@@ -14,6 +15,7 @@ namespace Ctf4e.Server.Services;
 public interface IExerciseService
 {
     Task<List<Exercise>> GetExercisesAsync(int labId, CancellationToken cancellationToken);
+    Task<List<AdminExerciseListEntry>> GetExerciseListAsync(int labId, CancellationToken cancellationToken);
     Task<Exercise> FindExerciseByIdAsync(int id, CancellationToken cancellationToken);
     Task<Exercise> FindExerciseByNumberAsync(int labId, int exerciseNumber, CancellationToken cancellationToken);
     Task<Exercise> CreateExerciseAsync(Exercise exercise, CancellationToken cancellationToken);
@@ -33,6 +35,15 @@ public class ExerciseService(CtfDbContext dbContext, IMapper mapper, GenericCrud
             .Where(e => e.LabId == labId)
             .OrderBy(e => e.Id)
             .ProjectTo<Exercise>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public Task<List<AdminExerciseListEntry>> GetExerciseListAsync(int labId, CancellationToken cancellationToken)
+    {
+        return dbContext.Exercises.AsNoTracking()
+            .Where(e => e.LabId == labId)
+            .OrderBy(e => e.ExerciseNumber)
+            .ProjectTo<AdminExerciseListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 
@@ -71,5 +82,10 @@ public class ExerciseService(CtfDbContext dbContext, IMapper mapper, GenericCrud
                 .Where(es => es.ExerciseId == exerciseId && es.UserId == userId)
         );
         return dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public static void RegisterMappings(Profile mappingProfile)
+    {
+        mappingProfile.CreateMap<ExerciseEntity, AdminExerciseListEntry>();
     }
 }

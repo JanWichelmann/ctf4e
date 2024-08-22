@@ -120,7 +120,7 @@ public abstract class ControllerBase<TController> : Utilities.Controllers.Contro
     /// </summary>
     /// <param name="viewPath">Path to the view to be rendered.</param>
     /// <param name="model">The model being shown/edited in this view.</param>
-    protected override IActionResult RenderView(string viewPath, object model = null)
+    protected IActionResult RenderView(string viewPath, object model = null)
     {
         // Pass current user
         ViewData["CurrentUser"] = GetCurrentUser();
@@ -130,6 +130,6 @@ public abstract class ControllerBase<TController> : Utilities.Controllers.Contro
         ViewData["ActiveMenuItem"] = ActiveMenuItem;
 
         // Render view
-        return base.RenderView(viewPath, model);
+        return RenderViewInternal(viewPath, model);
     }
 }

@@ -91,7 +91,7 @@ public abstract class ControllerBase<TController>(IUserService userService) : Ut
     /// <summary>
     /// Passes some global variables to the template engine and renders the previously specified view.
     /// </summary>
-    /// <param name="activeMenuItem">The page to be shown as "active" in the menu.</param>
+    /// <param name="viewPath">Path to the view file.</param>
     /// <param name="model">The model being shown/edited in this view.</param>
     protected async Task<IActionResult> RenderViewAsync(string viewPath, object model = null)
     {
@@ -112,6 +112,6 @@ public abstract class ControllerBase<TController>(IUserService userService) : Ut
         ViewData["BuildVersion"] = _buildVersion;
 
         // Render view
-        return base.RenderView(viewPath, model);
+        return RenderViewInternal(viewPath, model);
     }
 }

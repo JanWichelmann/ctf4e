@@ -8,6 +8,7 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
@@ -15,6 +16,7 @@ namespace Ctf4e.Server.Services;
 public interface IFlagService
 {
     Task<List<Flag>> GetFlagsAsync(int labId, CancellationToken cancellationToken);
+    Task<List<AdminFlagListEntry>> GetFlagListAsync(int labId, CancellationToken cancellationToken);
     Task<Flag> FindFlagByIdAsync(int id, CancellationToken cancellationToken);
     Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken);
     Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken);
@@ -32,6 +34,15 @@ public class FlagService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
             .Where(f => f.LabId == labId)
             .OrderBy(f => f.Id)
             .ProjectTo<Flag>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public Task<List<AdminFlagListEntry>> GetFlagListAsync(int labId, CancellationToken cancellationToken)
+    {
+        return dbContext.Flags.AsNoTracking()
+            .Where(f => f.LabId == labId)
+            .OrderBy(f => f.Id)
+            .ProjectTo<AdminFlagListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 
@@ -79,5 +90,10 @@ public class FlagService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
             // Most likely the flag has been submitted already
             return false;
         }
+    }
+
+    public static void RegisterMappings(Profile mappingProfile)
+    {
+        mappingProfile.CreateMap<FlagEntity, AdminFlagListEntry>();
     }
 }

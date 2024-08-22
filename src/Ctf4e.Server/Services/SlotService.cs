@@ -18,6 +18,7 @@ public interface ISlotService
     Task<List<AdminSlotListEntry>> GetSlotListAsync(CancellationToken cancellationToken);
     Task<Slot> FindSlotByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken);
+    Task<int> GetSlotGroupCount(int id, CancellationToken cancellationToken);
     Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken);
     Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken);
     Task DeleteSlotAsync(int id, CancellationToken cancellationToken);
@@ -49,6 +50,14 @@ public class SlotService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
         return dbContext.Slots.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
+    }
+
+    public async Task<int> GetSlotGroupCount(int id, CancellationToken cancellationToken)
+    {
+        var groupCount = await dbContext.Groups.AsNoTracking()
+            .CountAsync(g => g.SlotId == id, cancellationToken);
+
+        return groupCount;
     }
 
     public Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken)
