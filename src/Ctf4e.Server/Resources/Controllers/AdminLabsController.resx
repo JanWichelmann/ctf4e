@@ -66,4 +66,8 @@
         <value>The lab has at least one execution and thus cannot be deleted anymore.</value>
         <comment>DeleteLabAsync:HasExecutions</comment>
     </data>
+    <data name="EditLabAsync:NotFound" xml:space="preserve">
+        <value>This lab does not exist.</value>
+        <comment>EditLabAsync:NotFound</comment>
+    </data>
 </root>

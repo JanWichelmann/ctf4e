@@ -66,4 +66,8 @@
         <value>Das Praktikum hat bereits einmal stattgefunden und kann somit nicht mehr gelöscht werden.</value>
         <comment>DeleteLabAsync:HasExecutions</comment>
     </data>
+    <data name="EditLabAsync:NotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+        <comment>EditLabAsync:NotFound</comment>
+    </data>
 </root>
