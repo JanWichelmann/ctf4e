@@ -38,47 +38,47 @@
         <value>Beim Aktualisieren der Praktikumsausführung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>EditLabExecutionAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:InvalidInput" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:InvalidInput" xml:space="preserve">
         <value>Ungültige Eingabe.</value>
         <comment>CreateLabExecutionForSlotAsync:InvalidInput</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:Success" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:Success" xml:space="preserve">
         <value>Die Praktikumsausführung(en) wurde(n) erfolgreich erstellt.</value>
         <comment>CreateLabExecutionForSlotAsync:Success</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:UnknownError" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
         <value>Beim Erstellen der Praktikumsausführung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>CreateLabExecutionForSlotAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionForGroupAsync:InvalidInput" xml:space="preserve">
+    <data name="CreateLabExecutionAsync:InvalidInput" xml:space="preserve">
         <value>Ungültige Eingabe.</value>
         <comment>CreateLabExecutionForGroupAsync:InvalidInput</comment>
     </data>
-    <data name="CreateLabExecutionForGroupAsync:Success" xml:space="preserve">
+    <data name="CreateLabExecutionAsync:Success" xml:space="preserve">
         <value>Die Praktikumsausführung wurde erfolgreich erstellt.</value>
         <comment>CreateLabExecutionForGroupAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionForGroupAsync:NotFound" xml:space="preserve">
+    <data name="DeleteLabExecutionAsync:NotFound" xml:space="preserve">
         <value>Diese Praktikumsausführung existiert nicht.</value>
         <comment>DeleteLabExecutionForGroupAsync:NotFound</comment>
     </data>
-    <data name="DeleteLabExecutionForGroupAsync:Success" xml:space="preserve">
+    <data name="DeleteLabExecutionAsync:Success" xml:space="preserve">
         <value>Die Praktikumsausführung wurde erfolgreich gelöscht.</value>
         <comment>DeleteLabExecutionForGroupAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionForGroupAsync:UnknownError" xml:space="preserve">
+    <data name="DeleteLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>Beim Löschen der Praktikumsausführung ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>DeleteLabExecutionForGroupAsync:UnknownError</comment>
     </data>
-    <data name="DeleteLabExecutionForSlotAsync:Success" xml:space="preserve">
+    <data name="DeleteMultipleLabExecutionsAsync:Success" xml:space="preserve">
         <value>Die Praktikumsausführung(en) wurde(n) erfolgreich gelöscht.</value>
         <comment>DeleteLabExecutionForSlotAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionForSlotAsync:UnknownError" xml:space="preserve">
+    <data name="DeleteMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
         <value>Beim Löschen der Praktikumsausführung(en) ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>DeleteLabExecutionForSlotAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionForGroupAsync:UnknownError" xml:space="preserve">
+    <data name="CreateLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>Beim Erstellen der Praktikumsausführung ist ein Fehler aufgetreten. Existiert bereits eine Praktikumsausführung für diese Gruppe und dieses Praktikum? Weitere Details finden sich im Log.</value>
         <comment>CreateLabExecutionForGroupAsync:UnknownError</comment>
     </data>
@@ -86,8 +86,11 @@
         <value>Achtung: Das Bearbeiten einer bereits aktiven Praktikumsausführung kann zu Änderungen des "Bestanden"-Status und Verschiebungen im Scoreboard führen. Aufgaben- und Flag-Einreichungen werden nicht gelöscht, auch wenn diese bezüglich der neuen Beginn- und Endzeiten nicht möglich gewesen wären.</value>
         <comment>ShowEditLabExecutionFormAsync:Warning</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:ErrorGroup" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:ErrorGroup" xml:space="preserve">
         <value>Konnte Praktikum für Gruppe #{0} ({1}) nicht starten. Ist es für diese Gruppe bereits gestartet?</value>
         <comment>CreateLabExecutionForSlotAsync:ErrorGroup</comment>
+    </data>
+    <data name="EditLabExecutionAsync:NotFound" xml:space="preserve">
+        <value>Diese Praktikumsausführung existiert nicht.</value>
     </data>
 </root>

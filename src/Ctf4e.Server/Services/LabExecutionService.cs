@@ -8,6 +8,7 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Profiling;
@@ -18,6 +19,7 @@ namespace Ctf4e.Server.Services;
 public interface ILabExecutionService
 {
     Task<List<LabExecution>> GetLabExecutionsAsync(CancellationToken cancellationToken);
+    Task<List<AdminLabExecutionListEntry>> GetLabExecutionListAsync(CancellationToken cancellationToken);
     Task<bool> AnyLabExecutionsForLabAsync(int labId, CancellationToken cancellationToken);
     Task<LabExecution> FindLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
     Task<LabExecution> FindLabExecutionByUserAndLabAsync(int userId, int labId, CancellationToken cancellationToken);
@@ -37,6 +39,15 @@ public class LabExecutionService(CtfDbContext dbContext, IMapper mapper, Generic
             .OrderBy(l => l.LabId)
             .ThenBy(l => l.Group.DisplayName)
             .ProjectTo<LabExecution>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public Task<List<AdminLabExecutionListEntry>> GetLabExecutionListAsync(CancellationToken cancellationToken)
+    {
+        return dbContext.LabExecutions.AsNoTracking()
+            .OrderBy(l => l.LabId)
+            .ThenBy(l => l.Group.DisplayName)
+            .ProjectTo<AdminLabExecutionListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 
@@ -115,5 +126,10 @@ public class LabExecutionService(CtfDbContext dbContext, IMapper mapper, Generic
             .Where(l => l.LabId == labId && l.Group.SlotId == slotId);
         dbContext.LabExecutions.RemoveRange(labExecutionsInSlot);
         return dbContext.SaveChangesAsync(cancellationToken);
+    }
+    
+    public static void RegisterMappings(Profile profile)
+    {
+        profile.CreateMap<LabExecutionEntity, AdminLabExecutionListEntry>();
     }
 }

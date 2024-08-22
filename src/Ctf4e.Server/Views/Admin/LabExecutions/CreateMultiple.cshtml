@@ -1,0 +1,80 @@
+@using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model AdminLabExecutionMultipleInputModel
+@{                                         
+    ViewData["Title"] = Localizer["HtmlTitle"];
+    
+    var slots = (List<Slot>)ViewData["Slots"];
+    var labs = (List<Lab>)ViewData["Labs"];
+}
+
+<div class="container">
+    <h1 class="header">
+        @Localizer["Title"]
+    </h1>
+    <hr class="header">
+
+    <form asp-controller="AdminLabExecutions" asp-action="CreateMultipleLabExecutions" method="post">
+        <div class="mb-3">
+            <label class="form-label" asp-for="LabId">@Localizer["Form:LabId"]</label>
+            <select asp-for="LabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-select">
+                <option value="" disabled selected>@Localizer["Form:LabId:Placeholder"]</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="SlotId">@Localizer["Form:SlotId"]</label>
+            <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-select">
+                <option value="" disabled selected>@Localizer["Form:SlotId:Placeholder"]</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Start">@Localizer["Form:Start"]</label>
+            <input asp-for="Start" id="datetime-start" type="text" class="form-control" />
+            <span asp-validation-for="Start" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="End">@Localizer["Form:End"]</label>
+            <input asp-for="End" id="datetime-end" type="text" class="form-control" />
+            <span asp-validation-for="End" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            @Localizer["Form:DateNotes"]
+        </div>
+
+        <div class="mb-3">
+            <div class="form-check">
+                <input asp-for="OverrideExisting" class="form-check-input">
+                <label asp-for="OverrideExisting" class="form-check-label">@Localizer["Form:OverrideExisting"]</label>
+                <small>
+                    @Localizer["Form:OverrideExisting:Description"]
+                </small>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+        <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
+    </form>
+</div>
+
+<script>
+    flatpickr.localize(flatpickr.l10ns.de);
+    
+    options = {
+                 "altInput": true,
+                 "altFormat": "Y-m-d H:i:S",
+                 "enableTime": true,
+                 "enableSeconds": true,
+                 "allowInput": true,
+                 "minuteIncrement": 1
+             };
+    flatpickr(document.getElementById("datetime-start"), options);
+    flatpickr(document.getElementById("datetime-end"), options);
+</script>
+
+@section ScriptsHead
+{
+    <link asp-href-include="~/lib/flatpickr/css/flatpickr.min.css" asp-append-version="true" rel="stylesheet" />
+    <script asp-src-include="~/lib/flatpickr/js/flatpickr.min.js" asp-append-version="true"></script>
+    <script asp-src-include="~/lib/flatpickr/js/l10n/de.js" asp-append-version="true"></script>
+}

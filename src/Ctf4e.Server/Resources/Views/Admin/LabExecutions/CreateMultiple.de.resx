@@ -18,6 +18,10 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Aktive Praktika verwalten</value>
+        <comment>HtmlTitle</comment>
+    </data>
     <data name="Form:LabId" xml:space="preserve">
         <value>Praktikum</value>
         <comment>Form:LabId</comment>
@@ -53,5 +57,14 @@
     <data name="Form:Submit" xml:space="preserve">
         <value>Praktikum starten</value>
         <comment>Form:Submit</comment>
+    </data>
+    <data name="Form:DateNotes" xml:space="preserve">
+        <value>&lt;strong&gt;Hinweis:&lt;/strong&gt; Die Daten dürfen nicht exakt gleich sein, d.h. es muss Beginn &amp;lt; Ende gelten.</value>
+    </data>
+    <data name="Form:End" xml:space="preserve">
+        <value>Ende</value>
+    </data>
+    <data name="Form:Start" xml:space="preserve">
+        <value>Beginn</value>
     </data>
 </root>

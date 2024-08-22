@@ -38,47 +38,47 @@
         <value>An error occured while updating the lab execution. Check the log for more details.</value>
         <comment>EditLabExecutionAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:InvalidInput" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:InvalidInput" xml:space="preserve">
         <value>Invalid input.</value>
         <comment>CreateLabExecutionForSlotAsync:InvalidInput</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:Success" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:Success" xml:space="preserve">
         <value>The lab execution was created successfully.</value>
         <comment>CreateLabExecutionForSlotAsync:Success</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:UnknownError" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
         <value>An error occured when creating the lab execution(s). Check the log for more details.</value>
         <comment>CreateLabExecutionForSlotAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionForGroupAsync:InvalidInput" xml:space="preserve">
+    <data name="CreateLabExecutionAsync:InvalidInput" xml:space="preserve">
         <value>Invalid input.</value>
         <comment>CreateLabExecutionForGroupAsync:InvalidInput</comment>
     </data>
-    <data name="CreateLabExecutionForGroupAsync:Success" xml:space="preserve">
+    <data name="CreateLabExecutionAsync:Success" xml:space="preserve">
         <value>The lab execution was created successfully.</value>
         <comment>CreateLabExecutionForGroupAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionForGroupAsync:NotFound" xml:space="preserve">
+    <data name="DeleteLabExecutionAsync:NotFound" xml:space="preserve">
         <value>This lab execution does not exist.</value>
         <comment>DeleteLabExecutionForGroupAsync:NotFound</comment>
     </data>
-    <data name="DeleteLabExecutionForGroupAsync:Success" xml:space="preserve">
+    <data name="DeleteLabExecutionAsync:Success" xml:space="preserve">
         <value>The lab execution was deleted successfully.</value>
         <comment>DeleteLabExecutionForGroupAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionForGroupAsync:UnknownError" xml:space="preserve">
+    <data name="DeleteLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>An error occured while deleting the lab execution. Check the log for more details.</value>
         <comment>DeleteLabExecutionForGroupAsync:UnknownError</comment>
     </data>
-    <data name="DeleteLabExecutionForSlotAsync:Success" xml:space="preserve">
+    <data name="DeleteMultipleLabExecutionsAsync:Success" xml:space="preserve">
         <value>The lab execution was deleted successfully.</value>
         <comment>DeleteLabExecutionForSlotAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionForSlotAsync:UnknownError" xml:space="preserve">
+    <data name="DeleteMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
         <value>An error occured while deleting the lab execution(s). Check the log for more details.</value>
         <comment>DeleteLabExecutionForSlotAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionForGroupAsync:UnknownError" xml:space="preserve">
+    <data name="CreateLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>An error occured while creating the lab execution. Maybe there is already a lab execution for the given group? Check the log for more details.</value>
         <comment>CreateLabExecutionForGroupAsync:UnknownError</comment>
     </data>
@@ -86,8 +86,12 @@
         <value>Note: Editing an active lab execution may lead to changes of the "passed" status and shifts in the scoreboard. Exercise and flag submissions won't be deleted, even if they would not be possible within the new beginning and end times.</value>
         <comment>ShowEditLabExecutionFormAsync:Warning</comment>
     </data>
-    <data name="CreateLabExecutionForSlotAsync:ErrorGroup" xml:space="preserve">
+    <data name="CreateMultipleLabExecutionsAsync:ErrorGroup" xml:space="preserve">
         <value>Could not start lab for group #{0} ({1}). Is there already a lab execution for the given group?</value>
         <comment>CreateLabExecutionForSlotAsync:ErrorGroup</comment>
+    </data>
+    <data name="EditLabExecutionAsync:NotFound" xml:space="preserve">
+        <value>This lab execution do</value>
+        <comment>EditLabExecutionAsync:NotFound</comment>
     </data>
 </root>

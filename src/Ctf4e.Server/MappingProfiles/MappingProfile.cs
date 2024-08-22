@@ -11,7 +11,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         // Generic entity <-> model mappings
-        
+
         CreateMap<UserEntity, User>()
             .ForMember(u => u.Group, opt => opt.ExplicitExpansion())
             .ForMember(u => u.FlagSubmissions, opt => opt.ExplicitExpansion())
@@ -58,17 +58,19 @@ public class MappingProfile : Profile
             .ForMember(e => e.User, opt => opt.ExplicitExpansion())
             .ForMember(e => e.Exercise, opt => opt.ExplicitExpansion());
         CreateMap<ExerciseSubmission, ExerciseSubmissionEntity>();
-        
+
         // Other mappings
         ExerciseService.RegisterMappings(this);
         FlagService.RegisterMappings(this);
         GroupService.RegisterMappings(this);
         LabService.RegisterMappings(this);
+        LabExecutionService.RegisterMappings(this);
         SlotService.RegisterMappings(this);
         UserService.RegisterMappings(this);
         AdminExercisesController.RegisterMappings(this);
         AdminFlagsController.RegisterMappings(this);
         AdminGroupsController.RegisterMappings(this);
+        AdminLabExecutionsController.RegisterMappings(this);
         AdminLabsController.RegisterMappings(this);
         AdminSlotsController.RegisterMappings(this);
     }

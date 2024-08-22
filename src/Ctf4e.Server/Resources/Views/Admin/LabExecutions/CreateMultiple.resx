@@ -18,40 +18,56 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="Title" xml:space="preserve">
-        <value>Praktikum für eine Gruppe starten</value>
-        <comment>Title</comment>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Manage lab executions</value>
+        <comment>HtmlTitle</comment>
     </data>
     <data name="Form:LabId" xml:space="preserve">
-        <value>Praktikum</value>
+        <value>Lab</value>
         <comment>Form:LabId</comment>
     </data>
+    <data name="Title" xml:space="preserve">
+        <value>Title</value>
+        <comment>Title</comment>
+    </data>
     <data name="Form:LabId:Placeholder" xml:space="preserve">
-        <value>Praktikum auswählen</value>
+        <value>Select lab</value>
         <comment>Form:LabId:Placeholder</comment>
     </data>
-    <data name="Form:GroupId" xml:space="preserve">
-        <value>Gruppe</value>
-        <comment>Form:GroupId</comment>
+    <data name="Form:SlotId" xml:space="preserve">
+        <value>Time slot</value>
+        <comment>Form:SlotId</comment>
     </data>
-    <data name="Form:GroupId:Placeholder" xml:space="preserve">
-        <value>Gruppe auswählen</value>
-        <comment>Form:GroupId:Placeholder</comment>
+    <data name="Form:SlotId:Placeholder" xml:space="preserve">
+        <value>Select time slot</value>
+        <comment>Form:SlotId:Placeholder</comment>
     </data>
     <data name="Form:OverrideExisting" xml:space="preserve">
-        <value>Existierende Konfiguration überschreiben</value>
+        <value>Override for all groups</value>
         <comment>Form:OverrideExisting</comment>
     </data>
     <data name="Form:OverrideExisting:Description" xml:space="preserve">
-        <value>Dies überschreibt eine eventuell bereits existierende Praktikumsausführung der Gruppe.</value>
+        <value>This overrides all lab executions that may already exist for certain groups in the selected time slot.</value>
         <comment>Form:OverrideExisting:Description</comment>
     </data>
+    <data name="Form:Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Form:Cancel</comment>
+    </data>
     <data name="Form:Submit" xml:space="preserve">
-        <value>Praktikum starten</value>
+        <value>Start lab</value>
         <comment>Form:Submit</comment>
     </data>
-    <data name="Form:Cancel" xml:space="preserve">
-        <value>Abbrechen</value>
-        <comment>Form:Cancel</comment>
+    <data name="Form:Start" xml:space="preserve">
+        <value>Begin</value>
+        <comment>Form:Start</comment>
+    </data>
+    <data name="Form:End" xml:space="preserve">
+        <value>End</value>
+        <comment>Form:End</comment>
+    </data>
+    <data name="Form:DateNotes" xml:space="preserve">
+        <value>&lt;strong&gt;Note:&lt;/strong&gt; The dates must not be exactly the same, i.e. start &amp;lt; end must apply.</value>
+        <comment>Form:DateNotes</comment>
     </data>
 </root>

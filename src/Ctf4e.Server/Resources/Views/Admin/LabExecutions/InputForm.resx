@@ -30,4 +30,20 @@
         <value>&lt;strong&gt;Note:&lt;/strong&gt; The dates must not be exactly the same, i.e. start &amp;lt; end must apply.</value>
         <comment>Form:DateNotes</comment>
     </data>
+    <data name="Form:LabId" xml:space="preserve">
+        <value>Lab</value>
+        <comment>Form:LabId</comment>
+    </data>
+    <data name="Form:LabId:Placeholder" xml:space="preserve">
+        <value>Select lab</value>
+        <comment>Form:LabId:Placeholder</comment>
+    </data>
+    <data name="Form:GroupId" xml:space="preserve">
+        <value>Group</value>
+        <comment>Form:GroupId</comment>
+    </data>
+    <data name="Form:GroupId:Placeholder" xml:space="preserve">
+        <value>Select group</value>
+        <comment>Form:GroupId:Placeholder</comment>
+    </data>
 </root>

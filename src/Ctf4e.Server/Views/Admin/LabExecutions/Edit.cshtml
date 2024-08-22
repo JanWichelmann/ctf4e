@@ -1,9 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
-@model AdminSlotInputModel
 @inject IViewLocalizer Localizer
+@model AdminLabExecutionInputModel
 @{
     ViewData["Title"] = Localizer["HtmlTitle"];
-}                                                       
+}
 
 <div class="container">
     <h1 class="header">
@@ -11,12 +11,12 @@
     </h1>
     <hr class="header">
 
-    <form asp-controller="AdminSlots" asp-action="CreateSlot" method="post">
-    
+    <form asp-controller="AdminLabExecutions" asp-action="EditLabExecution" method="post">
+
         <partial name="InputForm.cshtml" model="Model" />
 
         <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
-        <a asp-controller="AdminSlots" asp-action="RenderSlotList" role="button" class="btn btn-outline-secondary">@Localizer["Form:Cancel"]</a>
+        <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@Localizer["Form:Cancel"]</a>
     </form>
 </div>
 

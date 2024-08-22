@@ -15,7 +15,7 @@
     
         <partial name="InputForm.cshtml" model="Model" />
 
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        <a asp-controller="AdminExercises" asp-action="RenderExerciseList" role="button" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+        <a asp-controller="AdminExercises" asp-action="RenderExerciseList" role="button" class="btn btn-outline-secondary">@Localizer["Form:Cancel"]</a>
     </form>
 </div>
