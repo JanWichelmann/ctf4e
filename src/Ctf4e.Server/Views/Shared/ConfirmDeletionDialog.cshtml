@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Ctf4e.Server.Views.Shared.ConfirmDeletionDialogModel
+
+<div class="modal fade" id="@Model.ModalId" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">@(Model.IsUndeletion ? "Undelete" : "Delete") @Model.DeletedObjectName</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you really want to @(Model.IsUndeletion ? "undelete" : "delete") this @Model.DeletedObjectName?
+                </p>
+                @foreach(var message in Model.AdditionalMessages)
+                {
+                    <p>@message</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-antiforgery="true" action="@Model.PostUrl">
+                    @foreach(var postParam in Model.PostParameters)
+                    {
+                        <input type="hidden" name="@postParam.postName" />
+                    }
+                                                                                                                 
+                    @if(Model.IsUndeletion)
+                    {
+                        <button type="submit" class="btn btn-outline-success">Undelete @Model.DeletedObjectName</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-outline-danger">Delete @Model.DeletedObjectName</button>
+                    }
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("@Model.ModalId").addEventListener("show.bs.modal", e =>
+{
+    @foreach(var postParam in Model.PostParameters)
+    {
+        @:e.target.querySelector('input[name="@postParam.postName"]').value = e.relatedTarget.getAttribute("data-@postParam.buttonDataName");
+    }
+});
+</script>

@@ -1,4 +1,4 @@
-@model List<Ctf4e.Server.Models.Slot>
+@model List<Ctf4e.Server.ViewModels.AdminSlotListEntry>
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.Authorization
@@ -38,7 +38,7 @@
         <tr>
             <td>@s.Id</td>
             <td>@s.Name</td>
-            <td>@s.Groups.Count</td>
+            <td>@s.GroupCount</td>
             <td>
                 @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditSlots))
                 {
@@ -46,7 +46,7 @@
                         <i class="bi bi-pencil"></i>
                         @Localizer["Edit"]
                     </a>
-                    @if(!s.Groups.Any())
+                    @if(s.GroupCount == 0)
                     {
                         <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-slot" data-slotid="@s.Id" data-slotname="@s.Name">
                             <i class="bi bi-trash"></i>

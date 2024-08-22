@@ -8,19 +8,10 @@ public class Lab
 {
     public int Id { get; set; }
 
-    [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
-    [DisplayFormat(ConvertEmptyStringToNull = false)]
-    [StringLength(100)]
     public string Name { get; set; }
 
-    [Required(AllowEmptyStrings = true, ErrorMessage = ValidationStrings.FieldIsRequired)]
-    [DisplayFormat(ConvertEmptyStringToNull = false)]
-    [StringLength(256)]
     public string ServerBaseUrl { get; set; }
 
-    [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
-    [DisplayFormat(ConvertEmptyStringToNull = false)]
-    [StringLength(100)]
     public string ApiCode { get; set; }
 
     public int MaxPoints { get; set; }

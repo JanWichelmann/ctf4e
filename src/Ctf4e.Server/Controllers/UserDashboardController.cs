@@ -81,8 +81,8 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
         var currentUser = await GetCurrentUserAsync();
         if(currentUser?.GroupId == null)
         {
-            AddStatusMessage(StatusMessageType.Error, Localizer["SubmitFlagAsync:NoGroup"]);
-            return await RenderLabPageAsync(labId);
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:NoGroup"]);
+            return RedirectToAction("RenderLabPage", new { labId });
         }
 
         try
@@ -91,19 +91,19 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
             bool success = await flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
             if(success)
             {
-                AddStatusMessage(StatusMessageType.Success, Localizer["SubmitFlagAsync:Success"]);
+                PostStatusMessage = new(StatusMessageType.Success, Localizer["SubmitFlagAsync:Success"]) { AutoHide = true };
             }
             else
             {
-                AddStatusMessage(StatusMessageType.Error, Localizer["SubmitFlagAsync:Error"]);
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:Error"]);
             }
         }
         catch(Exception)
         {
-            AddStatusMessage(StatusMessageType.Error, Localizer["SubmitFlagAsync:Error"]);
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:Error"]);
         }
 
-        return await RenderLabPageAsync(labId);
+        return RedirectToAction("RenderLabPage", new { labId });
     }
 
     [HttpGet("labserver")]

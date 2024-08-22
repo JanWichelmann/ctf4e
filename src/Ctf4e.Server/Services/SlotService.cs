@@ -7,6 +7,7 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
@@ -14,6 +15,7 @@ namespace Ctf4e.Server.Services;
 public interface ISlotService
 {
     Task<List<Slot>> GetSlotsAsync(CancellationToken cancellationToken);
+    Task<List<AdminSlotListEntry>> GetSlotListAsync(CancellationToken cancellationToken);
     Task<Slot> FindSlotByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken);
     Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken);
@@ -28,6 +30,14 @@ public class SlotService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
         return dbContext.Slots.AsNoTracking()
             .OrderBy(s => s.Id)
             .ProjectTo<Slot>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public Task<List<AdminSlotListEntry>> GetSlotListAsync(CancellationToken cancellationToken)
+    {
+        return dbContext.Slots.AsNoTracking()
+            .OrderBy(s => s.Id)
+            .ProjectTo<AdminSlotListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 
@@ -49,4 +59,10 @@ public class SlotService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
 
     public Task DeleteSlotAsync(int id, CancellationToken cancellationToken)
         => genericCrudService.DeleteAsync<SlotEntity>([id], cancellationToken);
+    
+    public static void RegisterMappings(Profile mappingProfile)
+    {
+        mappingProfile.CreateMap<SlotEntity, AdminSlotListEntry>()
+            .ForMember(se => se.GroupCount, opt => opt.MapFrom(s => s.Groups.Count));
+    }
 }

@@ -28,7 +28,7 @@ public class AdminSlotsController(IUserService userService, ISlotService slotSer
     public async Task<IActionResult> RenderSlotListAsync()
     {
         // Pass slots
-        var slots = await slotService.GetSlotsAsync(HttpContext.RequestAborted);
+        var slots = await slotService.GetSlotListAsync(HttpContext.RequestAborted);
 
         return await RenderAsync(ViewType.List, "~/Views/AdminSlots.cshtml", slots);
     }

@@ -13,7 +13,7 @@ public static class TempDataExtensions
     public static T? GetJson<T>(this ITempDataDictionary tempData, string key) where T : struct
     {
         if(tempData.TryGetValue(key, out var value) && value is string str)
-            return JsonSerializer.Deserialize<T>(str);
+            return JsonSerializer.Deserialize<T>(str);    
         return null;
     }
 }

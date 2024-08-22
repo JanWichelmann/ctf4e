@@ -6,7 +6,9 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
+using Ctf4e.Server.MappingProfiles;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
@@ -14,7 +16,7 @@ namespace Ctf4e.Server.Services;
 public interface ILabService
 {
     ValueTask<List<Lab>> GetLabsAsync(CancellationToken cancellationToken);
-    Task<List<Lab>> GetFullLabsAsync(CancellationToken cancellationToken);
+    Task<List<AdminLabListEntry>> GetLabListAsync(CancellationToken cancellationToken);
     Task<Lab> FindLabByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken);
     Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken);
@@ -28,12 +30,11 @@ public class LabService(CtfDbContext dbContext, IMapper mapper, GenericCrudServi
        => genericCrudService.GetAllAsync<Lab, LabEntity>()
            .ToListAsync(cancellationToken);
 
-    public Task<List<Lab>> GetFullLabsAsync(CancellationToken cancellationToken)
+    public Task<List<AdminLabListEntry>> GetLabListAsync(CancellationToken cancellationToken)
     {
-        // TODO dedicated viewmodel
         return dbContext.Labs.AsNoTracking()
             .OrderBy(l => l.Id)
-            .ProjectTo<Lab>(mapper.ConfigurationProvider, l => l.Exercises, l => l.Flags, l => l.Executions)
+            .ProjectTo<AdminLabListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
     
@@ -55,4 +56,12 @@ public class LabService(CtfDbContext dbContext, IMapper mapper, GenericCrudServi
 
     public Task DeleteLabAsync(int id, CancellationToken cancellationToken)
         => genericCrudService.DeleteAsync<LabEntity>([id], cancellationToken);
+
+    public static void RegisterMappings(Profile mappingProfile)
+    {
+        mappingProfile.CreateMap<LabEntity, AdminLabListEntry>()
+            .ForMember(l => l.ExerciseCount, opt => opt.MapFrom(l => l.Exercises.Count))
+            .ForMember(l => l.FlagCount, opt => opt.MapFrom(l => l.Flags.Count))
+            .ForMember(l => l.ExecutionCount, opt => opt.MapFrom(l => l.Executions.Count));
+    }
 }

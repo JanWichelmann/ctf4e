@@ -21,6 +21,8 @@ public abstract class ControllerBase<TController> : Controller
     /// </summary>
     protected IStringLocalizer<TController> Localizer => _localizer ??= HttpContext.RequestServices.GetRequiredService<IStringLocalizer<TController>>();
 
+    private StatusMessage? _postStatusMessage;
+    
     /// <summary>
     /// Stores a single status message in the controller's TempData collection.
     /// The message is displayed at the next request.
@@ -31,7 +33,7 @@ public abstract class ControllerBase<TController> : Controller
     /// </summary>
     protected StatusMessage? PostStatusMessage
     {
-        get => TempData.GetJson<StatusMessage>("PostStatusMessage");
+        get => _postStatusMessage ??= TempData.GetJson<StatusMessage>("PostStatusMessage");
         set
         {
             if(value == null)

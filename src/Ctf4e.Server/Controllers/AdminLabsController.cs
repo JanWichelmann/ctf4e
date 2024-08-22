@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
+using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
@@ -17,130 +19,109 @@ public class AdminLabsController(IUserService userService, ILabService labServic
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminLabs;
 
-    private Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, object model)
-    {
-        ViewData["ViewType"] = viewType;
-
-        return RenderViewAsync(viewPath, model);
-    }
-
     [HttpGet]
     public async Task<IActionResult> RenderLabListAsync()
     {
         // Pass labs
-        var labs = await labService.GetFullLabsAsync(HttpContext.RequestAborted);
+        var labs = await labService.GetLabListAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, "~/Views/AdminLabs.cshtml", labs);
+        return await RenderViewAsync("~/Views/Admin/Labs/Index.cshtml", labs);
     }
 
-    private async Task<IActionResult> ShowEditLabFormAsync(int? id, Lab lab = null)
+    private async Task<IActionResult> ShowEditLabFormAsync(AdminLabInputModel labInput)
     {
-        // Retrieve by ID, if no object from a failed POST was passed
-        if(id != null)
-        {
-            lab = await labService.FindLabByIdAsync(id.Value, HttpContext.RequestAborted);
-            if(lab == null)
-            {
-                AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditLabFormAsync:NotFound"]);
-                return await RenderLabListAsync();
-            }
-        }
-
-        if(lab == null)
-        {
-            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditLabFormAsync:MissingParameter"]);
-            return await RenderLabListAsync();
-        }
-
-        return await RenderAsync(ViewType.Edit, "~/Views/AdminLabs.cshtml", lab);
+        return await RenderViewAsync("~/Views/Admin/Labs/Edit.cshtml", labInput);
     }
 
     [HttpGet("edit")]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public Task<IActionResult> ShowEditLabFormAsync(int id)
+    public async Task<IActionResult> ShowEditLabFormAsync(int id, [FromServices] IMapper mapper)
     {
-        return ShowEditLabFormAsync(id, null);
+        var lab = await labService.FindLabByIdAsync(id, HttpContext.RequestAborted);
+        if(lab == null)
+        {
+            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditLabFormAsync:NotFound"]);
+            return await RenderLabListAsync();
+        }
+
+        var labData = mapper.Map<AdminLabInputModel>(lab);
+        return await ShowEditLabFormAsync(labData);
     }
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> EditLabAsync(Lab labData)
+    public async Task<IActionResult> EditLabAsync(AdminLabInputModel labInput, [FromServices] IMapper mapper)
     {
         // Check input
-        if(!ModelState.IsValid)
+        if(!ModelState.IsValid || labInput.Id == null)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["EditLabAsync:InvalidInput"]);
-            return await ShowEditLabFormAsync(null, labData);
+            return await ShowEditLabFormAsync(labInput);
         }
 
         try
         {
             // Retrieve edited lab from database and apply changes
-            var lab = await labService.FindLabByIdAsync(labData.Id, HttpContext.RequestAborted);
-            lab.Name = labData.Name;
-            lab.ApiCode = labData.ApiCode;
-            lab.ServerBaseUrl = labData.ServerBaseUrl;
-            lab.MaxPoints = labData.MaxPoints;
-            lab.MaxFlagPoints = labData.MaxFlagPoints;
-            lab.Visible = labData.Visible;
+            var lab = await labService.FindLabByIdAsync(labInput.Id.Value, HttpContext.RequestAborted);
+            if(lab == null)
+            {
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["EditLabAsync:NotFound"]) { AutoHide = true };
+                return RedirectToAction("RenderLabList");
+            }
+
+            mapper.Map(labInput, lab);
+
             await labService.UpdateLabAsync(lab, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["EditLabAsync:Success"]);
+            PostStatusMessage = new(StatusMessageType.Success, Localizer["EditLabAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderLabList");
         }
         catch(InvalidOperationException ex)
         {
             GetLogger().LogError(ex, "Edit lab");
             AddStatusMessage(StatusMessageType.Error, Localizer["EditLabAsync:UnknownError"]);
-            return await ShowEditLabFormAsync(null, labData);
+            return await ShowEditLabFormAsync(labInput);
         }
+    }
 
-        return await RenderLabListAsync();
+    private async Task<IActionResult> ShowCreateLabFormAsync(AdminLabInputModel labInput)
+    {
+        return await RenderViewAsync("~/Views/Admin/Labs/Create.cshtml", labInput);
     }
 
     [HttpGet("create")]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> ShowCreateLabFormAsync(Lab lab = null)
-    {
-        return await RenderAsync(ViewType.Create, "~/Views/AdminLabs.cshtml", lab);
-    }
+    public Task<IActionResult> ShowCreateLabFormAsync()
+        => ShowCreateLabFormAsync(null);
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> CreateLabAsync(Lab labData)
+    public async Task<IActionResult> CreateLabAsync(AdminLabInputModel labInput, [FromServices] IMapper mapper)
     {
         // Check input
         if(!ModelState.IsValid)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["CreateLabAsync:InvalidInput"]);
-            return await ShowCreateLabFormAsync(labData);
+            return await ShowCreateLabFormAsync(labInput);
         }
 
         try
         {
             // Create lab
-            var lab = new Lab
-            {
-                Name = labData.Name,
-                ApiCode = labData.ApiCode,
-                ServerBaseUrl = labData.ServerBaseUrl,
-                MaxPoints = labData.MaxPoints,
-                MaxFlagPoints = labData.MaxFlagPoints,
-                Visible = labData.Visible
-            };
+            var lab = mapper.Map<Lab>(labInput);
             await labService.CreateLabAsync(lab, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["CreateLabAsync:Success"]);
+            PostStatusMessage = new(StatusMessageType.Success, Localizer["CreateLabAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderLabList");
         }
         catch(InvalidOperationException ex)
         {
             GetLogger().LogError(ex, "Create lab");
             AddStatusMessage(StatusMessageType.Error, Localizer["CreateLabAsync:UnknownError"]);
-            return await ShowCreateLabFormAsync(labData);
+            return await ShowCreateLabFormAsync(labInput);
         }
-
-        return await RenderLabListAsync();
     }
 
     [HttpPost("delete")]
@@ -148,40 +129,39 @@ public class AdminLabsController(IUserService userService, ILabService labServic
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> DeleteLabAsync(int id, [FromServices] ILabExecutionService labExecutionService)
     {
-        // Input check
-        var lab = await labService.FindLabByIdAsync(id, HttpContext.RequestAborted);
-        if(lab == null)
-        {
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteLabAsync:NotFound"]);
-            return await RenderLabListAsync();
-        }
-
-        if(await labExecutionService.AnyLabExecutionsForLabAsync(id, HttpContext.RequestAborted))
-        {
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteLabAsync:HasExecutions"]);
-            return await RenderLabListAsync();
-        }
-
         try
         {
+            // Input check
+            var lab = await labService.FindLabByIdAsync(id, HttpContext.RequestAborted);
+            if(lab == null)
+            {
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["DeleteLabAsync:NotFound"]);
+                return RedirectToAction("RenderLabList");
+            }
+
+            if(await labExecutionService.AnyLabExecutionsForLabAsync(id, HttpContext.RequestAborted))
+            {
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["DeleteLabAsync:HasExecutions"]);
+                return RedirectToAction("RenderLabList");
+            }
+
             // Delete lab
             await labService.DeleteLabAsync(id, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteLabAsync:Success"]);
+            PostStatusMessage = new(StatusMessageType.Success, Localizer["DeleteLabAsync:Success"]) { AutoHide = true };
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Delete lab");
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteLabAsync:UnknownError"]);
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["DeleteLabAsync:UnknownError"]);
         }
 
-        return await RenderLabListAsync();
+        return RedirectToAction("RenderLabList");
     }
 
-    public enum ViewType
+    public static void RegisterMappings(Profile mappingProfile)
     {
-        List,
-        Edit,
-        Create
+        mappingProfile.CreateMap<Lab, AdminLabInputModel>();
+        mappingProfile.CreateMap<AdminLabInputModel, Lab>();
     }
 }
