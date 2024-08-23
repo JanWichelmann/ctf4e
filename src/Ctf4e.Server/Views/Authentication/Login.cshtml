@@ -1,0 +1,103 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Services
+@using Microsoft.Extensions.Options
+@using MoodleLti.Options
+@inject IViewLocalizer Localizer
+@inject IUserService UserService
+@inject IOptionsSnapshot<MoodleLtiOptions> MoodleOptions
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+    
+    string loginReferer = ViewData.ContainsKey("Referer") ? (string)ViewData["Referer"] : null;
+}
+
+<div class="container">
+    <div class="login-form card mt-5 mx-auto">
+        <div class="card-header">
+            <ul class="nav nav-pills card-header-pills" role="tablist">
+                <li class="nav-item me-2" role="presentation">
+                    <button class="nav-link active" id="password-login-tab" data-bs-toggle="tab" data-bs-target="#password-login-pane" type="button" role="tab" aria-controls="password-login-pane" aria-selected="true">@Localizer["Tab:PasswordLogin"]</button>
+                </li>
+                <li class="nav-item me-2" role="presentation">
+                    <button class="nav-link" id="moodle-login-tab" data-bs-toggle="tab" data-bs-target="#moodle-login-pane" type="button" role="tab" aria-controls="moodle-login-pane" aria-selected="false">@Localizer["Tab:MoodleLogin"]</button>
+                </li>
+
+                @{
+                    // Show developer login only in debug mode
+#if DEBUG
+                }
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="dev-login-tab" data-bs-toggle="tab" data-bs-target="#dev-login-pane" type="button" role="tab" aria-controls="dev-login-pane" aria-selected="false">@Localizer["Tab:DevLogin"]</button>
+                </li>
+                @{
+#endif
+                }
+            </ul>
+        </div>
+        <div class="card-body tab-content pt-4">
+            <div class="tab-pane fade show active" id="password-login-pane" role="tabpanel" aria-labelledby="password-login-tab">
+                <form asp-controller="Authentication" asp-action="PasswordLogin">
+                    <h1 class="mb-3 fw-normal">@Localizer["PasswordLogin:Title"]</h1>
+
+                    <div class="mb-3">
+                        <label for="username" class="visually-hidden">@Localizer["PasswordLogin:Username"]</label>
+                        <input type="text" class="form-control" name="username" id="username" placeholder="@Localizer["PasswordLogin:Username"]" value="@(ViewData.ContainsKey("LoginFormUsername") ? ViewData["LoginFormUsername"] : "")" required autofocus />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="visually-hidden">@Localizer["PasswordLogin:Password"]</label>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="@Localizer["PasswordLogin:Password"]" required />
+                    </div>
+
+                    <input type="hidden" name="referer" value="@(loginReferer ?? "")">
+
+                    <button class="btn btn-primary btn-block w-100" type="submit">@Localizer["PasswordLogin:Submit"]</button>
+                </form>
+            </div>
+
+            <div class="tab-pane fade show" id="moodle-login-pane" role="tabpanel" aria-labelledby="moodle-login-tab">
+                <h1 class="mb-3 fw-normal">@Localizer["MoodleLogin:Title"]</h1>
+
+                @{
+                    string moodleLink = MoodleOptions.Value.BaseUrl;
+                    if(moodleLink.EndsWith('/'))
+                        moodleLink += $"course/view.php?id={MoodleOptions.Value.CourseId}";
+                    else
+                        moodleLink += $"/course/view.php?id={MoodleOptions.Value.CourseId}";
+                }
+                <a class="btn btn-outline-primary" href="@moodleLink">
+                    <i class="bi bi-arrow-right-square"></i>
+                    @Localizer["MoodleLogin:Button"]
+                </a>
+            </div>
+
+            @{
+                // Show developer login only in debug mode
+#if DEBUG
+            }
+            <div class="tab-pane fade show" id="dev-login-pane" role="tabpanel" aria-labelledby="dev-login-tab">
+                @{
+                    var users = await UserService.GetUsersAsync(Context.RequestAborted);
+                }
+                <form asp-controller="Authentication" asp-action="DevLogin" method="get">
+                    <h1 class="mb-3 fw-normal">@Localizer["DevLogin:Title"]</h1>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="input-user-id">@Localizer["DevLogin:UserId"]</label>
+                        <select id="input-user-id" name="userId" class="form-select">
+                            @foreach(var user in users.OrderBy(u => u.Id))
+                            {
+                                <!option value="@user.Id">#@user.Id: @user.DisplayName</!option>
+                            }
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary btn-block w-100" type="submit">@Localizer["DevLogin:Submit"]</button>
+                </form>
+            </div>
+            @{
+#endif
+            }
+        </div>
+    </div>
+</div>

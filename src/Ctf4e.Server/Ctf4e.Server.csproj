@@ -199,6 +199,7 @@
   
   <ItemGroup>
     <Folder Include="Resources\Views\Admin\Labs\" />
+    <Folder Include="Views\Authentication\" />
   </ItemGroup>
   
   <ItemGroup>

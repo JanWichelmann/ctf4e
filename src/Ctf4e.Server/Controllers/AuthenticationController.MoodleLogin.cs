@@ -21,7 +21,7 @@ public partial class AuthenticationController
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser != null)
-            return await ShowRedirectAsync(null);
+            return await RedirectAsync(null);
 
         // Parse and check request
         MoodleAuthenticationMessageData authData;
@@ -37,8 +37,8 @@ public partial class AuthenticationController
         }
         catch(SecurityException)
         {
-            AddStatusMessage(StatusMessageType.Error, Localizer["LoginMoodleAsync:InvalidLogin"]);
-            return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
+            AddStatusMessage(StatusMessageType.Error, Localizer["LoginMoodleAsync:InvalidLogin"]);;
+            return await ShowLoginFormAsync(null);
         }
 
         // Does the user exist already?
@@ -57,7 +57,7 @@ public partial class AuthenticationController
                 Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default
             };
             user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
-            AddStatusMessage(StatusMessageType.Success, Localizer["LoginMoodleAsync:AccountCreationSuccess"]);
+            GetLogger().LogInformation("Created new user {UserId} (Moodle: {MoodleName})", user.Id, user.MoodleName);
         }
 
         // Sign in user
@@ -67,7 +67,7 @@ public partial class AuthenticationController
         loginRateLimiter.ResetRateLimit(user.Id);
 
         // Done
-        AddStatusMessage(StatusMessageType.Success, Localizer["LoginMoodleAsync:Success"]);
-        return await ShowRedirectAsync(null);
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["LoginMoodleAsync:Success"]) { AutoHide = true };
+        return await RedirectAsync(null);
     }
 }

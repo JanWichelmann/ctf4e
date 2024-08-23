@@ -20,7 +20,7 @@ public partial class AuthenticationController
         var slotService = HttpContext.RequestServices.GetRequiredService<ISlotService>();
         ViewData["Slots"] = await slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.GroupSelection, "~/Views/Authentication.cshtml", groupSelection);
+        return await RenderViewAsync("~/Views/Authentication/SelectGroup.cshtml", groupSelection);
     }
 
     [HttpGet("selgroup")]
@@ -48,7 +48,7 @@ public partial class AuthenticationController
         // Does the user already have a group?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser.Group != null)
-            return await ShowRedirectAsync(null);
+            return await RedirectAsync(null);
 
         // Try to create group
         int groupId;
@@ -127,12 +127,12 @@ public partial class AuthenticationController
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Start default lab on group creation");
-            AddStatusMessage(StatusMessageType.Error, Localizer["HandleGroupSelectionAsync:DefaultLabStartError"]);
-            return await ShowRedirectAsync(null);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["HandleGroupSelectionAsync:DefaultLabStartError"]);
+            return await RedirectAsync(null);
         }
 
         // Success
-        AddStatusMessage(StatusMessageType.Success, Localizer["HandleGroupSelectionAsync:Success"]);
-        return await ShowRedirectAsync(null);
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["HandleGroupSelectionAsync:Success"]);
+        return await RedirectAsync(null);
     }
 }

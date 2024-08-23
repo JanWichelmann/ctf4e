@@ -24,30 +24,23 @@ public partial class AuthenticationController(IUserService userService, IConfigu
     : ControllerBase<AuthenticationController>(userService)
 {
     protected override MenuItems ActiveMenuItem => MenuItems.Authentication;
-    
+
     private readonly IUserService _userService = userService;
 
-    private Task<IActionResult> RenderAsync(ViewType viewType, string viewPath, object model = null)
-    {
-        ViewData["ViewType"] = viewType;
-        return RenderViewAsync(viewPath, model);
-    }
-    
     [HttpGet]
     public async Task<IActionResult> ShowLoginFormAsync(string returnUrl)
     {
         // Logged in?
         var currentUser = await GetCurrentUserAsync();
-        if(currentUser != null) 
-            return await ShowRedirectAsync(null); // Redirect to any page the user has access to
-        
+        if(currentUser != null)
+            return await RedirectAsync(null); // Redirect to any page the user has access to
+
         if(!string.IsNullOrWhiteSpace(returnUrl))
             ViewData["Referer"] = returnUrl;
-        return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
-
+        return await RenderViewAsync("~/Views/Authentication/Login.cshtml");
     }
 
-    private async Task<IActionResult> ShowRedirectAsync(string redirectUrl)
+    private async Task<IActionResult> RedirectAsync(string redirectUrl)
     {
         // Redirect to the given URL. If no URL is specified, try to pick a valid one, depending on the user's privileges
         var currentUser = await GetCurrentUserAsync();
@@ -57,16 +50,15 @@ public partial class AuthenticationController(IUserService userService, IConfigu
         if(redirectUrl == null)
         {
             if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-                redirectUrl = Url.Action("RenderScoreboard", "AdminScoreboard");
-            else if(currentUser.GroupId == null)
-                redirectUrl = Url.Action("ShowGroupForm", "Authentication");
-            else
-                redirectUrl = Url.Action("RenderLabPage", "UserDashboard");
+                return RedirectToAction("RenderScoreboard", "AdminScoreboard");
+            
+            if(currentUser.GroupId == null)
+                return RedirectToAction("ShowGroupForm", "Authentication");
+            
+            return RedirectToAction("RenderLabPage", "UserDashboard");
         }
 
-        ViewData["RedirectUrl"] = redirectUrl;
-
-        return await RenderAsync(ViewType.Redirect, "~/Views/Authentication.cshtml");
+        return Redirect(redirectUrl);
     }
 
 #if DEBUG
@@ -77,26 +69,26 @@ public partial class AuthenticationController(IUserService userService, IConfigu
         var webHostEnvironment = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
         if(!webHostEnvironment.IsDevelopment())
             return Forbid();
-            
+
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser != null)
-            return await ShowRedirectAsync(null); // Redirect to any page the user has access to
+            return await RedirectAsync(null); // Redirect to any page the user has access to
 
         // Find user
         var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         if(user == null)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["DevLoginAsync:NotFound"]);
-            return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
+            return await RenderViewAsync("~/Views/Authentication/Login.cshtml");
         }
 
         // Sign in user
         await DoLoginAsync(user);
 
         // Done
-        AddStatusMessage(StatusMessageType.Success, Localizer["DevLoginAsync:Success"]);
-        return await ShowRedirectAsync(null); // Redirect to any page the user has access to
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DevLoginAsync:Success"]) { AutoHide = true };
+        return await RedirectAsync(null); // Redirect to any page the user has access to
     }
 
     [HttpGet("login/as")]
@@ -107,15 +99,15 @@ public partial class AuthenticationController(IUserService userService, IConfigu
         if(user == null)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["AdminLoginAsUserAsync:NotFound"]);
-            return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
+            return await RenderViewAsync("~/Views/Authentication/Login.cshtml");
         }
 
         // Sign in again, but as another user
         await DoLoginAsync(user);
 
         // Done
-        AddStatusMessage(StatusMessageType.Success, Localizer["AdminLoginAsUserAsync:Success", user.DisplayName]);
-        return await ShowRedirectAsync(null); // Redirect to any page the user has access to
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["AdminLoginAsUserAsync:Success", user.DisplayName]) { AutoHide = true };
+        return await RedirectAsync(null); // Redirect to any page the user has access to
     }
 #endif
 
@@ -124,7 +116,7 @@ public partial class AuthenticationController(IUserService userService, IConfigu
         // Prepare session data to identify user
         var claims = new List<Claim>
         {
-            new (AuthenticationStrings.ClaimUserId, user.Id.ToString())
+            new(AuthenticationStrings.ClaimUserId, user.Id.ToString())
         };
 
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
@@ -141,7 +133,8 @@ public partial class AuthenticationController(IUserService userService, IConfigu
         await HandleUserLoginAsync(user.Id);
     }
 
-    [HttpGet("logout")]
+    [HttpPost("logout")]
+    [ValidateAntiForgeryToken]
     [Authorize]
     public async Task<IActionResult> LogoutAsync()
     {
@@ -152,15 +145,7 @@ public partial class AuthenticationController(IUserService userService, IConfigu
         HandleUserLogout();
 
         // Done
-        AddStatusMessage(StatusMessageType.Success, Localizer["LogoutAsync:Success"]);
-        return await RenderAsync(ViewType.Login, "~/Views/Authentication.cshtml");
-    }
-
-    public enum ViewType
-    {
-        Login,
-        GroupSelection,
-        Settings,
-        Redirect
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["LogoutAsync:Success"]);
+        return RedirectToAction("ShowLoginForm");
     }
 }

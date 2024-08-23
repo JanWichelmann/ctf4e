@@ -239,11 +239,13 @@
                                     <hr class="dropdown-divider">
                                 </li>
 
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
-                                        <i class="bi bi-door-closed text-secondary"></i>
-                                        @Localizer["MenuItems:Logout"]
-                                    </a>
+                                <li class="dropdown-item">
+                                    <form asp-controller="Authentication" asp-action="Logout" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
+                                            <i class="bi bi-door-closed"></i>
+                                            @Localizer["MenuItems:Logout"]
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </li>
@@ -312,7 +314,7 @@
                                             break;
                                     }
                                 </span>
-                                               
+
                                 @if(statusMessage.Preformatted)
                                 {
                                     <pre>@statusMessage.Message</pre>

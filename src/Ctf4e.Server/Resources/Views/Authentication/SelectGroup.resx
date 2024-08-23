@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Create group</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Create group</value>
+        <comment>Title</comment>
+    </data>
+    <data name="YourCode" xml:space="preserve">
+        <value>Your code: &lt;span class="fw-bold font-monospace"&gt;{0}&lt;/span&gt;</value>
+        <comment>YourCode</comment>
+    </data>
+    <data name="Form:OtherUserCodes" xml:space="preserve">
+        <value>Codes of your group partners</value>
+        <comment>OtherCodes</comment>
+    </data>
+    <data name="Form:OtherUserCodes:Description" xml:space="preserve">
+        <value>One code per line.</value>
+        <comment>Form:OtherUserCodes:Description</comment>
+    </data>
+    <data name="Form:SlotId" xml:space="preserve">
+        <value>Time slot</value>
+        <comment>Form:SlotId</comment>
+    </data>
+    <data name="Form:SlotId:Description" xml:space="preserve">
+        <value>This must match the time slot which has been assigned to you.</value>
+        <comment>Form:SlotId:Description</comment>
+    </data>
+    <data name="Form:DisplayName" xml:space="preserve">
+        <value>Group name</value>
+        <comment>Form:DisplayName</comment>
+    </data>
+    <data name="Form:DisplayName:Description" xml:space="preserve">
+        <value>This field has full Unicode support, so apart from the length limitation there are no limits to your creativity. Afterwards, the group name cannot be changed anymore.</value>
+        <comment>Form:DisplayName:Description</comment>
+    </data>
+    <data name="Form:ShowInScoreboard" xml:space="preserve">
+        <value>Participate in CTF and show group in scoreboard</value>
+        <comment>Form:ShowInScoreboard</comment>
+    </data>
+    <data name="Form:ShowInScoreboard:Description" xml:space="preserve">
+        <value>If you check this field, you participate in the course's Capture-The-Flag competition, and the name of your group will be shown in the scoreboard. Participation in the CTF is optional and has no disadvantages. The scoreboard only shows the top scores.</value>
+        <comment>Form:ShowInScoreboard:Description</comment>
+    </data>
+    <data name="Form:FinalText" xml:space="preserve">
+        <value>Done? Great! Please check all inputs once again. If everything looks fine, you can click "Create group". The system will then create a new group and redirect you to the lab dashboard.</value>
+        <comment>Form:FinalText</comment>
+    </data>
+    <data name="Form:Submit" xml:space="preserve">
+        <value>Create group</value>
+        <comment>Form:Submit</comment>
+    </data>
+</root>

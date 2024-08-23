@@ -19,17 +19,24 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="HtmlTitle" xml:space="preserve">
-        <value>Login</value>
-        <comment>HtmlTitle</comment>
-    </data>
-    <data name="Redirecting" xml:space="preserve">
-        <value>Redirecting...</value>
-        <comment>Redirecting</comment>
-    </data>
-    <data name="HtmlTitle:Settings" xml:space="preserve">
         <value>Account settings</value>
     </data>
-    <data name="HtmlTitle:GroupSelection" xml:space="preserve">
-        <value>Create group</value>
+    <data name="Title" xml:space="preserve">
+        <value>Account settings</value>
+    </data>
+    <data name="Form:OldPassword" xml:space="preserve">
+        <value>Old password (only needed when a password is already set)</value>
+    </data>
+    <data name="Form:NewPassword" xml:space="preserve">
+        <value>New password (at least 8 characters)</value>
+    </data>
+    <data name="Form:NewPassword2" xml:space="preserve">
+        <value>Repeat new password</value>
+    </data>
+    <data name="Form:Submit" xml:space="preserve">
+        <value>Update settings</value>
+    </data>
+    <data name="Form:MoodleName" xml:space="preserve">
+        <value>User name</value>
     </data>
 </root>
