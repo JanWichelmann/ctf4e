@@ -19,6 +19,8 @@ public class Lab
     public int MaxFlagPoints { get; set; }
         
     public bool Visible { get; set; }
+    
+    public int SortIndex { get; set; }
 
     public ICollection<LabExecution> Executions { get; set; }
 

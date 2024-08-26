@@ -94,4 +94,7 @@
         <value>Sichtbar?</value>
         <comment>Labs:Visible</comment>
     </data>
+    <data name="Labs:SortIndex" xml:space="preserve">
+        <value>Sortiernummer</value>
+    </data>
 </root>

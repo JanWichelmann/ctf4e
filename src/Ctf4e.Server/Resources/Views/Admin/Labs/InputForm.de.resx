@@ -62,4 +62,12 @@
         <value>Dies legt fest, ob das Praktikum im Scoreboard und in der Praktikumsübersicht aufgelistet wird. Es wird weiterhin bewertet.</value>
         <comment>Form:Visible:Description</comment>
     </data>
+    <data name="Form:SortIndex" xml:space="preserve">
+        <value>Sortiernummer</value>
+        <comment>Form:SortIndex</comment>
+    </data>
+    <data name="Form:SortIndex:Description" xml:space="preserve">
+        <value>Legt fest, in welcher Reihenfolge die Praktika angezeigt werden. Kleinere Zahlen kommen zuerst.</value>
+        <comment>Form:SortIndex:Description</comment>
+    </data>
 </root>

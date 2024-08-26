@@ -94,4 +94,8 @@
         <value>Visible?</value>
         <comment>Labs:Visible</comment>
     </data>
+    <data name="Labs:SortIndex" xml:space="preserve">
+        <value>Sort index</value>
+        <comment>Labs:SortIndex</comment>
+    </data>
 </root>

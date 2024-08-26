@@ -33,7 +33,8 @@ public class LabService(CtfDbContext dbContext, IMapper mapper, GenericCrudServi
     public Task<List<AdminLabListEntry>> GetLabListAsync(CancellationToken cancellationToken)
     {
         return dbContext.Labs.AsNoTracking()
-            .OrderBy(l => l.Id)
+            .OrderBy(l => l.SortIndex)
+            .ThenBy(l => l.Name)
             .ProjectTo<AdminLabListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }

@@ -23,7 +23,7 @@
         }
     </div>
 
-    <h1 class="header">
+    <h1 class="mt-4">
         @Localizer["Title"]
     </h1>
     <hr class="header">
@@ -32,6 +32,7 @@
         <thead>
         <tr>
             <th scope="col">@Localizer["Labs:ID"]</th>
+            <th scope="col">@Localizer["Labs:SortIndex"]</th>
             <th scope="col">@Localizer["Labs:Name"]</th>
             <th scope="col">@Localizer["Labs:MaximumPoints"]</th>
             <th scope="col">@Localizer["Labs:MaximumFlagPoints"]</th>
@@ -46,7 +47,8 @@
         {
             <tr>
                 <td>@l.Id</td>
-                <td>@l.Name</td>
+                <td>@l.SortIndex</td>
+                <td>@l.Name</td>   
                 <td>@l.MaxPoints</td>
                 <td>@l.MaxFlagPoints</td>
                 <td>

@@ -62,4 +62,10 @@
         <value>This controls whether the lab is listed in the scoreboard and the lab dashboard. It is still graded.</value>
         <comment>Form:Visible:Description</comment>
     </data>
+    <data name="Form:SortIndex" xml:space="preserve">
+        <value>Sort index</value>
+    </data>
+    <data name="Form:SortIndex:Description" xml:space="preserve">
+        <value>Determines the order in which labs are displayed. Lower numbers come first.</value>
+    </data>
 </root>

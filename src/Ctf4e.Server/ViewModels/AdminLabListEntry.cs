@@ -5,6 +5,8 @@ public class AdminLabListEntry
     public int Id { get; set; }
 
     public string Name { get; set; }
+    
+    public int SortIndex { get; set; }
 
     public int MaxPoints { get; set; }
 
