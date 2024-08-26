@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.Authorization
-@model UserDashboardData
+@model UserDashboard
 @inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["HtmlTitle"];
@@ -10,26 +10,60 @@
 }
 
 <div class="container">
-    <div class="float-end">
+
+    <div class="row mt-4 align-items-center">
+        <div class="col">
+            <h1 class="mb-0 @(!Model.CurrentLab.Visible ? "fst-italic" : "")">
+                @if(!Model.CurrentLab.Visible)
+                {
+                    <i class="bi bi-lock-fill" title="@Localizer["LabHidden"]"></i>
+                }
+                @Localizer["Lab"]: @Model.CurrentLab.Name
+            </h1>
+        </div>
         @if(Model.HasPassed)
         {
-            <span class="badge bg-success" style="font-size: 1rem;">
-                <i class="bi bi-check-circle"></i>
-                @Localizer["Passed"]
-            </span>
+            <div class="col-auto">
+                <span class="badge bg-success" style="font-size: 1rem;">
+                    <i class="bi bi-check-circle"></i>
+                    @Localizer["Passed"]
+                </span>
+            </div>
         }
-    </div>
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @Localizer["SwitchLab"]
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    @foreach(var lab in Model.Labs)
+                    {
+                        if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs))
+                        {
+                            continue;
+                        }
 
-    <h1 class="header @(!Model.CurrentLab.Visible ? "fst-italic" : "")">
-        @if(!Model.CurrentLab.Visible)
-        {
-            <i class="bi bi-lock-fill" title="@Localizer["LabHidden"]"></i>
-        }
-        @Localizer["Lab"]: @Model.CurrentLab.Name
-    </h1>
+                        <li>
+                            <a class="dropdown-item @(!lab.Visible ? "fst-italic" : "") @(lab.Active ? "fw-bold" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage" asp-route-labId="@lab.LabId">
+                                @lab.Name
+                                @if(lab.Active)
+                                {
+                                    @:(@Localizer["SwitchLab:Active"])
+                                }
+                                @if(!lab.Visible)
+                                {
+                                    <i class="bi bi-lock-fill" title="@Localizer["LabHidden"]"></i>
+                                }
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
     <hr class="header">
 
-    switch(Model.LabExecutionStatus)
+    @switch(Model.LabExecutionStatus)
     {
         case ScoreboardGroupStatus.Undefined:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
@@ -49,7 +83,7 @@
             break;
     }
 
-    if(Model.LabExecutionStatus != ScoreboardGroupStatus.Undefined && Model.LabExecutionStatus != ScoreboardGroupStatus.BeforeStart)
+    @if(Model.LabExecutionStatus != ScoreboardGroupStatus.Undefined && Model.LabExecutionStatus != ScoreboardGroupStatus.BeforeStart)
     {
         <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
@@ -84,11 +118,15 @@
                         }
                         @if(exercise.Passed)
                         {
-                            <i class="bi bi-check-circle-fill  text-success" title="@Localizer["Solved"]"></i>
+                            <i class="bi bi-check-circle-fill text-success" title="@Localizer["Solved"]"></i>
+                        }
+                        else if(exercise.Tries > 0)
+                        {
+                            <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotSolved"]"></i>
                         }
                         else
                         {
-                            <i class="bi bi-x-circle-fill  text-danger" title="@Localizer["NotSolved"]"></i>
+                            <i class="bi bi-circle text-secondary" title="@Localizer["NotTried"]"></i>
                         }
                     </div>
                 </div>
@@ -110,7 +148,7 @@
                         }
                         @foreach(var submission in exercise.Submissions)
                         {
-                            <tr>
+                            <tr class="@((sawPassedSolution && Model.PassAsGroupEnabled) ? "row-muted" : "")">
                                 <td>
                                     @submission.SubmissionTime.ToString("G")
                                     @if(submission.SubmissionTime < (Model.LabExecution?.Start ?? DateTime.MinValue) || submission.SubmissionTime >= (Model.LabExecution?.End ?? DateTime.MinValue))
@@ -169,20 +207,22 @@
         <hr class="header-secondary">
     </div>
 
-    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@Model.LabId" class="mb-3">
-        <div class="mb-3">
-            <label class="form-label" for="input-flag-code">@Localizer["Flags:FlagCode"]</label>
-            <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
+    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@Model.LabId" class="row mb-3">
+        <div class="col-12 col-sm">
+            <input type="text" class="form-control font-monospace" name="code" placeholder="CTF{en7er-f14g-c0de-here}">
         </div>
 
-        <button type="submit" class="btn btn-primary">
-            <span class="bi bi-flag-fill"></span>
-            @Localizer["Flags:SubmitFlag"]
-        </button>
+        <div class="col mt-2 mt-sm-0">
+            <button type="submit" class="btn btn-primary">
+                <span class="bi bi-flag-fill"></span>
+                @Localizer["Flags:SubmitFlag"]
+            </button>
+        </div>
     </form>
     <div class="card mb-2">
-        <div class="card-header" id="flag-list-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#flag-list-card">
+        <div class="card-header cursor-link collapsed" id="flag-list-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#flag-list-card">
             <div class="row">
+                <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#flag-list-card"></div>
                 <div class="col">
                     @Localizer["Flags:FoundFlags"]
                 </div>
@@ -234,42 +274,4 @@
             </div>
         </div>
     </div>
-
-
-    <h2 class="header">
-        @Localizer["SwitchLab:Title"]
-    </h2>
-    <hr class="header-secondary">
-
-    <form asp-controller="UserDashboard" asp-action="RenderLabPage" method="get">
-        <div class="mb-3">
-            <label class="form-label" for="input-lab-id">@Localizer["Lab"]</label>
-            <select id="input-lab-id" name="labId" class="form-select" onchange="this.form.submit()">
-                @foreach(var lab in Model.Labs)
-                {
-                    if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs))
-                    {
-                        continue;
-                    }
-
-                    <option value="@lab.LabId" selected="@(Model.LabId == lab.LabId)">
-                        @lab.Name
-                        @if(lab.Active)
-                        {
-                            @:(@Localizer["SwitchLab:Active"])
-                        }
-                        @if(!lab.Visible)
-                        {
-                            @:(@Localizer["SwitchLab:Hidden"])
-                        }
-                    </option>
-                }
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-arrow-return-right"></i>
-            @Localizer["SwitchLab:Submit"]
-        </button>
-    </form>
 </div>

@@ -4,7 +4,7 @@ using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.ViewModels;
 
-public class UserDashboardData
+public class UserDashboard
 {
     public int LabId { get; set; }
 
@@ -15,6 +15,8 @@ public class UserDashboardData
     public ScoreboardGroupStatus LabExecutionStatus { get; set; }
 
     public LabExecution LabExecution { get; set; }
+    
+    public bool PassAsGroupEnabled { get; set; }
 
     public bool HasPassed { get; set; }
 

@@ -27,7 +27,7 @@ public interface IScoreboardService
     Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken);
     Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken, bool forceUncached = false);
     Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken, bool forceUncached = false);
-    Task<UserDashboardData> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
+    Task<UserDashboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
 }
 
 public class ScoreboardService : IScoreboardService
@@ -871,14 +871,14 @@ public class ScoreboardService : IScoreboardService
                         if(flags[s.FlagId].Flag.IsBounty)
                         {
                             // Bug bounties are counted separately, as, in the full scoreboard, they are not subject to the lab point caps.
-                            
+
                             flagPointsPerLab[s.LabId] = (fl.FlagPoints, fl.BugBountyPoints + flags[s.FlagId].CurrentPoints, fl.FlagCount);
                         }
                         else
                         {
                             if(s.MinSubmissionTime > entry.LastFlagSubmissionTime)
                                 entry.LastFlagSubmissionTime = s.MinSubmissionTime;
-                            
+
                             flagPointsPerLab[s.LabId] = (fl.FlagPoints + flags[s.FlagId].CurrentPoints, fl.BugBountyPoints, fl.FlagCount + 1);
                         }
                     }
@@ -1311,7 +1311,7 @@ public class ScoreboardService : IScoreboardService
         return scoreboard;
     }
 
-    public async Task<UserDashboardData> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken)
+    public async Task<UserDashboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken)
     {
         // Consistent time
         var now = DateTime.Now;
@@ -1325,7 +1325,8 @@ public class ScoreboardService : IScoreboardService
 
         // Get list of labs
         var labs = await _dbContext.Labs.AsNoTracking()
-            .OrderBy(l => l.Name)
+            .OrderBy(l => l.SortIndex)
+            .ThenBy(l => l.Name)
             .Select(l => new UserScoreboardLabEntry
             {
                 LabId = l.Id,
@@ -1394,7 +1395,7 @@ public class ScoreboardService : IScoreboardService
             fs.FlagCode = flags[fs.FlagId].Code;
 
         // Build scoreboard
-        var scoreboard = new UserDashboardData
+        var scoreboard = new UserDashboard
         {
             LabId = labId,
             CurrentLab = labs.First(l => l.LabId == labId),
@@ -1406,7 +1407,8 @@ public class ScoreboardService : IScoreboardService
             HasFoundAllFlags = foundFlagsGrouped.Count == flags.Count(f => !f.Value.IsBounty),
             Exercises = new List<UserScoreboardExerciseEntry>(),
             GroupMembers = groupMembers,
-            Flags = foundFlags
+            Flags = foundFlags,
+            PassAsGroupEnabled = await _configurationService.GetPassAsGroupAsync(cancellationToken)
         };
 
         // Check exercise submissions
@@ -1418,10 +1420,8 @@ public class ScoreboardService : IScoreboardService
             if(exercise.IsMandatory)
                 ++mandatoryExerciseCount;
 
-            if(exerciseSubmissions.ContainsKey(exercise.Id))
+            if(exerciseSubmissions.TryGetValue(exercise.Id, out var submissions))
             {
-                var submissions = exerciseSubmissions[exercise.Id];
-
                 var (groupMemberHasPassed, points, validTries) = CalculateExerciseStatus(exercise, submissions, labExecution);
 
                 // If passing as group is disabled, do another check whether this user has a valid passing submission

@@ -142,17 +142,9 @@
         <value>This flag was submitted outside of the lab time.</value>
         <comment>FlagSubmissions:Invalid</comment>
     </data>
-    <data name="SwitchLab:Title" xml:space="preserve">
-        <value>Switch lab</value>
-        <comment>SwitchLab</comment>
-    </data>
     <data name="SwitchLab:Active" xml:space="preserve">
         <value>active</value>
         <comment>SwitchLab:Active</comment>
-    </data>
-    <data name="SwitchLab:Submit" xml:space="preserve">
-        <value>Go to selected lab</value>
-        <comment>SwitchLab:Submit</comment>
     </data>
     <data name="SwitchLab:Hidden" xml:space="preserve">
         <value>hidden</value>
@@ -173,5 +165,12 @@
     <data name="ExerciseSubmissions:Points" xml:space="preserve">
         <value>Points</value>
         <comment>ExerciseSubmissions:Points</comment>
+    </data>
+    <data name="SwitchLab" xml:space="preserve">
+        <value>Switch lab</value>
+        <comment>SwitchLab</comment>
+    </data>
+    <data name="NotTried" xml:space="preserve">
+        <value>Not tried</value>
     </data>
 </root>

@@ -58,8 +58,7 @@ footer {
 
 /* Headlines */
 
-h1.header {
-  margin-top: 2*$spacer;
+h1 {
   color: $primary;
 }
 
@@ -77,6 +76,7 @@ hr.header {
   opacity: 1;
   height: 2px;
   background-color: $primary;
+  margin-top: 0.5*$spacer;
 }
 
 hr.header-secondary {
@@ -108,6 +108,17 @@ hr.header-secondary {
 
 .cursor-help {
   cursor: help;
+}
+
+
+/* Table tools */
+
+tr.row-muted td {
+  opacity: 0.5;
+}
+
+tr.row-muted:hover td {
+  opacity: 1;
 }
 
 

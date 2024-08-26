@@ -142,17 +142,9 @@
         <value>Diese Einreichung fand außerhalb der vorgegebenen Praktikumszeit statt.</value>
         <comment>FlagSubmissions:Invalid</comment>
     </data>
-    <data name="SwitchLab:Title" xml:space="preserve">
-        <value>Zu anderem Praktikum wechseln</value>
-        <comment>SwitchLab</comment>
-    </data>
     <data name="SwitchLab:Active" xml:space="preserve">
         <value>aktiv</value>
         <comment>SwitchLab:Active</comment>
-    </data>
-    <data name="SwitchLab:Submit" xml:space="preserve">
-        <value>Zu ausgewähltem Praktikum wechseln</value>
-        <comment>SwitchLab:Submit</comment>
     </data>
     <data name="SwitchLab:Hidden" xml:space="preserve">
         <value>versteckt</value>
@@ -173,5 +165,12 @@
     <data name="ExerciseSubmissions:Points" xml:space="preserve">
         <value>Punkte</value>
         <comment>ExerciseSubmissions:Points</comment>
+    </data>
+    <data name="SwitchLab" xml:space="preserve">
+        <value>Zu Praktikum wechseln</value>
+    </data>
+    <data name="NotTried" xml:space="preserve">
+        <value>Noch nicht versucht</value>
+        <comment>NotTried</comment>
     </data>
 </root>

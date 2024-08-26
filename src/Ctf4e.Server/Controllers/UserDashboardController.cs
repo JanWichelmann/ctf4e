@@ -17,16 +17,17 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
 {
     protected override MenuItems ActiveMenuItem => MenuItems.Group;
 
-    private async Task<IActionResult> RenderAsync(int? labId)
+    private async Task<IActionResult> RenderDashboardAsync(int? labId)
     {
         const string viewPath = "~/Views/UserDashboard/Index.cshtml";
+        const string viewPathEmpty = "~/Views/UserDashboard/Empty.cshtml";
 
         // Retrieve group ID
         var currentUser = await GetCurrentUserAsync();
         if(currentUser?.GroupId == null)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:NoGroup"]);
-            return await RenderViewAsync(viewPath);
+            return await RenderViewAsync(viewPathEmpty);
         }
 
         // Show group's most recent lab
@@ -37,7 +38,7 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
             if(currentLabExecution == null)
             {
                 AddStatusMessage(StatusMessageType.Info, Localizer["RenderAsync:NoActiveLab"]);
-                return await RenderViewAsync(viewPath);
+                return await RenderViewAsync(viewPathEmpty);
             }
 
             labId = currentLabExecution.LabId;
@@ -49,7 +50,7 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:LabNotFound"]);
-            return await RenderViewAsync(viewPath);
+            return await RenderViewAsync(viewPathEmpty);
         }
 
         // Retrieve scoreboard
@@ -57,18 +58,16 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
         if(scoreboard == null)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:EmptyScoreboard", labId]);
-            return await RenderViewAsync(viewPath);
+            return await RenderViewAsync(viewPathEmpty);
         }
 
-        ViewData["Scoreboard"] = scoreboard;
-
-        return await RenderViewAsync(viewPath);
+        return await RenderViewAsync(viewPath, scoreboard);
     }
 
-    [HttpGet("")]
+    [HttpGet]
     public Task<IActionResult> RenderLabPageAsync(int? labId)
     {
-        return RenderAsync(labId);
+        return RenderDashboardAsync(labId);
     }
 
     [HttpPost("flag")]
@@ -133,7 +132,7 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
         if(labExecution == null || now < labExecution.Start)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["CallLabServerAsync:LabNotActive"]);
-            return await RenderAsync(labId);
+            return await RenderDashboardAsync(labId);
         }
 
         // Build authentication string
