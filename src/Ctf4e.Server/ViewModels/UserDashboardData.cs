@@ -4,7 +4,7 @@ using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.ViewModels;
 
-public class UserScoreboard
+public class UserDashboardData
 {
     public int LabId { get; set; }
 

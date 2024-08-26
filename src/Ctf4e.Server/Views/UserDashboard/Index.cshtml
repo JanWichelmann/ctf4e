@@ -1,21 +1,17 @@
-﻿@using Ctf4e.Server.ViewModels
-@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Models
 @using Ctf4e.Server.Authorization
+@model UserDashboardData
 @inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["HtmlTitle"];
-
-    var userScoreboard = (UserScoreboard)ViewData["Scoreboard"];
 
     var currentUser = (User)ViewData["CurrentUser"];
 }
 
 <div class="container">
-@if(userScoreboard != null)
-{
     <div class="float-end">
-        @if(userScoreboard.HasPassed)
+        @if(Model.HasPassed)
         {
             <span class="badge bg-success" style="font-size: 1rem;">
                 <i class="bi bi-check-circle"></i>
@@ -24,16 +20,16 @@
         }
     </div>
 
-    <h1 class="header @(!userScoreboard.CurrentLab.Visible ? "fst-italic" : "")">
-        @if(!userScoreboard.CurrentLab.Visible)
+    <h1 class="header @(!Model.CurrentLab.Visible ? "fst-italic" : "")">
+        @if(!Model.CurrentLab.Visible)
         {
             <i class="bi bi-lock-fill" title="@Localizer["LabHidden"]"></i>
         }
-        @Localizer["Lab"]: @userScoreboard.CurrentLab.Name
+        @Localizer["Lab"]: @Model.CurrentLab.Name
     </h1>
     <hr class="header">
 
-    switch(userScoreboard.LabExecutionStatus)
+    switch(Model.LabExecutionStatus)
     {
         case ScoreboardGroupStatus.Undefined:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
@@ -41,11 +37,11 @@
             break;
         case ScoreboardGroupStatus.BeforeStart:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:BeforeStart:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:BeforeStart:Text", userScoreboard.LabExecution.Start]</p>
+            <p>@Localizer["LabExecutionStatus:BeforeStart:Text", Model.LabExecution.Start]</p>
             break;
         case ScoreboardGroupStatus.Start:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Start:Title"]</span>
-            <p>@Localizer["LabExecutionStatus:Start:Text", userScoreboard.LabExecution.End]</p>
+            <p>@Localizer["LabExecutionStatus:Start:Text", Model.LabExecution.End]</p>
             break;
         case ScoreboardGroupStatus.End:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:End:Title"]</span>
@@ -53,9 +49,9 @@
             break;
     }
 
-    if(userScoreboard.LabExecutionStatus != ScoreboardGroupStatus.Undefined && userScoreboard.LabExecutionStatus != ScoreboardGroupStatus.BeforeStart)
+    if(Model.LabExecutionStatus != ScoreboardGroupStatus.Undefined && Model.LabExecutionStatus != ScoreboardGroupStatus.BeforeStart)
     {
-        <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@userScoreboard.LabId" target="_blank">
+        <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>
             <i class="bi bi-hdd-network"></i>
             @Localizer["LabServer"]
@@ -67,7 +63,7 @@
     </h2>
     <hr class="header-secondary">
 
-    foreach(var exercise in userScoreboard.Exercises)
+    @foreach(var exercise in Model.Exercises)
     {
         <div class="card mb-2">
             <div class="card-header cursor-link collapsed" id="exercise@(exercise.Exercise.Id)-card-heading" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card">
@@ -117,13 +113,13 @@
                             <tr>
                                 <td>
                                     @submission.SubmissionTime.ToString("G")
-                                    @if(submission.SubmissionTime < (userScoreboard.LabExecution?.Start ?? DateTime.MinValue) || submission.SubmissionTime >= (userScoreboard.LabExecution?.End ?? DateTime.MinValue))
+                                    @if(submission.SubmissionTime < (Model.LabExecution?.Start ?? DateTime.MinValue) || submission.SubmissionTime >= (Model.LabExecution?.End ?? DateTime.MinValue))
                                     {
                                         <span class="badge bg-warning" title="@Localizer["ExerciseSubmissions:Invalid"]">@Localizer["Invalid"]</span>
                                     }
                                 </td>
                                 <td>
-                                    @userScoreboard.GroupMembers[submission.UserId]
+                                    @Model.GroupMembers[submission.UserId]
                                 </td>
                                 <td class="text-center">
                                     @if(submission.ExercisePassed)
@@ -173,7 +169,7 @@
         <hr class="header-secondary">
     </div>
 
-    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@userScoreboard.LabId" class="mb-3">
+    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@Model.LabId" class="mb-3">
         <div class="mb-3">
             <label class="form-label" for="input-flag-code">@Localizer["Flags:FlagCode"]</label>
             <input type="text" class="form-control font-monospace" name="code" id="input-flag-code" placeholder="CTF{1n5er7-f14g-c0de-here-37a12d}">
@@ -192,9 +188,9 @@
                 </div>
                 <div class="col col-auto ms-auto">
                     <span class="badge bg-light text-dark">
-                        @Localizer["Flags:SubmissionStatistic", userScoreboard.ValidFoundFlagsCount, userScoreboard.FoundFlagsCount]
+                        @Localizer["Flags:SubmissionStatistic", Model.ValidFoundFlagsCount, Model.FoundFlagsCount]
                     </span>
-                    @if(userScoreboard.HasFoundAllFlags)
+                    @if(Model.HasFoundAllFlags)
                     {
                         <span class="badge bg-success text-light py-2">
                             <i class="bi bi-check-circle"></i>
@@ -215,7 +211,7 @@
                     </tr>
                     </thead>
                     <tbody class="table-group-divider">
-                    @foreach(var flagSubmission in userScoreboard.Flags)
+                    @foreach(var flagSubmission in Model.Flags)
                     {
                         <tr>
                             <td>
@@ -229,7 +225,7 @@
                                 <code>@flagSubmission.FlagCode</code>
                             </td>
                             <td>
-                                @userScoreboard.GroupMembers[flagSubmission.UserId]
+                                @Model.GroupMembers[flagSubmission.UserId]
                             </td>
                         </tr>
                     }
@@ -249,14 +245,14 @@
         <div class="mb-3">
             <label class="form-label" for="input-lab-id">@Localizer["Lab"]</label>
             <select id="input-lab-id" name="labId" class="form-select" onchange="this.form.submit()">
-                @foreach(var lab in userScoreboard.Labs)
+                @foreach(var lab in Model.Labs)
                 {
                     if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs))
                     {
                         continue;
                     }
 
-                    <option value="@lab.LabId" selected="@(userScoreboard.LabId == lab.LabId)">
+                    <option value="@lab.LabId" selected="@(Model.LabId == lab.LabId)">
                         @lab.Name
                         @if(lab.Active)
                         {
@@ -276,5 +272,4 @@
             @Localizer["SwitchLab:Submit"]
         </button>
     </form>
-}
 </div>

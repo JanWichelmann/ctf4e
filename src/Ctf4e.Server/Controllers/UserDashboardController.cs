@@ -19,7 +19,7 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
 
     private async Task<IActionResult> RenderAsync(int? labId)
     {
-        const string viewPath = "~/Views/UserDashboard.cshtml";
+        const string viewPath = "~/Views/UserDashboard/Index.cshtml";
 
         // Retrieve group ID
         var currentUser = await GetCurrentUserAsync();

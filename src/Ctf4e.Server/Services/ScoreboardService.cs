@@ -27,7 +27,7 @@ public interface IScoreboardService
     Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken);
     Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken, bool forceUncached = false);
     Task<Scoreboard> GetLabScoreboardAsync(int labId, int? slotId, CancellationToken cancellationToken, bool forceUncached = false);
-    Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
+    Task<UserDashboardData> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
 }
 
 public class ScoreboardService : IScoreboardService
@@ -1311,7 +1311,7 @@ public class ScoreboardService : IScoreboardService
         return scoreboard;
     }
 
-    public async Task<UserScoreboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken)
+    public async Task<UserDashboardData> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken)
     {
         // Consistent time
         var now = DateTime.Now;
@@ -1394,7 +1394,7 @@ public class ScoreboardService : IScoreboardService
             fs.FlagCode = flags[fs.FlagId].Code;
 
         // Build scoreboard
-        var scoreboard = new UserScoreboard
+        var scoreboard = new UserDashboardData
         {
             LabId = labId,
             CurrentLab = labs.First(l => l.LabId == labId),
