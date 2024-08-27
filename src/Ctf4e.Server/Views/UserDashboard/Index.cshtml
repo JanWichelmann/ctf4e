@@ -44,15 +44,15 @@
                         }
 
                         <li>
-                            <a class="dropdown-item @(!lab.Visible ? "fst-italic" : "") @(lab.Active ? "fw-bold" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage" asp-route-labId="@lab.LabId">
+                            <a class="dropdown-item @(!lab.Visible ? "fst-italic" : "") @(lab.LabId == Model.LabId ? "fw-bold" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage" asp-route-labId="@lab.LabId">
                                 @lab.Name
                                 @if(lab.Active)
                                 {
-                                    @:(@Localizer["SwitchLab:Active"])
+                                    <span class="badge bg-secondary ms-1">@Localizer["LabExecutionStatus:Start:Title"]</span>
                                 }
                                 @if(!lab.Visible)
                                 {
-                                    <i class="bi bi-lock-fill" title="@Localizer["LabHidden"]"></i>
+                                    <i class="bi bi-lock-fill ms-1" title="@Localizer["LabHidden"]"></i>
                                 }
                             </a>
                         </li>
