@@ -6,18 +6,19 @@
 @using Ctf4e.Server.Services
 @inject IViewLocalizer Localizer
 @inject IUserService UserService;
+@model Scoreboard
 @{
     ViewData["Title"] = "Scoreboard";
-
-    var viewType = (ScoreboardController.ViewType)ViewData["ViewType"];
 
     var labs = (List<Lab>)ViewData["Labs"];
     var slots = (List<Slot>)ViewData["Slots"];
 
-    var scoreboard = ViewData.ContainsKey("Scoreboard") ? (Scoreboard)ViewData["Scoreboard"] : null;
-    bool showAllEntries = ViewData.ContainsKey("ShowAllEntries") && (bool)ViewData["ShowAllEntries"];
-    bool resetCache = ViewData.ContainsKey("ResetCache") && (bool)ViewData["ResetCache"];
+    var viewFlags = (ScoreboardController.ViewFlags)ViewData["ViewFlags"];
+    var showAllEntries = (viewFlags & ScoreboardController.ViewFlags.ShowAllEntries) != 0;
+    var bypassCache = (viewFlags & ScoreboardController.ViewFlags.BypassCache) != 0;
 
+    int autoReload = ViewData.ContainsKey("AutoReload") ? (int)ViewData["AutoReload"] : 0;
+    
     var currentUser = (User)ViewData["CurrentUser"];
 
     // User list, only used when "show all entries" is set
@@ -32,32 +33,97 @@
 }
 
 <div class="container">
-@if(viewType == ScoreboardController.ViewType.Blank)
-{
-    <!-- Status messages only -->
-}
-else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != null)
-{
-    <h1 class="mt-4">
-        @if(scoreboard.AllLabs)
-        {
-            @Localizer["Title:ScoreboardAll"]
-        }
-        else
-        {
-            @Localizer["Title:ScoreboardLab", labs.First(l => l.Id == scoreboard.LabId).Name]
-        }
-    </h1>
-    <h2 class="subheader">
-        @if(scoreboard.SlotId == null)
-        {
-            @Localizer["Title:AllSlots"]
-        }
-        else
-        {
-            @Localizer["Title:Slot", slots.First(s => s.Id == scoreboard.SlotId).Name]
-        }
-    </h2>
+
+    <div class="row mt-4 align-items-center">
+        <div class="col">
+            <h1 class="mb-0">
+                @if(Model.AllLabs)
+                {
+                    @Localizer["Title:ScoreboardAll"]
+                }
+                else
+                {
+                    @Localizer["Title:ScoreboardLab", labs.First(l => l.Id == Model.LabId).Name]
+                }
+            </h1>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @Localizer["SelectScoreboard"]
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item @(Model.AllLabs ? "fw-bold" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard" asp-route-labId="" asp-route-slotId="@Model.SlotId">
+                            @Localizer["AllLabs"]
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    @foreach(var lab in labs)
+                    {
+                        if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard))
+                        {
+                            continue;
+                        }
+
+                        <li>
+                            <a class="dropdown-item @(!lab.Visible ? "fst-italic" : "") @(Model.LabId == lab.Id ? "fw-bold" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard" asp-route-labId="@lab.Id" asp-route-slotId="@Model.SlotId">
+                                @lab.Name
+                                @if(!lab.Visible)
+                                {
+                                    <i class="bi bi-lock-fill" title="@Localizer["SelectScoreboard:HiddenLab"]"></i>
+                                }
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div> 
+    @if(slots.Count > 1)
+    {
+        <div class="row mt-2 align-items-center">
+            <div class="col">
+                <h2 class="mb-0">
+                    @if(Model.SlotId == null)
+                    {
+                        @Localizer["Title:AllSlots"]
+                    }
+                    else
+                    {
+                        @Localizer["Title:Slot", slots.First(s => s.Id == Model.SlotId).Name]
+                    }
+                </h2>
+            </div>
+            <div class="col-auto">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @Localizer["SelectSlot"]
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item @(Model.SlotId == null ? "fw-bold" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard" asp-route-labId="@(Model.AllLabs ? null : Model.LabId)" asp-route-slotId="">
+                                @Localizer["AllSlots"]
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @foreach(var slot in slots)
+                        {
+                            <li>
+                                <a class="dropdown-item @(Model.SlotId == slot.Id ? "fw-bold" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard" asp-route-labId="@(Model.AllLabs ? null : Model.LabId)" asp-route-slotId="@slot.Id">
+                                    @slot.Name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
     <hr class="header">
 
     <table class="table table-sm text-nowrap mt-4" id="flags-table">
@@ -78,12 +144,13 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
             int entryCount = 0;
             bool currentGroupShown = false;
         }
-        @foreach(var entry in scoreboard.Entries)
+        @foreach(var entry in Model.Entries)
         {
-            if(entryCount >= scoreboard.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
+            if(entryCount >= Model.MaximumEntryCount && entry.Rank != lastRank && !showAllEntries)
             {
                 break;
             }
+
             bool isCurrentGroup = entry.GroupId == currentUser.GroupId;
             currentGroupShown |= isCurrentGroup;
             <tr class="@(isCurrentGroup ? "table-active" : "")">
@@ -122,7 +189,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                             }
                         </span>
                     }
-                    @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                    @if(entry.BugBountyPoints > 0 && !Model.AllLabs)
                     {
                         <i class="bi bi-bug-fill text-primary" title="@Localizer["Scoreboard:GotBugBounty"]"></i>
                     }
@@ -184,9 +251,10 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                                 <i class="bi bi-pencil"></i>
                             </a>
                         }
+
                         if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
                         {
-                            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-labId="@scoreboard.LabId" asp-route-slotId="@scoreboard.SlotId" asp-route-groupMode="true" asp-fragment="@("group" + entry.GroupId)" class="text-decoration-none" title="@Localizer["Scoreboard:AdminScoreboard:Group"]">
+                            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="true" asp-fragment="@("group" + entry.GroupId)" class="text-decoration-none" title="@Localizer["Scoreboard:AdminScoreboard:Group"]">
                                 <i class="bi bi-bookmark-star"></i>
                             </a>
                         }
@@ -198,7 +266,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
         }
         @if(!currentGroupShown && currentUser.GroupId != null)
         {
-            var entry = scoreboard.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
+            var entry = Model.Entries.FirstOrDefault(e => e.GroupId == currentUser.GroupId);
             if(entry != null)
             {
                 <tr class="table-active">
@@ -219,7 +287,7 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
                                 @Localizer["Scoreboard:DetailedPointsWithBugs", entry.ExercisePoints, entry.FlagPoints, entry.BugBountyPoints]
                             }
                         </span>
-                        @if(entry.BugBountyPoints > 0 && !scoreboard.AllLabs)
+                        @if(entry.BugBountyPoints > 0 && !Model.AllLabs)
                         {
                             <i class="bi bi-bug-fill text-primary" title="@Localizer["Scoreboard:GotBugBounty"]"></i>
                         }
@@ -243,77 +311,49 @@ else if(viewType == ScoreboardController.ViewType.Scoreboard && scoreboard != nu
         }
         </tbody>
     </table>
-}
 
-<hr class="header-secondary mt-4">
-
-<form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get">
-    @{
-        // Handle visible/hidden labs
-        IEnumerable<Lab> filteredLabs;
-        if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-        {
-            filteredLabs = labs.OrderBy(l => l.Name).ToList();
-            foreach(var l in filteredLabs)
-            {
-                if(!l.Visible)
-                {
-                    l.Name += " " + Localizer.GetString("SelectScoreboard:HiddenLab");
-                }
-            }
-        }
-        else
-        {
-            filteredLabs = labs.Where(l => l.Visible).OrderBy(l => l.Name).ToList();
-        }
-    }
-    <div class="mb-3">
-        <label class="form-label" for="input-lab-id">@Localizer["SelectScoreboard"]</label>
-        <select id="input-lab-id" name="labId" asp-items="@(new SelectList(filteredLabs, nameof(Lab.Id), nameof(Lab.Name), scoreboard?.LabId))" class="form-select">
-            <option value="" selected>@Localizer["AllLabs"]</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="input-slot-id">@Localizer["SelectSlot"]</label>
-        <select id="input-slot-id" name="slotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name), scoreboard?.SlotId))" class="form-select">
-            <option value="" selected>@Localizer["AllSlots"]</option>
-        </select>
-    </div>
     @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
     {
-        <div class="mb-3">
-            <label class="form-label" for="input-reload">
-                @Localizer["AutoReload"]
-            </label>
-            <input type="number" min="0" max="3600" name="reload" value="0" id="input-reload" class="form-control">
-        </div>
-    }
-    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-    {
-        <div class="mb-3">
-            <div class="form-check">
-                <input type="checkbox" id="input-showAllEntries" name="showAllEntries" class="form-check-input" value="true" checked="@(showAllEntries)">
-                <label for="input-showAllEntries" class="form-check-label">
-                    @Localizer["ShowAllEntries"]
-                </label>
-            </div>
-        </div>
-    }
-    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
-    {
-        <div class="mb-3">
-            <div class="form-check">
-                <input type="checkbox" id="input-resetCache" name="resetCache" class="form-check-input" value="true" checked="@(resetCache)">
-                <label for="input-resetCache" class="form-check-label">
-                    @Localizer["ResetCache"]
-                </label>
-            </div>
-        </div>
-    }
+        <h2 class="mt-5">@Localizer["AdminFunctionality"]</h2>
+        <hr class="header-secondary">
 
-    <button type="submit" class="btn btn-primary">
-        <i class="bi bi-arrow-return-right"></i>
-        @Localizer["ShowSelectedScoreboard"]
-    </button>
-</form>
+        <div class="mb-3">
+            <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="show-all-entries-switch" checked="@showAllEntries">
+                <label class="form-check-label" for="show-all-entries-switch">@Localizer["ViewFlags:ShowAllEntries"]</label>
+            </div>
+
+            <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" id="bypass-cache-switch" checked="@bypassCache">
+                <label class="form-check-label" for="bypass-cache-switch">@Localizer["ViewFlags:BypassCache"]</label>
+            </div>
+        </div>
+
+        <form asp-controller="Scoreboard" asp-action="RenderScoreboard" method="get" class="row mb-3">   
+            <div class="col-12 col-sm">
+                <input type="number" min="0" max="3600" step="5" name="reload" value="@autoReload" id="input-reload" class="form-control form-control-sm">
+            </div>
+
+            <div class="col-10 mt-2 mt-sm-0">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <span class="bi bi-arrow-right"></span>
+                    @Localizer["AutoReload"]
+                </button>
+            </div>           
+            
+            <input type="hidden" name="labId" value="@(Model.AllLabs ? "" : Model.LabId)">
+            <input type="hidden" name="slotId" value="@Model.SlotId">
+        </form>
+    }
 </div>
+
+<script>
+    window.addEventListener("load", function()
+    {
+        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
+        {
+            @:setupViewFlagSwitch("ScoreboardViewFlags", document.getElementById("show-all-entries-switch"), 1);
+            @:setupViewFlagSwitch("ScoreboardViewFlags", document.getElementById("bypass-cache-switch"), 2);
+        }
+    });
+</script>

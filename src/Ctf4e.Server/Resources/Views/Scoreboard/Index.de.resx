@@ -62,24 +62,12 @@
         <value>Gesamtwertung über alle Praktika</value>
         <comment>AllLabs</comment>
     </data>
-    <data name="ShowAllEntries" xml:space="preserve">
-        <value>Alle Einträge anzeigen</value>
-        <comment>ShowAllEntries</comment>
-    </data>
     <data name="TutorsAndAdminsOnly" xml:space="preserve">
         <value>Nur für Tutoren und Administratoren</value>
         <comment>TutorsAndAdminsOnly</comment>
     </data>
-    <data name="AdminsOnly" xml:space="preserve">
-        <value>Nur für Administratoren</value>
-        <comment>AdminsOnly</comment>
-    </data>
-    <data name="ResetCache" xml:space="preserve">
-        <value>Cache zurücksetzen und Scoreboard vollständig aus der Datenbank laden</value>
-        <comment>ResetCache</comment>
-    </data>
     <data name="AutoReload" xml:space="preserve">
-        <value>Automatisch neu laden nach (Sekunden)</value>
+        <value>Auto-Neuladen setzen (Sekunden)</value>
         <comment>AutoReload</comment>
     </data>
     <data name="ShowSelectedScoreboard" xml:space="preserve">
@@ -125,5 +113,17 @@
     <data name="Scoreboard:AllEntries:BugBountyPoints" xml:space="preserve">
         <value>Bug-Bounty-Punkte</value>
         <comment>Scoreboard:AllEntries:BugBountyPoints</comment>
+    </data>
+    <data name="ViewFlags:ShowAllEntries" xml:space="preserve">
+        <value>Alle Einträge anzeigen</value>
+        <comment>ViewFlags:ShowAllEntries</comment>
+    </data>
+    <data name="ViewFlags:BypassCache" xml:space="preserve">
+        <value>Cache zurücksetzen und Scoreboard vollständig aus der Datenbank laden</value>
+        <comment>ViewFlags:BypassCache</comment>
+    </data>
+    <data name="AdminFunctionality" xml:space="preserve">
+        <value>Erweiterte Einstellungen</value>
+        <comment>AdminFunctionality</comment>
     </data>
 </root>

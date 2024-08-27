@@ -62,13 +62,12 @@ h1 {
   color: $primary;
 }
 
-h2.header {
-  margin-top: 2*$spacer;
+h2 {
   color: $primary;
 }
 
-h2.subheader {
-  margin-top: 1.0*$spacer;
+h2.header {
+  margin-top: 2*$spacer;
   color: $primary;
 }
 
@@ -81,6 +80,7 @@ hr.header {
 
 hr.header-secondary {
   height: 1px;
+  margin-top: 0.25*$spacer;
 }
 
 
