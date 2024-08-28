@@ -111,7 +111,7 @@ hr.header-secondary {
 }
 
 
-/* Table tools */
+/* Special row backgrounds */
 
 tr.row-muted td {
   opacity: 0.5;
@@ -119,6 +119,34 @@ tr.row-muted td {
 
 tr.row-muted:hover td {
   opacity: 1;
+}
+
+
+/* Vertical align for entire table */
+
+table.table-align-middle th {
+  vertical-align: middle;
+}
+
+table.table-align-middle td {
+  vertical-align: middle;
+}
+
+
+/* Sticky table headers */
+
+tr.row-sticky th {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Make sure other table elements are drawn below this */
+  background: $gray-100;
+  background-clip: padding-box; /* Do not override border */
+}
+
+@include color-mode(dark) {
+  tr.row-sticky th {
+    background: $gray-800;
+  }
 }
 
 

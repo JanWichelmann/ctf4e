@@ -12,7 +12,7 @@ public class UserDashboard
 
     public List<UserScoreboardLabEntry> Labs { get; set; }
 
-    public ScoreboardGroupStatus LabExecutionStatus { get; set; }
+    public LabExecutionStatus LabExecutionStatus { get; set; }
 
     public LabExecution LabExecution { get; set; }
     

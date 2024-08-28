@@ -18,9 +18,33 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="Title" xml:space="preserve">
-        <value>Statistics</value>
-        <comment>Title</comment>
+    <data name="Exercises:Header" xml:space="preserve">
+        <value>Exercises</value>
+        <comment>Exercises:Header</comment>
+    </data>
+    <data name="Exercises:Number" xml:space="preserve">
+        <value>No.</value>
+        <comment>Exercises:Number</comment>
+    </data>
+    <data name="Exercises:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Exercises:Name</comment>
+    </data>
+    <data name="Exercises:Points" xml:space="preserve">
+        <value>Points</value>
+        <comment>Exercises:Points</comment>
+    </data>
+    <data name="Exercises:Passed" xml:space="preserve">
+        <value>Passed Submissions</value>
+        <comment>Exercises:Passed</comment>
+    </data>
+    <data name="Mandatory" xml:space="preserve">
+        <value>Mandatory</value>
+        <comment>Mandatory</comment>
+    </data>
+    <data name="Flags:Header" xml:space="preserve">
+        <value>Flags (all time slots)</value>
+        <comment>Flags:Header</comment>
     </data>
     <data name="Flags:Description" xml:space="preserve">
         <value>Description</value>
@@ -38,32 +62,12 @@
         <value>Bug bounty</value>
         <comment>BugBounty</comment>
     </data>
-    <data name="ExercisesTitle" xml:space="preserve">
-        <value>Exercises</value>
-        <comment>ExercisesTitle</comment>
+    <data name="Flags:BasePoints" xml:space="preserve">
+        <value>Flag base points</value>
+        <comment>Flags:BasePoints</comment>
     </data>
-    <data name="FlagsTitle" xml:space="preserve">
-        <value>Flags (all time slots)</value>
-        <comment>FlagsTitle</comment>
-    </data>
-    <data name="Mandatory" xml:space="preserve">
-        <value>Mandatory</value>
-        <comment>Mandatory</comment>
-    </data>
-    <data name="Exercises:Number" xml:space="preserve">
-        <value>No.</value>
-        <comment>Exercises:Number</comment>
-    </data>
-    <data name="Exercises:Name" xml:space="preserve">
-        <value>Name</value>
-        <comment>Exercises:Name</comment>
-    </data>
-    <data name="Exercises:Passed" xml:space="preserve">
-        <value>Passed Submissions</value>
-        <comment>Exercises:Passed</comment>
-    </data>
-    <data name="Exercises:Points" xml:space="preserve">
-        <value>Points</value>
-        <comment>Exercises:Points</comment>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Overview - Admin Scoreboard</value>
+        <comment>HtmlTitle</comment>
     </data>
 </root>

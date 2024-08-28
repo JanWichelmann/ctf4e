@@ -1,14 +1,94 @@
 @using Ctf4e.Server.Controllers
-
-@{
-    
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IViewLocalizer Localizer
+@model AdminScoreboardStatistics
+@{                 
+    ViewData["Title"] = Localizer["HtmlTitle"];
 }
 
-
-
 <div class="container">
-    
-    <partial name="Nav.cshtml" model="SubView.Dashboard" />
-    
-    
+
+    @{
+        var navViewModel = new NavViewModel
+        {
+            SubView = SubView.Statistics,
+            LabId = Model.LabId,
+            SlotId = Model.SlotId
+        };
+    }
+    <partial name="Nav.cshtml" model="navViewModel" />
+
+    <h2 class="mt-5">@Localizer["Exercises:Header"]</h2>
+    <hr class="header-secondary">
+
+    <table class="table table-sm" id="exercises-table">
+        <thead>
+        <tr>
+            <th scope="col">@Localizer["Exercises:Number"]</th>
+            <th scope="col">@Localizer["Exercises:Name"]</th>
+            <th scope="col">@Localizer["Exercises:Points"]</th>
+            <th scope="col">@Localizer["Exercises:Passed"]</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        @foreach(var exercise in Model.Exercises)
+        {
+            <tr>
+                <td>@exercise.ExerciseNumber</td>
+                <td>
+                    @exercise.Name
+                    @if(exercise.IsMandatory)
+                    {
+                        <span class="badge bg-info text-light">@Localizer["Mandatory"]</span>
+                    }
+                </td>
+                <td>
+                    <span class="text-success">@exercise.BasePoints</span>
+                    /
+                    <span class="text-danger">@exercise.PenaltyPoints</span>
+                </td>
+                <td class="fw-bold">
+                    @exercise.PassedCount
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <h2 class="mt-5">@Localizer["Flags:Header"]</h2>
+    <hr class="header-secondary">
+
+    <table class="table table-sm" id="flags-table">
+        <thead>
+        <tr>
+            <th></th>
+            <th scope="col">@Localizer["Flags:Description"]</th>
+            <th scope="col">@Localizer["Flags:Points"]</th>
+            <th scope="col">@Localizer["Flags:Submissions"]</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        @foreach(var flag in Model.Flags)
+        {
+            <tr>
+                <th scope="row">#@flag.Id</th>
+                <td>
+                    @flag.Description
+                    @if(flag.IsBounty)
+                    {
+                        <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
+                    }
+                </td>
+                <td>
+                    @flag.CurrentPoints
+                    <span class="text-muted cursor-help" title="@Localizer["Flags:BasePoints"]">(@flag.BasePoints)</span>
+                </td>
+                <td class="fw-bold">
+                    @flag.SubmissionCount
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>

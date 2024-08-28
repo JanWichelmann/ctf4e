@@ -28,15 +28,15 @@
                     <span class="ms-2">@group.GroupName</span>
                 </div>
                 <div class="col-auto ms-auto">
-                    @if(group.Status == ScoreboardGroupStatus.Start)
+                    @if(group.Status == LabExecutionStatus.Start)
                     {
                         <span class="badge bg-warning" title="@Localizer["LabExecutionStatus:Start:Text"]">@Localizer["LabExecutionStatus:Start:Title"]</span>
                     }
-                    else if(group.Status == ScoreboardGroupStatus.End)
+                    else if(group.Status == LabExecutionStatus.End)
                     {
                         <span class="badge bg-success" title="@Localizer["LabExecutionStatus:End:Text"]">@Localizer["LabExecutionStatus:End:Title"]</span>
                     }
-                    else if(group.Status == ScoreboardGroupStatus.Undefined)
+                    else if(group.Status == LabExecutionStatus.Undefined)
                     {
                         <span class="badge bg-danger" title="@Localizer["LabExecutionStatus:Undefined:Text"]">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
                     }
@@ -267,19 +267,19 @@ else
                     <span class="ms-2">@user.UserName</span>
                 </div>
                 <div class="col-auto ms-auto">
-                    @if(user.Status == ScoreboardGroupStatus.BeforeStart)
+                    @if(user.Status == LabExecutionStatus.BeforeStart)
                     {
                         <span class="badge bg-info" title="@Localizer["LabExecutionStatus:BeforeStart:Text"]">@Localizer["LabExecutionStatus:BeforeStart:Title"]</span>
                     }
-                    else if(user.Status == ScoreboardGroupStatus.Start)
+                    else if(user.Status == LabExecutionStatus.Start)
                     {
                         <span class="badge bg-warning" title="@Localizer["LabExecutionStatus:Start:Text"]">@Localizer["LabExecutionStatus:Start:Title"]</span>
                     }
-                    else if(user.Status == ScoreboardGroupStatus.End)
+                    else if(user.Status == LabExecutionStatus.End)
                     {
                         <span class="badge bg-success" title="@Localizer["LabExecutionStatus:End:Text"]">@Localizer["LabExecutionStatus:End:Title"]</span>
                     }
-                    else if(user.Status == ScoreboardGroupStatus.Undefined)
+                    else if(user.Status == LabExecutionStatus.Undefined)
                     {
                         <span class="badge bg-danger" title="@Localizer["LabExecutionStatus:Undefined:Text"]">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
                     }

@@ -1,13 +1,94 @@
-@model SubView
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model NavViewModel
 @{
-    
+    var labs = (List<SelectLabListEntry>)ViewData["Labs"];
+    var slots = (List<SelectSlotListEntry>)ViewData["Slots"];
+
+    var currentLab = labs.FirstOrDefault(l => l.Id == Model.LabId);
+    var currentSlot = slots.FirstOrDefault(s => s.Id == Model.SlotId);
+
+    string GetSubViewLink(SubView subView, int? labId, int? slotId)
+    {
+        return subView switch
+        {
+            SubView.Statistics => Url.Action("ShowStatisticsDashboard", "AdminScoreboard", new { labId, slotId }),
+            SubView.Groups => Url.Action("ShowGroupsOverview", "AdminScoreboard", new { labId, slotId }),
+            SubView.Users => Url.Action("ShowUsersOverview", "AdminScoreboard", new { labId, slotId }),
+            SubView.Export => Url.Action("ShowExportPage", "AdminScoreboard", new { labId, slotId }),
+            _ => throw new InvalidOperationException("Invalid sub view")
+        };
+    }
 }
 
-<h1>
-    Admin Scoreboard
+<h1 class="mt-4">
+    @Localizer["Title"]
 </h1>
 <hr class="header">
-    
+
 <ul class="nav nav-tabs mt-3">
-        
+    <li class="nav-item">
+        <a class="nav-link @(Model.SubView == SubView.Statistics ? "active" : "")" href="@GetSubViewLink(SubView.Statistics, Model.LabId, Model.SlotId)">
+            @Localizer["Nav:Statistics"]
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.SubView is SubView.Groups or SubView.GroupDashboard ? "active" : "")" href="@GetSubViewLink(SubView.Groups, Model.LabId, Model.SlotId)">
+            @Localizer["Nav:Groups"]
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.SubView is SubView.Users or SubView.UserDashboard ? "active" : "")" href="@GetSubViewLink(SubView.Users, Model.LabId, Model.SlotId)">
+            @Localizer["Nav:Users"]
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.SubView == SubView.Export ? "active" : "")" href="@GetSubViewLink(SubView.Export, Model.LabId, Model.SlotId)">
+            @Localizer["Nav:Export"]
+        </a>
+    </li>
+
+    @if(Model.SubView != SubView.Export)
+    {
+        if(Model.LabId != null)
+        {
+            <li class="nav-item dropdown ms-auto">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">@currentLab.Name</a>
+                <ul class="dropdown-menu">
+                    @foreach(var lab in labs)
+                    {
+                        <li>
+                            @if(Model.SubView == SubView.GroupDashboard)
+                            {
+                                <a class="dropdown-item @(lab.Id == Model.LabId ? "active" : "")" asp-controller="AdminScoreboard" asp-action="ShowGroupDashboard" asp-route-groupId="@Model.GroupId" asp-route-labId="@Model.LabId">@lab.Name</a>
+                            }
+                            else if(Model.SubView == SubView.UserDashboard)
+                            {
+                                <a class="dropdown-item @(lab.Id == Model.LabId ? "active" : "")" asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-userId="@Model.UserId" asp-route-labId="@Model.LabId">@lab.Name</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item @(lab.Id == Model.LabId ? "active" : "")" href="@GetSubViewLink(Model.SubView, lab.Id, Model.SlotId)">@lab.Name</a>
+                            }
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+
+        if(Model.SubView != SubView.GroupDashboard && Model.SubView != SubView.UserDashboard && Model.SlotId != null)
+        {
+            <li class="nav-item dropdown @(Model.LabId == null ? "ms-auto" : "")">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">@currentSlot.Name</a>
+                <ul class="dropdown-menu">
+                    @foreach(var slot in slots)
+                    {
+                        <li>
+                            <a class="dropdown-item @(slot.Id == Model.SlotId ? "active" : "")" href="@GetSubViewLink(Model.SubView, Model.LabId, slot.Id)">@slot.Name</a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    }
 </ul>

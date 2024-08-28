@@ -58,7 +58,7 @@ public class AdminScoreboardUserEntry
         
     public int? GroupId { get; set; }
 
-    public ScoreboardGroupStatus Status { get; set; }
+    public LabExecutionStatus Status { get; set; }
 
     public bool HasPassed { get; set; }
 
@@ -78,7 +78,7 @@ public class AdminScoreboardGroupEntry
     public int GroupId { get; set; }
     public string GroupName { get; set; }
 
-    public ScoreboardGroupStatus Status { get; set; }
+    public LabExecutionStatus Status { get; set; }
 
     public bool HasPassed { get; set; }
 
@@ -95,7 +95,7 @@ public class AdminScoreboardGroupEntry
     public List<int> GroupMembers { get; set; }
 }
 
-public enum ScoreboardGroupStatus
+public enum LabExecutionStatus
 {
     Undefined,
     BeforeStart,

@@ -11,13 +11,14 @@ using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/scoreboard")]
 [AnyUserPrivilege(UserPrivileges.ViewAdminScoreboard)]
-public class AdminScoreboardController(IUserService userService, IScoreboardService scoreboardService)
+public class AdminScoreboardController(IUserService userService, IScoreboardService scoreboardService, IAdminScoreboardService adminScoreboardService)
     : ControllerBase<AdminScoreboardController>(userService)
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminScoreboard;
@@ -26,33 +27,76 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
 
     private async Task<IActionResult> RenderAsync(string viewPath, object model)
     {
-        ViewData["Labs"] 
-        
+        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
+        var slotService = HttpContext.RequestServices.GetRequiredService<ISlotService>();
+
+        ViewData["Labs"] = await labService.GetSelectLabListAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await slotService.GetSelectSlotListAsync(HttpContext.RequestAborted);
+
         return await RenderViewAsync(viewPath, model);
     }
-    
-    [HttpGet]
-    public async Task<IActionResult> RenderDashboardAsync()
+
+    private async Task<(int LabId, int SlotId)> GetRecentLabAndSlotAsync()
     {
+        var labExecutionService = HttpContext.RequestServices.GetRequiredService<ILabExecutionService>();
 
-
-        return await RenderViewAsync("~/Views/Admin/Scoreboard/Index.cshtml");
+        // Show the most recently executed lab and slot as default
+        var labExecution = await labExecutionService.FindMostRecentLabExecutionAsync(HttpContext.RequestAborted);
+        if(labExecution != null)
+            return (labExecution.LabId, labExecution.Group?.SlotId ?? 0);
+        return (0, 0);
     }
-    
-    public async Task<IActionResult> RenderScoreboardAsync([FromServices] ILabExecutionService labExecutionService, int? labId, int? slotId, bool groupMode, bool includeTutors)
+
+    [HttpGet]
+    [HttpGet("stats")]
+    public async Task<IActionResult> ShowStatisticsDashboardAsync(int? labId, int? slotId)
     {
         if(labId == null || slotId == null)
-        {
-            // Show the most recently executed lab and slot as default
-            var recentLabExecution = await labExecutionService.FindMostRecentLabExecutionAsync(HttpContext.RequestAborted);
-            if(recentLabExecution != null)
-            {
-                labId = recentLabExecution.LabId;
-                slotId = recentLabExecution.Group?.SlotId;
-            }
-        }
+            (labId, slotId) = await GetRecentLabAndSlotAsync();
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", labId ?? 0, slotId ?? 0, groupMode, includeTutors);
+        var statistics = await adminScoreboardService.GetStatisticsAsync(labId.Value, slotId.Value, HttpContext.RequestAborted);
+
+        return await RenderAsync("~/Views/Admin/Scoreboard/Index.cshtml", statistics);
+    }
+
+    [HttpGet("groups")]
+    public async Task<IActionResult> ShowGroupsOverviewAsync(int? labId, int? slotId)
+    {
+        if(labId == null || slotId == null)
+            (labId, slotId) = await GetRecentLabAndSlotAsync();
+        
+        var overview = await adminScoreboardService.GetOverviewAsync(labId.Value, slotId.Value, HttpContext.RequestAborted);
+        
+        return await RenderAsync("~/Views/Admin/Scoreboard/Groups.cshtml", overview);
+    }
+    
+    [HttpGet("users")]
+    public async Task<IActionResult> ShowUsersOverviewAsync(int? labId, int? slotId)
+    {
+        if(labId == null || slotId == null)
+            (labId, slotId) = await GetRecentLabAndSlotAsync();
+        
+        var overview = await adminScoreboardService.GetOverviewAsync(labId.Value, slotId.Value, HttpContext.RequestAborted);
+        
+        return await RenderAsync("~/Views/Admin/Scoreboard/Users.cshtml", overview);
+    }
+
+    [HttpGet("group/{groupId}")]
+    public async Task<IActionResult> ShowGroupDashboardAsync(int groupId, int labId)
+    {
+        return await RenderAsync("~/Views/Admin/Scoreboard/GroupDashboard.cshtml", null);
+    }
+    
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> ShowUserDashboardAsync(int userId, int labId)
+    {
+        return await RenderAsync("~/Views/Admin/Scoreboard/UserDashboard.cshtml", null);
+    }
+    
+    [HttpGet("export")]
+    public async Task<IActionResult> ShowExportPageAsync()
+    {
+        return await RenderAsync("~/Views/Admin/Scoreboard/Export.cshtml", null);
     }
 
     [HttpPost("exercisesubmission/delete")]
@@ -73,7 +117,7 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
             AddStatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseSubmissionAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", labId, slotId, groupMode, includeTutors);
+        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpPost("exercisesubmission/deletemultiple")]
@@ -94,7 +138,7 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
             AddStatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseSubmissionsAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", labId, slotId, groupMode, includeTutors);
+        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpPost("exercisesubmission/create")]
@@ -123,7 +167,7 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
             AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseSubmissionAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", labId, slotId, groupMode, includeTutors);
+        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpPost("flagsubmission/delete")]
@@ -144,7 +188,7 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
             AddStatusMessage(StatusMessageType.Error, Localizer["DeleteFlagSubmissionAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", labId, slotId, groupMode, includeTutors);
+        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpPost("flagsubmission/create")]
@@ -171,7 +215,7 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
             AddStatusMessage(StatusMessageType.Error, Localizer["CreateFlagSubmissionAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", labId, slotId, groupMode, includeTutors);
+        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpGet("labserver")]
@@ -211,19 +255,21 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
     [AnyUserPrivilege(UserPrivileges.TransferResults)]
     public async Task<IActionResult> UploadToMoodleAsync([FromServices] IMoodleService moodleService)
     {
+        // TODO move this and next function to own sub view
+        
         try
         {
             await moodleService.UploadStateToMoodleAsync(HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["UploadToMoodleAsync:Success"]);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["UploadToMoodleAsync:Success"]);
         }
         catch(InvalidOperationException ex)
         {
             GetLogger().LogError(ex, "Upload to Moodle");
-            AddStatusMessage(StatusMessageType.Error, Localizer["UploadToMoodleAsync:UnknownError"]);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["UploadToMoodleAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", 0, 0, false, false);
+        return RedirectToAction("ShowStatisticsDashboard");
     }
 
     [HttpGet("sync/csv")]
@@ -241,6 +287,6 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
             AddStatusMessage(StatusMessageType.Error, Localizer["DownloadAsCsvAsync:UnknownError"]);
         }
 
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", 0, 0, false, false);
+        return await ShowStatisticsDashboardAsync(null, null);
     }
 }

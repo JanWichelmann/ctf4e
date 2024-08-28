@@ -31,10 +31,6 @@
 
     <script asp-src-include="~/lib/popper/js/popper.min.js" asp-append-version="true"></script>
     <script asp-src-include="~/js/main.js" asp-append-version="true"></script>
-    @if(currentUser != null && currentUser.Privileges != UserPrivileges.Default)
-    {
-        <script asp-src-include="~/js/util.js" asp-append-version="true"></script>
-    }
 
     @await RenderSectionAsync("ScriptsHead", required: false)
 </head>

@@ -1,0 +1,113 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model AdminScoreboardOverview
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+}
+
+<div class="container">
+
+    @{
+        var navViewModel = new NavViewModel
+        {
+            SubView = SubView.Users,
+            LabId = Model.LabId,
+            SlotId = Model.SlotId
+        };
+    }
+    <partial name="Nav.cshtml" model="navViewModel" />
+
+    <table class="table table-sm table-align-middle mt-4" id="users-table">
+        <thead>
+        <tr class="row-sticky">
+            <th scope="col"></th>
+            <th scope="col">
+                @Localizer["Columns:Name"]
+                <input type="text" id="input-filter-name" class="form-control form-control-sm d-inline w-auto ms-2" placeholder="Filter">
+            </th>
+            <th scope="col" class="text-end">
+                @Localizer["Columns:Stats"]
+            </th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        @foreach(var userEntry in Model.UserEntries)
+        {
+            <tr>
+                <td>
+                    @if(userEntry.HasPassed)
+                    {
+                        <i class="bi bi-check-circle-fill text-success" title="@Localizer["Passed"]"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotPassed"]"></i>
+                    }
+                </td>
+                <td data-content="name">
+                    @userEntry.UserName
+                </td>
+                <td class="text-end">
+                    @if(userEntry.Status == LabExecutionStatus.Start)
+                    {
+                        <span class="badge bg-warning cursor-help" title="@Localizer["LabExecutionStatus:Start:Text"]">@Localizer["LabExecutionStatus:Start:Title"]</span>
+                    }
+                    else if(userEntry.Status == LabExecutionStatus.End)
+                    {
+                        <span class="badge bg-success cursor-help" title="@Localizer["LabExecutionStatus:End:Text"]">@Localizer["LabExecutionStatus:End:Title"]</span>
+                    }
+                    else if(userEntry.Status == LabExecutionStatus.Undefined)
+                    {
+                        <span class="badge bg-danger cursor-help" title="@Localizer["LabExecutionStatus:Undefined:Text"]">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
+                    }
+                    <span class="badge bg-primary cursor-help" title="@Localizer["Statistics:MandatoryExercises"]">@userEntry.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
+                    <span class="badge bg-secondary cursor-help" title="@Localizer["Statistics:OptionalExercises"]">@userEntry.PassedOptionalExercisesCount / @Model.OptionalExercisesCount</span>
+                    <span class="badge bg-info cursor-help" title="@Localizer["Statistics:FoundFlags"]">@userEntry.FoundFlagsCount / @Model.FlagCount</span>
+                </td>
+                <td class="text-end">
+                    <a asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-userId="@userEntry.UserId" asp-route-labId="@Model.LabId" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-arrow-right"></i>
+                        @Localizer["OpenUserDashboard"]
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<script>
+let filterInputName = document.getElementById("input-filter-name");
+    
+function filterTable()
+{
+    let nameFilter = new RegExp(filterInputName.value, "i");
+
+    // Show rows where the user name matches the filter
+    let table = document.getElementById("users-table");    
+    for(let row of table.rows)
+    {
+        let nameCell = row.querySelector('td[data-content="name"]');
+        if(nameCell && !nameFilter.test(nameCell.innerHTML))
+        {
+            row.classList.add("d-none");
+            continue;
+        }                               
+        
+        row.classList.remove("d-none");
+    }    
+
+    // Remember filters
+    setCookie("AdminScoreboardUsersListFilterName", filterInputName.value);
+}
+
+filterInputName.addEventListener("input", delay(filterTable, 500));
+
+window.addEventListener("load", function()
+{
+    // Restore filters
+    filterInputName.value = getCookie("AdminScoreboardUsersListFilterName") ?? "";
+    filterTable();
+});
+</script>

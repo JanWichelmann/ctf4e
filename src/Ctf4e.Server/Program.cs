@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Data;
@@ -78,7 +79,11 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IExerciseService, ExerciseService>();
     builder.Services.AddScoped<IFlagService, FlagService>();
     builder.Services.AddScoped<ILabExecutionService, LabExecutionService>();
+    
+    // Scoreboard computations
+    builder.Services.AddSingleton<ScoreboardUtilities>();
     builder.Services.AddScoped<IScoreboardService, ScoreboardService>();
+    builder.Services.AddScoped<IAdminScoreboardService, AdminScoreboardService>();
 
     // Markdown parser
     builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
@@ -198,6 +203,10 @@ var app = builder.Build();
     // Build HTTP request pipeline
 
     var mainOptions = app.Services.GetRequiredService<IOptions<MainOptions>>().Value;
+    
+    // Initialize singleton services
+    var scoreboardUtilities = app.Services.GetRequiredService<ScoreboardUtilities>();
+    await scoreboardUtilities.InitFlagPointParametersAsync(app.Services.GetRequiredService<IServiceScopeFactory>(), CancellationToken.None);
     
     // Verbose stack traces
     if(app.Environment.IsDevelopment())

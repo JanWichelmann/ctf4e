@@ -65,25 +65,25 @@
 
     @switch(Model.LabExecutionStatus)
     {
-        case ScoreboardGroupStatus.Undefined:
+        case LabExecutionStatus.Undefined:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
             <p>@Localizer["LabExecutionStatus:Undefined:Text"]</p>
             break;
-        case ScoreboardGroupStatus.BeforeStart:
+        case LabExecutionStatus.BeforeStart:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:BeforeStart:Title"]</span>
             <p>@Localizer["LabExecutionStatus:BeforeStart:Text", Model.LabExecution.Start]</p>
             break;
-        case ScoreboardGroupStatus.Start:
+        case LabExecutionStatus.Start:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Start:Title"]</span>
             <p>@Localizer["LabExecutionStatus:Start:Text", Model.LabExecution.End]</p>
             break;
-        case ScoreboardGroupStatus.End:
+        case LabExecutionStatus.End:
             <span class="badge bg-secondary">@Localizer["LabExecutionStatus:End:Title"]</span>
             <p>@Localizer["LabExecutionStatus:End:Text"]</p>
             break;
     }
 
-    @if(Model.LabExecutionStatus != ScoreboardGroupStatus.Undefined && Model.LabExecutionStatus != ScoreboardGroupStatus.BeforeStart)
+    @if(Model.LabExecutionStatus != LabExecutionStatus.Undefined && Model.LabExecutionStatus != LabExecutionStatus.BeforeStart)
     {
         <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" target="_blank">
             <i class="bi bi-arrow-return-right"></i>

@@ -30,7 +30,7 @@ public interface IScoreboardService
     Task<UserDashboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
 }
 
-public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigurationService configurationService, IMemoryCache cache)
+public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigurationService configurationService, IMemoryCache cache, ScoreboardUtilities scoreboardUtilities)
     : IScoreboardService
 {
     /// <summary>
@@ -38,15 +38,11 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
     /// </summary>
     private readonly IDbConnection _dbConn = new ProfiledDbConnection(dbContext.Database.GetDbConnection(), MiniProfiler.Current); // Enable profiling
 
-    private double _minPointsMultiplier;
-    private int _halfPointsCount;
+    
 
 
     public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken)
     {
-        // Load flag point parameters
-        await InitFlagPointParametersAsync(cancellationToken);
-
         // Consistent time
         var now = DateTime.Now;
 
@@ -174,7 +170,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                 splitOn: "SubmissionCount"))
             .ToDictionary(f => f.Flag.Id);
         foreach(var f in scoreboardFlagStatus)
-            f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
+            f.Value.CurrentPoints = scoreboardUtilities.CalculateFlagPoints(f.Value.Flag.BasePoints, f.Value.Flag.IsBounty, f.Value.SubmissionCount);
 
         int mandatoryExercisesCount = exercises.Count(e => e.IsMandatory);
         var adminScoreboard = new AdminScoreboard
@@ -223,7 +219,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                 {
                     GroupId = group.Id,
                     GroupName = group.DisplayName,
-                    Status = LabExecutionToStatus(now, groupLabExecution),
+                    Status = ScoreboardUtilities.GetLabExecutionStatus(now, groupLabExecution),
                     Exercises = new List<ScoreboardUserExerciseEntry>(),
                     Flags = new List<AdminScoreboardUserFlagEntry>(),
                     GroupMembers = groupMembers
@@ -250,7 +246,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                         {
                             var submissions = groupExerciseSubmissions[exercise.Id];
 
-                            var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+                            var (passed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, groupLabExecution);
 
                             groupEntry.Exercises.Add(new ScoreboardUserExerciseEntry
                             {
@@ -300,7 +296,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                                 var submissions = userExerciseSubmissions[exercise.Id];
 
                                 // Check whether user has passed
-                                var (passed, _, _) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+                                var (passed, _, _) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, groupLabExecution);
                                 if(passed)
                                     ++groupMembersPassed;
                             }
@@ -314,7 +310,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                         {
                             var submissions = groupExerciseSubmissions[exercise.Id];
 
-                            var (_, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+                            var (_, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, groupLabExecution);
 
                             groupEntry.Exercises.Add(new ScoreboardUserExerciseEntry
                             {
@@ -356,7 +352,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                 {
                     if(groupFlagSubmissions != null && groupFlagSubmissions.ContainsKey(flag.Id))
                     {
-                        var validSubmission = groupFlagSubmissions[flag.Id].FirstOrDefault(fs => CalculateFlagStatus(fs, groupLabExecution));
+                        var validSubmission = groupFlagSubmissions[flag.Id].FirstOrDefault(fs => ScoreboardUtilities.GetFlagSubmissionIsValid(fs, groupLabExecution));
                         groupEntry.Flags.Add(new AdminScoreboardUserFlagEntry
                         {
                             Flag = flag,
@@ -404,7 +400,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                     UserId = user.Id,
                     UserName = user.DisplayName,
                     GroupId = user.GroupId,
-                    Status = LabExecutionToStatus(now, groupLabExecution),
+                    Status = ScoreboardUtilities.GetLabExecutionStatus(now, groupLabExecution),
                     Exercises = new List<ScoreboardUserExerciseEntry>(),
                     Flags = new List<AdminScoreboardUserFlagEntry>()
                 };
@@ -423,7 +419,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                     {
                         var submissions = userExerciseSubmissions[exercise.Id];
 
-                        var (passed, points, validTries) = CalculateExerciseStatus(exercise, submissions, groupLabExecution);
+                        var (passed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, groupLabExecution);
 
                         userEntry.Exercises.Add(new ScoreboardUserExerciseEntry
                         {
@@ -466,7 +462,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                     {
                         var submission = userFlagSubmissions[flag.Id];
 
-                        var valid = CalculateFlagStatus(submission, groupLabExecution);
+                        var valid = ScoreboardUtilities.GetFlagSubmissionIsValid(submission, groupLabExecution);
 
                         userEntry.Flags.Add(new AdminScoreboardUserFlagEntry
                         {
@@ -503,129 +499,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
         return adminScoreboard;
     }
 
-    /// <summary>
-    ///     Derives the status for the given timestamp, considering the given lab execution constraints.
-    /// </summary>
-    /// <param name="time">Timestamp to check.</param>
-    /// <param name="labExecution">Lab execution data.</param>
-    /// <returns></returns>
-    private static ScoreboardGroupStatus LabExecutionToStatus(DateTime time, LabExecutionEntity labExecution)
-    {
-        if(labExecution == null)
-            return ScoreboardGroupStatus.Undefined;
-
-        if(time < labExecution.Start)
-            return ScoreboardGroupStatus.BeforeStart;
-        if(labExecution.Start <= time && time < labExecution.End)
-            return ScoreboardGroupStatus.Start;
-        if(labExecution.End <= time)
-            return ScoreboardGroupStatus.End;
-
-        return ScoreboardGroupStatus.Undefined;
-    }
-
-    /// <summary>
-    /// Calculates the points for the given exercise from the given submission list. Ignores tries that are outside of the lab execution constraints.
-    /// </summary>
-    /// <param name="exercise">Exercise being evaluated.</param>
-    /// <param name="submissions">All submissions for this exercise.</param>
-    /// <param name="labExecution">Lab execution data.</param>
-    /// <returns></returns>
-    private static (bool passed, int points, int validTries) CalculateExerciseStatus(Exercise exercise, IEnumerable<ExerciseSubmission> submissions, LabExecutionEntity labExecution)
-    {
-        // If the group does not have a lab execution, collecting points and passing is impossible
-        if(labExecution == null)
-            return (false, 0, 0);
-
-        // Point calculation:
-        //     Subtract points for every failed try
-        //     If the exercise was passed, add base points
-        //     If the number is negative, return 0
-
-        int tries = 0;
-        int points = 0;
-        bool passed = false;
-        foreach(var submission in submissions)
-        {
-            // Check submission validity
-            if(submission.SubmissionTime < labExecution.Start || labExecution.End <= submission.SubmissionTime)
-                continue;
-            ++tries;
-
-            if(submission.ExercisePassed)
-            {
-                points += exercise.BasePoints;
-                passed = true;
-                break;
-            }
-
-            points -= submission.Weight * exercise.PenaltyPoints;
-        }
-
-        if(points < 0)
-            points = 0;
-
-        return (passed, points, tries);
-    }
-
-    /// <summary>
-    ///     Calculates whether the given flag submission is valid, by checking the lab execution constraints.
-    /// </summary>
-    /// <param name="flagSubmission">Flag submission.</param>
-    /// <param name="labExecution">Lab execution data.</param>
-    /// <returns></returns>
-    private static bool CalculateFlagStatus(FlagSubmission flagSubmission, LabExecutionEntity labExecution)
-    {
-        // If the group does not have a lab execution, submitting flags is impossible
-        if(labExecution == null)
-            return false;
-
-        return labExecution.Start <= flagSubmission.SubmissionTime && flagSubmission.SubmissionTime < labExecution.End;
-    }
-
-    /// <summary>
-    ///     Retrieves the flag point parameters from the configuration.
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns></returns>
-    private async Task InitFlagPointParametersAsync(CancellationToken cancellationToken)
-    {
-        // Retrieve constants
-        _minPointsMultiplier = 1.0 / await configurationService.GetFlagMinimumPointsDivisorAsync(cancellationToken);
-        _halfPointsCount = await configurationService.GetFlagHalfPointsSubmissionCountAsync(cancellationToken);
-    }
-
-    /// <summary>
-    ///     Returns the points the flag yields for the give submission count.
-    /// </summary>
-    /// <param name="flag">Flag.</param>
-    /// <param name="submissionCount">Number of valid submissions.</param>
-    /// <returns></returns>
-    private int CalculateFlagPoints(Flag flag, int submissionCount)
-    {
-        // Bounties are not scaled
-        if(flag.IsBounty)
-            return flag.BasePoints;
-
-        // Retrieve necessary constants
-
-        // a: Base points
-        // b: Min points = multiplier*a
-        // c: 50% points y = (a+b)/2
-        // d: 50% points x
-
-        // Flag points depending on submission count x:
-        // (a-b)*((a-b)/(c-b))^(1/(d-1)*(-x+1))+b
-        // (base is solution of (a-b)*y^(-d+1)+b=c)
-
-        // (a-b)
-        double amb = flag.BasePoints - _minPointsMultiplier * flag.BasePoints;
-
-        // (c-b)=(a+b)/2-b=(a-b)/2
-        // -> (a-b)/(c-b)=2
-        double points = (amb * Math.Pow(2, (-submissionCount + 1.0) / (_halfPointsCount - 1))) + (_minPointsMultiplier * flag.BasePoints);
-        return points > flag.BasePoints ? flag.BasePoints : (int)Math.Round(points);
-    }
+    
 
     public async Task<Scoreboard> GetFullScoreboardAsync(int? slotId, CancellationToken cancellationToken, bool forceUncached = false)
     {
@@ -633,9 +507,6 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
         string fullScoreboardCacheKey = "scoreboard-full-" + (slotId?.ToString() ?? "all");
         if(!forceUncached && cache.TryGetValue(fullScoreboardCacheKey, out Scoreboard scoreboard))
             return scoreboard;
-
-        // Load flag point parameters
-        await InitFlagPointParametersAsync(cancellationToken);
 
         // Get current time to avoid overestimating scoreboard validity time
         DateTime now = DateTime.Now;
@@ -800,7 +671,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                 splitOn: "SubmissionCount"))
             .ToDictionary(f => f.Flag.Id);
         foreach(var f in flags)
-            f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
+            f.Value.CurrentPoints = scoreboardUtilities.CalculateFlagPoints(f.Value.Flag.BasePoints, f.Value.Flag.IsBounty, f.Value.SubmissionCount);
 
         // Get valid submissions for flags
         var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, int LabId, DateTime MinSubmissionTime)>(@"
@@ -972,9 +843,6 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
         string scoreboardCacheKey = "scoreboard-" + labId + "-" + (slotId?.ToString() ?? "all");
         if(!forceUncached && cache.TryGetValue(scoreboardCacheKey, out Scoreboard scoreboard))
             return scoreboard;
-
-        // Load flag point parameters
-        await InitFlagPointParametersAsync(cancellationToken);
 
         // Get current time to avoid overestimating scoreboard validity time
         DateTime now = DateTime.Now;
@@ -1151,7 +1019,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                 splitOn: "SubmissionCount"))
             .ToDictionary(f => f.Flag.Id);
         foreach(var f in flags)
-            f.Value.CurrentPoints = CalculateFlagPoints(f.Value.Flag, f.Value.SubmissionCount);
+            f.Value.CurrentPoints = scoreboardUtilities.CalculateFlagPoints(f.Value.Flag.BasePoints, f.Value.Flag.IsBounty, f.Value.SubmissionCount);
 
         // Get valid submissions for flags
         var validFlagSubmissionsUngrouped = (await _dbConn.QueryAsync<(int GroupId, int FlagId, DateTime MinSubmissionTime)>(@"
@@ -1386,7 +1254,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
             LabId = labId,
             CurrentLab = labs.First(l => l.LabId == labId),
             Labs = labs,
-            LabExecutionStatus = LabExecutionToStatus(now, labExecution),
+            LabExecutionStatus = ScoreboardUtilities.GetLabExecutionStatus(now, labExecution),
             LabExecution = mapper.Map<LabExecution>(labExecution),
             FoundFlagsCount = foundFlagsGrouped.Count,
             ValidFoundFlagsCount = foundFlagsGrouped.Count(ff => ff.Any(ffs => ffs.Valid)),
@@ -1408,7 +1276,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
 
             if(exerciseSubmissions.TryGetValue(exercise.Id, out var submissions))
             {
-                var (groupMemberHasPassed, points, validTries) = CalculateExerciseStatus(exercise, submissions, labExecution);
+                var (groupMemberHasPassed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, labExecution);
 
                 // If passing as group is disabled, do another check whether this user has a valid passing submission
                 bool passed = groupMemberHasPassed;

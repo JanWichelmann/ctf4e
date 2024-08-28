@@ -64,3 +64,14 @@ function setupViewFlagSwitch(cookieName, sw, flag)
         window.location = window.location.href;
     });
 }
+
+// Utility function: Delay callback to after n milliseconds.
+function delay(callback, n)
+{
+    var delayTimer = 0;
+    return function()
+    {
+        clearTimeout(delayTimer);
+        delayTimer = setTimeout(callback, n);
+    };
+}
