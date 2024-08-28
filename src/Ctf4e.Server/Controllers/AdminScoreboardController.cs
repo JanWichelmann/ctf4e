@@ -24,14 +24,21 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
 
     private readonly IUserService _userService = userService;
 
-    private async Task<IActionResult> RenderAsync(string viewPath, int labId, int slotId, bool groupMode, bool includeTutors)
+    private async Task<IActionResult> RenderAsync(string viewPath, object model)
     {
-        var scoreboard = await scoreboardService.GetAdminScoreboardAsync(labId, slotId, groupMode, includeTutors, HttpContext.RequestAborted);
-
-        return await RenderViewAsync(viewPath, scoreboard);
+        ViewData["Labs"] 
+        
+        return await RenderViewAsync(viewPath, model);
     }
-
+    
     [HttpGet]
+    public async Task<IActionResult> RenderDashboardAsync()
+    {
+
+
+        return await RenderViewAsync("~/Views/Admin/Scoreboard/Index.cshtml");
+    }
+    
     public async Task<IActionResult> RenderScoreboardAsync([FromServices] ILabExecutionService labExecutionService, int? labId, int? slotId, bool groupMode, bool includeTutors)
     {
         if(labId == null || slotId == null)

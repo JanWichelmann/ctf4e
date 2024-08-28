@@ -17,6 +17,7 @@ public interface ILabService
 {
     ValueTask<List<Lab>> GetLabsAsync(CancellationToken cancellationToken);
     Task<List<AdminLabListEntry>> GetLabListAsync(CancellationToken cancellationToken);
+    Task<List<SelectLabListEntry>> GetSelectLabListAsync(CancellationToken cancellationToken);
     Task<Lab> FindLabByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> LabExistsAsync(int id, CancellationToken cancellationToken);
     Task<Lab> CreateLabAsync(Lab lab, CancellationToken cancellationToken);
@@ -36,6 +37,15 @@ public class LabService(CtfDbContext dbContext, IMapper mapper, GenericCrudServi
             .OrderBy(l => l.SortIndex)
             .ThenBy(l => l.Name)
             .ProjectTo<AdminLabListEntry>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<SelectLabListEntry>> GetSelectLabListAsync(CancellationToken cancellationToken)
+    {
+        return dbContext.Labs.AsNoTracking()
+            .OrderBy(l => l.SortIndex)
+            .ThenBy(l => l.Name)
+            .ProjectTo<SelectLabListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
     
@@ -64,5 +74,7 @@ public class LabService(CtfDbContext dbContext, IMapper mapper, GenericCrudServi
             .ForMember(l => l.ExerciseCount, opt => opt.MapFrom(l => l.Exercises.Count))
             .ForMember(l => l.FlagCount, opt => opt.MapFrom(l => l.Flags.Count))
             .ForMember(l => l.ExecutionCount, opt => opt.MapFrom(l => l.Executions.Count));
+
+        mappingProfile.CreateMap<LabEntity, SelectLabListEntry>();
     }
 }

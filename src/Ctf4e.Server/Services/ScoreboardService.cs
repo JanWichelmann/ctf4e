@@ -30,31 +30,17 @@ public interface IScoreboardService
     Task<UserDashboard> GetUserScoreboardAsync(int userId, int groupId, int labId, CancellationToken cancellationToken);
 }
 
-public class ScoreboardService : IScoreboardService
+public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigurationService configurationService, IMemoryCache cache)
+    : IScoreboardService
 {
-    private readonly CtfDbContext _dbContext;
-    private readonly IMapper _mapper;
-    private readonly IConfigurationService _configurationService;
-    private readonly IMemoryCache _cache;
-
     /// <summary>
-    ///     Database connection for Dapper queries.
+    /// Database connection for Dapper queries.
     /// </summary>
-    private readonly IDbConnection _dbConn;
+    private readonly IDbConnection _dbConn = new ProfiledDbConnection(dbContext.Database.GetDbConnection(), MiniProfiler.Current); // Enable profiling
 
     private double _minPointsMultiplier;
     private int _halfPointsCount;
 
-    public ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigurationService configurationService, IMemoryCache cache)
-    {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-
-        // Profile Dapper queries
-        _dbConn = new ProfiledDbConnection(_dbContext.Database.GetDbConnection(), MiniProfiler.Current);
-    }
 
     public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken)
     {
@@ -64,47 +50,47 @@ public class ScoreboardService : IScoreboardService
         // Consistent time
         var now = DateTime.Now;
 
-        bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
 
-        var labs = await _dbContext.Labs.AsNoTracking()
+        var labs = await dbContext.Labs.AsNoTracking()
             .OrderBy(l => l.Name)
-            .ProjectTo<Lab>(_mapper.ConfigurationProvider)
+            .ProjectTo<Lab>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        var slots = await _dbContext.Slots.AsNoTracking()
+        var slots = await dbContext.Slots.AsNoTracking()
             .OrderBy(s => s.Name)
-            .ProjectTo<Slot>(_mapper.ConfigurationProvider)
+            .ProjectTo<Slot>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        var labExecutions = await _dbContext.LabExecutions.AsNoTracking()
+        var labExecutions = await dbContext.LabExecutions.AsNoTracking()
             .Where(l => l.LabId == labId && l.Group.SlotId == slotId)
             .ToDictionaryAsync(l => l.GroupId, cancellationToken); // Each group ID can only appear once, since it is part of the primary key
 
-        var users = await _dbContext.Users.AsNoTracking()
+        var users = await dbContext.Users.AsNoTracking()
             .Where(u => u.GroupId != null && u.Group.SlotId == slotId)
             .OrderBy(u => u.DisplayName)
             .ToListAsync(cancellationToken);
         var groupIdLookup = users.ToDictionary(u => u.Id, u => u.GroupId!.Value);
         var userNameLookup = users.ToDictionary(u => u.Id, u => u.DisplayName);
 
-        var groups = await _dbContext.Groups.AsNoTracking()
+        var groups = await dbContext.Groups.AsNoTracking()
             .Where(g => g.SlotId == slotId)
             .OrderBy(g => g.DisplayName)
-            .ProjectTo<Group>(_mapper.ConfigurationProvider)
+            .ProjectTo<Group>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
         var groupNameLookup = groups.ToDictionary(g => g.Id, g => g.DisplayName);
 
-        var exercises = await _dbContext.Exercises.AsNoTracking()
+        var exercises = await dbContext.Exercises.AsNoTracking()
             .Where(e => e.LabId == labId)
             .OrderBy(e => e.ExerciseNumber)
-            .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
+            .ProjectTo<Exercise>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        var exerciseSubmissionsUngrouped = await _dbContext.ExerciseSubmissions.AsNoTracking()
+        var exerciseSubmissionsUngrouped = await dbContext.ExerciseSubmissions.AsNoTracking()
             .Where(e => e.Exercise.LabId == labId && e.User.GroupId != null && e.User.Group.SlotId == slotId)
             .OrderBy(e => e.ExerciseId)
             .ThenBy(e => e.SubmissionTime)
-            .ProjectTo<ExerciseSubmission>(_mapper.ConfigurationProvider)
+            .ProjectTo<ExerciseSubmission>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         // Aggregate exercise submissions by user and by group
@@ -141,16 +127,16 @@ public class ScoreboardService : IScoreboardService
             })
             .ToList();
 
-        var flags = await _dbContext.Flags.AsNoTracking()
+        var flags = await dbContext.Flags.AsNoTracking()
             .Where(f => f.LabId == labId)
             .OrderBy(f => f.IsBounty)
             .ThenBy(f => f.Description)
-            .ProjectTo<Flag>(_mapper.ConfigurationProvider)
+            .ProjectTo<Flag>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        var flagSubmissionsUngrouped = await _dbContext.FlagSubmissions.AsNoTracking()
+        var flagSubmissionsUngrouped = await dbContext.FlagSubmissions.AsNoTracking()
             .Where(f => f.Flag.LabId == labId && f.User.GroupId != null && f.User.Group.SlotId == slotId)
-            .ProjectTo<FlagSubmission>(_mapper.ConfigurationProvider)
+            .ProjectTo<FlagSubmission>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
         var flagSubmissions = flagSubmissionsUngrouped
             .GroupBy(f => f.UserId) // This needs to be done in memory (no aggregation)
@@ -181,7 +167,7 @@ public class ScoreboardService : IScoreboardService
                         GROUP BY f.`Id`",
                 (flag, submissionCount) => new AdminScoreboardFlagStatisticsEntry
                 {
-                    Flag = _mapper.Map<Flag>(flag),
+                    Flag = mapper.Map<Flag>(flag),
                     SubmissionCount = (int)submissionCount
                 },
                 new { labId },
@@ -605,8 +591,8 @@ public class ScoreboardService : IScoreboardService
     private async Task InitFlagPointParametersAsync(CancellationToken cancellationToken)
     {
         // Retrieve constants
-        _minPointsMultiplier = 1.0 / await _configurationService.GetFlagMinimumPointsDivisorAsync(cancellationToken);
-        _halfPointsCount = await _configurationService.GetFlagHalfPointsSubmissionCountAsync(cancellationToken);
+        _minPointsMultiplier = 1.0 / await configurationService.GetFlagMinimumPointsDivisorAsync(cancellationToken);
+        _halfPointsCount = await configurationService.GetFlagHalfPointsSubmissionCountAsync(cancellationToken);
     }
 
     /// <summary>
@@ -645,7 +631,7 @@ public class ScoreboardService : IScoreboardService
     {
         // Is there a cached scoreboard?
         string fullScoreboardCacheKey = "scoreboard-full-" + (slotId?.ToString() ?? "all");
-        if(!forceUncached && _cache.TryGetValue(fullScoreboardCacheKey, out Scoreboard scoreboard))
+        if(!forceUncached && cache.TryGetValue(fullScoreboardCacheKey, out Scoreboard scoreboard))
             return scoreboard;
 
         // Load flag point parameters
@@ -655,14 +641,14 @@ public class ScoreboardService : IScoreboardService
         DateTime now = DateTime.Now;
 
         // Get flag point limits
-        var pointLimits = await _dbContext.Labs.AsNoTracking()
+        var pointLimits = await dbContext.Labs.AsNoTracking()
             .Select(l => new { l.Id, l.MaxPoints, l.MaxFlagPoints })
             .ToDictionaryAsync(l => l.Id, cancellationToken);
 
         // Get list of exercises
-        var exercises = await _dbContext.Exercises.AsNoTracking()
+        var exercises = await dbContext.Exercises.AsNoTracking()
             .OrderBy(e => e.ExerciseNumber)
-            .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
+            .ProjectTo<Exercise>(mapper.ConfigurationProvider)
             .ToDictionaryAsync(e => e.Id, cancellationToken);
 
         // Initialize scoreboard entries with group data
@@ -808,7 +794,7 @@ public class ScoreboardService : IScoreboardService
                  ",
                 (flag, submissionCount) => new ScoreboardFlagEntry
                 {
-                    Flag = _mapper.Map<Flag>(flag),
+                    Flag = mapper.Map<Flag>(flag),
                     SubmissionCount = (int)submissionCount
                 },
                 splitOn: "SubmissionCount"))
@@ -965,17 +951,17 @@ public class ScoreboardService : IScoreboardService
             {
                 AllLabs = true,
                 SlotId = slotId,
-                MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
+                MaximumEntryCount = await configurationService.GetScoreboardEntryCountAsync(cancellationToken),
                 Entries = scoreboardEntries,
                 Flags = flags,
-                ValidUntil = now.AddSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
+                ValidUntil = now.AddSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
             };
         }
 
         // Update cache
-        var cacheDuration = TimeSpan.FromSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
+        var cacheDuration = TimeSpan.FromSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
         if(cacheDuration > TimeSpan.Zero)
-            _cache.Set(fullScoreboardCacheKey, scoreboard, cacheDuration);
+            cache.Set(fullScoreboardCacheKey, scoreboard, cacheDuration);
 
         return scoreboard;
     }
@@ -984,7 +970,7 @@ public class ScoreboardService : IScoreboardService
     {
         // Is there a cached scoreboard?
         string scoreboardCacheKey = "scoreboard-" + labId + "-" + (slotId?.ToString() ?? "all");
-        if(!forceUncached && _cache.TryGetValue(scoreboardCacheKey, out Scoreboard scoreboard))
+        if(!forceUncached && cache.TryGetValue(scoreboardCacheKey, out Scoreboard scoreboard))
             return scoreboard;
 
         // Load flag point parameters
@@ -994,16 +980,16 @@ public class ScoreboardService : IScoreboardService
         DateTime now = DateTime.Now;
 
         // Get lab data
-        var lab = await _dbContext.Labs.AsNoTracking()
+        var lab = await dbContext.Labs.AsNoTracking()
             .FirstOrDefaultAsync(l => l.Id == labId, cancellationToken);
         if(lab == null)
             return null;
 
         // Get list of exercises
-        var exercises = await _dbContext.Exercises.AsNoTracking()
+        var exercises = await dbContext.Exercises.AsNoTracking()
             .Where(e => e.LabId == labId)
             .OrderBy(e => e.ExerciseNumber)
-            .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
+            .ProjectTo<Exercise>(mapper.ConfigurationProvider)
             .ToDictionaryAsync(e => e.Id, cancellationToken);
         if(!exercises.Any())
             return null; // No scoreboard for empty labs
@@ -1158,7 +1144,7 @@ public class ScoreboardService : IScoreboardService
                  ",
                 (flag, submissionCount) => new ScoreboardFlagEntry
                 {
-                    Flag = _mapper.Map<Flag>(flag),
+                    Flag = mapper.Map<Flag>(flag),
                     SubmissionCount = (int)submissionCount
                 },
                 new { labId },
@@ -1296,17 +1282,17 @@ public class ScoreboardService : IScoreboardService
                 LabId = labId,
                 SlotId = slotId,
                 AllLabs = false,
-                MaximumEntryCount = await _configurationService.GetScoreboardEntryCountAsync(cancellationToken),
+                MaximumEntryCount = await configurationService.GetScoreboardEntryCountAsync(cancellationToken),
                 Entries = scoreboardEntries,
                 Flags = flags,
-                ValidUntil = now.AddSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
+                ValidUntil = now.AddSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
             };
         }
 
         // Update cache
-        var cacheDuration = TimeSpan.FromSeconds(await _configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
+        var cacheDuration = TimeSpan.FromSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
         if(cacheDuration > TimeSpan.Zero)
-            _cache.Set(scoreboardCacheKey, scoreboard, cacheDuration);
+            cache.Set(scoreboardCacheKey, scoreboard, cacheDuration);
 
         return scoreboard;
     }
@@ -1316,15 +1302,15 @@ public class ScoreboardService : IScoreboardService
         // Consistent time
         var now = DateTime.Now;
 
-        bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
 
-        var currentLab = await _dbContext.Labs.AsNoTracking()
+        var currentLab = await dbContext.Labs.AsNoTracking()
             .FirstOrDefaultAsync(l => l.Id == labId, cancellationToken);
         if(currentLab == null)
             return null;
 
         // Get list of labs
-        var labs = await _dbContext.Labs.AsNoTracking()
+        var labs = await dbContext.Labs.AsNoTracking()
             .OrderBy(l => l.SortIndex)
             .ThenBy(l => l.Name)
             .Select(l => new UserScoreboardLabEntry
@@ -1338,21 +1324,21 @@ public class ScoreboardService : IScoreboardService
             .ToListAsync(cancellationToken);
 
         // Find active lab execution
-        var labExecution = await _dbContext.LabExecutions.AsNoTracking()
+        var labExecution = await dbContext.LabExecutions.AsNoTracking()
             .FirstOrDefaultAsync(le => le.GroupId == groupId && le.LabId == labId, cancellationToken);
 
         // Get lookup of group members
-        var groupMembers = await _dbContext.Users.AsNoTracking()
+        var groupMembers = await dbContext.Users.AsNoTracking()
             .Where(u => u.GroupId == groupId)
             .OrderBy(u => u.DisplayName)
             .Select(u => new { u.Id, u.DisplayName })
             .ToDictionaryAsync(u => u.Id, u => u.DisplayName, cancellationToken);
 
         // Get list of exercises for current lab
-        var exercises = await _dbContext.Exercises.AsNoTracking()
+        var exercises = await dbContext.Exercises.AsNoTracking()
             .Where(e => e.LabId == labId)
             .OrderBy(e => e.ExerciseNumber)
-            .ProjectTo<Exercise>(_mapper.ConfigurationProvider)
+            .ProjectTo<Exercise>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         // Retrieve all exercise submissions of this user/group
@@ -1365,12 +1351,12 @@ public class ScoreboardService : IScoreboardService
                     AND e.`LabId` = @labId
                     ORDER BY e.`Id`, es.`SubmissionTime`",
                 new { groupId, userId, labId }))
-            .Select(es => _mapper.Map<ExerciseSubmission>(es))
+            .Select(es => mapper.Map<ExerciseSubmission>(es))
             .GroupBy(es => es.ExerciseId)
             .ToDictionary(es => es.Key, es => es.ToList());
 
         // Retrieve all flag submissions of this group
-        var foundFlags = await _dbContext.FlagSubmissions.AsNoTracking()
+        var foundFlags = await dbContext.FlagSubmissions.AsNoTracking()
             .Where(fs => fs.User.GroupId == groupId && fs.Flag.LabId == labId && !fs.Flag.IsBounty) // Do not show bounty flags
             .OrderBy(fs => fs.SubmissionTime)
             .Select(fs => new UserScoreboardFlagEntry
@@ -1387,9 +1373,9 @@ public class ScoreboardService : IScoreboardService
             .ToList();
 
         // Retrieve flag codes
-        var flags = await _dbContext.Flags.AsNoTracking()
+        var flags = await dbContext.Flags.AsNoTracking()
             .Where(f => f.LabId == labId)
-            .ProjectTo<Flag>(_mapper.ConfigurationProvider)
+            .ProjectTo<Flag>(mapper.ConfigurationProvider)
             .ToDictionaryAsync(f => f.Id, cancellationToken);
         foreach(var fs in foundFlags)
             fs.FlagCode = flags[fs.FlagId].Code;
@@ -1401,14 +1387,14 @@ public class ScoreboardService : IScoreboardService
             CurrentLab = labs.First(l => l.LabId == labId),
             Labs = labs,
             LabExecutionStatus = LabExecutionToStatus(now, labExecution),
-            LabExecution = _mapper.Map<LabExecution>(labExecution),
+            LabExecution = mapper.Map<LabExecution>(labExecution),
             FoundFlagsCount = foundFlagsGrouped.Count,
             ValidFoundFlagsCount = foundFlagsGrouped.Count(ff => ff.Any(ffs => ffs.Valid)),
             HasFoundAllFlags = foundFlagsGrouped.Count == flags.Count(f => !f.Value.IsBounty),
             Exercises = new List<UserScoreboardExerciseEntry>(),
             GroupMembers = groupMembers,
             Flags = foundFlags,
-            PassAsGroupEnabled = await _configurationService.GetPassAsGroupAsync(cancellationToken)
+            PassAsGroupEnabled = await configurationService.GetPassAsGroupAsync(cancellationToken)
         };
 
         // Check exercise submissions

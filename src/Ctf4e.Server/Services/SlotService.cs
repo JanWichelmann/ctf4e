@@ -16,6 +16,7 @@ public interface ISlotService
 {
     Task<List<Slot>> GetSlotsAsync(CancellationToken cancellationToken);
     Task<List<AdminSlotListEntry>> GetSlotListAsync(CancellationToken cancellationToken);
+    Task<List<SelectSlotListEntry>> GetSelectSlotListAsync(CancellationToken cancellationToken);
     Task<Slot> FindSlotByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken);
     Task<int> GetSlotGroupCount(int id, CancellationToken cancellationToken);
@@ -39,6 +40,14 @@ public class SlotService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
         return dbContext.Slots.AsNoTracking()
             .OrderBy(s => s.Id)
             .ProjectTo<AdminSlotListEntry>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<SelectSlotListEntry>> GetSelectSlotListAsync(CancellationToken cancellationToken)
+    {
+        return dbContext.Slots.AsNoTracking()
+            .OrderBy(s => s.Id)
+            .ProjectTo<SelectSlotListEntry>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 
@@ -73,5 +82,7 @@ public class SlotService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
     {
         mappingProfile.CreateMap<SlotEntity, AdminSlotListEntry>()
             .ForMember(se => se.GroupCount, opt => opt.MapFrom(s => s.Groups.Count));
+
+        mappingProfile.CreateMap<SlotEntity, SelectSlotListEntry>();
     }
 }
