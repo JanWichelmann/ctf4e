@@ -49,9 +49,6 @@ public partial class AuthenticationController(IUserService userService, IConfigu
 
         if(redirectUrl == null)
         {
-            if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
-                return RedirectToAction("RenderScoreboard", "AdminScoreboard");
-            
             if(currentUser.GroupId == null)
                 return RedirectToAction("ShowGroupForm", "Authentication");
             

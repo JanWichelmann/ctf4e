@@ -39,10 +39,8 @@ public class AdminScoreboardStatistics
         
         public int BasePoints { get; set; }
 
-        [NotMapped]
         public int CurrentPoints { get; set; }
 
-        [NotMapped]
         public int SubmissionCount { get; set; }
     }
 }

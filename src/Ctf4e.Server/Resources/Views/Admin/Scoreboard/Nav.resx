@@ -33,4 +33,12 @@
     <data name="Nav:Export" xml:space="preserve">
         <value>Export</value>
     </data>
+    <data name="Nav:BackToGroups" xml:space="preserve">
+        <value>Back to overview</value>
+        <comment>Nav:BackToGroups</comment>
+    </data>
+    <data name="Nav:BackToUsers" xml:space="preserve">
+        <value>Back to overview</value>
+        <comment>Nav:BackToUsers</comment>
+    </data>
 </root>

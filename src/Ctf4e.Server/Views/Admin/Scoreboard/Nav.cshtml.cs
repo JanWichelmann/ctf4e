@@ -5,7 +5,10 @@ public class NavViewModel
     public int? SlotId { get; set; }
     
     public int GroupId { get; set; }
+    public string GroupName { get; set; }
+    
     public int UserId { get; set; }
+    public string UserName { get; set; }
 }
 
 public enum SubView
@@ -15,5 +18,6 @@ public enum SubView
     Users,
     GroupDashboard,
     UserDashboard,
-    Export
+    Export,
+    Empty
 }

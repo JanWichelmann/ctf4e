@@ -59,6 +59,9 @@
     <Compile Update="Views\Shared\ConfirmDeletionDialog.cshtml.cs">
       <DependentUpon>ConfirmDeletionDialog.cshtml</DependentUpon>
     </Compile>
+    <Compile Update="Controllers\AdminScoreboardController.Edit.cs">
+      <DependentUpon>AdminScoreboardController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

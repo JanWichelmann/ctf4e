@@ -1,8 +1,17 @@
+@using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Views.Shared
+@using Microsoft.AspNetCore.Antiforgery
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
+@inject IAntiforgery Csrf  
+@model AdminScoreboardDetails
 @{
     ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+    bool allowEdit = currentUser.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard);
 }
 
 <div class="container">
@@ -11,14 +20,238 @@
         var navViewModel = new NavViewModel
         {
             SubView = SubView.GroupDashboard,
-            LabId = 1, // TODO
-            SlotId = 1, // TODO
-            GroupId = 1 // TODO
+            LabId = Model.LabId,
+            SlotId = Model.SlotId,
+            GroupId = Model.GroupId,
+            GroupName = Model.GroupName
         };
     }
     <partial name="Nav.cshtml" model="navViewModel" />
 
-    <h2 class="mt-5">back &lt;--- Group Name</h2>
+    <h2 class="mt-5">Exercises</h2>
     <hr class="header-secondary">
 
+    @foreach(var exercise in Model.Exercises)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">
+                        @if(exercise.Passed)
+                        {
+                            <i class="bi bi-check-circle-fill text-success cursor-help me-2" title="@Localizer["Solved"]"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-x-circle-fill text-danger cursor-help me-2" title="@Localizer["NotSolved"]"></i>
+                        }
+
+                        @exercise.ExerciseName
+
+                        @if(exercise.IsMandatory)
+                        {
+                            <span class="badge bg-info ms-2">@Localizer["Mandatory"]</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary ms-2">@Localizer["Optional"]</span>
+                        }
+                    </div>
+                    <div class="col-auto ms-auto">
+                        <span class="badge bg-light text-dark" title="@Localizer["Tries:Text"]">@Localizer["Tries:Value", exercise.ValidTries, exercise.Tries]</span>
+                        @if(exercise.Passed)
+                        {
+                            <span class="badge bg-primary">@Localizer["Points", exercise.Points]</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-align-middle">
+                    <thead>
+                    <tr>
+                        <th scope="col">
+                            <input type="checkbox" class="form-check-input" name="es-checkbox-select-all">
+                        </th>
+                        <th scope="col"></th>
+                        <th scope="col">@Localizer["Submissions:Solved"]</th>
+                        <th scope="col">@Localizer["Submissions:Timestamp"]</th>
+                        <th scope="col">@Localizer["Submissions:SubmittedBy"]</th>
+                        <th scope="col">@Localizer["Submissions:Weight"]</th>
+                        <th scope="col">@Localizer["Submissions:Points"]</th>
+                        @if(allowEdit)
+                        {
+                            <th scope="col"></th>
+                        }
+                    </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                    @{
+                        bool sawPassedSolution = false;
+                    }
+                    @foreach(var submission in exercise.Submissions)
+                    {
+                        <tr class="@(sawPassedSolution ? "row-highlighted" : "")" data-submission-id="@submission.Id">
+                            <td>
+                                <input type="checkbox" class="form-check-input" name="es-checkbox">
+                            </td>
+                            <th scope="row">#@submission.Id</th>
+                            <td>
+                                @if(submission.Solved)
+                                {
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                }
+                            </td>
+                            <td>
+                                @submission.SubmissionTime.ToString("G")
+                            </td>
+                            <td>
+                                <a class="text-decoration-none" asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-labId="@Model.LabId" asp-route-userId="@submission.UserId">
+                                    @submission.UserName
+                                </a>
+                            </td>
+                            <td>
+                                @submission.Weight
+                            </td>
+                            <td>
+                                @if(!sawPassedSolution)
+                                {
+                                    if(submission.Solved)
+                                    {
+                                        <span class="text-success fw-bold">
+                                            +@exercise.BasePoints
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger fw-bold">
+                                            &minus;@(submission.Weight * exercise.PenaltyPoints)
+                                        </span>
+                                    }
+                                }
+                            </td>
+                            @if(allowEdit)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger" role="button" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submission">
+                                        <i class="bi bi-trash"></i>
+                                        @Localizer["Delete"]
+                                    </button>
+                                </td>
+                            }
+                        </tr>
+
+                        if(submission.Solved)
+                        {
+                            sawPassedSolution = true;
+                        }
+                    }
+                    </tbody>
+                </table>
+
+                @if(allowEdit)
+                {
+                    <button class="btn btn-sm btn-outline-danger" role="button" data-bs-toggle="modal" data-bs-target="#modal-delete-exercise-submissions">
+                        <i class="bi bi-trash"></i>
+                        @Localizer["DeleteSelected"]
+                    </button>
+                }
+            </div>
+        </div>
+    }
 </div>
+
+@{
+    var deleteExerciseSubmissionModalViewModel = new GenericConfirmModalModel
+    {
+        ModalId = "modal-delete-exercise-submission",
+        CallbackFunctionName = "deleteExerciseSubmission",
+        Title = Localizer["DeleteExerciseSubmissionModal:Title"].Value,
+        Messages = new List<string> { Localizer["DeleteExerciseSubmissionModal:Message"].Value },
+        SubmitButtonText = Localizer["DeleteExerciseSubmissionModal:Submit"].Value,
+        Color = GenericConfirmModalModel.ColorScheme.Danger
+    };
+}
+<partial name="GenericConfirmModal" model="deleteExerciseSubmissionModalViewModel" />
+
+@{
+    var deleteSelectedExerciseSubmissionsModalViewModel = new GenericConfirmModalModel
+    {
+        ModalId = "modal-delete-exercise-submissions",
+        CallbackFunctionName = "deleteSelectedExerciseSubmissions",
+        Title = Localizer["DeleteSelectedExerciseSubmissionsModal:Title"].Value,
+        Messages = new List<string> { Localizer["DeleteSelectedExerciseSubmissionsModal:Message"].Value },
+        SubmitButtonText = Localizer["DeleteSelectedExerciseSubmissionsModal:Submit"].Value,
+        Color = GenericConfirmModalModel.ColorScheme.Danger
+    };
+}
+<partial name="GenericConfirmModal" model="deleteSelectedExerciseSubmissionsModalViewModel" />
+
+<script>      
+window.addEventListener("load", () =>
+{
+    // "Select all" checkboxes
+    const selectAllCheckboxes = document.querySelectorAll('input[name="es-checkbox-select-all"]');
+    for(let selectAllCheckbox of selectAllCheckboxes)
+    {
+        selectAllCheckbox.addEventListener("change", function() {
+            const localCheckboxes = selectAllCheckbox.closest("table").querySelectorAll('input[name="es-checkbox"]');
+            for(let checkbox of localCheckboxes)
+                checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+});       
+
+function deleteExerciseSubmission(button)
+{            
+    const tr = button.closest("tr");
+    const submissionId = tr.dataset.submissionId;
+    
+    const url = "@Url.Action("DeleteExerciseSubmission", "AdminScoreboard")";
+                                       
+    ajaxPost(url, { id: submissionId }, (status, response) =>
+    {
+        if(status === 200)
+        {
+            setTimeout(() => tr.remove(), 2000);
+            tr.classList.add("fade-out-2sec");
+            showToast("success", "@Localizer["DeleteExerciseSubmission:Success"].Value");
+        }
+        else
+        {
+            showToast("error", "@Localizer["DeleteExerciseSubmission:Error"].Value");
+        }
+    }, true);
+}               
+
+function deleteSelectedExerciseSubmissions(button)
+{
+    const selectedTrs = Array.from(button.parentElement.querySelectorAll(`input[name=es-checkbox]:checked`))
+                            .map(input => input.closest("tr"));
+    const submissionIds = selectedTrs.map(tr => tr.dataset.submissionId);
+    
+    const url = "@Url.Action("DeleteExerciseSubmissions", "AdminScoreboard")";
+    
+    ajaxPost(url, submissionIds, (status, response) =>
+    {
+        if(status === 200)
+        {         
+            setTimeout(() => selectedTrs.forEach(tr => tr.remove()), 2000);
+            selectedTrs.forEach(tr => tr.classList.add("fade-out-2sec"));
+            
+            showToast("success", "@Localizer["DeleteSelectedExerciseSubmissions:Success"].Value");
+        }
+        else
+        {
+            showToast("error", "@Localizer["DeleteSelectedExerciseSubmissions:Error"].Value");
+        }
+    });
+}
+</script>
+<input type="hidden" id="csrf-token" value="@Csrf.GetAndStoreTokens(Context).RequestToken">
+
+<partial name="~/Views/Shared/Toasts.cshtml" />

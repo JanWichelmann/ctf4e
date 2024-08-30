@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading;
 using System.Threading.Tasks;
+using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ctf4e.Server.Services;
@@ -146,5 +150,47 @@ public class ScoreboardUtilities
             return false;
 
         return labExecution.Start <= flagSubmission.SubmissionTime && flagSubmission.SubmissionTime < labExecution.End;
+    }
+
+    public async Task<List<FlagState>> GetFlagStateAsync(CtfDbContext dbContext, int labId, CancellationToken cancellationToken)
+    {
+        var flags = await dbContext.Database.SqlQuery<FlagState>(
+                $"""
+                 SELECT f.Id, f.Description, f.BasePoints, f.IsBounty, COUNT(DISTINCT g.`Id`) AS 'SubmissionCount'
+                 FROM `Flags` f
+                 LEFT JOIN(
+                   `FlagSubmissions` s
+                   INNER JOIN `Users` u ON u.`Id` = s.`UserId` AND u.`IsTutor` = 0
+                   INNER JOIN `Groups` g ON g.`Id` = u.`GroupId`
+                 ) ON s.`FlagId` = f.`Id`
+                   AND g.`ShowInScoreboard` = 1
+                   AND EXISTS(
+                     SELECT 1
+                     FROM `LabExecutions` le
+                     WHERE le.`GroupId` = g.`Id`
+                       AND le.`LabId` = @labId
+                       AND le.`Start` <= s.`SubmissionTime`
+                       AND s.`SubmissionTime` < le.`End`
+                   )
+                 WHERE f.`LabId` = {labId}
+                 GROUP BY f.`Id`
+                 """)
+            .ToListAsync(cancellationToken);
+        foreach(var f in flags)
+            f.CurrentPoints = CalculateFlagPoints(f.BasePoints, f.IsBounty, f.SubmissionCount);
+        
+        return flags;
+    }
+    
+    public class FlagState
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public int BasePoints { get; set; }
+        public bool IsBounty { get; set; }
+        public int SubmissionCount { get; set; }
+
+        [NotMapped]
+        public int CurrentPoints { get; set; }
     }
 }

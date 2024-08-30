@@ -1,0 +1,17 @@
+@{
+    
+}   
+
+<div class="container">
+
+@{
+    var navViewModel = new NavViewModel
+    {
+        SubView = SubView.Empty,
+        LabId = null,
+        SlotId = null
+    };
+}
+<partial name="Nav.cshtml" model="navViewModel" />
+
+</div>

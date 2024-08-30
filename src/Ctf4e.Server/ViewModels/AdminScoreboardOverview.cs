@@ -24,8 +24,8 @@ public class AdminScoreboardOverview
 
     public class UserEntry
     {
-        public int UserId { get; set; }
-        public string UserName { get; set; }
+        public int Id { get; set; }
+        public string DisplayName { get; set; }
 
         public LabExecutionStatus Status { get; set; }
 
@@ -42,8 +42,8 @@ public class AdminScoreboardOverview
     
     public class GroupEntry
     {
-        public int GroupId { get; set; }
-        public string GroupName { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
         public LabExecutionStatus Status { get; set; }
 

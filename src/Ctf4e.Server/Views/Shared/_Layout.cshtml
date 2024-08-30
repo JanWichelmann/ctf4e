@@ -111,7 +111,7 @@
                                     @if(adminMenuItemAdminScoreboard)
                                     {
                                         <li>
-                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="RenderScoreboard">
+                                            <a class="dropdown-item @(activeMenuItem == MenuItems.AdminScoreboard ? "text-primary" : "")" asp-controller="AdminScoreboard" asp-action="ShowGroupsOverview">
                                                 <i class="bi bi-bookmark-star text-secondary"></i>
                                                 @Localizer["MenuItems:Admin:AdminScoreboard"]
                                             </a>
@@ -270,22 +270,24 @@
         return "secondary";
     }
 }
+
+<div class="toast-container position-fixed mb-2 bottom-0 start-50 translate-middle-x" id="toast-container">
+    @foreach(var statusMessage in statusMessages.Where(m => m.AutoHide))
+    {
+        <div class="toast align-items-center text-bg-@StatusMessageTypeToColor(statusMessage.Type) border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @statusMessage.Message
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+</div>
+
 @if(statusMessages.Any())
 {
     <div class="container">
-        <div class="toast-container position-fixed mb-2 bottom-0 start-50 translate-middle-x">
-            @foreach(var statusMessage in statusMessages.Where(m => m.AutoHide))
-            {
-                <div class="toast align-items-center text-bg-@StatusMessageTypeToColor(statusMessage.Type) border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            @statusMessage.Message
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-            }
-        </div>
         <div class="row">
             <div class="col px-4">
                 @foreach(var statusMessage in statusMessages.Where(m => !m.AutoHide))

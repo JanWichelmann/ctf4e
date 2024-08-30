@@ -38,4 +38,10 @@
         <value>Export</value>
         <comment>Nav:GroupDashboard</comment>
     </data>
+    <data name="Nav:BackToGroups" xml:space="preserve">
+        <value>Zurück zur Übersicht</value>
+    </data>
+    <data name="Nav:BackToUsers" xml:space="preserve">
+        <value>Zurück zur Übersicht</value>
+    </data>
 </root>

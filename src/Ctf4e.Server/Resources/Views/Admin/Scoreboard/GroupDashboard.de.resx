@@ -22,4 +22,100 @@
         <value>Gruppe - Admin-Scoreboard</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="Solved" xml:space="preserve">
+        <value>Gelöst</value>
+        <comment>Solved</comment>
+    </data>
+    <data name="NotSolved" xml:space="preserve">
+        <value>Nicht gelöst</value>
+        <comment>NotSolved</comment>
+    </data>
+    <data name="Mandatory" xml:space="preserve">
+        <value>Pflicht</value>
+        <comment>Mandatory</comment>
+    </data>
+    <data name="Optional" xml:space="preserve">
+        <value>Freiwillig</value>
+        <comment>Optional</comment>
+    </data>
+    <data name="Tries:Text" xml:space="preserve">
+        <value>Gültige Versuche (Versuche insgesamt)</value>
+        <comment>Tries:Text</comment>
+    </data>
+    <data name="Tries:Value" xml:space="preserve">
+        <value>{0} ({1}) Versuche</value>
+        <comment>Tries:Value</comment>
+    </data>
+    <data name="Points" xml:space="preserve">
+        <value>Punkte</value>
+        <comment>Points</comment>
+    </data>
+    <data name="Submissions:Solved" xml:space="preserve">
+        <value>Gelöst</value>
+        <comment>Submissions:Solved</comment>
+    </data>
+    <data name="Submissions:Timestamp" xml:space="preserve">
+        <value>Zeit</value>
+        <comment>Submissions:Timestamp</comment>
+    </data>
+    <data name="Submissions:SubmittedBy" xml:space="preserve">
+        <value>Eingereicht von</value>
+        <comment>Submissions:SubmittedBy</comment>
+    </data>
+    <data name="Submissions:Weight" xml:space="preserve">
+        <value>Gewichtung</value>
+        <comment>Submissions:Weight</comment>
+    </data>
+    <data name="Submissions:Points" xml:space="preserve">
+        <value>Punkte</value>
+        <comment>Submissions:Points</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>Delete</comment>
+    </data>
+    <data name="DeleteSelected" xml:space="preserve">
+        <value>Ausgewählte löschen</value>
+        <comment>DeleteSelected</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Title" xml:space="preserve">
+        <value>Einreichung löschen</value>
+        <comment>DeleteExerciseSubmissionModal:Title</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Message" xml:space="preserve">
+        <value>Soll diese Einreichung wirklich gelöscht werden?</value>
+        <comment>DeleteExerciseSubmissionModal:Message</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Submit" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>DeleteExerciseSubmissionModal:Submit</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Title" xml:space="preserve">
+        <value>Einreichungen löschen</value>
+        <comment>DeleteSelectedExerciseSubmissionsModal:Title</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Message" xml:space="preserve">
+        <value>Sollen die gewählten Einreichungen wirklich gelöscht werden?</value>
+        <comment>DeleteSelectedExerciseSubmissionsModal:Message</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Submit" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>DeleteSelectedExerciseSubmissionsModal:Submit</comment>
+    </data>
+    <data name="DeleteExerciseSubmission:Success" xml:space="preserve">
+        <value>Die Einreichung wurde erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
+        <comment>DeleteExerciseSubmission:Success</comment>
+    </data>
+    <data name="DeleteExerciseSubmission:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>DeleteExerciseSubmission:Error</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissions:Success" xml:space="preserve">
+        <value>Die Einreichungen wurden erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
+        <comment>DeleteSelectedExerciseSubmissions:Success</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissions:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>DeleteSelectedExerciseSubmissions:Error</comment>
+    </data>
 </root>

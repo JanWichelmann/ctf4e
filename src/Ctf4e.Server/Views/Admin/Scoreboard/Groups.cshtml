@@ -46,7 +46,7 @@
                     }
                 </td>
                 <td class="bg-body-secondary fw-bold" data-content="name">
-                    @groupEntry.GroupName
+                    @groupEntry.Name
                 </td>
                 <td class="text-end bg-body-secondary">
                     @if(groupEntry.Status == LabExecutionStatus.Start)
@@ -66,7 +66,7 @@
                     <span class="badge bg-info cursor-help" title="@Localizer["Statistics:FoundFlags"]">@groupEntry.FoundFlagsCount / @Model.FlagCount</span>
                 </td>
                 <td class="bg-body-secondary text-end">
-                    <a asp-controller="AdminScoreboard" asp-action="ShowGroupDashboard" asp-route-groupId="@groupEntry.GroupId" asp-route-labId="@Model.LabId" class="btn btn-sm btn-outline-primary">
+                    <a asp-controller="AdminScoreboard" asp-action="ShowGroupDashboard" asp-route-groupId="@groupEntry.Id" asp-route-labId="@Model.LabId" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-arrow-right"></i>
                         @Localizer["OpenGroupDashboard"]
                     </a>
@@ -87,7 +87,7 @@
                         }
                     </td>
                     <td class="ps-4" data-content="name">
-                        @userEntry.UserName
+                        @userEntry.DisplayName
                     </td>
                     <td class="text-end">
                         <span class="badge bg-primary cursor-help" title="@Localizer["Statistics:MandatoryExercises"]">@userEntry.PassedMandatoryExercisesCount / @Model.MandatoryExercisesCount</span>
@@ -95,7 +95,7 @@
                         <span class="badge bg-info cursor-help" title="@Localizer["Statistics:FoundFlags"]">@userEntry.FoundFlagsCount / @Model.FlagCount</span>
                     </td>
                     <td class="text-end">
-                        <a asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-userId="@userEntry.UserId" asp-route-labId="@Model.LabId" class="btn btn-sm btn-outline-primary">
+                        <a asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-userId="@userEntry.Id" asp-route-labId="@Model.LabId" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-arrow-right"></i>
                             @Localizer["OpenUserDashboard"]
                         </a>

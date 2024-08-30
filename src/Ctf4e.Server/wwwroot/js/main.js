@@ -71,7 +71,60 @@ function delay(callback, n)
     var delayTimer = 0;
     return function()
     {
-        clearTimeout(delayTimer);
+        clearTimeout(delayTimer); // Any action resets the timer
         delayTimer = setTimeout(callback, n);
     };
+}
+
+// Utility function: AJAX GET with callback.
+function ajaxGet(url, callback, spinner = null)
+{
+    // Prepare request
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onload = () =>
+    {
+        if(spinner !== null)
+            spinner.classList.add("invisible");
+        if(callback !== null)
+            callback(xhr.status, xhr.responseText);
+    };
+
+    // Run request
+    if(spinner !== null)
+        spinner.classList.remove("invisible");
+    xhr.send();
+}
+
+// Utility function: AJAX POST with callback.
+function ajaxPost(url, data, callback, useFormData = false, spinner = null)
+{
+    // Prepare request
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.setRequestHeader("RequestVerificationToken", document.getElementById("csrf-token").value);
+    xhr.onload = () =>
+    {
+        if(spinner !== null)
+            spinner.classList.add("invisible");
+        if(callback !== null)
+            callback(xhr.status, xhr.responseText);
+    };
+
+    // Run request
+    if(spinner !== null)
+        spinner.classList.remove("invisible");
+    
+    if(useFormData)
+    {
+        let formData = new FormData();
+        for(let key in data)
+            formData.append(key, data[key]);
+        xhr.send(formData);
+    }
+    else
+    {
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(data));
+    }
 }

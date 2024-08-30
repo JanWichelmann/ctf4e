@@ -18,7 +18,12 @@ namespace Ctf4e.Server.Controllers;
 
 [Route("admin/scoreboard")]
 [AnyUserPrivilege(UserPrivileges.ViewAdminScoreboard)]
-public class AdminScoreboardController(IUserService userService, IScoreboardService scoreboardService, IAdminScoreboardService adminScoreboardService)
+public partial class AdminScoreboardController(
+    IUserService userService,
+    IScoreboardService scoreboardService,
+    IAdminScoreboardService adminScoreboardService,
+    ILabService labService,
+    ISlotService slotService)
     : ControllerBase<AdminScoreboardController>(userService)
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminScoreboard;
@@ -27,9 +32,6 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
 
     private async Task<IActionResult> RenderAsync(string viewPath, object model)
     {
-        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
-        var slotService = HttpContext.RequestServices.GetRequiredService<ISlotService>();
-
         ViewData["Labs"] = await labService.GetSelectLabListAsync(HttpContext.RequestAborted);
         ViewData["Slots"] = await slotService.GetSelectSlotListAsync(HttpContext.RequestAborted);
 
@@ -47,12 +49,23 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
         return (0, 0);
     }
 
+    private async Task<IActionResult> ShowErrorViewAsync(string message)
+    {
+        AddStatusMessage(StatusMessageType.Error, message);
+        return await RenderAsync("~/Views/Admin/Scoreboard/Empty.cshtml", null);
+    }
+
     [HttpGet]
     [HttpGet("stats")]
     public async Task<IActionResult> ShowStatisticsDashboardAsync(int? labId, int? slotId)
     {
         if(labId == null || slotId == null)
             (labId, slotId) = await GetRecentLabAndSlotAsync();
+
+        if(!await labService.LabExistsAsync(labId.Value, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["LabNotFound"]);
+        if(!await slotService.SlotExistsAsync(slotId.Value, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["SlotNotFound"]);
 
         var statistics = await adminScoreboardService.GetStatisticsAsync(labId.Value, slotId.Value, HttpContext.RequestAborted);
 
@@ -64,158 +77,63 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
     {
         if(labId == null || slotId == null)
             (labId, slotId) = await GetRecentLabAndSlotAsync();
-        
+
+        if(!await labService.LabExistsAsync(labId.Value, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["LabNotFound"]);
+        if(!await slotService.SlotExistsAsync(slotId.Value, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["SlotNotFound"]);
+
         var overview = await adminScoreboardService.GetOverviewAsync(labId.Value, slotId.Value, HttpContext.RequestAborted);
-        
+
         return await RenderAsync("~/Views/Admin/Scoreboard/Groups.cshtml", overview);
     }
-    
+
     [HttpGet("users")]
     public async Task<IActionResult> ShowUsersOverviewAsync(int? labId, int? slotId)
     {
         if(labId == null || slotId == null)
             (labId, slotId) = await GetRecentLabAndSlotAsync();
-        
+
+        if(!await labService.LabExistsAsync(labId.Value, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["LabNotFound"]);
+        if(!await slotService.SlotExistsAsync(slotId.Value, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["SlotNotFound"]);
+
         var overview = await adminScoreboardService.GetOverviewAsync(labId.Value, slotId.Value, HttpContext.RequestAborted);
-        
+
         return await RenderAsync("~/Views/Admin/Scoreboard/Users.cshtml", overview);
     }
 
     [HttpGet("group/{groupId}")]
-    public async Task<IActionResult> ShowGroupDashboardAsync(int groupId, int labId)
+    public async Task<IActionResult> ShowGroupDashboardAsync(int groupId, int labId, [FromServices] IGroupService groupService)
     {
-        return await RenderAsync("~/Views/Admin/Scoreboard/GroupDashboard.cshtml", null);
+        if(!await groupService.GroupExistsAsync(groupId, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["GroupNotFound"]);
+        if(!await labService.LabExistsAsync(labId, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["LabNotFound"]);
+
+        var details = await adminScoreboardService.GetDetailsAsync(labId, groupId, null, HttpContext.RequestAborted);
+
+        return await RenderAsync("~/Views/Admin/Scoreboard/GroupDashboard.cshtml", details);
     }
-    
+
     [HttpGet("user/{userId}")]
-    public async Task<IActionResult> ShowUserDashboardAsync(int userId, int labId)
+    public async Task<IActionResult> ShowUserDashboardAsync(int userId, int labId, [FromServices] IUserService userService)
     {
-        return await RenderAsync("~/Views/Admin/Scoreboard/UserDashboard.cshtml", null);
+        if(!await userService.UserExistsAsync(userId, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["UserNotFound"]);
+        if(!await labService.LabExistsAsync(labId, HttpContext.RequestAborted))
+            return await ShowErrorViewAsync(Localizer["LabNotFound"]);
+
+        var details = await adminScoreboardService.GetDetailsAsync(labId, null, userId, HttpContext.RequestAborted);
+
+        return await RenderAsync("~/Views/Admin/Scoreboard/UserDashboard.cshtml", details);
     }
-    
+
     [HttpGet("export")]
     public async Task<IActionResult> ShowExportPageAsync()
     {
         return await RenderAsync("~/Views/Admin/Scoreboard/Export.cshtml", null);
-    }
-
-    [HttpPost("exercisesubmission/delete")]
-    [ValidateAntiForgeryToken]
-    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> DeleteExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, int submissionId)
-    {
-        try
-        {
-            // Delete submission
-            await exerciseService.DeleteExerciseSubmissionAsync(submissionId, HttpContext.RequestAborted);
-
-            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteExerciseSubmissionAsync:Success"]);
-        }
-        catch(Exception ex)
-        {
-            GetLogger().LogError(ex, "Delete exercise submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseSubmissionAsync:UnknownError"]);
-        }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
-    }
-
-    [HttpPost("exercisesubmission/deletemultiple")]
-    [ValidateAntiForgeryToken]
-    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> DeleteExerciseSubmissionsAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, List<int> submissionIds)
-    {
-        try
-        {
-            // Delete submissions
-            await exerciseService.DeleteExerciseSubmissionsAsync(submissionIds, HttpContext.RequestAborted);
-
-            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteExerciseSubmissionsAsync:Success"]);
-        }
-        catch(Exception ex)
-        {
-            GetLogger().LogError(ex, "Delete exercise submissions");
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteExerciseSubmissionsAsync:UnknownError"]);
-        }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
-    }
-
-    [HttpPost("exercisesubmission/create")]
-    [ValidateAntiForgeryToken]
-    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> CreateExerciseSubmissionAsync([FromServices] IExerciseService exerciseService, int labId, int slotId, bool groupMode, bool includeTutors, int exerciseId, int userId, DateTime submissionTime, bool passed, int weight)
-    {
-        try
-        {
-            // Create submission
-            var submission = new ExerciseSubmission
-            {
-                ExerciseId = exerciseId,
-                UserId = userId,
-                ExercisePassed = passed,
-                SubmissionTime = submissionTime,
-                Weight = passed ? 1 : weight
-            };
-            await exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
-
-            AddStatusMessage(StatusMessageType.Success, Localizer["CreateExerciseSubmissionAsync:Success"]);
-        }
-        catch(InvalidOperationException ex)
-        {
-            GetLogger().LogError(ex, "Create exercise submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseSubmissionAsync:UnknownError"]);
-        }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
-    }
-
-    [HttpPost("flagsubmission/delete")]
-    [ValidateAntiForgeryToken]
-    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> DeleteFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId)
-    {
-        try
-        {
-            // Delete submission
-            await flagService.DeleteFlagSubmissionAsync(userId, flagId, HttpContext.RequestAborted);
-
-            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteFlagSubmissionAsync:Success"]);
-        }
-        catch(Exception ex)
-        {
-            GetLogger().LogError(ex, "Delete flag submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteFlagSubmissionAsync:UnknownError"]);
-        }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
-    }
-
-    [HttpPost("flagsubmission/create")]
-    [ValidateAntiForgeryToken]
-    [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> CreateFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId, DateTime submissionTime)
-    {
-        try
-        {
-            // Create submission
-            var submission = new FlagSubmission
-            {
-                UserId = userId,
-                FlagId = flagId,
-                SubmissionTime = submissionTime
-            };
-            await flagService.CreateFlagSubmissionAsync(submission, HttpContext.RequestAborted);
-
-            AddStatusMessage(StatusMessageType.Success, Localizer["CreateFlagSubmissionAsync:Success"]);
-        }
-        catch(InvalidOperationException ex)
-        {
-            GetLogger().LogError(ex, "Create flag submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["CreateFlagSubmissionAsync:UnknownError"]);
-        }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpGet("labserver")]
@@ -256,7 +174,7 @@ public class AdminScoreboardController(IUserService userService, IScoreboardServ
     public async Task<IActionResult> UploadToMoodleAsync([FromServices] IMoodleService moodleService)
     {
         // TODO move this and next function to own sub view
-        
+
         try
         {
             await moodleService.UploadStateToMoodleAsync(HttpContext.RequestAborted);

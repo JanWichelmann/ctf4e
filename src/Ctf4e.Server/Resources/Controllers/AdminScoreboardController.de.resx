@@ -74,4 +74,16 @@
         <value>Dieses Praktikum existiert nicht.</value>
         <comment>CallLabServerAsync:NotFound</comment>
     </data>
+    <data name="GroupNotFound" xml:space="preserve">
+        <value>Diese Gruppe existiert nicht.</value>
+    </data>
+    <data name="LabNotFound" xml:space="preserve">
+        <value>Dieses Praktikum existiert nicht.</value>
+    </data>
+    <data name="SlotNotFound" xml:space="preserve">
+        <value>Dieser Terminslot existiert nicht.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>Dieser Benutzer existiert nicht.</value>
+    </data>
 </root>
