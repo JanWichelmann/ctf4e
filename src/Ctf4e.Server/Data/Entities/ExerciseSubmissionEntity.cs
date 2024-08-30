@@ -25,7 +25,7 @@ public class ExerciseSubmissionEntity
     public bool ExercisePassed { get; set; }
 
     /// <summary>
-    ///     Factor for penalty points. Always 1 for succesful tries.
+    ///     Factor for penalty points. Always 1 for successful tries.
     /// </summary>
     public int Weight { get; set; }
 }

@@ -351,6 +351,7 @@ public class AdminScoreboardService(
             GroupName = group.DisplayName,
             UserId = userId,
             UserName = userId != null ? userNameLookup[userId.Value] : null,
+            GroupMembers = group.Members.Select(u => (u.Id, u.DisplayName)).ToList(),
             PassAsGroup = passAsGroup,
             HasPassed = false,
             Status = ScoreboardUtilities.GetLabExecutionStatus(now, labExecution),

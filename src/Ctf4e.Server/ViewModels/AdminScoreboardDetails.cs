@@ -12,6 +12,8 @@ public class AdminScoreboardDetails
     public int SlotId { get; set; }
     public int GroupId { get; set; }
     public string GroupName { get; set; }
+    
+    public List<(int Id, string DisplayName)> GroupMembers { get; set; }
 
     /// <summary>
     /// Only set in user dashboard.

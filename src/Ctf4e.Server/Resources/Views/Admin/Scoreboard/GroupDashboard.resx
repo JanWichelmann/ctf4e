@@ -60,7 +60,7 @@
         <value>Optional</value>
     </data>
     <data name="Points" xml:space="preserve">
-        <value>Points</value>
+        <value>{0} Points</value>
     </data>
     <data name="Submissions:Points" xml:space="preserve">
         <value>Points</value>

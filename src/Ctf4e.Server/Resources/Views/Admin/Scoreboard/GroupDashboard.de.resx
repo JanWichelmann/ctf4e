@@ -47,7 +47,7 @@
         <comment>Tries:Value</comment>
     </data>
     <data name="Points" xml:space="preserve">
-        <value>Punkte</value>
+        <value>{0} Punkte</value>
         <comment>Points</comment>
     </data>
     <data name="Submissions:Solved" xml:space="preserve">

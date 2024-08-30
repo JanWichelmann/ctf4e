@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
 using Ctf4e.Server.Authorization;

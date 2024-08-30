@@ -38,9 +38,6 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
     /// </summary>
     private readonly IDbConnection _dbConn = new ProfiledDbConnection(dbContext.Database.GetDbConnection(), MiniProfiler.Current); // Enable profiling
 
-    
-
-
     public async Task<AdminScoreboard> GetAdminScoreboardAsync(int labId, int slotId, bool groupMode, bool includeTutors, CancellationToken cancellationToken)
     {
         // Consistent time
