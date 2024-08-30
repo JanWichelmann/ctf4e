@@ -1,3 +1,10 @@
+function safeReload()
+{
+    if(window.history.replaceState)
+        window.history.replaceState(null, null, window.location.href);
+    window.location = window.location.href;
+}
+
 function switchLanguage(element)
 {
     // Set cookie
@@ -5,7 +12,7 @@ function switchLanguage(element)
     let selectedLanguage = "c=" + element.getAttribute("data-language-id") + "|uic=" + element.getAttribute("data-language-id");
     let expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()
     document.cookie = `${cookieName}=${encodeURIComponent(selectedLanguage)}; expires=${expires}; samesite=lax; path=/`;
-    location.reload();
+    safeReload();
 }
 
 // Utility function: Reads the given cookie's value.
@@ -59,9 +66,7 @@ function setupViewFlagSwitch(cookieName, sw, flag)
     sw.addEventListener("change", () => {
         toggleViewFlag(cookieName, flag);
 
-        if(window.history.replaceState )
-            window.history.replaceState(null, null, window.location.href);
-        window.location = window.location.href;
+        safeReload();
     });
 }
 

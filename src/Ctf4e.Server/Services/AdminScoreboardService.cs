@@ -410,6 +410,7 @@ public class AdminScoreboardService(
                         UserName = userNameLookup[s.UserId],
                         Solved = s.ExercisePassed,
                         SubmissionTime = s.SubmissionTime,
+                        Valid = labExecution != null && labExecution.Start <= s.SubmissionTime && s.SubmissionTime < labExecution.End,
                         Weight = s.Weight
                     })
                     .ToList()
@@ -429,7 +430,8 @@ public class AdminScoreboardService(
             {
                 Id = flag.Id,
                 Description = flag.Description,
-                Submitted = submissions.Any(s => s.UserId == userId),
+                IsBounty = flag.IsBounty,
+                Submitted = submissions.Any(s => userId == null ? group.Members.Any(m => m.Id == s.UserId) : s.UserId == userId),
                 Valid = labExecution != null && submissions.Any(s => labExecution.Start <= s.SubmissionTime && s.SubmissionTime < labExecution.End),
                 Points = flag.CurrentPoints,
                 Submissions = submissions

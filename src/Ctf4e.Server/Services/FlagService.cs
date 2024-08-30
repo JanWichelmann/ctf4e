@@ -62,7 +62,7 @@ public class FlagService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
         => genericCrudService.CreateAsync<FlagSubmission, FlagSubmissionEntity>(submission, cancellationToken);
 
     public async Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken)
-        => await genericCrudService.DeleteAsync<FlagSubmissionEntity>([userId, flagId], cancellationToken);
+        => await genericCrudService.DeleteAsync<FlagSubmissionEntity>([flagId, userId], cancellationToken);
 
     public async Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken)
     {

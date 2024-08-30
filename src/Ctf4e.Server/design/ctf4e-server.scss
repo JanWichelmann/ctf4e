@@ -2,6 +2,9 @@
 
 $blue: #003e80 !default;
 
+$color-deleted: #ffeef0;
+$color-new: #e6ffed;
+
 
 /* Override heading sizes */
 
@@ -113,17 +116,33 @@ hr.header-secondary {
 
 /* Special row backgrounds */
 
-tr.row-muted td {
-  opacity: 0.5;
+tr.row-muted {
+  td, th {
+    opacity: 0.5;
+  }
 }
 
-tr.row-muted:hover td {
-  opacity: 1;
+tr.row-muted:hover {
+  td, th {
+    opacity: 1;
+  }
 }
 
 tr.row-highlighted {
   td, th {
     background-color: $gray-100;
+  }
+}
+
+tr.row-deleted {
+  td, th {
+    background: $color-deleted;
+  }
+}
+
+tr.row-added {
+  td, th {
+    background: $color-new;
   }
 }
 
@@ -188,13 +207,4 @@ tr.row-sticky th {
     background-size: $accordion-icon-width;
     @include transition($accordion-icon-transition);
   }
-}
-
-
-/* Fade out utility */
-
-.fade-out-2sec {
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s 2s, opacity 2s linear;
 }

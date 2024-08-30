@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="DeleteExerciseSubmission:Success" xml:space="preserve">
+        <value>The submission was deleted successfully. Refresh to see all changes.</value>
+        <comment>DeleteExerciseSubmission:Success</comment>
+    </data>
+    <data name="DeleteExerciseSubmission:Error" xml:space="preserve">
+        <value>An error occured.</value>
+        <comment>DeleteExerciseSubmission:Error</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissions:Success" xml:space="preserve">
+        <value>The submissions were deleted successfully. Refresh to see all changes.</value>
+        <comment>DeleteSelectedExerciseSubmissions:Success</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissions:Error" xml:space="preserve">
+        <value>An error occured.</value>
+        <comment>DeleteSelectedExerciseSubmissions:Error</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Title" xml:space="preserve">
+        <value>Create exercise submission(s)</value>
+        <comment>Modal:CreateExerciseSubmission:Title</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:User" xml:space="preserve">
+        <value>User</value>
+        <comment>Modal:CreateExerciseSubmission:User</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:NoUser" xml:space="preserve">
+        <value>(all group members)</value>
+        <comment>Modal:CreateExerciseSubmission:NoUser</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+        <comment>Modal:CreateExerciseSubmission:Timestamp</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Weight" xml:space="preserve">
+        <value>Weight</value>
+        <comment>Modal:CreateExerciseSubmission:Weight</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Submit" xml:space="preserve">
+        <value>Create</value>
+        <comment>Modal:CreateExerciseSubmission:Submit</comment>
+    </data>
+    <data name="AddExerciseSubmission:Error" xml:space="preserve">
+        <value>An error occured.</value>
+        <comment>AddExerciseSubmission:Error</comment>
+    </data>
+    <data name="AddExerciseSubmission:Success" xml:space="preserve">
+        <value>The submission was created successfully. Refresh to see the changes.</value>
+        <comment>AddExerciseSubmission:Success</comment>
+    </data>
+    <data name="DeleteFlagSubmission:Success" xml:space="preserve">
+        <value>The submission was deleted successfully. Refresh to see all changes.</value>
+        <comment>DeleteFlagSubmission:Success</comment>
+    </data>
+    <data name="DeleteFlagSubmission:Error" xml:space="preserve">
+        <value>An error occured.</value>
+        <comment>DeleteFlagSubmission:Error</comment>
+    </data>
+    <data name="DeleteFlagSubmissionModal:Title" xml:space="preserve">
+        <value>Reset flag</value>
+        <comment>DeleteFlagSubmissionModal:Title</comment>
+    </data>
+    <data name="DeleteFlagSubmissionModal:Message" xml:space="preserve">
+        <value>Do you really want to reset this flag?</value>
+        <comment>DeleteFlagSubmissionModal:Message</comment>
+    </data>
+    <data name="DeleteFlagSubmissionModal:Submit" xml:space="preserve">
+        <value>Reset</value>
+        <comment>DeleteFlagSubmissionModal:Submit</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Title" xml:space="preserve">
+        <value>Submit flag</value>
+        <comment>Modal:CreateFlagSubmission:Title</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Timestamp" xml:space="preserve">
+        <value>Time</value>
+        <comment>Modal:CreateFlagSubmission:Timestamp</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Submit" xml:space="preserve">
+        <value>Submit</value>
+        <comment>Modal:CreateFlagSubmission:Submit</comment>
+    </data>
+    <data name="AddFlagSubmission:Success" xml:space="preserve">
+        <value>The submission was created successfully. Refresh to see all changes.</value>
+        <comment>AddFlagSubmission:Success</comment>
+    </data>
+    <data name="AddFlagSubmission:Error" xml:space="preserve">
+        <value>An error occured.</value>
+        <comment>AddFlagSubmission:Error</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Message" xml:space="preserve">
+        <value>Do you really want to delete the selected submissions?</value>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Submit" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Message" xml:space="preserve">
+        <value>Do you really want to delete this submission?</value>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Submit" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Title" xml:space="preserve">
+        <value>Delete submission</value>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Title" xml:space="preserve">
+        <value>Delete submissions</value>
+    </data>
+    <data name="Passed" xml:space="preserve">
+        <value>Solved</value>
+        <comment>Passed</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Cancel</comment>
+    </data>
+</root>

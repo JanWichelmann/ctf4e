@@ -78,44 +78,44 @@
         <value>Ausgewählte löschen</value>
         <comment>DeleteSelected</comment>
     </data>
-    <data name="DeleteExerciseSubmissionModal:Title" xml:space="preserve">
-        <value>Einreichung löschen</value>
-        <comment>DeleteExerciseSubmissionModal:Title</comment>
+    <data name="Create" xml:space="preserve">
+        <value>Hinzufügen</value>
+        <comment>Create</comment>
     </data>
-    <data name="DeleteExerciseSubmissionModal:Message" xml:space="preserve">
-        <value>Soll diese Einreichung wirklich gelöscht werden?</value>
-        <comment>DeleteExerciseSubmissionModal:Message</comment>
+    <data name="SubmissionInvalid" xml:space="preserve">
+        <value>Ungültige Einreichung außerhalb der Praktikumszeit</value>
+        <comment>SubmissionInvalid</comment>
     </data>
-    <data name="DeleteExerciseSubmissionModal:Submit" xml:space="preserve">
-        <value>Löschen</value>
-        <comment>DeleteExerciseSubmissionModal:Submit</comment>
+    <data name="Flags:Description" xml:space="preserve">
+        <value>Beschreibung / Zeit</value>
+        <comment>Flags:Description</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissionsModal:Title" xml:space="preserve">
-        <value>Einreichungen löschen</value>
-        <comment>DeleteSelectedExerciseSubmissionsModal:Title</comment>
+    <data name="Flags:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Flags:Name</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissionsModal:Message" xml:space="preserve">
-        <value>Sollen die gewählten Einreichungen wirklich gelöscht werden?</value>
-        <comment>DeleteSelectedExerciseSubmissionsModal:Message</comment>
+    <data name="FlagValid" xml:space="preserve">
+        <value>Gültig</value>
+        <comment>FlagValid</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissionsModal:Submit" xml:space="preserve">
-        <value>Löschen</value>
-        <comment>DeleteSelectedExerciseSubmissionsModal:Submit</comment>
+    <data name="FlagInvalid" xml:space="preserve">
+        <value>Ungültige Einreichung</value>
+        <comment>FlagInvalid</comment>
     </data>
-    <data name="DeleteExerciseSubmission:Success" xml:space="preserve">
-        <value>Die Einreichung wurde erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
-        <comment>DeleteExerciseSubmission:Success</comment>
+    <data name="FlagNotSubmitted" xml:space="preserve">
+        <value>Nicht eingereicht</value>
+        <comment>FlagNotSubmitted</comment>
     </data>
-    <data name="DeleteExerciseSubmission:Error" xml:space="preserve">
-        <value>Es ist ein Fehler aufgetreten.</value>
-        <comment>DeleteExerciseSubmission:Error</comment>
+    <data name="BugBounty" xml:space="preserve">
+        <value>Bug-Bounty</value>
+        <comment>BugBounty</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissions:Success" xml:space="preserve">
-        <value>Die Einreichungen wurden erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
-        <comment>DeleteSelectedExerciseSubmissions:Success</comment>
+    <data name="SubmitFlag" xml:space="preserve">
+        <value>Einreichen</value>
+        <comment>SubmitFlag</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissions:Error" xml:space="preserve">
-        <value>Es ist ein Fehler aufgetreten.</value>
-        <comment>DeleteSelectedExerciseSubmissions:Error</comment>
+    <data name="ResetFlag" xml:space="preserve">
+        <value>Zurücksetzen</value>
+        <comment>ResetFlag</comment>
     </data>
 </root>

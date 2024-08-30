@@ -1,13 +1,9 @@
+@using System.Globalization
 @using Ctf4e.Server.Authorization
 @using Ctf4e.Server.Models
-@using Ctf4e.Server.Services
-@using Ctf4e.Server.Views.Shared
-@using Microsoft.AspNetCore.Antiforgery
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
-@inject IAntiforgery Csrf  
-@inject IUserService UserService
 @model AdminScoreboardDetails
 @{
     ViewData["Title"] = Localizer["HtmlTitle"];
@@ -83,7 +79,12 @@
                         <th scope="col">@Localizer["Submissions:Points"]</th>
                         @if(allowEdit)
                         {
-                            <th scope="col"></th>
+                            <th scope="col">
+                                <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Id">
+                                    <i class="bi bi-plus"></i>
+                                    @Localizer["Create"]
+                                </button>
+                            </th>
                         }
                     </tr>
                     </thead>
@@ -101,11 +102,25 @@
                             <td>
                                 @if(submission.Solved)
                                 {
-                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    if(submission.Valid)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success cursor-help" title="@Localizer["Solved"]"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-check-circle text-success cursor-help" title="@Localizer["SubmissionInvalid"]"></i>
+                                    }
                                 }
                                 else
                                 {
-                                    <i class="bi bi-x-circle-fill text-danger"></i>
+                                    if(submission.Valid)
+                                    {
+                                        <i class="bi bi-x-circle-fill text-danger cursor-help" title="@Localizer["NotSolved"]"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle text-danger cursor-help" title="@Localizer["SubmissionInvalid"]"></i>
+                                    }
                                 }
                             </td>
                             <td>
@@ -165,186 +180,131 @@
             </div>
         </div>
     }
+
+
+    <h2 class="mt-5">Flags</h2>
+    <hr class="header-secondary">
+
+    <table class="table table-sm table-align-middle">
+        <thead>
+        <tr class="row-sticky">
+            <th scope="col"></th>
+            <th scope="col">@Localizer["Flags:Description"]</th>
+            <th scope="col">@Localizer["Flags:Name"]</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        @foreach(var flag in Model.Flags)
+        {
+            <tbody class="table-group-divider">
+            <tr>
+                <th scope="row" class="bg-body-secondary">
+                    @if(flag.Valid)
+                    {
+                        <i class="bi bi-check-circle-fill text-success cursor-help" title="@Localizer["FlagValid"]"></i>
+                    }
+                    else if(flag.Submitted)
+                    {
+                        <i class="bi bi-check-circle text-danger cursor-help" title="@Localizer["FlagInvalid"]"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-circle-fill text-danger cursor-help" title="@Localizer["FlagNotSubmitted"]"></i>
+                    }
+                </th>
+                <td colspan="2" class="bg-body-secondary fw-bold">
+                    @flag.Description
+                    @if(flag.IsBounty)
+                    {
+                        <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
+                    }
+                </td>
+                <td class="bg-body-secondary text-end">
+                    @if(flag.Valid)
+                    {
+                        <span class="badge bg-primary">@Localizer["Points", flag.Points]</span>
+                    }
+                </td>
+            </tr>
+
+            @foreach(var user in Model.GroupMembers)
+            {
+                var submission = flag.Submissions.FirstOrDefault(s => s.UserId == user.Id);
+
+                if(submission == null)
+                {
+                    <tr>
+                        <td>
+                            <i class="bi bi-circle text-secondary cursor-help" title="@Localizer["FlagNotSubmitted"]"></i>
+                        </td>
+                        <td></td>
+                        <td>
+                            <a class="text-decoration-none" asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-labId="@Model.LabId" asp-route-userId="@user.Id">
+                                @user.DisplayName
+                            </a>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-flag-submission" data-flag-id="@flag.Id" data-user-id="@user.Id">
+                                <i class="bi bi-plus"></i>
+                                @Localizer["SubmitFlag"]
+                            </button>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr data-user-id="@user.Id" data-flag-id="@flag.Id">
+                        <td>
+                            @if(submission.Valid)
+                            {
+                                <i class="bi bi-check-circle-fill text-success cursor-help" title="@Localizer["FlagValid"]"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-x-circle-fill text-danger cursor-help" title="@Localizer["FlagInvalid"]"></i>
+                            }
+                        </td>
+                        <td class="ps-4">
+                            @submission.SubmissionTime.ToString("G")
+                        </td>
+                        <td>
+                            <a class="text-decoration-none" asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-labId="@Model.LabId" asp-route-userId="@user.Id">
+                                @user.DisplayName
+                            </a>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" role="button" data-bs-toggle="modal" data-bs-target="#modal-delete-flag-submission">
+                                <i class="bi bi-trash"></i>
+                                @Localizer["ResetFlag"]
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+
+            </tbody>
+        }
+    </table>
 </div>
 
-<script>      
-window.addEventListener("load", () =>
-{
-    // "Select all" checkboxes
-    const selectAllCheckboxes = document.querySelectorAll('input[name="es-checkbox-select-all"]');
-    for(let selectAllCheckbox of selectAllCheckboxes)
-    {
-        selectAllCheckbox.addEventListener("change", function() {
-            const localCheckboxes = selectAllCheckbox.closest("table").querySelectorAll('input[name="es-checkbox"]');
-            for(let checkbox of localCheckboxes)
-                checkbox.checked = selectAllCheckbox.checked;
-        });
-    }
-});       
-
-function deleteExerciseSubmission(button)
-{            
-    const tr = button.closest("tr");
-    const submissionId = tr.dataset.submissionId;
-    
-    const url = "@Url.Action("DeleteExerciseSubmission", "AdminScoreboard")";
-                                       
-    ajaxPost(url, { id: submissionId }, (status, response) =>
-    {
-        if(status === 200)
-        {
-            setTimeout(() => tr.remove(), 2000);
-            tr.classList.add("fade-out-2sec");
-            showToast("success", "@Localizer["DeleteExerciseSubmission:Success"].Value");
-        }
-        else
-        {
-            showToast("error", "@Localizer["DeleteExerciseSubmission:Error"].Value");
-        }
-    }, true);
-}               
-
-function deleteSelectedExerciseSubmissions(button)
-{
-    const selectedTrs = Array.from(button.parentElement.querySelectorAll(`input[name=es-checkbox]:checked`))
-                            .map(input => input.closest("tr"));
-    const submissionIds = selectedTrs.map(tr => tr.dataset.submissionId);
-    
-    const url = "@Url.Action("DeleteExerciseSubmissions", "AdminScoreboard")";
-    
-    ajaxPost(url, submissionIds, (status, response) =>
-    {
-        if(status === 200)
-        {         
-            setTimeout(() => selectedTrs.forEach(tr => tr.remove()), 2000);
-            selectedTrs.forEach(tr => tr.classList.add("fade-out-2sec"));
-            
-            showToast("success", "@Localizer["DeleteSelectedExerciseSubmissions:Success"].Value");
-        }
-        else
-        {
-            showToast("error", "@Localizer["DeleteSelectedExerciseSubmissions:Error"].Value");
-        }
-    });
-}
-</script>
-<input type="hidden" id="csrf-token" value="@Csrf.GetAndStoreTokens(Context).RequestToken">
+<partial name="DashboardLogic.cshtml" />
 
 <partial name="~/Views/Shared/Toasts.cshtml" />
 
-@{
-    var deleteExerciseSubmissionModalViewModel = new GenericConfirmModalModel
-    {
-        ModalId = "modal-delete-exercise-submission",
-        CallbackFunctionName = "deleteExerciseSubmission",
-        Title = Localizer["DeleteExerciseSubmissionModal:Title"].Value,
-        Messages = new List<string> { Localizer["DeleteExerciseSubmissionModal:Message"].Value },
-        SubmitButtonText = Localizer["DeleteExerciseSubmissionModal:Submit"].Value,
-        Color = GenericConfirmModalModel.ColorScheme.Danger
-    };
-}
-<partial name="GenericConfirmModal" model="deleteExerciseSubmissionModalViewModel" />
 
-@{
-    var deleteSelectedExerciseSubmissionsModalViewModel = new GenericConfirmModalModel
-    {
-        ModalId = "modal-delete-exercise-submissions",
-        CallbackFunctionName = "deleteSelectedExerciseSubmissions",
-        Title = Localizer["DeleteSelectedExerciseSubmissionsModal:Title"].Value,
-        Messages = new List<string> { Localizer["DeleteSelectedExerciseSubmissionsModal:Message"].Value },
-        SubmitButtonText = Localizer["DeleteSelectedExerciseSubmissionsModal:Submit"].Value,
-        Color = GenericConfirmModalModel.ColorScheme.Danger
-    };
-}
-<partial name="GenericConfirmModal" model="deleteSelectedExerciseSubmissionsModalViewModel" />
-
-<div class="modal fade" id="modal-add-exercise-submission" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">@Localizer["Modal:CreateExerciseSubmission:Title"]</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label" for="input-add-exercise-submission-user">@Localizer["Modal:CreateExerciseSubmission:User"]</label>
-                    <select id="input-add-exercise-submission-user" class="form-select">
-                        <option value="">@Localizer["Modal:CreateExerciseSubmission:NoUser"]</option>
-                        @foreach(var user in Model.GroupMembers)
-                        {
-                            <option value="@user.Id">@user.DisplayName</option>
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" class="form-check-input me-3" id="input-add-exercise-submission-enable-time" checked="checked">
-                    <label class="form-label" for="input-add-exercise-submission-time">@Localizer["Modal:CreateExerciseSubmission:Timestamp"]</label>
-                    <input id="input-add-exercise-submission-time" type="text" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="input-add-exercise-submission-weight">@Localizer["Modal:CreateExerciseSubmission:Weight"]</label>
-                    <input id="input-add-exercise-submission-weight" type="number" min="0" value="1" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <div class="form-check form-switch">
-                        <input id="input-add-exercise-submission-passed" type="checkbox" class="form-check-input" checked="checked">
-                        <label for="input-add-exercise-submission-passed" class="form-check-label">@Localizer["Passed"]</label>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <input type="hidden" id="input-add-exercise-submission-exercise" value="">
-
-                <button role="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="submit-add-exercise-submission">@Localizer["Modal:CreateExerciseSubmission:Submit"]</button>
-                <button role="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-window.addEventListener("load", () =>
+@section ScriptsHead
 {
-    const modal = document.getElementById("modal-add-exercise-submission");
-    const submitButton = document.getElementById("submit-add-exercise-submission");
-    const idPrefix = "input-add-exercise-submission";
-
-    const inputUser = document.getElementById(`${idPrefix}-user`);
-    const inputEnableTime = document.getElementById(`${idPrefix}-enable-time`);
-    const inputTime = document.getElementById(`${idPrefix}-time`);
-    const inputWeight = document.getElementById(`${idPrefix}-weight`);
-    const inputPassed = document.getElementById(`${idPrefix}-passed`);
-    const inputExercise = document.getElementById(`${idPrefix}-exercise`);
-    
-    modal.addEventListener("show.bs.modal", e =>
-    {
-        const trigger = e.relatedTarget;
-        const exerciseId = trigger.dataset.exerciseId;
-        
-        inputExercise.value = exerciseId;
-    });
-    
-    submitButton.addEventListener("click", () =>
-    {
-        const url = "@Url.Action("CreateExerciseSubmission", "AdminScoreboard")";
-        const data = {
-            exerciseId: inputExercise.value,
-            userId: inputUser.value === "" ? null : inputUser.value,
-            submissionTime: inputEnableTime.checked ? inputTime.value : null,
-            weight: inputWeight.value,
-            passed: inputPassed.checked
+    <link asp-href-include="~/lib/flatpickr/css/flatpickr.min.css" asp-append-version="true" rel="stylesheet" />
+    <script asp-src-include="~/lib/flatpickr/js/flatpickr.min.js" asp-append-version="true"></script>
+    <script asp-src-include="~/lib/flatpickr/js/l10n/de.js" asp-append-version="true"></script>
+    <script>
+        flatpickr.localize(flatpickr.l10ns.@CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
+        options = {
+            "dateFormat": "Y-m-d H:i:S",
+            "enableTime": true,
+            "enableSeconds": true,
+            "allowInput": true,
+            "minuteIncrement": 1
         };
-        
-        ajaxPost(url, data, (status, response) =>
-        {
-            if(status === 200)
-            {
-                showToast("success", "@Localizer["AddExerciseSubmission:Success"].Value");
-            }
-            else
-            {
-                showToast("error", "@Localizer["AddExerciseSubmission:Error"].Value");
-            }
-        });
-    });
-});
-</script>
+    </script>
+}

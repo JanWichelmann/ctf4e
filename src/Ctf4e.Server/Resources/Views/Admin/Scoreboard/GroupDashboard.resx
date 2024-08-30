@@ -29,26 +29,8 @@
     <data name="Delete" xml:space="preserve">
         <value>Delete</value>
     </data>
-    <data name="DeleteSelectedExerciseSubmissionsModal:Message" xml:space="preserve">
-        <value>Do you really want to delete the selected submissions?</value>
-    </data>
-    <data name="DeleteExerciseSubmissionModal:Message" xml:space="preserve">
-        <value>Do you really want to delete this submission?</value>
-    </data>
-    <data name="DeleteExerciseSubmissionModal:Submit" xml:space="preserve">
-        <value>Delete</value>
-    </data>
-    <data name="DeleteExerciseSubmissionModal:Title" xml:space="preserve">
-        <value>Delete submission</value>
-    </data>
-    <data name="DeleteSelectedExerciseSubmissionsModal:Title" xml:space="preserve">
-        <value>Delete submissions</value>
-    </data>
     <data name="DeleteSelected" xml:space="preserve">
         <value>Delete selected</value>
-    </data>
-    <data name="DeleteSelectedExerciseSubmissionsModal:Submit" xml:space="preserve">
-        <value>Delete</value>
     </data>
     <data name="Mandatory" xml:space="preserve">
         <value>Mandatory</value>
@@ -83,20 +65,44 @@
     <data name="Tries:Value" xml:space="preserve">
         <value>{0} ({1}) attempts</value>
     </data>
-    <data name="DeleteExerciseSubmission:Success" xml:space="preserve">
-        <value>The submission was deleted successfully. Refresh to see all changes.</value>
-        <comment>DeleteExerciseSubmission:Success</comment>
+    <data name="Create" xml:space="preserve">
+        <value>Add</value>
+        <comment>Create</comment>
     </data>
-    <data name="DeleteExerciseSubmission:Error" xml:space="preserve">
-        <value>An error occured.</value>
-        <comment>DeleteExerciseSubmission:Error</comment>
+    <data name="SubmissionInvalid" xml:space="preserve">
+        <value>Invalid submission outside of lab time</value>
+        <comment>SubmissionInvalid</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissions:Success" xml:space="preserve">
-        <value>The submissions were deleted successfully. Refresh to see all changes.</value>
-        <comment>DeleteSelectedExerciseSubmissions:Success</comment>
+    <data name="Flags:Description" xml:space="preserve">
+        <value>Description / Time</value>
+        <comment>Flags:Description</comment>
     </data>
-    <data name="DeleteSelectedExerciseSubmissions:Error" xml:space="preserve">
-        <value>An error occured.</value>
-        <comment>DeleteSelectedExerciseSubmissions:Error</comment>
+    <data name="Flags:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Flags:Name</comment>
+    </data>
+    <data name="FlagValid" xml:space="preserve">
+        <value>Valid</value>
+        <comment>FlagValid</comment>
+    </data>
+    <data name="FlagInvalid" xml:space="preserve">
+        <value>Invalid submission</value>
+        <comment>FlagInvalid</comment>
+    </data>
+    <data name="FlagNotSubmitted" xml:space="preserve">
+        <value>Not submitted</value>
+        <comment>FlagNotSubmitted</comment>
+    </data>
+    <data name="BugBounty" xml:space="preserve">
+        <value>Bug bounty</value>
+        <comment>BugBounty</comment>
+    </data>
+    <data name="SubmitFlag" xml:space="preserve">
+        <value>Submit</value>
+        <comment>SubmitFlag</comment>
+    </data>
+    <data name="ResetFlag" xml:space="preserve">
+        <value>Reset</value>
+        <comment>ResetFlag</comment>
     </data>
 </root>

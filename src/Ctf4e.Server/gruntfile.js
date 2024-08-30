@@ -25,6 +25,7 @@ module.exports = function (grunt) {
                     {expand: true, flatten: true, src: ['node_modules/@popperjs/core/dist/umd/popper.min.js'], dest: 'wwwroot/lib/popper/js/'},
                     {expand: true, flatten: true, src: ['node_modules/flatpickr/dist/flatpickr.min.js'], dest: 'wwwroot/lib/flatpickr/js/'},
                     {expand: true, flatten: true, src: ['node_modules/flatpickr/dist/l10n/de.js'], dest: 'wwwroot/lib/flatpickr/js/l10n/'},
+                    {expand: true, flatten: true, src: ['node_modules/flatpickr/dist/l10n/en.js'], dest: 'wwwroot/lib/flatpickr/js/l10n/'},
                     {expand: true, flatten: true, src: ['node_modules/flatpickr/dist/flatpickr.min.css'], dest: 'wwwroot/lib/flatpickr/css/'},
                     {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/bootstrap-icons.css'], dest:'wwwroot/lib/bootstrap-icons/css'},
                     {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff'], dest:'wwwroot/lib/bootstrap-icons/css/fonts'},

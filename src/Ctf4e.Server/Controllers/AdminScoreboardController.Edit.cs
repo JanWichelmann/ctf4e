@@ -95,62 +95,61 @@ public partial class AdminScoreboardController
                 await exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
             }
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["CreateExerciseSubmissionAsync:Success"]);
+            return Ok();
         }
         catch(InvalidOperationException ex)
         {
             GetLogger().LogError(ex, "Create exercise submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["CreateExerciseSubmissionAsync:UnknownError"]);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpPost("flag-submission/delete")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> DeleteFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId)
+    public async Task<IActionResult> DeleteFlagSubmissionAsync(int userId, int flagId, [FromServices] IFlagService flagService)
     {
         try
         {
             // Delete submission
             await flagService.DeleteFlagSubmissionAsync(userId, flagId, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["DeleteFlagSubmissionAsync:Success"]);
+            return Ok();
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Delete flag submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["DeleteFlagSubmissionAsync:UnknownError"]);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 
     [HttpPost("flag-submission/create")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditAdminScoreboard)]
-    public async Task<IActionResult> CreateFlagSubmissionAsync([FromServices] IFlagService flagService, int labId, int slotId, bool groupMode, bool includeTutors, int userId, int flagId, DateTime submissionTime)
+    public async Task<IActionResult> CreateFlagSubmissionAsync([FromBody] AdminFlagSubmissionInputModel input, [FromServices] IFlagService flagService)
     {
+        if(!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var submissionTime = input.SubmissionTime ?? DateTime.Now;
+        
         try
         {
             // Create submission
             var submission = new FlagSubmission
             {
-                UserId = userId,
-                FlagId = flagId,
+                FlagId = input.FlagId,
+                UserId = input.UserId,
                 SubmissionTime = submissionTime
             };
             await flagService.CreateFlagSubmissionAsync(submission, HttpContext.RequestAborted);
 
-            AddStatusMessage(StatusMessageType.Success, Localizer["CreateFlagSubmissionAsync:Success"]);
+            return Ok();
         }
-        catch(InvalidOperationException ex)
+        catch(Exception ex)
         {
             GetLogger().LogError(ex, "Create flag submission");
-            AddStatusMessage(StatusMessageType.Error, Localizer["CreateFlagSubmissionAsync:UnknownError"]);
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-
-        return await RenderAsync("~/Views/AdminScoreboard.cshtml", null);
     }
 }

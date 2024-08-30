@@ -56,6 +56,7 @@ public class AdminScoreboardDetails
         public string UserName { get; set; }
         public bool Solved { get; set; }
         public DateTime SubmissionTime { get; set; }
+        public bool Valid { get; set; }
         public int Weight { get; set; }
     }
 
@@ -63,6 +64,7 @@ public class AdminScoreboardDetails
     {
         public int Id { get; set; }
         public string Description { get; set; }
+        public bool IsBounty { get; set; }
 
         public bool Submitted { get; set; }
         public bool Valid { get; set; }

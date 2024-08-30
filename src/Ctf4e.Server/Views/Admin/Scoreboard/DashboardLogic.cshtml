@@ -1,0 +1,339 @@
+@using Ctf4e.Server.Views.Shared
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IAntiforgery Csrf
+@inject IViewLocalizer Localizer
+@model AdminScoreboardDetails
+@{
+    // This partial view contains shared markup and helper functions for the group/user dashboard views.
+}
+
+
+<input type="hidden" id="csrf-token" value="@Csrf.GetAndStoreTokens(Context).RequestToken">
+
+<script>      
+window.addEventListener("load", () =>
+{
+    // "Select all" checkboxes
+    const selectAllCheckboxes = document.querySelectorAll('input[name="es-checkbox-select-all"]');
+    for(let selectAllCheckbox of selectAllCheckboxes)
+    {
+        selectAllCheckbox.addEventListener("change", function() {
+            const localCheckboxes = selectAllCheckbox.closest("table").querySelectorAll('input[name="es-checkbox"]');
+            for(let checkbox of localCheckboxes)
+                checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+});         
+
+function markRowChanged(tr)
+{
+    tr.querySelectorAll(`button`).forEach(button => button.parentElement.removeChild(button));
+    tr.querySelectorAll(`input`).forEach(input => input.parentElement.removeChild(input));
+}
+  
+function markRowAdded(tr)
+{
+    tr.classList.remove("row-highlighted");
+    tr.classList.add("row-added");
+    markRowChanged(tr);
+}
+                     
+function markRowDeleted(tr)
+{
+    tr.classList.remove("row-highlighted");
+    tr.classList.add("row-deleted");
+    markRowChanged(tr);
+}                     
+                     
+function deleteExerciseSubmission(button)
+{            
+    const tr = button.closest("tr");
+    const submissionId = tr.dataset.submissionId;
+    
+    const url = "@Url.Action("DeleteExerciseSubmission", "AdminScoreboard")";
+                                       
+    ajaxPost(url, { id: submissionId }, (status, response) =>
+    {
+        if(status === 200)
+        {
+            markRowDeleted(tr);
+            
+            showToast("success", "@Localizer["DeleteExerciseSubmission:Success"].Value");
+        }
+        else
+        {
+            showToast("error", "@Localizer["DeleteExerciseSubmission:Error"].Value");
+        }
+    }, true);
+}               
+
+function deleteSelectedExerciseSubmissions(button)
+{
+    const selectedTrs = Array.from(button.parentElement.querySelectorAll(`input[name=es-checkbox]:checked`))
+                            .map(input => input.closest("tr"));
+    const submissionIds = selectedTrs.map(tr => tr.dataset.submissionId);
+    
+    const url = "@Url.Action("DeleteExerciseSubmissions", "AdminScoreboard")";
+    
+    ajaxPost(url, submissionIds, (status, response) =>
+    {
+        if(status === 200)
+        {         
+            selectedTrs.forEach(markRowDeleted);
+            
+            showToast("success", "@Localizer["DeleteSelectedExerciseSubmissions:Success"].Value");
+        }
+        else
+        {
+            showToast("error", "@Localizer["DeleteSelectedExerciseSubmissions:Error"].Value");
+        }
+    });
+}   
+
+function deleteFlagSubmission(button)
+{
+    const tr = button.closest("tr");
+    const userId = tr.dataset.userId;
+    const flagId = tr.dataset.flagId;
+    
+    const url = "@Url.Action("DeleteFlagSubmission", "AdminScoreboard")";
+    
+    ajaxPost(url, { userId, flagId }, (status, response) =>
+    {
+        if(status === 200)
+        {
+            markRowDeleted(tr);
+            
+            showToast("success", "@Localizer["DeleteFlagSubmission:Success"].Value");
+        }
+        else
+        {
+            showToast("error", "@Localizer["DeleteFlagSubmission:Error"].Value");
+        }
+    }, true);
+}
+</script>
+
+@{
+    var deleteExerciseSubmissionModalViewModel = new GenericConfirmModalModel
+    {
+        ModalId = "modal-delete-exercise-submission",
+        CallbackFunctionName = "deleteExerciseSubmission",
+        Title = Localizer["DeleteExerciseSubmissionModal:Title"].Value,
+        Messages = new List<string> { Localizer["DeleteExerciseSubmissionModal:Message"].Value },
+        SubmitButtonText = Localizer["DeleteExerciseSubmissionModal:Submit"].Value,
+        Color = GenericConfirmModalModel.ColorScheme.Danger
+    };
+}
+<partial name="GenericConfirmModal" model="deleteExerciseSubmissionModalViewModel" />
+
+@{
+    var deleteSelectedExerciseSubmissionsModalViewModel = new GenericConfirmModalModel
+    {
+        ModalId = "modal-delete-exercise-submissions",
+        CallbackFunctionName = "deleteSelectedExerciseSubmissions",
+        Title = Localizer["DeleteSelectedExerciseSubmissionsModal:Title"].Value,
+        Messages = new List<string> { Localizer["DeleteSelectedExerciseSubmissionsModal:Message"].Value },
+        SubmitButtonText = Localizer["DeleteSelectedExerciseSubmissionsModal:Submit"].Value,
+        Color = GenericConfirmModalModel.ColorScheme.Danger
+    };
+}
+<partial name="GenericConfirmModal" model="deleteSelectedExerciseSubmissionsModalViewModel" />
+
+@{
+    var deleteFlagSubmissionModalViewModel = new GenericConfirmModalModel
+    {
+        ModalId = "modal-delete-flag-submission",
+        CallbackFunctionName = "deleteFlagSubmission",
+        Title = Localizer["DeleteFlagSubmissionModal:Title"].Value,
+        Messages = new List<string> { Localizer["DeleteFlagSubmissionModal:Message"].Value },
+        SubmitButtonText = Localizer["DeleteFlagSubmissionModal:Submit"].Value,
+        Color = GenericConfirmModalModel.ColorScheme.Danger
+    };
+}
+<partial name="GenericConfirmModal" model="deleteFlagSubmissionModalViewModel" />
+
+@* Modal for adding a new exercise submission *@
+<div class="modal" id="modal-add-exercise-submission" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">@Localizer["Modal:CreateExerciseSubmission:Title"]</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label" for="input-add-exercise-submission-user">@Localizer["Modal:CreateExerciseSubmission:User"]</label>
+                    <select id="input-add-exercise-submission-user" class="form-select">
+                        <option value="">@Localizer["Modal:CreateExerciseSubmission:NoUser"]</option>
+                        @foreach(var user in Model.GroupMembers)
+                        {
+                            <option value="@user.Id">@user.DisplayName</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input me-1" id="input-add-exercise-submission-enable-time">
+                    <label class="form-label" for="input-add-exercise-submission-time">@Localizer["Modal:CreateExerciseSubmission:Timestamp"]</label>
+                    <input id="input-add-exercise-submission-time" type="text" class="form-control" disabled="disabled">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="input-add-exercise-submission-weight">@Localizer["Modal:CreateExerciseSubmission:Weight"]</label>
+                    <input id="input-add-exercise-submission-weight" type="number" min="0" value="1" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input id="input-add-exercise-submission-passed" type="checkbox" class="form-check-input" checked="checked">
+                        <label for="input-add-exercise-submission-passed" class="form-check-label">@Localizer["Passed"]</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="input-add-exercise-submission-exercise" value="">
+
+                <button role="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="submit-add-exercise-submission">@Localizer["Modal:CreateExerciseSubmission:Submit"]</button>
+                <button role="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+window.addEventListener("load", () =>
+{
+    const modal = document.getElementById("modal-add-exercise-submission");
+    const submitButton = document.getElementById("submit-add-exercise-submission");
+    const idPrefix = "input-add-exercise-submission";
+
+    const inputUser = document.getElementById(`${idPrefix}-user`);
+    const inputEnableTime = document.getElementById(`${idPrefix}-enable-time`);
+    const inputTime = document.getElementById(`${idPrefix}-time`);
+    const inputWeight = document.getElementById(`${idPrefix}-weight`);
+    const inputPassed = document.getElementById(`${idPrefix}-passed`);
+    const inputExercise = document.getElementById(`${idPrefix}-exercise`);
+    
+    inputEnableTime.addEventListener("change", () =>
+    {                  
+        inputTime.disabled = !inputEnableTime.checked;
+    });
+    
+    modal.addEventListener("show.bs.modal", e =>
+    {
+        const trigger = e.relatedTarget;
+        const exerciseId = trigger.dataset.exerciseId;
+        
+        inputExercise.value = exerciseId;
+    });
+    
+    submitButton.addEventListener("click", () =>
+    {
+        const url = "@Url.Action("CreateExerciseSubmission", "AdminScoreboard")";
+        const data = {
+            exerciseId: inputExercise.value,
+            userId: inputUser.value === "" ? null : inputUser.value,
+            groupId: @Model.GroupId,
+            submissionTime: inputEnableTime.checked ? inputTime.value : null,
+            weight: inputWeight.value,
+            exercisePassed: inputPassed.checked
+        };
+        
+        ajaxPost(url, data, (status, response) =>
+        {
+            if(status === 200)
+            {                                
+                showToast("success", "@Localizer["AddExerciseSubmission:Success"].Value");
+            }
+            else
+            {
+                showToast("error", "@Localizer["AddExerciseSubmission:Error"].Value");
+            }
+        });
+    });
+
+    flatpickr(inputTime, options);
+});
+</script>
+
+@* Modal for adding a new flag submission *@
+<div class="modal" id="modal-add-flag-submission" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">@Localizer["Modal:CreateFlagSubmission:Title"]</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="checkbox" class="form-check-input me-1" id="input-add-flag-submission-enable-time">
+                    <label class="form-label" for="input-add-flag-submission-time">@Localizer["Modal:CreateFlagSubmission:Timestamp"]</label>
+                    <input id="input-add-flag-submission-time" type="text" class="form-control" disabled="disabled">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="input-add-flag-submission-flag" value="">
+                <input type="hidden" id="input-add-flag-submission-user" value="">
+
+                <button role="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="submit-add-flag-submission">@Localizer["Modal:CreateFlagSubmission:Submit"]</button>
+                <button role="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+window.addEventListener("load", () =>
+{
+    const modal = document.getElementById("modal-add-flag-submission");
+    const submitButton = document.getElementById("submit-add-flag-submission");
+    const idPrefix = "input-add-flag-submission";
+
+    const inputEnableTime = document.getElementById(`${idPrefix}-enable-time`);
+    const inputTime = document.getElementById(`${idPrefix}-time`);
+    const inputFlag = document.getElementById(`${idPrefix}-flag`);
+    const inputUser = document.getElementById(`${idPrefix}-user`);
+    
+    inputEnableTime.addEventListener("change", () =>
+    {                  
+        inputTime.disabled = !inputEnableTime.checked;
+    });
+                               
+    let tr;                        
+    modal.addEventListener("show.bs.modal", e =>
+    {
+        const trigger = e.relatedTarget;
+        const flagId = trigger.dataset.flagId;
+        const userId = trigger.dataset.userId;
+        
+        inputFlag.value = flagId;
+        inputUser.value = userId;  
+        
+        tr = trigger.closest("tr");
+    });
+    
+    submitButton.addEventListener("click", () =>
+    {
+        const url = "@Url.Action("CreateFlagSubmission", "AdminScoreboard")";
+        const data = {
+            flagId: inputFlag.value,
+            userId: inputUser.value,
+            submissionTime: inputEnableTime.checked ? inputTime.value : null
+        };
+        
+        ajaxPost(url, data, (status, response) =>
+        {
+            if(status === 200)
+            {
+                markRowAdded(tr);
+                
+                showToast("success", "@Localizer["AddFlagSubmission:Success"].Value");
+            }
+            else
+            {
+                showToast("error", "@Localizer["AddFlagSubmission:Error"].Value");
+            }
+        });
+    });
+
+    flatpickr(inputTime, options);
+});
+</script>
