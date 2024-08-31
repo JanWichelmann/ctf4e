@@ -1,3 +1,5 @@
+@using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
@@ -8,6 +10,8 @@
 
     var currentLab = labs.FirstOrDefault(l => l.Id == Model.LabId);
     var currentSlot = slots.FirstOrDefault(s => s.Id == Model.SlotId);
+    
+    var currentUser = (User)ViewData["CurrentUser"];
 
     string GetSubViewLink(SubView subView, int? labId, int? slotId)
     {
@@ -42,12 +46,15 @@
         <a class="nav-link @(Model.SubView is SubView.Users or SubView.UserDashboard ? "active" : "")" href="@GetSubViewLink(SubView.Users, Model.LabId, Model.SlotId)">
             @Localizer["Nav:Users"]
         </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(Model.SubView == SubView.Export ? "active" : "")" href="@GetSubViewLink(SubView.Export, Model.LabId, Model.SlotId)">
-            @Localizer["Nav:Export"]
-        </a>
-    </li>
+    </li>            
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.TransferResults))
+    {
+        <li class="nav-item">
+            <a class="nav-link @(Model.SubView == SubView.Export ? "active" : "")" href="@GetSubViewLink(SubView.Export, Model.LabId, Model.SlotId)">
+                @Localizer["Nav:Export"]
+            </a>
+        </li>
+    }
 
     @{
         bool padLeft = true;

@@ -31,7 +31,7 @@ namespace Ctf4e.Api.Services
     /// </summary>
     public class CryptoService : ICryptoService
     {
-        private static readonly TimeSpan _timestampValidityDuration = new(0, 3, 0);
+        private static readonly TimeSpan _timestampValidityDuration = TimeSpan.FromMinutes(3);
 
         private readonly byte[] _key;
 

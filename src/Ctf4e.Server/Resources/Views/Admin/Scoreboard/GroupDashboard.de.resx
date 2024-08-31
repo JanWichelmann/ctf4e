@@ -118,4 +118,12 @@
         <value>Zurücksetzen</value>
         <comment>ResetFlag</comment>
     </data>
+    <data name="Title:Exercises" xml:space="preserve">
+        <value>Aufgaben</value>
+        <comment>Title:Exercises</comment>
+    </data>
+    <data name="Title:Flags" xml:space="preserve">
+        <value>Flags</value>
+        <comment>Title:Flags</comment>
+    </data>
 </root>

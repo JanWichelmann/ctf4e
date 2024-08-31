@@ -89,4 +89,8 @@
     <data name="OpenUserDashboard" xml:space="preserve">
         <value>Details</value>
     </data>
+    <data name="CallLabServer" xml:space="preserve">
+        <value>Praktikumsserver</value>
+        <comment>CallLabServer</comment>
+    </data>
 </root>

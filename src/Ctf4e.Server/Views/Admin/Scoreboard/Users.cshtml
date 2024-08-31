@@ -1,9 +1,13 @@
+@using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Models
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
 @model AdminScoreboardOverview
 @{
     ViewData["Title"] = Localizer["HtmlTitle"];
+    
+    var currentUser = (User)ViewData["CurrentUser"];
 }
 
 <div class="container">
@@ -67,6 +71,14 @@
                     <span class="badge bg-info cursor-help" title="@Localizer["Statistics:FoundFlags"]">@userEntry.FoundFlagsCount / @Model.FlagCount</span>
                 </td>
                 <td class="text-end">
+                    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin))
+                    {
+                        <a asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@userEntry.Id" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-hdd-network"></i>
+                            @Localizer["CallLabServer"]
+                        </a>
+                    }
+
                     <a asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-userId="@userEntry.Id" asp-route-labId="@Model.LabId" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-arrow-right"></i>
                         @Localizer["OpenUserDashboard"]

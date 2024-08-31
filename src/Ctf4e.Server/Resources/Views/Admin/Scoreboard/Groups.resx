@@ -94,4 +94,8 @@
         <value>Show Details</value>
         <comment>OpenUserDashboard</comment>
     </data>
+    <data name="CallLabServer" xml:space="preserve">
+        <value>Lab server</value>
+        <comment>CallLabServer</comment>
+    </data>
 </root>

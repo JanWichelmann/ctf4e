@@ -113,7 +113,7 @@ public partial class AdminScoreboardController(
     }
 
     [HttpGet("user/{userId}")]
-    public async Task<IActionResult> ShowUserDashboardAsync(int userId, int labId, [FromServices] IUserService userService)
+    public async Task<IActionResult> ShowUserDashboardAsync(int userId, int labId)
     {
         if(!await userService.UserExistsAsync(userId, HttpContext.RequestAborted))
             return await ShowErrorViewAsync(Localizer["UserNotFound"]);
@@ -133,19 +133,19 @@ public partial class AdminScoreboardController(
 
     [HttpGet("labserver")]
     [AnyUserPrivilege(UserPrivileges.LoginAsLabServerAdmin)]
-    public async Task<IActionResult> CallLabServerAsync([FromServices] ILabService labService, [FromServices] IGroupService groupService, int labId, int userId)
+    public async Task<IActionResult> CallLabServerAsync(int labId, int userId, [FromServices] IGroupService groupService)
     {
         // Retrieve lab data
         var lab = await labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
         {
             PostStatusMessage = new(StatusMessageType.Error, Localizer["CallLabServerAsync:NotFound"]);
-            return RedirectToAction("RenderScoreboard");
+            return RedirectToAction("ShowStatisticsDashboard");
         }
 
         // Build authentication string
         var user = await userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
-        var group = user.GroupId == null ? null : await groupService.FindGroupByIdAsync(user.GroupId ?? -1, HttpContext.RequestAborted);
+        var group = user.GroupId == null ? null : await groupService.FindGroupByIdAsync(user.GroupId.Value, HttpContext.RequestAborted);
         var authData = new UserLoginRequest
         {
             UserId = userId,

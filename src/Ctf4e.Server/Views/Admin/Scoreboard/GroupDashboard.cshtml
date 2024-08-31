@@ -26,7 +26,7 @@
     }
     <partial name="Nav.cshtml" model="navViewModel" />
 
-    <h2 class="mt-5">Exercises</h2>
+    <h2 class="mt-5">@Localizer["Title:Exercises"]</h2>
     <hr class="header-secondary">
 
     @foreach(var exercise in Model.Exercises)
@@ -182,7 +182,7 @@
     }
 
 
-    <h2 class="mt-5">Flags</h2>
+    <h2 class="mt-5">@Localizer["Title:Flags"]</h2>
     <hr class="header-secondary">
 
     <table class="table table-sm table-align-middle">
@@ -313,4 +313,4 @@
             "minuteIncrement": 1
         };
     </script>
-}
+}    

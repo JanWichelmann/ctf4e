@@ -26,7 +26,7 @@
     }
     <partial name="Nav.cshtml" model="navViewModel" />
 
-    <h2 class="mt-5">Exercises</h2>
+    <h2 class="mt-5">@Localizer["Title:Exercises"]</h2>
     <hr class="header-secondary">
 
     @foreach(var exercise in Model.Exercises)
@@ -176,7 +176,7 @@
     }
 
 
-    <h2 class="mt-5">Flags</h2>
+    <h2 class="mt-5">@Localizer["Title:Flags"]</h2>
     <hr class="header-secondary">
 
     <table class="table table-sm table-align-middle">
@@ -250,7 +250,20 @@
             </tr>
         }
         </tbody>
-    </table>
+    </table>  
+    
+    
+    <h2 class="mt-5">@Localizer["Title:Actions"]</h2>
+    <hr class="header-secondary">
+
+    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin))
+    {
+        <a asp-controller="AdminScoreboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" asp-route-userId="@Model.UserId" target="_blank" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-return-right"></i>
+            <i class="bi bi-hdd-network"></i>
+            @Localizer["CallLabServer"]
+        </a>
+    }
 </div>
 
 <partial name="DashboardLogic.cshtml" />

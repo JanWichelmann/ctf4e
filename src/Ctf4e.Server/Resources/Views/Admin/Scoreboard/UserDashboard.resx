@@ -102,4 +102,20 @@
         <value>Time</value>
         <comment>Flags:Timestamp</comment>
     </data>
+    <data name="CallLabServer" xml:space="preserve">
+        <value>Lab server</value>
+        <comment>CallLabServer</comment>
+    </data>
+    <data name="Title:Actions" xml:space="preserve">
+        <value>Other actions</value>
+        <comment>Title:Actions</comment>
+    </data>
+    <data name="Title:Flags" xml:space="preserve">
+        <value>Flags</value>
+        <comment>Title:Flags</comment>
+    </data>
+    <data name="Title:Exercises" xml:space="preserve">
+        <value>Exercises</value>
+        <comment>Title:Exercises</comment>
+    </data>
 </root>
