@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.ViewModels;
 

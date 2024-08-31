@@ -1,7 +1,9 @@
+@using Ctf4e.Server.Views
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model AdminUserInputModel
 @inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<GenericStrings> GenericLocalizer
 @{
      
 }
@@ -18,7 +20,7 @@
 
         <input type="hidden" asp-for="Id">
 
-        <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
-        <a asp-controller="AdminUsers" asp-action="RenderUserList" role="button" class="btn btn-outline-secondary">@Localizer["Form:Cancel"]</a>
+        <button type="submit" class="btn btn-primary">@GenericLocalizer["Form:Edit:Submit"]</button>
+        <a asp-controller="AdminUsers" asp-action="RenderUserList" role="button" class="btn btn-outline-secondary">@GenericLocalizer["Form:Edit:Cancel"]</a>
     </form>
 </div>

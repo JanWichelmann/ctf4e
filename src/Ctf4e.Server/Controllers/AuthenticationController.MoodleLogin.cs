@@ -37,7 +37,7 @@ public partial class AuthenticationController
         }
         catch(SecurityException)
         {
-            AddStatusMessage(StatusMessageType.Error, Localizer["LoginMoodleAsync:InvalidLogin"]);;
+            AddStatusMessage(StatusMessageType.Error, Localizer["LoginMoodleAsync:InvalidLogin"]);
             return await ShowLoginFormAsync(null);
         }
 

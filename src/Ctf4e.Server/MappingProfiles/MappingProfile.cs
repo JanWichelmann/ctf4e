@@ -3,7 +3,6 @@ using Ctf4e.Server.Controllers;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
-using Ctf4e.Server.ViewModels;
 
 namespace Ctf4e.Server.MappingProfiles;
 

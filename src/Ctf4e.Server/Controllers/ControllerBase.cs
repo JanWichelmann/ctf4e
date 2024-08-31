@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Ctf4e.Server.Attributes;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.Models;
@@ -23,18 +21,8 @@ public abstract class ControllerBase<TController>(IUserService userService) : Ut
     /// </summary>
     protected virtual MenuItems ActiveMenuItem => MenuItems.Undefined;
 
-    /// <summary>
-    /// Version of this assembly.
-    /// </summary>
-    private static readonly string _buildVersion;
-
     private User _currentUser;
     private bool _currentUserHasLoggedOut;
-
-    static ControllerBase()
-    {
-        
-    }
 
     /// <summary>
     ///     Updates the internal current user variable.
@@ -107,9 +95,6 @@ public abstract class ControllerBase<TController>(IUserService userService) : Ut
         var configService = HttpContext.RequestServices.GetRequiredService<IConfigurationService>();
         ViewData["PageTitle"] = await configService.GetPageTitleAsync(HttpContext.RequestAborted);
         ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync(HttpContext.RequestAborted);
-
-        // Other render data
-        ViewData["BuildVersion"] = _buildVersion;
 
         // Render view
         return RenderViewInternal(viewPath, model);

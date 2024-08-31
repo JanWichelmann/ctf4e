@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Ctf4e.Api.Models;
 using Ctf4e.Api.Services;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
-using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
 using Ctf4e.Utilities;
@@ -21,15 +18,12 @@ namespace Ctf4e.Server.Controllers;
 [AnyUserPrivilege(UserPrivileges.ViewAdminScoreboard)]
 public partial class AdminScoreboardController(
     IUserService userService,
-    IScoreboardService scoreboardService,
     IAdminScoreboardService adminScoreboardService,
     ILabService labService,
     ISlotService slotService)
     : ControllerBase<AdminScoreboardController>(userService)
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminScoreboard;
-
-    private readonly IUserService _userService = userService;
 
     private async Task<IActionResult> RenderAsync(string viewPath, object model)
     {
@@ -150,7 +144,7 @@ public partial class AdminScoreboardController(
         }
 
         // Build authentication string
-        var user = await _userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
+        var user = await userService.FindUserByIdAsync(userId, HttpContext.RequestAborted);
         var group = user.GroupId == null ? null : await groupService.FindGroupByIdAsync(user.GroupId ?? -1, HttpContext.RequestAborted);
         var authData = new UserLoginRequest
         {
@@ -174,8 +168,6 @@ public partial class AdminScoreboardController(
     [AnyUserPrivilege(UserPrivileges.TransferResults)]
     public async Task<IActionResult> UploadToMoodleAsync([FromServices] IMoodleService moodleService)
     {
-        // TODO move this and next function to own sub view
-
         try
         {
             await moodleService.UploadStateToMoodleAsync(HttpContext.RequestAborted);

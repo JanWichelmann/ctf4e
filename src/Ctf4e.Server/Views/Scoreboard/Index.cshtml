@@ -1,9 +1,9 @@
 ﻿@using Ctf4e.Server.Controllers
 @using Ctf4e.Server.Models
-@using Ctf4e.Server.ViewModels
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Ctf4e.Server.Authorization
 @using Ctf4e.Server.Services
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
 @inject IUserService UserService;
 @model Scoreboard
@@ -254,7 +254,7 @@
 
                         if(currentUser.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
                         {
-                            <a asp-controller="AdminScoreboard" asp-action="RenderScoreboard" asp-route-labId="@Model.LabId" asp-route-slotId="@Model.SlotId" asp-route-groupMode="true" asp-fragment="@("group" + entry.GroupId)" class="text-decoration-none" title="@Localizer["Scoreboard:AdminScoreboard:Group"]">
+                            <a asp-controller="AdminScoreboard" asp-action="ShowGroupDashboard" asp-route-labId="@Model.LabId" asp-route-groupId="@entry.GroupId" class="text-decoration-none" title="@Localizer["Scoreboard:AdminScoreboard:Group"]">
                                 <i class="bi bi-bookmark-star"></i>
                             </a>
                         }

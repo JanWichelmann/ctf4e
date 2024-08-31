@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Ctf4e.Server.Models;
 
 namespace Ctf4e.Server.InputModels;
 

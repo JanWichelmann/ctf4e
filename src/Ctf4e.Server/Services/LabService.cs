@@ -6,7 +6,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
-using Ctf4e.Server.MappingProfiles;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;

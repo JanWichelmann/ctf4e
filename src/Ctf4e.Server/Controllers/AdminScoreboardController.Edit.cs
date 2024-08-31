@@ -6,7 +6,6 @@ using Ctf4e.Server.Authorization;
 using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
-using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
