@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -290,7 +289,7 @@ public class AdminScoreboardService(
         bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
 
         // Retrieve group and all relevant users
-        // We treat group/user dashboard modes generally the same for simplicity, and filter the submission lists later in the view.
+        // For simplicity, we use the same code paths for group and user dashboards, and filter the submission lists later in the view.
         // Only exception are the passed/points calculations.
         Group group;
         if(userId != null)
@@ -365,21 +364,28 @@ public class AdminScoreboardService(
             if(!exerciseSubmissionsByExercise.TryGetValue(exercise.Id, out var submissions))
                 submissions = [];
 
-            var (groupMemberHasPassed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, labExecution);
-
-            // If passing as group is disabled, do another check whether this user has a valid passing submission
-            // If we are looking at an entire group, check whether _all_ members have passed
-            bool passed = groupMemberHasPassed;
-            if(!passAsGroup && labExecution != null) // If labExecution is null, passed is already false and we don't need to check
+            // If we view a single user, only check their own submissions
+            // Note: This function only provides data for the user/group dashboard, which shows details about individual exercises and submissions.
+            //       An accurate list over who passed the lab and who did not is provided by the overview routes. So we can actually produce "wrong"
+            //       passed/not passed results in user mode, where pass-as-group is temporarily ignored.
+            bool passed;
+            bool groupMemberHasPassed;
+            int points;
+            int validTries;
+            if(userId != null)
             {
-                if(userId != null)
-                {
-                    passed = submissions.Any(s => s.ExercisePassed
-                                                  && s.UserId == userId
-                                                  && labExecution.Start <= s.SubmissionTime
-                                                  && s.SubmissionTime < labExecution.End);
-                }
-                else
+                var filteredSubmissions = submissions.Where(s => s.UserId == userId);
+                
+                (passed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, filteredSubmissions, labExecution);
+                groupMemberHasPassed = passed;
+            }
+            else
+            {
+                (groupMemberHasPassed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, labExecution);
+
+                // If passing as group is disabled, check whether _all_ members have passed
+                passed = groupMemberHasPassed;
+                if(!passAsGroup && labExecution != null) // If labExecution is null, passed is already false and we don't need to check
                 {
                     passed = group.Members.All(u => submissions.Any(s => s.ExercisePassed
                                                                          && s.UserId == u.Id

@@ -22,4 +22,84 @@
         <value>User - Admin Scoreboard</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="Solved" xml:space="preserve">
+        <value>Solved</value>
+        <comment>Solved</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="DeleteSelected" xml:space="preserve">
+        <value>Delete selected</value>
+    </data>
+    <data name="Mandatory" xml:space="preserve">
+        <value>Mandatory</value>
+    </data>
+    <data name="NotSolved" xml:space="preserve">
+        <value>Not solved</value>
+    </data>
+    <data name="Optional" xml:space="preserve">
+        <value>Optional</value>
+    </data>
+    <data name="Points" xml:space="preserve">
+        <value>{0} Points</value>
+    </data>
+    <data name="Submissions:Points" xml:space="preserve">
+        <value>Points</value>
+    </data>
+    <data name="Submissions:Solved" xml:space="preserve">
+        <value>Solved</value>
+    </data>
+    <data name="Submissions:Timestamp" xml:space="preserve">
+        <value>Submission time</value>
+    </data>
+    <data name="Submissions:Weight" xml:space="preserve">
+        <value>Weight</value>
+    </data>
+    <data name="Tries:Text" xml:space="preserve">
+        <value>Valid attempts (total)</value>
+    </data>
+    <data name="Tries:Value" xml:space="preserve">
+        <value>{0} ({1}) attempts</value>
+    </data>
+    <data name="Create" xml:space="preserve">
+        <value>Add</value>
+        <comment>Create</comment>
+    </data>
+    <data name="SubmissionInvalid" xml:space="preserve">
+        <value>Invalid submission outside of lab time</value>
+        <comment>SubmissionInvalid</comment>
+    </data>
+    <data name="Flags:Description" xml:space="preserve">
+        <value>Description</value>
+        <comment>Flags:Description</comment>
+    </data>
+    <data name="FlagValid" xml:space="preserve">
+        <value>Valid</value>
+        <comment>FlagValid</comment>
+    </data>
+    <data name="FlagInvalid" xml:space="preserve">
+        <value>Invalid submission</value>
+        <comment>FlagInvalid</comment>
+    </data>
+    <data name="FlagNotSubmitted" xml:space="preserve">
+        <value>Not submitted</value>
+        <comment>FlagNotSubmitted</comment>
+    </data>
+    <data name="BugBounty" xml:space="preserve">
+        <value>Bug bounty</value>
+        <comment>BugBounty</comment>
+    </data>
+    <data name="SubmitFlag" xml:space="preserve">
+        <value>Submit</value>
+        <comment>SubmitFlag</comment>
+    </data>
+    <data name="ResetFlag" xml:space="preserve">
+        <value>Reset</value>
+        <comment>ResetFlag</comment>
+    </data>
+    <data name="Flags:Timestamp" xml:space="preserve">
+        <value>Time</value>
+        <comment>Flags:Timestamp</comment>
+    </data>
 </root>

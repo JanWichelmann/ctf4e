@@ -243,17 +243,20 @@
                                 @user.DisplayName
                             </a>
                         </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-flag-submission" data-flag-id="@flag.Id" data-user-id="@user.Id">
-                                <i class="bi bi-plus"></i>
-                                @Localizer["SubmitFlag"]
-                            </button>
+                        <td>           
+                            @if(allowEdit)
+                            {
+                                <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-flag-submission" data-flag-id="@flag.Id" data-user-id="@user.Id">
+                                    <i class="bi bi-plus"></i>
+                                    @Localizer["SubmitFlag"]
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
                 else
                 {
-                    <tr data-user-id="@user.Id" data-flag-id="@flag.Id">
+                    <tr>
                         <td>
                             @if(submission.Valid)
                             {
@@ -272,11 +275,14 @@
                                 @user.DisplayName
                             </a>
                         </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-danger" role="button" data-bs-toggle="modal" data-bs-target="#modal-delete-flag-submission">
-                                <i class="bi bi-trash"></i>
-                                @Localizer["ResetFlag"]
-                            </button>
+                        <td>          
+                            @if(allowEdit)
+                            {
+                                <button class="btn btn-sm btn-outline-danger" role="button" data-bs-toggle="modal" data-bs-target="#modal-delete-flag-submission" data-flag-id="@flag.Id" data-user-id="@user.Id">
+                                    <i class="bi bi-trash"></i>
+                                    @Localizer["ResetFlag"]
+                                </button>
+                            }
                         </td>
                     </tr>
                 }

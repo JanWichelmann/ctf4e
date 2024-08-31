@@ -29,8 +29,8 @@ window.addEventListener("load", () =>
 
 function markRowChanged(tr)
 {
-    tr.querySelectorAll(`button`).forEach(button => button.parentElement.removeChild(button));
-    tr.querySelectorAll(`input`).forEach(input => input.parentElement.removeChild(input));
+    tr.querySelectorAll(`button`).forEach(button => button.classList.add("invisible"));
+    tr.querySelectorAll(`input`).forEach(input => input.classList.add("invisible"));
 }
   
 function markRowAdded(tr)
@@ -95,8 +95,8 @@ function deleteSelectedExerciseSubmissions(button)
 function deleteFlagSubmission(button)
 {
     const tr = button.closest("tr");
-    const userId = tr.dataset.userId;
-    const flagId = tr.dataset.flagId;
+    const userId = button.dataset.userId;
+    const flagId = button.dataset.flagId;
     
     const url = "@Url.Action("DeleteFlagSubmission", "AdminScoreboard")";
     
