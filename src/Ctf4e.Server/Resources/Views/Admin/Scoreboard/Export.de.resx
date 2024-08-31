@@ -22,4 +22,36 @@
         <value>Export - Admin-Scoreboard</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="DownloadCsv" xml:space="preserve">
+        <value>Ergebnisse als CSV herunterladen</value>
+        <comment>DownloadCsv</comment>
+    </data>
+    <data name="UploadMoodle" xml:space="preserve">
+        <value>Ergebnisse in Moodlekurs hochladen</value>
+        <comment>UploadMoodle</comment>
+    </data>
+    <data name="Modal:SyncMoodle:Title" xml:space="preserve">
+        <value>Ergebnisse in Moodlekurs hochladen</value>
+        <comment>Modal:SyncMoodle:Title</comment>
+    </data>
+    <data name="Modal:SyncMoodle:Body" xml:space="preserve">
+        <value>&lt;p&gt;Dieses Kommando lädt die kompletten Kursergebnisse über die API in den angebundenen Moodlekurs hoch.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Achtung:&lt;/strong&gt; Dieser Vorgang dauert einige Zeit, und sollte nicht unterbrochen werden.&lt;/p&gt;</value>
+        <comment>Modal:SyncMoodle:Body</comment>
+    </data>
+    <data name="Modal:SyncMoodle:Submit" xml:space="preserve">
+        <value>Ergebnisse hochladen</value>
+        <comment>Modal:SyncMoodle:Submit</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Abbrechen</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Title:Download" xml:space="preserve">
+        <value>Ergebnisse herunterladen</value>
+        <comment>Title:Download</comment>
+    </data>
+    <data name="Title:Push" xml:space="preserve">
+        <value>Ergebnisse übertragen</value>
+        <comment>Title:Push</comment>
+    </data>
 </root>

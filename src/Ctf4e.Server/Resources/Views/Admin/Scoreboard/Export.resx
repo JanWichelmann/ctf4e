@@ -22,4 +22,36 @@
         <value>Export - Admin Scoreboard</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="DownloadCsv" xml:space="preserve">
+        <value>Download results as CSV</value>
+        <comment>DownloadCsv</comment>
+    </data>
+    <data name="UploadMoodle" xml:space="preserve">
+        <value>Upload results to Moodle course</value>
+        <comment>UploadMoodle</comment>
+    </data>
+    <data name="Modal:SyncMoodle:Title" xml:space="preserve">
+        <value>Upload results to Moodle course</value>
+        <comment>Modal:SyncMoodle:Title</comment>
+    </data>
+    <data name="Modal:SyncMoodle:Body" xml:space="preserve">
+        <value>&lt;p&gt;This command uploads all results via the API into the linked Moodle course.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Attention:&lt;/strong&gt; This may take a while, and should not be cancelled.&lt;/p&gt;</value>
+        <comment>Modal:SyncMoodle:Body</comment>
+    </data>
+    <data name="Modal:SyncMoodle:Submit" xml:space="preserve">
+        <value>Upload result</value>
+        <comment>Modal:SyncMoodle:Submit</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Title:Download" xml:space="preserve">
+        <value>Download results</value>
+        <comment>Title:Download</comment>
+    </data>
+    <data name="Title:Push" xml:space="preserve">
+        <value>Transfer results</value>
+        <comment>Title:Push</comment>
+    </data>
 </root>

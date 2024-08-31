@@ -16,6 +16,40 @@
         };
     }
     <partial name="Nav.cshtml" model="navViewModel" />
+                                
+    <h2 class="mt-4">@Localizer["Title:Download"]</h2> 
+    <hr class="header-secondary">
+    
+    <a class="btn btn-primary mb-2" asp-controller="AdminScoreboard" asp-action="DownloadAsCsv">
+        <i class="bi bi-download"></i>
+        @Localizer["DownloadCsv"]
+    </a>
+                             
+    <h2 class="mt-4">@Localizer["Title:Push"]</h2>
+    <hr class="header-secondary"> 
+    
+    <button class="btn btn-warning mb-2" href="#" data-bs-toggle="modal" data-bs-target="#modal-sync-moodle">
+        <i class="bi bi-cloud-upload"></i>
+        @Localizer["UploadMoodle"]
+    </button>
 
-
+    <div class="modal fade" id="modal-sync-moodle" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["Modal:SyncMoodle:Title"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @Localizer["Modal:SyncMoodle:Body"]
+                </div>
+                <div class="modal-footer">
+                    <form method="post" asp-controller="AdminScoreboard" asp-action="UploadToMoodle">
+                        <button type="submit" class="btn btn-outline-warning">@Localizer["Modal:SyncMoodle:Submit"]</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

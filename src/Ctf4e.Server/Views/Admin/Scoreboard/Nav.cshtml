@@ -17,7 +17,7 @@
             SubView.Statistics => Url.Action("ShowStatisticsDashboard", "AdminScoreboard", new { labId, slotId }),
             SubView.Groups => Url.Action("ShowGroupsOverview", "AdminScoreboard", new { labId, slotId }),
             SubView.Users => Url.Action("ShowUsersOverview", "AdminScoreboard", new { labId, slotId }),
-            SubView.Export => Url.Action("ShowExportPage", "AdminScoreboard", new { labId, slotId }),
+            SubView.Export => Url.Action("ShowExportPage", "AdminScoreboard"),
             _ => throw new InvalidOperationException("Invalid sub view")
         };
     }
