@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ctf4e.LabServer.InputModels;
 
-public class MultipleChoiceExerciseInputData
+public class MultipleChoiceExerciseInput : ExerciseInput
 {
-    public int ExerciseId { get; set; }
-
     [Required]
     public List<int> SelectedOptions { get; set; }
 }

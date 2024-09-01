@@ -21,7 +21,7 @@ public abstract class ControllerBase<TController> : Controller
     /// </summary>
     protected IStringLocalizer<TController> Localizer => _localizer ??= HttpContext.RequestServices.GetRequiredService<IStringLocalizer<TController>>();
 
-    private StatusMessage? _postStatusMessage;
+    private StatusMessage _postStatusMessage;
     
     /// <summary>
     /// Stores a single status message in the controller's TempData collection.
@@ -31,8 +31,9 @@ public abstract class ControllerBase<TController> : Controller
     /// Use this property exclusively for POST-Redirect-GET, all other status messages
     /// should be stored directly in <see cref="StatusMessages"/>.
     /// </summary>
-    protected StatusMessage? PostStatusMessage
+    protected StatusMessage PostStatusMessage
     {
+        // The value can be consumed exactly once; we cache it in a variable so it can be accessed multiple times
         get => _postStatusMessage ??= TempData.GetJson<StatusMessage>("PostStatusMessage");
         set
         {
@@ -42,7 +43,7 @@ public abstract class ControllerBase<TController> : Controller
                     TempData.Remove("PostStatusMessage");
             }
             else
-                TempData.SetJson("PostStatusMessage", value.Value);
+                TempData.SetJson("PostStatusMessage", value);
         }
     }
 
@@ -67,7 +68,7 @@ public abstract class ControllerBase<TController> : Controller
     {
         // Pass status messages
         if(PostStatusMessage != null)
-            StatusMessages.Add(PostStatusMessage.Value);
+            StatusMessages.Add(PostStatusMessage);
         ViewData["StatusMessages"] = StatusMessages;
 
         // Render view

@@ -47,7 +47,11 @@
         <comment>UpdateConfigurationAsync:UnknownError</comment>
     </data>
     <data name="UpdateConfigurationAsync:ValidationError" xml:space="preserve">
-        <value>Bei der Validierung wurde ein Fehler erkannt: {0}</value>
+        <value>Bei der Validierung von Aufgabe #{0} wurde ein Fehler erkannt: {1}</value>
         <comment>UpdateConfigurationAsync:ValidationError</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>UpdateConfigurationAsync:InvalidInput</comment>
     </data>
 </root>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Api.Exceptions;
@@ -18,17 +17,8 @@ namespace Ctf4e.Api.Services
         Task ClearGroupExerciseSubmissionsAsync(int exerciseNumber, int groupId, CancellationToken cancellationToken);
     }
 
-    public class CtfApiClient : ICtfApiClient
+    public class CtfApiClient(IOptions<CtfApiOptions> options, ICryptoService cryptoService) : ICtfApiClient
     {
-        private readonly IOptions<CtfApiOptions> _options;
-        private readonly ICryptoService _cryptoService;
-
-        public CtfApiClient(IOptions<CtfApiOptions> options, ICryptoService cryptoService)
-        {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
-        }
-
         public Task CreateExerciseSubmissionAsync(ApiExerciseSubmission submission, CancellationToken cancellationToken)
             => RunApiPostRequestAsync("exercisesubmission/create", submission, cancellationToken);
 
@@ -44,14 +34,11 @@ namespace Ctf4e.Api.Services
         private async Task RunApiPostRequestAsync(string resource, object payload, CancellationToken cancellationToken)
         {
             // Run request
-            var client = new RestClient(_options.Value.CtfServerApiBaseUrl);
+            var client = new RestClient(options.Value.CtfServerApiBaseUrl);
             var request = new RestRequest(resource, Method.Post);
-            request.AddJsonBody(CtfApiRequest.Create(_options.Value.LabId, _cryptoService, payload));
+            request.AddJsonBody(CtfApiRequest.Create(options.Value.LabId, cryptoService, payload));
             var response = await client.ExecuteAsync(request, cancellationToken);
-
-            // WORKAROUND: The current implementation of RestSharp silently swallows exceptions; check and throw possible exceptions manually
-            if(response.ErrorException != null)
-                throw response.ErrorException;
+            
             if(!response.IsSuccessful)
             {
                 // Throw an exception which contains the entire response data, for easier debugging

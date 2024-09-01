@@ -27,7 +27,7 @@ public class DockerService : IDockerService, IDisposable
 
     public DockerService(IOptions<LabOptions> options)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
 
         // Only initialize this if container support is enabled
         if(!string.IsNullOrWhiteSpace(_options.Value.DockerContainerName))
@@ -39,7 +39,7 @@ public class DockerService : IDockerService, IDisposable
     public async Task InitUserAsync(int userId, string userName, string password, CancellationToken cancellationToken)
     {
         if(_dockerClient == null)
-            throw new NotSupportedException("Docker support is not initialized.");
+            throw new InvalidOperationException("Docker support is not initialized.");
 
         if(string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
             throw new NotSupportedException("User initialization script is not specified.");
@@ -60,7 +60,7 @@ public class DockerService : IDockerService, IDisposable
             },
             Detach = false
         }, cancellationToken);
-
+                                                            
         // Run command and wait for completion
         var execStream = await _dockerClient.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, cancellationToken);
         await execStream.ReadOutputToEndAsync(cancellationToken);
@@ -69,7 +69,7 @@ public class DockerService : IDockerService, IDisposable
     public async Task<(bool passed, string stderr)> GradeAsync(int userId, int exerciseId, string input, CancellationToken cancellationToken)
     {
         if(_dockerClient == null)
-            throw new NotSupportedException("Docker support is not initialized.");
+            throw new InvalidOperationException("Docker support is not initialized.");
             
         if(string.IsNullOrWhiteSpace(_options.Value.DockerContainerGradeScriptPath))
             throw new NotSupportedException("Grading script is not specified.");

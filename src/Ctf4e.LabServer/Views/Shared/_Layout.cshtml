@@ -1,10 +1,11 @@
 ﻿@using Ctf4e.Utilities
 @using Ctf4e.LabServer.Constants
-@using Ctf4e.LabServer.Configuration
 @using Ctf4e.LabServer.Options
 @using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer
+@using Microsoft.Extensions.Options
+@inject IViewLocalizer Localizer   
+@inject IOptions<LabOptions> LabOptions
 @{
     // Retrieve status messages
     var statusMessages = (List<StatusMessage>)ViewData["StatusMessages"];
@@ -15,9 +16,6 @@
 
     // Current menu item
     var activeMenuItem = (MenuItems)ViewData["ActiveMenuItem"];
-
-    var labOptions = (LabOptions)ViewData["LabOptions"];
-    var labConfiguration = (LabConfiguration)ViewData["LabConfiguration"];
 }
 <!DOCTYPE html>
 <html lang="de">
@@ -25,7 +23,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-    <title>@ViewData["Title"] - @labConfiguration.PageTitle</title>
+    <title>@ViewData["Title"] - @LabOptions.Value.PageTitle</title>
 
     <link rel="icon" type="image/x-icon" asp-href-include="~/favicon.ico" asp-append-version="true">
     <link rel="stylesheet" asp-href-include="~/lib/bootstrap-icons/css/bootstrap-icons.css" asp-append-version="true">
@@ -41,31 +39,33 @@
     <nav class="navbar navbar-expand-lg border-bottom px-2">
         <div class="container">
 
-            <a class="navbar-brand text-body-secondary" asp-controller="Group" asp-action="RenderPage">
+            <a class="navbar-brand text-body-secondary" asp-controller="Dashboard" asp-action="ShowDashboard">
                 <i class="bi bi-hdd-network"></i>
-                @labConfiguration.NavbarTitle
+                @LabOptions.Value.NavbarTitle
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Navigation umschalten">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="@Localizer["ToggleNavbar"]">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between" id="navbar-content">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "scoreboard"))">
+                        <a class="nav-link" href="@(System.IO.Path.Combine(LabOptions.Value.CtfServerBaseUrl, "scoreboard"))" target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i>
                             @Localizer["MenuItems:Scoreboard"]
                         </a>
                     </li>
                     @if(currentUser != null)
                     {
                         <li class="nav-item">
-                            <a class="nav-link" href="@(System.IO.Path.Combine(labOptions.CtfServerBaseUrl, "dashboard"))">
+                            <a class="nav-link" href="@(System.IO.Path.Combine(LabOptions.Value.CtfServerBaseUrl, "dashboard"))" target="_blank">
+                                <i class="bi bi-box-arrow-up-right"></i>
                                 @Localizer["MenuItems:Dashboard"]
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Group" asp-action="RenderPage">
+                            <a class="nav-link @(activeMenuItem == MenuItems.Group ? "active" : "")" asp-controller="Dashboard" asp-action="ShowDashboard">
                                 @Localizer["MenuItems:Exercises"]
                             </a>
                         </li>
@@ -83,7 +83,7 @@
                                     @Localizer["MenuItems:Admin"]
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="admin-dropdown">
-                                    <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="RenderPage">
+                                    <a class="dropdown-item @(activeMenuItem == MenuItems.AdminConfiguration ? "text-primary" : "")" asp-controller="AdminConfiguration" asp-action="ShowForm">
                                         <i class="bi bi-gear text-secondary"></i>
                                         @Localizer["MenuItems:Admin:Configuration"]
                                     </a>
@@ -98,11 +98,13 @@
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end mt-0" aria-labelledby="auth-dropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Authentication" asp-action="Logout">
-                                        <i class="bi bi-door-closed text-secondary"></i>
-                                        @Localizer["MenuItems:Logout"]
-                                    </a>
+                                <li class="dropdown-item">
+                                    <form asp-controller="Authentication" asp-action="Logout" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary w-100">
+                                            <i class="bi bi-door-closed"></i>
+                                            @Localizer["MenuItems:Logout"]
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </li>
@@ -131,63 +133,65 @@
         return "secondary";
     }
 }
+
+<div class="toast-container position-fixed mb-2 bottom-0 start-50 translate-middle-x" id="toast-container">
+    @foreach(var statusMessage in statusMessages.Where(m => m.AutoHide))
+    {
+    <div class="toast align-items-center text-bg-@StatusMessageTypeToColor(statusMessage.Type) border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                @statusMessage.Message
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    }
+</div>
+
 @if(statusMessages.Any())
 {
-    <div class="container">
-        <div class="toast-container position-fixed mb-2 bottom-0 start-50 translate-middle-x">
-            @foreach(var statusMessage in statusMessages.Where(m => m.AutoHide))
+<div class="container">
+    <div class="row">
+        <div class="col px-4">
+            @foreach(var statusMessage in statusMessages.Where(m => !m.AutoHide))
             {
-                <div class="toast align-items-center text-bg-@StatusMessageTypeToColor(statusMessage.Type) border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            @statusMessage.Message
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-            }
-        </div>
-        <div class="row">
-            <div class="col px-4">
-                @foreach(var statusMessage in statusMessages.Where(m => !m.AutoHide))
-                {
-                    <div class="row mt-3">
-                        <div class="col-sm">
-                            <div class="alert alert-@StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
+            <div class="row mt-3">
+                <div class="col-sm">
+                    <div class="alert alert-@StatusMessageTypeToColor(statusMessage.Type) alert-dismissible fade show" role="alert">
                                 <span class="me-2">
                                     @switch(statusMessage.Type)
                                     {
-                                        case StatusMessageType.Info:
-                                            <i class="bi bi-info-circle"></i>
-                                            break;
-                                        case StatusMessageType.Success:
-                                            <i class="bi bi-check-circle"></i>
-                                            break;
-                                        case StatusMessageType.Warning:
-                                            <i class="bi bi-exclamation-circle"></i>
-                                            break;
-                                        case StatusMessageType.Error:
-                                            <i class="bi bi-x-circle"></i>
-                                            break;
+                                    case StatusMessageType.Info:
+                                    <i class="bi bi-info-circle"></i>
+                                    break;
+                                    case StatusMessageType.Success:
+                                    <i class="bi bi-check-circle"></i>
+                                    break;
+                                    case StatusMessageType.Warning:
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    break;
+                                    case StatusMessageType.Error:
+                                    <i class="bi bi-x-circle"></i>
+                                    break;
                                     }
                                 </span>
 
-                                @if(statusMessage.Preformatted)
-                                {
-                                    <pre>@statusMessage.Message</pre>
-                                }
-                                else
-                                {
-                                    @statusMessage.Message
-                                }
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </div>
+                        @if(statusMessage.Preformatted)
+                        {
+                        <pre>@statusMessage.Message</pre>
+                        }
+                        else
+                        {
+                        @statusMessage.Message
+                        }
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                }
+                </div>
             </div>
+            }
         </div>
     </div>
+</div>
 }
 
 <main role="main" class="pb-4 flex-grow-1">
@@ -209,7 +213,7 @@
                             ["de-DE"] = "Deutsch"
                         };
 
-                        string currentLanguage = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture?.UICulture.Name ?? "en-US";
+                        string currentLanguage = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.UICulture.Name ?? "en-US";
                         if(!supportedLanguages.ContainsKey(currentLanguage))
                         {
                             currentLanguage = "en-US";

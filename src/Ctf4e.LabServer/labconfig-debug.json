@@ -1,7 +1,4 @@
 {
-  "PassAsGroup": true,
-  "PageTitle": "CTF4E Lab Server",
-  "NavbarTitle": "CTF4E Lab Server",
   "Exercises": [
     {
       "Id": 10,

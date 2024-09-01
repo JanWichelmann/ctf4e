@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Ctf4e.Utilities;
 
-public readonly struct StatusMessage(StatusMessageType type, string message)
+public class StatusMessage(StatusMessageType type, string message)
 {
     [JsonPropertyName("t")]
     public StatusMessageType Type { get; init; } = type;

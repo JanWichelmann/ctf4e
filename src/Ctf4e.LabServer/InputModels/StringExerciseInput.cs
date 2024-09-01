@@ -1,11 +1,9 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ctf4e.LabServer.InputModels;
 
-public class ScriptExerciseInputData
+public class StringExerciseInput : ExerciseInput
 {
-    public int ExerciseId { get; set; }
-
     [DisplayFormat(ConvertEmptyStringToNull = false)]
     public string Input { get; set; }
 }

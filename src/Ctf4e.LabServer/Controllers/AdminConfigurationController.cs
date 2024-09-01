@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Constants;
+using Ctf4e.LabServer.InputModels;
 using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
@@ -17,12 +19,18 @@ namespace Ctf4e.LabServer.Controllers;
 
 [Route("admin/config")]
 [Authorize(Policy = AuthenticationStrings.PolicyAdminMode)]
-public class AdminConfigurationController(IOptionsSnapshot<LabOptions> labOptions, ILabConfigurationService labConfiguration, IStateService stateService)
+public class AdminConfigurationController(IOptions<LabOptions> labOptions, ILabConfigurationService labConfiguration, IStateService stateService)
     : ControllerBase<AdminConfigurationController>
 {
     protected override MenuItems ActiveMenuItem => MenuItems.AdminConfiguration;
 
-    private async Task<IActionResult> RenderAsync(string configuration = null)
+    private IActionResult ShowForm(AdminConfigurationInputModel configurationInput)
+    {
+        return RenderView("~/Views/Admin/Configuration/Index.cshtml", configurationInput);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ShowFormAsync()
     {
         try
         {
@@ -31,44 +39,43 @@ public class AdminConfigurationController(IOptionsSnapshot<LabOptions> labOption
             await using var configFileStream = configFile.Open(FileMode.Open);
 
             // Check whether configuration file is writable by this application
-            bool writable = configFileStream.CanWrite;
+            bool writable = !configFile.IsReadOnly && configFileStream.CanWrite;
             ViewData["Writable"] = writable;
             if(!writable)
                 AddStatusMessage(StatusMessageType.Warning, Localizer["RenderAsync:ConfigNonWritable"]);
 
             // Read configuration
-            if(configuration == null)
+            using var configFileReader = new StreamReader(configFileStream);
+            var configurationInput = new AdminConfigurationInputModel
             {
-                using var configFileReader = new StreamReader(configFileStream);
-                ViewData["Configuration"] = await configFileReader.ReadToEndAsync();
-            }
-            else
-                ViewData["Configuration"] = configuration;
+                Configuration = await configFileReader.ReadToEndAsync()
+            };
+
+            return ShowForm(configurationInput);
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Read configuration file");
             AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:UnknownError"]);
+            return RenderView("~/Views/Admin/Configuration/Empty.cshtml");
         }
-
-        return RenderView("~/Views/AdminConfiguration.cshtml");
-    }
-
-    [HttpGet("")]
-    public Task<IActionResult> RenderPageAsync()
-    {
-        return RenderAsync();
     }
 
     [HttpPost("update")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateConfigurationAsync(string configuration)
+    public async Task<IActionResult> UpdateConfigurationAsync(AdminConfigurationInputModel configurationInput)
     {
+        if(!ModelState.IsValid)
+        {
+            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:InvalidInput"]);
+            return ShowForm(configurationInput);
+        }
+
         // Parse configuration and do some sanity checks
         bool error = false;
         try
         {
-            var newOptions = JsonConvert.DeserializeObject<LabConfiguration>(configuration);
+            var newOptions = JsonConvert.DeserializeObject<LabConfiguration>(configurationInput.Configuration);
 
             HashSet<int> exerciseIds = new HashSet<int>();
             foreach(var exercise in newOptions.Exercises)
@@ -85,7 +92,7 @@ public class AdminConfigurationController(IOptionsSnapshot<LabOptions> labOption
                 // Run exercise self-check
                 if(!exercise.Validate(out string errorMessage))
                 {
-                    AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ValidationError", errorMessage]);
+                    AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ValidationError", exercise.Id, errorMessage]);
                     error = true;
                 }
             }
@@ -100,26 +107,26 @@ public class AdminConfigurationController(IOptionsSnapshot<LabOptions> labOption
         if(error)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:Error"]);
-            return await RenderAsync(configuration);
+            return ShowForm(configurationInput);
         }
 
         try
         {
             // Update configuration
-            await System.IO.File.WriteAllTextAsync(labOptions.Value.LabConfigurationFile, configuration);
-                
+            await System.IO.File.WriteAllTextAsync(labOptions.Value.LabConfigurationFile, configurationInput.Configuration, CancellationToken.None);
+
             // Reload
-            await labConfiguration.ReadConfigurationAsync();
-            stateService.Reload();
-                
-            AddStatusMessage(StatusMessageType.Success, Localizer["UpdateConfigurationAsync:Success"]);
+            await labConfiguration.ReadConfigurationAsync(HttpContext.RequestAborted);
+            await stateService.ReloadAsync(HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["UpdateConfigurationAsync:Success"]);
+            return RedirectToAction("ShowForm");
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Update configuration");
             AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:UnknownError"]);
+            return ShowForm(configurationInput);
         }
-
-        return await RenderAsync();
     }
 }

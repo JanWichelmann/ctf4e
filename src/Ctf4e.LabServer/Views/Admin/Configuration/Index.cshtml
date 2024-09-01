@@ -1,0 +1,33 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IViewLocalizer Localizer        
+@model Ctf4e.LabServer.InputModels.AdminConfigurationInputModel
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    bool writable = ViewData.ContainsKey("Writable") && (bool)ViewData["Writable"];
+}
+
+<div class="container">
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <p class="text-danger font-weight-bold">
+        @Localizer["WarningText"]
+    </p>
+
+    <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
+        <div class="mb-3">
+            <textarea asp-for="Configuration" class="form-control font-monospace" rows="40" cols="100"></textarea>
+        </div>
+
+        @if(writable)
+        {
+            <button type="submit" class="btn btn-outline-danger">
+                @Localizer["Form:Submit"]
+            </button>
+        }
+    </form>
+</div>

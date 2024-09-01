@@ -19,85 +19,97 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="CheckStringInputAsync:UnknownError" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten.</value>
+        <value>An error occured.</value>
         <comment>CheckStringInputAsync:UnknownError</comment>
     </data>
     <data name="CheckMultipleChoiceInputAsync:UnknownError" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten.</value>
+        <value>An error occured.</value>
         <comment>CheckMultipleChoiceInputAsync:UnknownError</comment>
     </data>
     <data name="CheckScriptInputAsync:UnknownError" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten.</value>
+        <value>An error occured.</value>
         <comment>CheckScriptInputAsync:UnknownError</comment>
     </data>
     <data name="MarkExerciseAsSolvedAsync:UnknownError" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten. Weitere Details finden sich im Server-Log.</value>
+        <value>An error has occured. Check the server log for more details.</value>
         <comment>MarkExerciseAsSolvedAsync:UnknownError</comment>
     </data>
     <data name="ResetExerciseStatusAsync:UnknownError" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten. Weitere Details finden sich im Server-Log.</value>
+        <value>An error has occured. Check the server log for more details.</value>
         <comment>ResetExerciseStatusAsync:UnknownError</comment>
     </data>
     <data name="CheckStringInputAsync:Success" xml:space="preserve">
-        <value>Die Lösung ist korrekt!</value>
+        <value>This solution is correct!</value>
         <comment>CheckStringInputAsync:Success</comment>
     </data>
     <data name="CheckMultipleChoiceInputAsync:Success" xml:space="preserve">
-        <value>Die Lösung ist korrekt!</value>
+        <value>This solution is correct!</value>
         <comment>CheckMultipleChoiceInputAsync:Success</comment>
     </data>
     <data name="CheckScriptInputAsync:Success" xml:space="preserve">
-        <value>Die Lösung ist korrekt!</value>
+        <value>This solution is correct!</value>
         <comment>CheckScriptInputAsync:Success</comment>
     </data>
     <data name="CheckStringInputAsync:InvalidInput" xml:space="preserve">
-        <value>Ungültige Eingabe.</value>
+        <value>Invalid input.</value>
         <comment>CheckStringInputAsync:InvalidInput</comment>
     </data>
     <data name="CheckScriptInputAsync:InvalidInput" xml:space="preserve">
-        <value>Ungültige Eingabe.</value>
+        <value>Invalid input.</value>
         <comment>CheckScriptInputAsync:InvalidInput</comment>
     </data>
     <data name="CheckMultipleChoiceInputAsync:InvalidInput" xml:space="preserve">
-        <value>Ungültige Eingabe.</value>
+        <value>Invalid input.</value>
         <comment>CheckMultipleChoiceInputAsync:InvalidInput</comment>
     </data>
     <data name="CheckStringInputAsync:Wrong" xml:space="preserve">
-        <value>Diese Lösung ist nicht korrekt.</value>
+        <value>This solution is not correct.</value>
         <comment>CheckStringInputAsync:Wrong</comment>
     </data>
     <data name="CheckMultipleChoiceInputAsync:Wrong" xml:space="preserve">
-        <value>Diese Lösung ist nicht korrekt.</value>
+        <value>This solution is not correct.</value>
         <comment>CheckMultipleChoiceInputAsync:Wrong</comment>
     </data>
     <data name="CheckScriptInputAsync:Wrong" xml:space="preserve">
-        <value>Diese Lösung ist nicht korrekt.</value>
+        <value>This solution is not correct.</value>
         <comment>CheckScriptInputAsync:Wrong</comment>
     </data>
     <data name="MarkExerciseAsSolvedAsync:NotFound" xml:space="preserve">
-        <value>Diese Aufgabe existiert nicht.</value>
+        <value>This exercise does not exist.</value>
         <comment>MarkExerciseAsSolvedAsync:NotFound</comment>
     </data>
     <data name="ResetExerciseStatusAsync:NotFound" xml:space="preserve">
-        <value>Diese Aufgabe existiert nicht.</value>
+        <value>This exercise does not exist.</value>
         <comment>ResetExerciseStatusAsync:NotFound</comment>
     </data>
     <data name="ResetExerciseStatusAsync:Success" xml:space="preserve">
-        <value>Die Aufgabe wurde erfolgreich zurückgesetzt.</value>
+        <value>The exercise was reset successfully.</value>
         <comment>ResetExerciseStatusAsync:Success</comment>
     </data>
     <data name="MarkExerciseAsSolvedAsync:Success" xml:space="preserve">
-        <value>Die Aufgabe wurde erfolgreich als gelöst markiert.</value>
+        <value>The exercise was marked as "solved" successfully.</value>
         <comment>MarkExerciseAsSolvedAsync:Success</comment>
     </data>
     <data name="CtfError:Default" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten.</value>
+        <value>An error occured.</value>
     </data>
     <data name="CtfError:Admin" xml:space="preserve">
-        <value>Bei der Kommunikation mit dem CTF-System ist ein Fehler aufgetreten. Siehe unten für weitere Details.</value>
+        <value>An error occured while communicating with the CTF server. See below for details.</value>
     </data>
     <data name="ExceptionMessage" xml:space="preserve">
-        <value>Ein Fehler ist aufgetreten. Fehlermeldung: {0}</value>
+        <value>An error occured. Error message: {0}</value>
         <comment>ExceptionMessage</comment>
+    </data>
+    <data name="CheckStringInputAsync:Timeout" xml:space="preserve">
+        <value>The operation timed out.</value>
+        <comment>CheckStringInputAsync:Timeout</comment>
+    </data>
+    <data name="CheckMultipleChoiceInputAsync:Timeout" xml:space="preserve">
+        <value>The operation timed out.</value>
+        <comment>CheckMultipleChoiceInputAsync:Timeout</comment>
+    </data>
+    <data name="CheckScriptInputAsync:Timeout" xml:space="preserve">
+        <value>The operation timed out.</value>
+        <comment>CheckScriptInputAsync:Timeout</comment>
     </data>
 </root>

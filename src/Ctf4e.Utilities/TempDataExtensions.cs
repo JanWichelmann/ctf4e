@@ -5,15 +5,15 @@ namespace Ctf4e.Utilities;
 
 public static class TempDataExtensions
 {
-    public static void SetJson<T>(this ITempDataDictionary tempData, string key, T value) where T : struct
+    public static void SetJson<T>(this ITempDataDictionary tempData, string key, T value) where T : class
     {
         tempData[key] = JsonSerializer.Serialize(value, new JsonSerializerOptions { WriteIndented = false });
     }
 
-    public static T? GetJson<T>(this ITempDataDictionary tempData, string key) where T : struct
+    public static T GetJson<T>(this ITempDataDictionary tempData, string key) where T : class
     {
         if(tempData.TryGetValue(key, out var value) && value is string str)
-            return JsonSerializer.Deserialize<T>(str);    
+            return JsonSerializer.Deserialize<T>(str);
         return null;
     }
 }

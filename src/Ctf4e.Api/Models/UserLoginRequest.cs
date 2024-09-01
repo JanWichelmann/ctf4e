@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 namespace Ctf4e.Api.Models
 {
@@ -7,6 +7,11 @@ namespace Ctf4e.Api.Models
     /// </summary>
     public class UserLoginRequest
     {
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            WriteIndented = false
+        };
+
         public int UserId { get; set; }
 
         public string UserDisplayName { get; set; }
@@ -19,12 +24,12 @@ namespace Ctf4e.Api.Models
 
         public string Serialize()
         {
-            return JsonConvert.SerializeObject(this, Formatting.None);
+            return JsonSerializer.Serialize(this, _jsonSerializerOptions);
         }
 
         public static UserLoginRequest Deserialize(string serialized)
         {
-            return JsonConvert.DeserializeObject<UserLoginRequest>(serialized);
+            return JsonSerializer.Deserialize<UserLoginRequest>(serialized);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
 using Ctf4e.LabServer.Options;
@@ -15,33 +16,24 @@ public interface ILabConfigurationService
     /// <summary>
     /// Reloads the current configuration.
     /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    Task ReadConfigurationAsync();
+    Task ReadConfigurationAsync(CancellationToken cancellationToken);
 }
 
 /// <summary>
 /// Loads and parses the lab configuration file.
 /// </summary>
-public class LabConfigurationService : ILabConfigurationService
+public class LabConfigurationService(IOptions<LabOptions> options) : ILabConfigurationService
 {
-    private readonly IOptionsMonitor<LabOptions> _options;
     public LabConfiguration CurrentConfiguration { get; private set; }
 
-    public LabConfigurationService(IOptionsMonitor<LabOptions> options)
-    {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
-    }
-
-    /// <summary>
-    /// Reloads the current configuration.
-    /// </summary>
-    /// <returns></returns>
-    public async Task ReadConfigurationAsync()
+    public async Task ReadConfigurationAsync(CancellationToken cancellationToken)
     {
         try
-        {
+        {                 
             // Read and parse configuration
-            var labConfigData = await File.ReadAllTextAsync(_options.CurrentValue.LabConfigurationFile);
+            var labConfigData = await File.ReadAllTextAsync(options.Value.LabConfigurationFile, cancellationToken);
             CurrentConfiguration = JsonConvert.DeserializeObject<LabConfiguration>(labConfigData);
         }
         catch(Exception ex)
