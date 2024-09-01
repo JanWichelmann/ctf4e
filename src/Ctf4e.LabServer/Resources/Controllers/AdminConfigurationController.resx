@@ -26,10 +26,6 @@
         <value>An error occured while reading the configuration file. Check the log for more details.</value>
         <comment>RenderAsync:UnknownError</comment>
     </data>
-    <data name="UpdateConfigurationAsync:DuplicateExerciseId" xml:space="preserve">
-        <value>Duplicate exercise ID: {0}</value>
-        <comment>UpdateConfigurationAsync:DuplicateExerciseId</comment>
-    </data>
     <data name="UpdateConfigurationAsync:ErrorParsingNewConfig" xml:space="preserve">
         <value>Could not parse new configuration. Is the JSON valid? Check the log for more details.</value>
         <comment>UpdateConfigurationAsync:ErrorParsingNewConfig</comment>
@@ -46,12 +42,12 @@
         <value>An error occured while updating the configuration. Possibly this has left the system in an inconsistent state. It is recommend to check the current configuration and perform a restart. Check the log for more details.</value>
         <comment>UpdateConfigurationAsync:UnknownError</comment>
     </data>
-    <data name="UpdateConfigurationAsync:ValidationError" xml:space="preserve">
-        <value>An error was detected during validation of exercise #{0}: {1}</value>
-        <comment>UpdateConfigurationAsync:ValidationError</comment>
-    </data>
     <data name="UpdateConfigurationAsync:InvalidInput" xml:space="preserve">
         <value>Invalid input.</value>
         <comment>UpdateConfigurationAsync:InvalidInput</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:InvalidConfig" xml:space="preserve">
+        <value>The were errors when validating the new configuration.</value>
+        <comment>UpdateConfigurationAsync:InvalidConfig</comment>
     </data>
 </root>

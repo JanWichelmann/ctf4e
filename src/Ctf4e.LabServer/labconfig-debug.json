@@ -1,13 +1,7 @@
 {
   "Exercises": [
     {
-      "Id": 10,
-      "CtfExerciseNumber": 10,
-      "FlagCode": null,
-      "Title": "Exercise1",
-      "DescriptionFormat": null,
-      "Link": null,
-      "Type": "String",
+      "$type": "String",
       "AllowAnySolution": true,
       "UseRegex": false,
       "Multiline": false,
@@ -20,16 +14,16 @@
           "Name": null,
           "Value": "22"
         }
-      ]
+      ],
+      "Id": 10,
+      "CtfExerciseNumber": 10,
+      "FlagCode": null,
+      "Title": "Exercise1",
+      "DescriptionFormat": null,
+      "Link": null
     },
     {
-      "Id": 20,
-      "CtfExerciseNumber": 20,
-      "FlagCode": null,
-      "Title": "Exercise2",
-      "DescriptionFormat": "Please enter secret of <strong>{0}</strong>.",
-      "Link": null,
-      "Type": "String",
+      "$type": "String",
       "AllowAnySolution": false,
       "UseRegex": false,
       "Multiline": false,
@@ -42,38 +36,38 @@
           "Name": "Bob",
           "Value": "2"
         }
-      ]
+      ],
+      "Id": 20,
+      "CtfExerciseNumber": 20,
+      "FlagCode": null,
+      "Title": "Exercise2",
+      "DescriptionFormat": "Please enter secret of \u003Cstrong\u003E{0}\u003C/strong\u003E.",
+      "Link": null
     },
     {
-      "Id": 30,
-      "CtfExerciseNumber": null,
-      "FlagCode": "CTF{test-flag1}",
-      "Title": "Flag1",
-      "DescriptionFormat": "Please enter another secret of <strong>{0}</strong>.",
-      "Link": "http://localhost:5000/",
-      "Type": "String",
+      "$type": "String",
       "AllowAnySolution": false,
       "UseRegex": true,
       "Multiline": true,
       "ValidSolutions": [
         {
           "Name": "Alice",
-          "Value": "^alice+[0-9]+"
+          "Value": "^alice\u002B[0-9]\u002B"
         },
         {
           "Name": "Bob",
           "Value": "(bob){2,}"
         }
-      ]
+      ],
+      "Id": 30,
+      "CtfExerciseNumber": null,
+      "FlagCode": "CTF{test-flag1}",
+      "Title": "Flag1",
+      "DescriptionFormat": "Please enter another secret of \u003Cstrong\u003E{0}\u003C/strong\u003E.",
+      "Link": "http://localhost:5000/"
     },
     {
-      "Id": 40,
-      "CtfExerciseNumber": null,
-      "FlagCode": "CTF{test-flag2}",
-      "Title": "Flag2",
-      "DescriptionFormat": "Please choose any correct option.",
-      "Link": null,
-      "Type": "MultipleChoice",
+      "$type": "MultipleChoice",
       "RequireAll": false,
       "Options": [
         {
@@ -88,16 +82,16 @@
           "Correct": true,
           "Value": "Correct."
         }
-      ]
+      ],
+      "Id": 40,
+      "CtfExerciseNumber": null,
+      "FlagCode": "CTF{test-flag2}",
+      "Title": "Flag2",
+      "DescriptionFormat": "Please choose any correct option.",
+      "Link": null
     },
     {
-      "Id": 50,
-      "CtfExerciseNumber": null,
-      "FlagCode": "CTF{test-flag3}",
-      "Title": "Flag3",
-      "DescriptionFormat": "Please choose all correct options.",
-      "Link": null,
-      "Type": "MultipleChoice",
+      "$type": "MultipleChoice",
       "RequireAll": true,
       "Options": [
         {
@@ -112,7 +106,13 @@
           "Correct": true,
           "Value": "Correct."
         }
-      ]
+      ],
+      "Id": 50,
+      "CtfExerciseNumber": null,
+      "FlagCode": "CTF{test-flag3}",
+      "Title": "Flag3",
+      "DescriptionFormat": "Please choose all correct options.",
+      "Link": null
     }
   ]
 }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Ctf4e.LabServer.Configuration.Exercises;
 
 namespace Ctf4e.LabServer.Models.State;
@@ -5,11 +6,14 @@ namespace Ctf4e.LabServer.Models.State;
 /// <summary>
 /// Contains the state of one exercise.
 /// </summary>
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(UserStateFileStringExerciseEntry), "String")]
+[JsonDerivedType(typeof(UserStateFileMultipleChoiceExerciseEntry), "MultipleChoice")]
+[JsonDerivedType(typeof(UserStateFileScriptExerciseEntry), "Script")]
 public abstract class UserStateFileExerciseEntry
 {
     public int ExerciseId { get; set; }
     public bool Solved { get; set; }
-    public UserStateFileExerciseEntryType Type { get; set; }
         
     /// <summary>
     /// Checks whether the internal state is still consistent with the given exercise data, and updates it if necessary.

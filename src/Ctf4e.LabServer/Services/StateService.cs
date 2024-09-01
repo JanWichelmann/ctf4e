@@ -16,7 +16,6 @@ using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.ViewModels;
 using Ctf4e.Utilities;
 using Nito.AsyncEx;
-using ExerciseEntryJsonConverter = Ctf4e.LabServer.Models.State.ExerciseEntryJsonConverter;
 
 namespace Ctf4e.LabServer.Services;
 
@@ -92,8 +91,6 @@ public partial class StateService : IDisposable, IStateService
     private readonly ILabConfigurationService _labConfiguration;
     private readonly IDockerService _dockerService;
 
-    private readonly JsonSerializerOptions _userStateFileReadOptions = new();
-
     private ConcurrentDictionary<int, UserState> _userStates;
 
     private SortedDictionary<int, LabConfigurationExerciseEntry> _exercises;
@@ -117,11 +114,6 @@ public partial class StateService : IDisposable, IStateService
         _dockerService = dockerService ?? throw new ArgumentNullException(nameof(dockerService));
 
         _dockerSupportEnabled = !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName);
-        
-        // Register custom JSON converter for reading user state files
-        // It would be more elegant to place a [JsonConverter] attribute on the UserStateFile class, but this
-        // unfortunately would require implementing a full serializer as well, which we do not need at the moment.
-        _userStateFileReadOptions.Converters.Add(new ExerciseEntryJsonConverter());
     }
 
     public Task InitAsync(CancellationToken cancellationToken)
@@ -244,7 +236,7 @@ public partial class StateService : IDisposable, IStateService
         string path = Path.Combine(_options.Value.UserStateDirectory, userStateFileName);
         if(!File.Exists(path))
             return null;
-        return JsonSerializer.Deserialize<UserStateFile>(await File.ReadAllTextAsync(path, cancellationToken), _userStateFileReadOptions);
+        return JsonSerializer.Deserialize<UserStateFile>(await File.ReadAllTextAsync(path, cancellationToken));
     }
 
     /// <summary>
@@ -435,7 +427,7 @@ public partial class StateService : IDisposable, IStateService
                 UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.ValidateInput(exercise, input),
                 _ => false
             };
-            if(exerciseState.Type == UserStateFileExerciseEntryType.Script)
+            if(exerciseState is UserStateFileScriptExerciseEntry)
             {
                 if(!_dockerSupportEnabled)
                     throw new NotSupportedException("Docker support is not enabled, so script exercises cannot be graded.");

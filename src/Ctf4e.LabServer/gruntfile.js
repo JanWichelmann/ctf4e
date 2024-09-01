@@ -26,6 +26,7 @@ module.exports = function (grunt) {
                     {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff'], dest:'wwwroot/lib/bootstrap-icons/css/fonts'},
                     {expand: true, flatten: true, src: ['node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2'], dest:'wwwroot/lib/bootstrap-icons/css/fonts'},
                     {expand: true, flatten: true, src: ['node_modules/clipboard/dist/clipboard.min.js'], dest:'wwwroot/lib/clipboard/js'},
+                    {expand: true, flatten: true, src: ['node_modules/vanilla-jsoneditor/standalone.js'], dest:'wwwroot/lib/vanilla-jsoneditor/js'},
                 ]
             }
         }

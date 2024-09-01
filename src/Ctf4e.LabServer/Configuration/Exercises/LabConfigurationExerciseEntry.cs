@@ -1,8 +1,11 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Ctf4e.LabServer.Configuration.Exercises;
 
-[JsonConverter(typeof(ExerciseEntryJsonConverter))]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(LabConfigurationStringExerciseEntry), "String")]
+[JsonDerivedType(typeof(LabConfigurationMultipleChoiceExerciseEntry), "MultipleChoice")]
+[JsonDerivedType(typeof(LabConfigurationScriptExerciseEntry), "Script")]
 public abstract class LabConfigurationExerciseEntry
 {
     /// <summary>
@@ -35,11 +38,6 @@ public abstract class LabConfigurationExerciseEntry
     /// Optional. URL which needs to visited for solving this exercise.
     /// </summary>
     public string Link { get; set; }
-        
-    /// <summary>
-    /// Type of this exercise.
-    /// </summary>
-    public LabConfigurationExerciseEntryType Type { get; set; }
 
     /// <summary>
     /// Checks whether all parameters of this instance are valid. Used for testing sanity of a new configuration file.

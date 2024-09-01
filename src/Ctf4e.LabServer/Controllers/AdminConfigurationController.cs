@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Ctf4e.LabServer.Controllers;
 
@@ -72,52 +70,30 @@ public class AdminConfigurationController(IOptions<LabOptions> labOptions, ILabC
         }
 
         // Parse configuration and do some sanity checks
-        bool error = false;
+        LabConfiguration newConfiguration;
         try
         {
-            var newOptions = JsonConvert.DeserializeObject<LabConfiguration>(configurationInput.Configuration);
-
-            HashSet<int> exerciseIds = new HashSet<int>();
-            foreach(var exercise in newOptions.Exercises)
+            if(!labConfiguration.DeserializeAndCheckConfiguration(configurationInput.Configuration, out var issues, out newConfiguration))
             {
-                // Make sure that exercise IDs are unique
-                if(exerciseIds.Contains(exercise.Id))
-                {
-                    AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:DuplicateExerciseId", exercise.Id]);
-                    error = true;
-                }
-
-                exerciseIds.Add(exercise.Id);
-
-                // Run exercise self-check
-                if(!exercise.Validate(out string errorMessage))
-                {
-                    AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ValidationError", exercise.Id, errorMessage]);
-                    error = true;
-                }
+                AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:InvalidConfig"]);
+                AddStatusMessage(StatusMessageType.Error, string.Join("\n", issues));
+                
+                return ShowForm(configurationInput);
             }
         }
         catch(Exception ex)
         {
             GetLogger().LogError(ex, "Parse new configuration");
             AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ErrorParsingNewConfig"]);
-            error = true;
-        }
-
-        if(error)
-        {
-            AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:Error"]);
             return ShowForm(configurationInput);
         }
 
+        // Write configuration and reload state
         try
         {
-            // Update configuration
-            await System.IO.File.WriteAllTextAsync(labOptions.Value.LabConfigurationFile, configurationInput.Configuration, CancellationToken.None);
-
-            // Reload
-            await labConfiguration.ReadConfigurationAsync(HttpContext.RequestAborted);
-            await stateService.ReloadAsync(HttpContext.RequestAborted);
+            await labConfiguration.WriteConfigurationAsync(newConfiguration, CancellationToken.None);
+            
+            await stateService.ReloadAsync(CancellationToken.None);
 
             PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["UpdateConfigurationAsync:Success"]);
             return RedirectToAction("ShowForm");

@@ -13,8 +13,7 @@ public class UserStateFileMultipleChoiceExerciseEntry : UserStateFileExerciseEnt
         var exerciseState = new UserStateFileMultipleChoiceExerciseEntry
         {
             ExerciseId = exercise.Id,
-            Solved = false,
-            Type = UserStateFileExerciseEntryType.MultipleChoice
+            Solved = false
         };
 
         return exerciseState;

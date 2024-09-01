@@ -128,17 +128,15 @@
                         </p>
                     }
 
-                    @if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.String)
+                    @if(exercise.Exercise is LabConfigurationStringExerciseEntry stringExercise)
                     {
-                        var exerciseData = (LabConfigurationStringExerciseEntry)exercise.Exercise;
-
                         var lastInput = lastExerciseInput as StringExerciseInput;
                         if(lastInput?.ExerciseId != exercise.Exercise.Id)
                             lastInput = null;
 
                         <form class="form" method="post" asp-controller="Dashboard" asp-action="CheckStringInput">
                             <div class="mb-3">
-                                @if(exerciseData.Multiline)
+                                @if(stringExercise.Multiline)
                                 {
                                     <textarea class="form-control font-monospace" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
                                 }
@@ -155,23 +153,21 @@
                             </button>
                         </form>
                     }
-                    else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.MultipleChoice)
+                    else if(exercise.Exercise is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
                     {
-                        var exerciseData = (LabConfigurationMultipleChoiceExerciseEntry)exercise.Exercise;
-
                         var lastInput = lastExerciseInput as MultipleChoiceExerciseInput;
                         if(lastInput?.ExerciseId != exercise.Exercise.Id)
                             lastInput = null;
 
                         <form class="form" method="post" asp-controller="Dashboard" asp-action="CheckMultipleChoiceInput">
                             <div class="mb-3">
-                                @for(int i = 0; i < exerciseData.Options.Length; ++i)
+                                @for(int i = 0; i < multipleChoiceExercise.Options.Length; ++i)
                                 {
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="selectedOptions[]" value="@i" id="option-@i" @(lastInput?.SelectedOptions?.Contains(i) ?? false ? "checked" : "")>
                                         @* ReSharper disable once Html.IdNotResolved *@
                                         <label class="form-check-label" for="option-@i">
-                                            @exerciseData.Options[i].Value
+                                            @multipleChoiceExercise.Options[i].Value
                                         </label>
                                     </div>
                                 }
@@ -184,19 +180,17 @@
                             </button>
                         </form>
                     }
-                    else if(exercise.Exercise.Type == LabConfigurationExerciseEntryType.Script)
+                    else if(exercise.Exercise is LabConfigurationScriptExerciseEntry scriptExercise)
                     {
-                        var exerciseData = (LabConfigurationScriptExerciseEntry)exercise.Exercise;
-
                         var lastInput = lastExerciseInput as ScriptExerciseInput;
                         if(lastInput?.ExerciseId != exercise.Exercise.Id)
                             lastInput = null;
 
                         <form class="form" method="post" asp-controller="Dashboard" asp-action="CheckScriptInput">
-                            @if(exerciseData.StringInput)
+                            @if(scriptExercise.StringInput)
                             {
                                 <div class="mb-3">
-                                    @if(exerciseData.Multiline)
+                                    @if(scriptExercise.Multiline)
                                     {
                                         <textarea class="form-control" name="input" placeholder="@Localizer["Exercises:Form:Input:Placeholder"]" rows="5">@(lastInput?.Input ?? "")</textarea>
                                     }

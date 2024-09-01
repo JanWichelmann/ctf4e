@@ -18,16 +18,38 @@
         @Localizer["WarningText"]
     </p>
 
+    <div class="mb-3" id="json-editor"></div>
+    
     <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
-        <div class="mb-3">
-            <textarea asp-for="Configuration" class="form-control font-monospace" rows="40" cols="100"></textarea>
-        </div>
-
+        <input type="hidden" asp-for="Configuration" id="input-json" />
+        
         @if(writable)
         {
-            <button type="submit" class="btn btn-outline-danger">
+            <button type="button" class="btn btn-outline-danger" id="submit-button">
                 @Localizer["Form:Submit"]
             </button>
         }
-    </form>
-</div>
+    </form>        
+</div>             
+
+<script type="module">
+    import { JSONEditor } from '@Url.Content("/lib/vanilla-jsoneditor/js/standalone.js")';
+    
+    let jsonContent = {
+        json: @Html.Raw(Model.Configuration)
+    };
+    
+    const editor = new JSONEditor({
+        target: document.getElementById('json-editor'),
+        props: {
+            content: jsonContent
+        },
+        readOnly: @(writable ? "false" : "true")
+    });   
+    
+    const submitButton = document.getElementById('submit-button');
+    submitButton.addEventListener('click', () => {
+        document.getElementById('input-json').value = JSON.stringify(editor.get().json);
+        submitButton.form.submit();
+    });
+</script>

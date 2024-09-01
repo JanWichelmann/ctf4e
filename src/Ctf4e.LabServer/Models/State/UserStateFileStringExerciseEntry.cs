@@ -16,8 +16,7 @@ public class UserStateFileStringExerciseEntry : UserStateFileExerciseEntry
         var exerciseState = new UserStateFileStringExerciseEntry
         {
             ExerciseId = exercise.Id,
-            Solved = false,
-            Type = UserStateFileExerciseEntryType.String
+            Solved = false
         };
 
         // Require a specific, randomly picked solution?
