@@ -18,7 +18,7 @@
     <h1 class="mt-4">
         @Localizer["Title"]
     </h1>
-    <hr class="header">
+    <div class="header-rule"></div>
 
     @Html.Raw(MarkdownService.GetRenderedHtml(await ConfigurationService.GetGroupSelectionPageTextAsync(Context.RequestAborted)))
 

@@ -7,7 +7,7 @@
 @using Ctf4e.Server.Authorization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
-@inject IOptionsSnapshot<MainOptions> MainOptions
+@inject IOptions<MainOptions> MainOptions
 @{
     // Retrieve status messages
     var statusMessages = (List<StatusMessage>)ViewData["StatusMessages"];
