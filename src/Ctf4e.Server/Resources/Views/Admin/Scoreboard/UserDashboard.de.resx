@@ -130,4 +130,8 @@
         <value>Aufgaben</value>
         <comment>Title:Exercises</comment>
     </data>
+    <data name="CreatedByAdmin" xml:space="preserve">
+        <value>Manuell von Administrator erstellt</value>
+        <comment>CreatedByAdmin</comment>
+    </data>
 </root>

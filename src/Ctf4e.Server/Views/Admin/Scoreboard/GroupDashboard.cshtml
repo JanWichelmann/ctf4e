@@ -125,6 +125,10 @@
                             </td>
                             <td>
                                 @submission.SubmissionTime.ToString("G")
+                                @if(submission.CreatedByAdmin)
+                                {
+                                    <i class="bi bi-mortarboard-fill text-secondary cursor-help" title="@Localizer["CreatedByAdmin"]"></i>
+                                }
                             </td>
                             <td>
                                 <a class="text-decoration-none" asp-controller="AdminScoreboard" asp-action="ShowUserDashboard" asp-route-labId="@Model.LabId" asp-route-userId="@submission.UserId">
@@ -243,7 +247,7 @@
                                 @user.DisplayName
                             </a>
                         </td>
-                        <td>           
+                        <td>
                             @if(allowEdit)
                             {
                                 <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-flag-submission" data-flag-id="@flag.Id" data-user-id="@user.Id">
@@ -275,7 +279,7 @@
                                 @user.DisplayName
                             </a>
                         </td>
-                        <td>          
+                        <td>
                             @if(allowEdit)
                             {
                                 <button class="btn btn-sm btn-outline-danger" role="button" data-bs-toggle="modal" data-bs-target="#modal-delete-flag-submission" data-flag-id="@flag.Id" data-user-id="@user.Id">
@@ -313,4 +317,4 @@
             "minuteIncrement": 1
         };
     </script>
-}    
+}

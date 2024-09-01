@@ -25,4 +25,6 @@ public class ExerciseSubmission
     ///     Factor for penalty points. Always 1 for successful tries.
     /// </summary>
     public int Weight { get; set; }
+    
+    public bool CreatedByAdmin { get; set; }
 }

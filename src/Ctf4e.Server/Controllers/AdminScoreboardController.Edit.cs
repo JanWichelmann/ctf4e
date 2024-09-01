@@ -89,7 +89,8 @@ public partial class AdminScoreboardController
                     UserId = userId,
                     ExercisePassed = input.ExercisePassed,
                     SubmissionTime = submissionTime,
-                    Weight = input.ExercisePassed ? 1 : input.Weight
+                    Weight = input.ExercisePassed ? 1 : input.Weight,
+                    CreatedByAdmin = true
                 };
                 await exerciseService.CreateExerciseSubmissionAsync(submission, HttpContext.RequestAborted);
             }

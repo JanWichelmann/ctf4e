@@ -417,7 +417,8 @@ public class AdminScoreboardService(
                         Solved = s.ExercisePassed,
                         SubmissionTime = s.SubmissionTime,
                         Valid = labExecution != null && labExecution.Start <= s.SubmissionTime && s.SubmissionTime < labExecution.End,
-                        Weight = s.Weight
+                        Weight = s.Weight,
+                        CreatedByAdmin = s.CreatedByAdmin
                     })
                     .ToList()
             };

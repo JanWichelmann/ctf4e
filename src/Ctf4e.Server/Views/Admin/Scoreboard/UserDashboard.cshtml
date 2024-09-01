@@ -124,6 +124,10 @@
                             </td>
                             <td>
                                 @submission.SubmissionTime.ToString("G")
+                                @if(submission.CreatedByAdmin)
+                                {
+                                    <i class="bi bi-mortarboard-fill text-secondary cursor-help" title="@Localizer["CreatedByAdmin"]"></i>
+                                }
                             </td>
                             <td>
                                 @submission.Weight
@@ -193,7 +197,7 @@
         @foreach(var flag in Model.Flags)
         {
             var submission = flag.Submissions.FirstOrDefault(s => s.UserId == Model.UserId);
-            
+
             <tr>
                 <th scope="row">
                     @if(flag.Valid)
@@ -215,7 +219,7 @@
                     {
                         <i class="bi bi-bug-fill text-primary" title="@Localizer["BugBounty"]"></i>
                     }
-                </td>              
+                </td>
                 <td>
                     @if(submission != null)
                     {
@@ -227,7 +231,7 @@
                     {
                         <span class="badge bg-primary">@Localizer["Points", flag.Points]</span>
                     }
-                </td>   
+                </td>
                 <td>
                     @if(allowEdit)
                     {
@@ -250,9 +254,9 @@
             </tr>
         }
         </tbody>
-    </table>  
-    
-    
+    </table>
+
+
     <h2 class="mt-5">@Localizer["Title:Actions"]</h2>
     <hr class="header-secondary">
 

@@ -58,6 +58,7 @@ public class AdminScoreboardDetails
         public DateTime SubmissionTime { get; set; }
         public bool Valid { get; set; }
         public int Weight { get; set; }
+        public bool CreatedByAdmin { get; set; }
     }
 
     public class FlagEntry

@@ -173,4 +173,8 @@
         <value>Noch nicht versucht</value>
         <comment>NotTried</comment>
     </data>
+    <data name="CreatedByAdmin" xml:space="preserve">
+        <value>Dieser Lösungsversuch wurde manuell von einem Administrator erzeugt.</value>
+        <comment>CreatedByAdmin</comment>
+    </data>
 </root>

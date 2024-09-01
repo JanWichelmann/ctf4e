@@ -152,6 +152,10 @@
                             <tr class="@((sawPassedSolution && Model.PassAsGroupEnabled) ? "row-muted" : "")">
                                 <td>
                                     @submission.SubmissionTime.ToString("G")
+                                    @if(submission.CreatedByAdmin)
+                                    {
+                                        <i class="bi bi-mortarboard-fill text-secondary cursor-help" title="@Localizer["CreatedByAdmin"]"></i>
+                                    }
                                     @if(submission.SubmissionTime < (Model.LabExecution?.Start ?? DateTime.MinValue) || submission.SubmissionTime >= (Model.LabExecution?.End ?? DateTime.MinValue))
                                     {
                                         <span class="badge bg-warning" title="@Localizer["ExerciseSubmissions:Invalid"]">@Localizer["Invalid"]</span>

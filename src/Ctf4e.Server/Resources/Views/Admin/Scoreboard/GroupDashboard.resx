@@ -113,4 +113,8 @@
         <value>Flags</value>
         <comment>Title:Flags</comment>
     </data>
+    <data name="CreatedByAdmin" xml:space="preserve">
+        <value>Created manually by admin</value>
+        <comment>CreatedByAdmin</comment>
+    </data>
 </root>
