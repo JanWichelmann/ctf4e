@@ -1,97 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-            
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="ShowEditLabExecutionFormAsync:NotFound" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ShowEditLabExecutionFormAsync:NotFound" xml:space="preserve">
         <value>This lab execution does not exist.</value>
         <comment>ShowEditLabExecutionFormAsync:NotFound</comment>
     </data>
-    <data name="ShowEditLabExecutionFormAsync:MissingParameter" xml:space="preserve">
+  <data name="ShowEditLabExecutionFormAsync:MissingParameter" xml:space="preserve">
         <value>No lab execution specified.</value>
         <comment>ShowEditLabExecutionFormAsync:MissingParameter</comment>
     </data>
-    <data name="EditLabExecutionAsync:InvalidInput" xml:space="preserve">
+  <data name="EditLabExecutionAsync:InvalidInput" xml:space="preserve">
         <value>Invalid input.</value>
         <comment>EditLabExecutionAsync:InvalidInput</comment>
     </data>
-    <data name="EditLabExecutionAsync:Success" xml:space="preserve">
+  <data name="EditLabExecutionAsync:Success" xml:space="preserve">
         <value>The lab execution was updated successfully.</value>
         <comment>EditLabExecutionAsync:Success</comment>
     </data>
-    <data name="EditLabExecutionAsync:UnknownError" xml:space="preserve">
+  <data name="EditLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>An error occured while updating the lab execution. Check the log for more details.</value>
         <comment>EditLabExecutionAsync:UnknownError</comment>
     </data>
-    <data name="CreateMultipleLabExecutionsAsync:InvalidInput" xml:space="preserve">
+  <data name="CreateMultipleLabExecutionsAsync:InvalidInput" xml:space="preserve">
         <value>Invalid input.</value>
         <comment>CreateLabExecutionForSlotAsync:InvalidInput</comment>
     </data>
-    <data name="CreateMultipleLabExecutionsAsync:Success" xml:space="preserve">
+  <data name="CreateMultipleLabExecutionsAsync:Success" xml:space="preserve">
         <value>The lab execution was created successfully.</value>
         <comment>CreateLabExecutionForSlotAsync:Success</comment>
     </data>
-    <data name="CreateMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
+  <data name="CreateMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
         <value>An error occured when creating the lab execution(s). Check the log for more details.</value>
         <comment>CreateLabExecutionForSlotAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionAsync:InvalidInput" xml:space="preserve">
+  <data name="CreateLabExecutionAsync:InvalidInput" xml:space="preserve">
         <value>Invalid input.</value>
         <comment>CreateLabExecutionForGroupAsync:InvalidInput</comment>
     </data>
-    <data name="CreateLabExecutionAsync:Success" xml:space="preserve">
+  <data name="CreateLabExecutionAsync:Success" xml:space="preserve">
         <value>The lab execution was created successfully.</value>
         <comment>CreateLabExecutionForGroupAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionAsync:NotFound" xml:space="preserve">
+  <data name="DeleteLabExecutionAsync:NotFound" xml:space="preserve">
         <value>This lab execution does not exist.</value>
         <comment>DeleteLabExecutionForGroupAsync:NotFound</comment>
     </data>
-    <data name="DeleteLabExecutionAsync:Success" xml:space="preserve">
+  <data name="DeleteLabExecutionAsync:Success" xml:space="preserve">
         <value>The lab execution was deleted successfully.</value>
         <comment>DeleteLabExecutionForGroupAsync:Success</comment>
     </data>
-    <data name="DeleteLabExecutionAsync:UnknownError" xml:space="preserve">
+  <data name="DeleteLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>An error occured while deleting the lab execution. Check the log for more details.</value>
         <comment>DeleteLabExecutionForGroupAsync:UnknownError</comment>
     </data>
-    <data name="DeleteMultipleLabExecutionsAsync:Success" xml:space="preserve">
+  <data name="DeleteMultipleLabExecutionsAsync:Success" xml:space="preserve">
         <value>The lab execution was deleted successfully.</value>
         <comment>DeleteLabExecutionForSlotAsync:Success</comment>
     </data>
-    <data name="DeleteMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
+  <data name="DeleteMultipleLabExecutionsAsync:UnknownError" xml:space="preserve">
         <value>An error occured while deleting the lab execution(s). Check the log for more details.</value>
         <comment>DeleteLabExecutionForSlotAsync:UnknownError</comment>
     </data>
-    <data name="CreateLabExecutionAsync:UnknownError" xml:space="preserve">
+  <data name="CreateLabExecutionAsync:UnknownError" xml:space="preserve">
         <value>An error occured while creating the lab execution. Maybe there is already a lab execution for the given group? Check the log for more details.</value>
         <comment>CreateLabExecutionForGroupAsync:UnknownError</comment>
     </data>
-    <data name="ShowEditLabExecutionFormAsync:Warning" xml:space="preserve">
+  <data name="ShowEditLabExecutionFormAsync:Warning" xml:space="preserve">
         <value>Note: Editing an active lab execution may lead to changes of the "passed" status and shifts in the scoreboard. Exercise and flag submissions won't be deleted, even if they would not be possible within the new beginning and end times.</value>
         <comment>ShowEditLabExecutionFormAsync:Warning</comment>
     </data>
-    <data name="CreateMultipleLabExecutionsAsync:ErrorGroup" xml:space="preserve">
+  <data name="CreateMultipleLabExecutionsAsync:ErrorGroup" xml:space="preserve">
         <value>Could not start lab for group #{0} ({1}). Is there already a lab execution for the given group?</value>
         <comment>CreateLabExecutionForSlotAsync:ErrorGroup</comment>
     </data>
-    <data name="EditLabExecutionAsync:NotFound" xml:space="preserve">
-        <value>This lab execution do</value>
+  <data name="EditLabExecutionAsync:NotFound" xml:space="preserve">
+        <value>This lab execution does not exist.</value>
         <comment>EditLabExecutionAsync:NotFound</comment>
     </data>
 </root>
