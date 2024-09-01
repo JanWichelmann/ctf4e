@@ -7,131 +7,132 @@ using Ctf4e.Server.Constants;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("dashboard")]
-public class UserDashboardController : ControllerBase
+public class UserDashboardController(IUserService userService, IScoreboardService scoreboardService)
+    : ControllerBase<UserDashboardController>(userService)
 {
-    private readonly IStringLocalizer<UserDashboardController> _localizer;
-    private readonly IScoreboardService _scoreboardService;
-    private readonly ILabExecutionService _labExecutionService;
-    private readonly IFlagService _flagService;
-    private readonly ILabService _labService;
+    protected override MenuItems ActiveMenuItem => MenuItems.Group;
 
-    public UserDashboardController(IUserService userService, IStringLocalizer<UserDashboardController> localizer, IScoreboardService scoreboardService, ILabExecutionService labExecutionService, IFlagService flagService, ILabService labService)
-        : base("~/Views/UserDashboard.cshtml", userService)
+    private async Task<IActionResult> RenderDashboardAsync(int? labId)
     {
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _scoreboardService = scoreboardService ?? throw new ArgumentNullException(nameof(scoreboardService));
-        _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
-        _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
-        _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-    }
+        const string viewPath = "~/Views/UserDashboard/Index.cshtml";
+        const string viewPathEmpty = "~/Views/UserDashboard/Empty.cshtml";
 
-    private async Task<IActionResult> RenderAsync(int? labId)
-    {
         // Retrieve group ID
         var currentUser = await GetCurrentUserAsync();
         if(currentUser?.GroupId == null)
         {
-            AddStatusMessage(_localizer["RenderAsync:NoGroup"], StatusMessageTypes.Error);
-            return await RenderViewAsync();
+            AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:NoGroup"]);
+            return await RenderViewAsync(viewPathEmpty);
         }
 
         // Show group's most recent lab
         if(labId == null)
         {
-            var currentLabExecution = await _labExecutionService.GetMostRecentLabExecutionAsync(currentUser.GroupId.Value, HttpContext.RequestAborted);
+            var labExecutionService = HttpContext.RequestServices.GetRequiredService<ILabExecutionService>();
+            var currentLabExecution = await labExecutionService.FindMostRecentLabExecutionByGroupAsync(currentUser.GroupId.Value, HttpContext.RequestAborted);
             if(currentLabExecution == null)
             {
-                AddStatusMessage(_localizer["RenderAsync:NoActiveLab"], StatusMessageTypes.Info);
-                return await RenderViewAsync();
+                AddStatusMessage(StatusMessageType.Info, Localizer["RenderAsync:NoActiveLab"]);
+                return await RenderViewAsync(viewPathEmpty);
             }
 
             labId = currentLabExecution.LabId;
         }
-        
+
         // Check whether user may access this lab, if it even exists
-        var lab = await _labService.GetLabAsync(labId.Value, HttpContext.RequestAborted);
+        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
+        var lab = await labService.FindLabByIdAsync(labId.Value, HttpContext.RequestAborted);
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
-            AddStatusMessage(_localizer["RenderAsync:LabNotFound"], StatusMessageTypes.Error);
-            return await RenderViewAsync();
+            AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:LabNotFound"]);
+            return await RenderViewAsync(viewPathEmpty);
         }
 
         // Retrieve scoreboard
-        var scoreboard = await _scoreboardService.GetUserScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
+        var scoreboard = await scoreboardService.GetUserScoreboardAsync(currentUser.Id, currentUser.GroupId.Value, labId.Value, HttpContext.RequestAborted);
         if(scoreboard == null)
         {
-            AddStatusMessage(_localizer["RenderAsync:EmptyScoreboard", labId], StatusMessageTypes.Error);
-            return await RenderViewAsync();
+            AddStatusMessage(StatusMessageType.Error, Localizer["RenderAsync:EmptyScoreboard", labId]);
+            return await RenderViewAsync(viewPathEmpty);
         }
 
-        ViewData["Scoreboard"] = scoreboard;
-
-        return await RenderViewAsync(MenuItems.Group);
+        return await RenderViewAsync(viewPath, scoreboard);
     }
 
-    [HttpGet("")]
+    [HttpGet]
     public Task<IActionResult> RenderLabPageAsync(int? labId)
     {
-        return RenderAsync(labId);
+        return RenderDashboardAsync(labId);
     }
 
     [HttpPost("flag")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SubmitFlagAsync(int labId, string code)
+    public async Task<IActionResult> SubmitFlagAsync(int labId,
+                                                     string code,
+                                                     [FromServices] IFlagService flagService)
     {
         // Retrieve group ID
         var currentUser = await GetCurrentUserAsync();
         if(currentUser?.GroupId == null)
         {
-            AddStatusMessage(_localizer["SubmitFlagAsync:NoGroup"], StatusMessageTypes.Error);
-            return await RenderLabPageAsync(labId);
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:NoGroup"]);
+            return RedirectToAction("RenderLabPage", new { labId });
         }
 
-        // Try to submit flag
-        bool success = await _flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
-        if(success)
+        try
         {
-            AddStatusMessage(_localizer["SubmitFlagAsync:Success"], StatusMessageTypes.Success);
+            // Try to submit flag
+            bool success = await flagService.SubmitFlagAsync(currentUser.Id, labId, code, HttpContext.RequestAborted);
+            if(success)
+            {
+                PostStatusMessage = new(StatusMessageType.Success, Localizer["SubmitFlagAsync:Success"]) { AutoHide = true };
+            }
+            else
+            {
+                PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:Error"]);
+            }
         }
-        else
+        catch(Exception)
         {
-            AddStatusMessage(_localizer["SubmitFlagAsync:Error"], StatusMessageTypes.Error);
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:Error"]);
         }
 
-        return await RenderLabPageAsync(labId);
+        return RedirectToAction("RenderLabPage", new { labId });
     }
 
     [HttpGet("labserver")]
-    public async Task<IActionResult> CallLabServerAsync(int labId)
+    public async Task<IActionResult> CallLabServerAsync(int labId,
+                                                        [FromServices] ILabService labService,
+                                                        [FromServices] ILabExecutionService labExecutionService)
     {
         // Retrieve group ID
         var currentUser = await GetCurrentUserAsync();
         if(currentUser?.GroupId == null)
         {
-            AddStatusMessage(_localizer["CallLabServerAsync:NoGroup"], StatusMessageTypes.Error);
-            return await RenderViewAsync();
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["CallLabServerAsync:NoGroup"]);
+            return RedirectToAction("RenderLabPage", new { labId });
         }
-            
+
         // Retrieve lab data and check access
-        var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        var lab = await labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null || (!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs)))
         {
-            AddStatusMessage(_localizer["CallLabServerAsync:LabNotFound"], StatusMessageTypes.Error);
-            return await RenderViewAsync();
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["CallLabServerAsync:LabNotFound"]);
+            return RedirectToAction("RenderLabPage", new { labId });
         }
 
         // Check whether lab is accessible by given group
         DateTime now = DateTime.Now;
-        var labExecution = await _labExecutionService.GetLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
+        var labExecution = await labExecutionService.FindLabExecutionAsync(currentUser.GroupId.Value, labId, HttpContext.RequestAborted);
         if(labExecution == null || now < labExecution.Start)
         {
-            AddStatusMessage(_localizer["CallLabServerAsync:LabNotActive"], StatusMessageTypes.Error);
-            return await RenderAsync(labId);
+            AddStatusMessage(StatusMessageType.Error, Localizer["CallLabServerAsync:LabNotActive"]);
+            return await RenderDashboardAsync(labId);
         }
 
         // Build authentication string

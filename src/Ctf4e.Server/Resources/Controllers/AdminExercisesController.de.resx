@@ -50,4 +50,14 @@
         <value>Beim Aktualisieren der Aufgabe ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>EditExerciseAsync:UnknownError</comment>
     </data>
+    <data name="ShowEditExerciseFormAsync:NotFound" xml:space="preserve">
+        <value>Diese Aufgabe existiert nicht.</value>
+        <comment>ShowEditExerciseFormAsync:NotFound</comment>
+    </data>
+    <data name="EditExerciseAsync:NotFound" xml:space="preserve">
+        <value>Diese Aufgabe existiert nicht.</value>
+    </data>
+    <data name="DeleteExerciseAsync:NotFound" xml:space="preserve">
+        <value>Diese Aufgabe existiert nicht.</value>
+    </data>
 </root>

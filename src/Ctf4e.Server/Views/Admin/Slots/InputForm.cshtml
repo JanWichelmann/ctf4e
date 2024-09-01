@@ -1,0 +1,44 @@
+@using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AdminSlotInputModel
+@inject IViewLocalizer Localizer
+@{
+    var labs = (List<Lab>)ViewData["Labs"];
+}
+
+<div class="mb-3">
+    <label class="form-label" asp-for="Name">@Localizer["Form:Name"]</label>
+    <input asp-for="Name" class="form-control">
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label class="form-label" asp-for="DefaultExecuteLabId">@Localizer["Form:DefaultExecuteLabId"]</label>
+    <select asp-for="DefaultExecuteLabId" asp-items="@(new SelectList(labs, nameof(Lab.Id), nameof(Lab.Name)))" class="form-select">
+        <option value="" selected>@Localizer["Form:DefaultExecuteLabId:Placeholder"]</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label class="form-label" asp-for="DefaultExecuteLabEnd">@Localizer["Form:DefaultExecuteLabEnd"]</label>
+    <input asp-for="DefaultExecuteLabEnd" id="datetime-end" type="text" class="form-control" />
+    <span asp-validation-for="DefaultExecuteLabEnd" class="text-danger"></span>
+</div>
+
+<script>
+    window.addEventListener("load", ()=>
+    {
+        flatpickr.localize(flatpickr.l10ns.de);
+
+        options = {
+            "altInput": true,
+            "altFormat": "Y-m-d H:i:S",
+            "enableTime": true,
+            "enableSeconds": true,
+            "allowInput": true,
+            "minuteIncrement": 1
+        };
+        flatpickr(document.getElementById("datetime-end"), options);
+    });
+</script>

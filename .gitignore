@@ -439,3 +439,5 @@ watcherTasks.xml
 /.idea/.idea.ctf4e/.idea/riderModule.iml
 
 appsettings.Development.json
+
+/**/.idea/dataSources.xml

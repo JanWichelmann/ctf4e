@@ -11,8 +11,7 @@ public class UserStateFileScriptExerciseEntry: UserStateFileExerciseEntry
         var exerciseState = new UserStateFileScriptExerciseEntry
         {
             ExerciseId = exercise.Id,
-            Solved = false,
-            Type = UserStateFileExerciseEntryType.Script
+            Solved = false
         };
 
         return exerciseState;

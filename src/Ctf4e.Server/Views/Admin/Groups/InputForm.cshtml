@@ -1,0 +1,36 @@
+@using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AdminGroupInputModel
+@inject IViewLocalizer Localizer
+@{
+    var slots = (List<Slot>)ViewData["Slots"];
+}
+
+<div class="mb-3">
+    <label class="form-label" asp-for="DisplayName">@Localizer["Form:DisplayName"]</label>
+    <input asp-for="DisplayName" class="form-control">
+    <span asp-validation-for="DisplayName" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="ScoreboardAnnotation">@Localizer["Form:ScoreboardAnnotation"]</label>
+    <input asp-for="ScoreboardAnnotation" class="form-control">
+    <span asp-validation-for="ScoreboardAnnotation" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="ScoreboardAnnotationHoverText">@Localizer["Form:ScoreboardAnnotationHoverText"]</label>
+    <input asp-for="ScoreboardAnnotationHoverText" class="form-control">
+    <span asp-validation-for="ScoreboardAnnotationHoverText" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="SlotId">@Localizer["Form:SlotId"]</label>
+    <select asp-for="SlotId" asp-items="@(new SelectList(slots, nameof(Slot.Id), nameof(Slot.Name)))" class="form-select">
+        <option disabled selected>@Localizer["Form:SlotId:Placeholder"]</option>
+    </select>
+</div>
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="ShowInScoreboard" class="form-check-input">
+        <label asp-for="ShowInScoreboard" class="form-check-label">@Localizer["Form:ShowInScoreboard"]</label>
+    </div>
+</div>

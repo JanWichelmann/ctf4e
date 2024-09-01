@@ -74,4 +74,20 @@
         <value>This lab does not exist.</value>
         <comment>CallLabServerAsync:NotFound</comment>
     </data>
+    <data name="LabNotFound" xml:space="preserve">
+        <value>This lab does not exist.</value>
+        <comment>LabNotFound</comment>
+    </data>
+    <data name="SlotNotFound" xml:space="preserve">
+        <value>This time slot does not exist.</value>
+        <comment>SlotNotFound</comment>
+    </data>
+    <data name="GroupNotFound" xml:space="preserve">
+        <value>This group does not exist.</value>
+        <comment>GroupNotFound</comment>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>This user does not exist.</value>
+        <comment>UserNotFound</comment>
+    </data>
 </root>

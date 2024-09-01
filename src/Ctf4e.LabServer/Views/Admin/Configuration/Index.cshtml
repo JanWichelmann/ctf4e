@@ -1,0 +1,55 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IViewLocalizer Localizer        
+@model Ctf4e.LabServer.InputModels.AdminConfigurationInputModel
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    bool writable = ViewData.ContainsKey("Writable") && (bool)ViewData["Writable"];
+}
+
+<div class="container">
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <p class="text-danger font-weight-bold">
+        @Localizer["WarningText"]
+    </p>
+
+    <div class="mb-3" id="json-editor"></div>
+    
+    <form method="post" asp-controller="AdminConfiguration" asp-action="UpdateConfiguration">
+        <input type="hidden" asp-for="Configuration" id="input-json" />
+        
+        @if(writable)
+        {
+            <button type="button" class="btn btn-outline-danger" id="submit-button">
+                @Localizer["Form:Submit"]
+            </button>
+        }
+    </form>        
+</div>             
+
+<script type="module">
+    import { JSONEditor } from '@Url.Content("/lib/vanilla-jsoneditor/js/standalone.js")';
+    
+    let jsonContent = {
+        json: @Html.Raw(Model.Configuration)
+    };
+    
+    const editor = new JSONEditor({
+        target: document.getElementById('json-editor'),
+        props: {
+            content: jsonContent
+        },
+        readOnly: @(writable ? "false" : "true")
+    });   
+    
+    const submitButton = document.getElementById('submit-button');
+    submitButton.addEventListener('click', () => {
+        document.getElementById('input-json').value = JSON.stringify(editor.get().json);
+        submitButton.form.submit();
+    });
+</script>

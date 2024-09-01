@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="DeleteExerciseSubmissionModal:Title" xml:space="preserve">
+        <value>Einreichung löschen</value>
+        <comment>DeleteExerciseSubmissionModal:Title</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Message" xml:space="preserve">
+        <value>Soll diese Einreichung wirklich gelöscht werden?</value>
+        <comment>DeleteExerciseSubmissionModal:Message</comment>
+    </data>
+    <data name="DeleteExerciseSubmissionModal:Submit" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>DeleteExerciseSubmissionModal:Submit</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Title" xml:space="preserve">
+        <value>Einreichungen löschen</value>
+        <comment>DeleteSelectedExerciseSubmissionsModal:Title</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Message" xml:space="preserve">
+        <value>Sollen die gewählten Einreichungen wirklich gelöscht werden?</value>
+        <comment>DeleteSelectedExerciseSubmissionsModal:Message</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissionsModal:Submit" xml:space="preserve">
+        <value>Löschen</value>
+        <comment>DeleteSelectedExerciseSubmissionsModal:Submit</comment>
+    </data>
+    <data name="DeleteExerciseSubmission:Success" xml:space="preserve">
+        <value>Die Einreichung wurde erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
+        <comment>DeleteExerciseSubmission:Success</comment>
+    </data>
+    <data name="DeleteExerciseSubmission:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>DeleteExerciseSubmission:Error</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissions:Success" xml:space="preserve">
+        <value>Die Einreichungen wurden erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
+        <comment>DeleteSelectedExerciseSubmissions:Success</comment>
+    </data>
+    <data name="DeleteSelectedExerciseSubmissions:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>DeleteSelectedExerciseSubmissions:Error</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Title" xml:space="preserve">
+        <value>Einreichung erstellen</value>
+        <comment>Modal:CreateExerciseSubmission:Title</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:User" xml:space="preserve">
+        <value>Benutzer</value>
+        <comment>Modal:CreateExerciseSubmission:User</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:NoUser" xml:space="preserve">
+        <value>(alle Gruppenmitglieder)</value>
+        <comment>Modal:CreateExerciseSubmission:NoUser</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Timestamp" xml:space="preserve">
+        <value>Zeit</value>
+        <comment>Modal:CreateExerciseSubmission:Timestamp</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Weight" xml:space="preserve">
+        <value>Gewichtung</value>
+        <comment>Modal:CreateExerciseSubmission:Weight</comment>
+    </data>
+    <data name="Modal:CreateExerciseSubmission:Submit" xml:space="preserve">
+        <value>Erstellen</value>
+        <comment>Modal:CreateExerciseSubmission:Submit</comment>
+    </data>
+    <data name="AddExerciseSubmission:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>AddExerciseSubmission:Error</comment>
+    </data>
+    <data name="AddExerciseSubmission:Success" xml:space="preserve">
+        <value>Die Einreichung wurde erfolgreich erstellt. Laden Sie das Fenster neu, um die Änderungen anzuzeigen.</value>
+        <comment>AddExerciseSubmission:Success</comment>
+    </data>
+    <data name="DeleteFlagSubmission:Success" xml:space="preserve">
+        <value>Die Einreichung wurde erfolgreich gelöscht. Laden Sie das Fenster neu, um alle Änderungen anzuzeigen.</value>
+        <comment>DeleteFlagSubmission:Success</comment>
+    </data>
+    <data name="DeleteFlagSubmission:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>DeleteFlagSubmission:Error</comment>
+    </data>
+    <data name="DeleteFlagSubmissionModal:Title" xml:space="preserve">
+        <value>Flag zurücksetzen</value>
+        <comment>DeleteFlagSubmissionModal:Title</comment>
+    </data>
+    <data name="DeleteFlagSubmissionModal:Message" xml:space="preserve">
+        <value>Wollen Sie diese Flag wirklich zurücksetzen?</value>
+        <comment>DeleteFlagSubmissionModal:Message</comment>
+    </data>
+    <data name="DeleteFlagSubmissionModal:Submit" xml:space="preserve">
+        <value>Zurücksetzen</value>
+        <comment>DeleteFlagSubmissionModal:Submit</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Title" xml:space="preserve">
+        <value>Flag einreichen</value>
+        <comment>Modal:CreateFlagSubmission:Title</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Timestamp" xml:space="preserve">
+        <value>Zeit</value>
+        <comment>Modal:CreateFlagSubmission:Timestamp</comment>
+    </data>
+    <data name="Modal:CreateFlagSubmission:Submit" xml:space="preserve">
+        <value>Einreichen</value>
+        <comment>Modal:CreateFlagSubmission:Submit</comment>
+    </data>
+    <data name="AddFlagSubmission:Success" xml:space="preserve">
+        <value>Die Einreichung wurde erfolgreich erstellt. Laden Sie das Fenster neu, um die Änderungen anzuzeigen.</value>
+        <comment>AddFlagSubmission:Success</comment>
+    </data>
+    <data name="AddFlagSubmission:Error" xml:space="preserve">
+        <value>Es ist ein Fehler aufgetreten.</value>
+        <comment>AddFlagSubmission:Error</comment>
+    </data>
+    <data name="Passed" xml:space="preserve">
+        <value>Gelöst</value>
+        <comment>Passed</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Abbrechen</value>
+        <comment>Cancel</comment>
+    </data>
+</root>

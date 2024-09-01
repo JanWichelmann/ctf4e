@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+}
+
+<div class="container">
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <form asp-controller="Authentication" asp-action="ChangeSettings">
+        <div class="mb-3">
+            <label for="username" class="form-label">@Localizer["Form:MoodleName"]</label>
+            <input type="text" class="form-control" id="username" disabled="disabled" value="@currentUser.MoodleName" />
+        </div>
+        <div class="mb-3">
+            <label for="oldPassword" class="form-label">@Localizer["Form:OldPassword"]</label>
+            <input type="password" class="form-control" name="oldPassword" id="oldPassword" />
+        </div>
+        <div class="mb-3">
+            <label for="newPassword" class="form-label">@Localizer["Form:NewPassword"]</label>
+            <input type="password" class="form-control" name="newPassword" id="newPassword" />
+        </div>
+        <div class="mb-3">
+            <label for="newPassword2" class="form-label">@Localizer["Form:NewPassword2"]</label>
+            <input type="password" class="form-control" name="newPassword2" id="newPassword2" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">@Localizer["Form:Submit"]</button>
+    </form>
+</div>

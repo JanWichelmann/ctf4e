@@ -50,4 +50,16 @@
         <value>An error occured while deleting the flag. Check the log for more details.</value>
         <comment>DeleteFlagAsync:UnknownError</comment>
     </data>
+    <data name="ShowEditFlagFormAsync:NotFound" xml:space="preserve">
+        <value>This flag does not exist.</value>
+        <comment>ShowEditFlagFormAsync:NotFound</comment>
+    </data>
+    <data name="EditFlagAsync:NotFound" xml:space="preserve">
+        <value>This flag does not exist.</value>
+        <comment>EditFlagAsync:NotFound</comment>
+    </data>
+    <data name="DeleteFlagAsync:NotFound" xml:space="preserve">
+        <value>This flag does not exist.</value>
+        <comment>DeleteFlagAsync:NotFound</comment>
+    </data>
 </root>

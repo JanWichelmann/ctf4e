@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,100 +7,82 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
 
 public interface ISlotService
 {
-    IAsyncEnumerable<Slot> GetSlotsAsync();
-    Task<Slot> GetSlotAsync(int id, CancellationToken cancellationToken);
+    Task<List<Slot>> GetSlotsAsync(CancellationToken cancellationToken);
+    Task<List<AdminSlotListEntry>> GetSlotListAsync(CancellationToken cancellationToken);
+    Task<List<SelectSlotListEntry>> GetSelectSlotListAsync(CancellationToken cancellationToken);
+    Task<Slot> FindSlotByIdAsync(int id, CancellationToken cancellationToken);
     Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken);
+    Task<int> GetSlotGroupCount(int id, CancellationToken cancellationToken);
     Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken);
     Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken);
     Task DeleteSlotAsync(int id, CancellationToken cancellationToken);
 }
 
-public class SlotService : ISlotService
+public class SlotService(CtfDbContext dbContext, IMapper mapper, GenericCrudService<CtfDbContext> genericCrudService) : ISlotService
 {
-    private readonly CtfDbContext _dbContext;
-    private readonly IMapper _mapper;
-
-    public SlotService(CtfDbContext dbContext, IMapper mapper)
+    public Task<List<Slot>> GetSlotsAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public IAsyncEnumerable<Slot> GetSlotsAsync()
-    {
-        return _dbContext.Slots.AsNoTracking()
-            .Include(s => s.Groups)
+        return dbContext.Slots.AsNoTracking()
             .OrderBy(s => s.Id)
-            .ProjectTo<Slot>(_mapper.ConfigurationProvider, s => s.Groups)
-            .AsAsyncEnumerable();
+            .ProjectTo<Slot>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
+    }
+    
+    public Task<List<AdminSlotListEntry>> GetSlotListAsync(CancellationToken cancellationToken)
+    {
+        return dbContext.Slots.AsNoTracking()
+            .OrderBy(s => s.Id)
+            .ProjectTo<AdminSlotListEntry>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<Slot> GetSlotAsync(int id, CancellationToken cancellationToken)
+    public Task<List<SelectSlotListEntry>> GetSelectSlotListAsync(CancellationToken cancellationToken)
     {
-        return _dbContext.Slots.AsNoTracking()
-            .Include(s => s.Groups)
-            .Where(s => s.Id == id)
-            .ProjectTo<Slot>(_mapper.ConfigurationProvider, s => s.Groups)
-            .FirstOrDefaultAsync(cancellationToken);
+        return dbContext.Slots.AsNoTracking()
+            .OrderBy(s => s.Id)
+            .ProjectTo<SelectSlotListEntry>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
+
+    public Task<Slot> FindSlotByIdAsync(int id, CancellationToken cancellationToken)
+        => genericCrudService.FindAsync<Slot, SlotEntity>(s => s.Id == id, cancellationToken);
 
     public Task<bool> SlotExistsAsync(int id, CancellationToken cancellationToken)
     {
-        return _dbContext.Slots.AsNoTracking()
+        return dbContext.Slots.AsNoTracking()
             .Where(s => s.Id == id)
             .AnyAsync(cancellationToken);
     }
 
-    public async Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken)
+    public async Task<int> GetSlotGroupCount(int id, CancellationToken cancellationToken)
     {
-        // Create new Slot
-        var slotEntity = _dbContext.Slots.Add(new SlotEntity
-        {
-            Name = slot.Name,
-            DefaultExecuteLabId = slot.DefaultExecuteLabId,
-            DefaultExecuteLabEnd = slot.DefaultExecuteLabEnd,
-            Groups = new List<GroupEntity>()
-        }).Entity;
+        var groupCount = await dbContext.Groups.AsNoTracking()
+            .CountAsync(g => g.SlotId == id, cancellationToken);
 
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<Slot>(slotEntity);
+        return groupCount;
     }
 
-    public async Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken)
+    public Task<Slot> CreateSlotAsync(Slot slot, CancellationToken cancellationToken)
+        => genericCrudService.CreateAsync<Slot, SlotEntity>(slot, cancellationToken);
+
+    public Task UpdateSlotAsync(Slot slot, CancellationToken cancellationToken)
+        => genericCrudService.UpdateAsync<Slot, SlotEntity>(slot, cancellationToken);
+
+    public Task DeleteSlotAsync(int id, CancellationToken cancellationToken)
+        => genericCrudService.DeleteAsync<SlotEntity>([id], cancellationToken);
+    
+    public static void RegisterMappings(Profile mappingProfile)
     {
-        // Try to retrieve existing entity
-        var slotEntity = await _dbContext.Slots.FindAsync(new object[] { slot.Id }, cancellationToken);
-        if(slotEntity == null)
-            throw new InvalidOperationException("Dieser Slot existiert nicht");
+        mappingProfile.CreateMap<SlotEntity, AdminSlotListEntry>()
+            .ForMember(se => se.GroupCount, opt => opt.MapFrom(s => s.Groups.Count));
 
-        // Update entry
-        slotEntity.Name = slot.Name;
-        slotEntity.DefaultExecuteLabId = slot.DefaultExecuteLabId;
-        slotEntity.DefaultExecuteLabEnd = slot.DefaultExecuteLabEnd;
-
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task DeleteSlotAsync(int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Delete entry
-            _dbContext.Slots.Remove(new SlotEntity { Id = id });
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
-        {
-            // Most likely a non-existent entry, just forward the exception
-            throw;
-        }
+        mappingProfile.CreateMap<SlotEntity, SelectSlotListEntry>();
     }
 }

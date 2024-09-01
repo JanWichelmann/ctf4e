@@ -1,0 +1,75 @@
+@model AdminLabExecutionInputModel
+@using Ctf4e.Server.Models
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IViewLocalizer Localizer          
+@{                 
+    var labs = (List<Lab>)ViewData["Labs"];
+    var groups = (List<Group>)ViewData["Groups"];
+
+    bool editMode = ViewData.ContainsKey("EditMode") && (bool)ViewData["EditMode"];
+
+    var labSelectList = labs
+        .Select(l => new SelectListItem(l.Name, l.Id.ToString(), editMode && l.Id == Model.LabId))
+        .Prepend(new SelectListItem(Localizer["Form:LabId:Placeholder"].Value, "", !editMode, !editMode))
+        .ToList();
+    var groupSelectList = groups
+        .Select(g => new SelectListItem(g.DisplayName, g.Id.ToString(), editMode && g.Id == Model.GroupId))
+        .Prepend(new SelectListItem(Localizer["Form:GroupId:Placeholder"].Value, "", !editMode, !editMode))
+        .ToList();
+}
+
+<div class="mb-3">
+    @if(editMode)
+    {
+        <label class="form-label" asp-for="LabId">@Localizer["Form:LabId"]</label>
+        <select asp-items="labSelectList" class="form-select" disabled="disabled"></select>
+        <input type="hidden" asp-for="LabId">
+    }
+    else
+    {
+        <label class="form-label" asp-for="LabId">@Localizer["Form:LabId"]</label>
+        <select asp-for="LabId" asp-items="labSelectList" class="form-select"></select>
+    }
+</div>
+<div class="mb-3">
+    @if(editMode)
+    {
+        <label class="form-label" asp-for="GroupId">@Localizer["Form:GroupId"]</label>
+        <select asp-items="groupSelectList" class="form-select" disabled="disabled"></select>
+        <input type="hidden" asp-for="GroupId">
+    }
+    else
+    {
+        <label class="form-label" asp-for="GroupId">@Localizer["Form:GroupId"]</label>
+        <select asp-for="GroupId" asp-items="groupSelectList" class="form-select"></select>
+    }
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="Start">@Localizer["Form:Start"]</label>
+    <input asp-for="Start" id="datetime-start" type="text" class="form-control" />
+    <span asp-validation-for="Start" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="End">@Localizer["Form:End"]</label>
+    <input asp-for="End" id="datetime-end" type="text" class="form-control" />
+    <span asp-validation-for="End" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    @Localizer["Form:DateNotes"]
+</div>
+
+<script>
+    flatpickr.localize(flatpickr.l10ns.de);
+    
+    options = {
+                 "altInput": true,
+                 "altFormat": "Y-m-d H:i:S",
+                 "enableTime": true,
+                 "enableSeconds": true,
+                 "allowInput": true,
+                 "minuteIncrement": 1
+             };
+    flatpickr(document.getElementById("datetime-start"), options);
+    flatpickr(document.getElementById("datetime-end"), options);
+</script>

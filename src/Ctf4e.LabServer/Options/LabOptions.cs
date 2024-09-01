@@ -23,4 +23,10 @@ public class LabOptions
     public string DockerContainerInitUserScriptPath { get; set; }
         
     public string DockerContainerGradeScriptPath { get; set; }
+    
+    public bool PassAsGroup { get; set; }
+
+    public string PageTitle { get; set; }
+        
+    public string NavbarTitle { get; set; }
 }

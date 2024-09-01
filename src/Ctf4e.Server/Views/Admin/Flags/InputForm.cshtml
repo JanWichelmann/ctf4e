@@ -1,0 +1,33 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AdminFlagInputModel
+@inject IViewLocalizer Localizer
+@{
+}
+
+<div class="mb-3">
+    <label class="form-label" asp-for="Code">@Localizer["Form:Code"]</label>
+    <input asp-for="Code" class="form-control font-monospace">
+    <span asp-validation-for="Code" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="Description">@Localizer["Form:Description"]</label>
+    <input asp-for="Description" class="form-control">
+    <span asp-validation-for="Description" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label class="form-label" asp-for="BasePoints">@Localizer["Form:BasePoints"]</label>
+    <input asp-for="BasePoints" class="form-control">
+    <span asp-validation-for="BasePoints" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="IsBounty" class="form-check-input">
+        <label asp-for="IsBounty" class="form-check-label">@Localizer["Form:IsBounty"]</label>
+        <small class="form-text text-muted">
+            @Localizer["Form:IsBounty:Description"]
+        </small>
+    </div>
+</div>
+
+<input asp-for="LabId" type="hidden">

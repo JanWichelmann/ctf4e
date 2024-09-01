@@ -66,4 +66,7 @@
         <value>The time slot must not have any groups.</value>
         <comment>DeleteSlotAsync:HasGroups</comment>
     </data>
+    <data name="EditSlotAsync:NotFound" xml:space="preserve">
+        <value>This time slot does not exist.</value>
+    </data>
 </root>

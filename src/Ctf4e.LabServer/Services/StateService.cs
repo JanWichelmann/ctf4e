@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,6 @@ using Ctf4e.LabServer.Configuration.Exercises;
 using Ctf4e.LabServer.Models.State;
 using Ctf4e.LabServer.Options;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Ctf4e.LabServer.ViewModels;
 using Ctf4e.Utilities;
 using Nito.AsyncEx;
@@ -21,10 +21,12 @@ namespace Ctf4e.LabServer.Services;
 
 public interface IStateService
 {
+    Task InitAsync(CancellationToken cancellationToken);
+
     /// <summary>
     /// Reloads the configuration and updates caches.
     /// </summary>
-    void Reload();
+    Task ReloadAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Checks whether the given user state object exists. If it does exist, the old user state is updated, else a new one is generated.
@@ -47,23 +49,26 @@ public interface IStateService
     /// </summary>
     /// <param name="exerciseId">Exercise ID.</param>
     /// <param name="userId">User ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    Task MarkExerciseSolvedAsync(int exerciseId, int userId);
+    Task MarkExerciseSolvedAsync(int exerciseId, int userId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Resets the given exercise.
     /// </summary>
     /// <param name="exerciseId">Exercise ID.</param>
     /// <param name="userId">User ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    Task ResetExerciseStatusAsync(int exerciseId, int userId);
+    Task ResetExerciseStatusAsync(int exerciseId, int userId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns the user scoreboard.
     /// </summary>
     /// <param name="userId">User ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    Task<UserScoreboard> GetUserScoreboardAsync(int userId);
+    Task<UserScoreboard> GetUserScoreboardAsync(int userId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Adds a new log message to the given user's state object.
@@ -71,7 +76,8 @@ public interface IStateService
     /// <param name="userId">User ID.</param>
     /// <param name="message">Message.</param>
     /// <param name="data">Data accompanying the message. May be used for user-provided inputs or error messages.</param>
-    Task AddUserLogMessage(int userId, string message, string data);
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task AddUserLogMessageAsync(int userId, string message, string data, CancellationToken cancellationToken);
 
     void Dispose();
 }
@@ -79,7 +85,7 @@ public interface IStateService
 /// <summary>
 /// Contains and manages the lab state.
 /// </summary>
-public class StateService : IDisposable, IStateService
+public partial class StateService : IDisposable, IStateService
 {
     private readonly IOptions<LabOptions> _options;
     private readonly ILabConfigurationService _labConfiguration;
@@ -108,19 +114,19 @@ public class StateService : IDisposable, IStateService
         _dockerService = dockerService ?? throw new ArgumentNullException(nameof(dockerService));
 
         _dockerSupportEnabled = !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName);
-
-        // Load state
-        Reload();
     }
+
+    public Task InitAsync(CancellationToken cancellationToken)
+        => ReloadAsync(cancellationToken);
 
     /// <summary>
     /// Reloads the configuration and updates caches.
     /// </summary>
-    public void Reload()
+    public async Task ReloadAsync(CancellationToken cancellationToken)
     {
         // We update the entire state, ensure that no one is reading right now
         // This lock will be automatically released upon return
-        using var configWriteLock = _configLock.WriterLock();
+        using var configWriteLock = await _configLock.WriterLockAsync(cancellationToken);
 
         // Read exercises
         _exercises = new SortedDictionary<int, LabConfigurationExerciseEntry>(_labConfiguration.CurrentConfiguration.Exercises.ToDictionary(e => e.Id));
@@ -132,23 +138,20 @@ public class StateService : IDisposable, IStateService
 
         // Read user data
         _userStates = new ConcurrentDictionary<int, UserState>();
-        Regex userIdRegex = new Regex("u([0-9]+)\\.json$", RegexOptions.Compiled);
         foreach(var userStateFileInfo in userStateDirectory.EnumerateFiles("u*.json"))
         {
             // Read file
-            int userId = int.Parse(userIdRegex.Match(userStateFileInfo.Name).Groups[1].Value);
-            var userStateFile = ReadUserStateFile(userStateFileInfo.Name);
+            int userId = int.Parse(UserStateFileIdRegex().Match(userStateFileInfo.Name).Groups[1].Value);
+            var userStateFile = await ReadUserStateFileAsync(userStateFileInfo.Name, cancellationToken);
             if(userStateFile == null)
-            {
                 throw new Exception($"Could not read state file for user #{userId}");
-            }
 
             // Store user state
             var userState = new UserState
             {
                 Lock = new SemaphoreSlim(1, 1),
                 GroupId = userStateFile.GroupId,
-                GroupMembers = new List<UserState>(),
+                GroupMembers = [],
                 UserName = userStateFile.UserName,
                 Password = userStateFile.Password,
                 Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId)),
@@ -165,7 +168,7 @@ public class StateService : IDisposable, IStateService
             {
                 if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
                 {
-                    if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileStringExerciseEntry stringExerciseState))
+                    if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || exerciseState is not UserStateFileStringExerciseEntry stringExerciseState)
                     {
                         // Set new empty state
                         userState.Exercises[exercise.Value.Id] = UserStateFileStringExerciseEntry.CreateState(stringExercise);
@@ -177,7 +180,7 @@ public class StateService : IDisposable, IStateService
                 }
                 else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
                 {
-                    if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState))
+                    if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || exerciseState is not UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState)
                     {
                         // Set new empty state
                         userState.Exercises[exercise.Value.Id] = UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise);
@@ -189,7 +192,7 @@ public class StateService : IDisposable, IStateService
                 }
                 else if(exercise.Value is LabConfigurationScriptExerciseEntry scriptExercise)
                 {
-                    if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || !(exerciseState is UserStateFileScriptExerciseEntry scriptExerciseState))
+                    if(!userState.Exercises.TryGetValue(exercise.Key, out var exerciseState) || exerciseState is not UserStateFileScriptExerciseEntry scriptExerciseState)
                     {
                         // Set new empty state
                         userState.Exercises[exercise.Value.Id] = UserStateFileScriptExerciseEntry.CreateState(scriptExercise);
@@ -203,20 +206,20 @@ public class StateService : IDisposable, IStateService
 
             // Update user state file, if necessary
             if(userStateChanged)
-                WriteUserStateFile(userId);
+                await WriteUserStateFileAsync(userId, cancellationToken);
         }
 
-        // Link groups
-        foreach(var g in _userStates.Where(u => u.Value.GroupId != null).GroupBy(u => u.Value.GroupId))
+        // Link groups, so each user has references to all their group members
+        foreach(var group in _userStates.Where(u => u.Value.GroupId != null).GroupBy(u => u.Value.GroupId))
         {
-            if(g.Count() <= 1)
+            if(group.Count() <= 1)
                 continue;
 
-            foreach(var u in g)
-            foreach(var u2 in g)
+            foreach(var user1 in group)
+            foreach(var user2 in group)
             {
-                if(u.Key != u2.Key)
-                    u.Value.GroupMembers.Add(u2.Value);
+                if(user1.Key != user2.Key)
+                    user1.Value.GroupMembers.Add(user2.Value);
             }
         }
     }
@@ -225,21 +228,23 @@ public class StateService : IDisposable, IStateService
     /// Parses the state file for the given user.
     /// </summary>
     /// <param name="userStateFileName">File path.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    private UserStateFile ReadUserStateFile(string userStateFileName)
+    private async Task<UserStateFile> ReadUserStateFileAsync(string userStateFileName, CancellationToken cancellationToken)
     {
         // Read user state file
         string path = Path.Combine(_options.Value.UserStateDirectory, userStateFileName);
         if(!File.Exists(path))
             return null;
-        return JsonConvert.DeserializeObject<UserStateFile>(File.ReadAllText(path));
+        return JsonSerializer.Deserialize<UserStateFile>(await File.ReadAllTextAsync(path, cancellationToken));
     }
 
     /// <summary>
     /// Updates the state file for the given user.
     /// </summary>
     /// <param name="userId">User ID.</param>
-    private void WriteUserStateFile(int userId)
+    /// <param name="cancellationToken">Cancellation token.</param>
+    private async Task WriteUserStateFileAsync(int userId, CancellationToken cancellationToken)
     {
         // Create new object
         var userState = _userStates[userId];
@@ -250,7 +255,7 @@ public class StateService : IDisposable, IStateService
             Password = userState.Password,
             Exercises = userState.Exercises.Values.ToList()
         };
-        File.WriteAllText(Path.Combine(_options.Value.UserStateDirectory, $"u{userId}.json"), JsonConvert.SerializeObject(userStateFile));
+        await File.WriteAllTextAsync(Path.Combine(_options.Value.UserStateDirectory, $"u{userId}.json"), JsonSerializer.Serialize(userStateFile), cancellationToken);
     }
 
     /// <summary>
@@ -275,7 +280,7 @@ public class StateService : IDisposable, IStateService
                         return;
 
                     userState.GroupId = groupId;
-                    userState.GroupMembers = new List<UserState>(); // Will be filled later
+                    userState.GroupMembers = []; // Will be filled later
                 }
                 finally
                 {
@@ -289,7 +294,7 @@ public class StateService : IDisposable, IStateService
                 {
                     Lock = new SemaphoreSlim(1, 1),
                     GroupId = groupId,
-                    GroupMembers = new List<UserState>(), // Will be filled later
+                    GroupMembers = [], // Will be filled later
                     Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(),
                     UserName = _dockerSupportEnabled ? $"user{userId}" : null,
                     Password = _dockerSupportEnabled ? RandomStringGenerator.GetRandomString(10) : null,
@@ -299,17 +304,24 @@ public class StateService : IDisposable, IStateService
                 // Initialize exercises
                 foreach(var exercise in _exercises)
                 {
-                    if(exercise.Value is LabConfigurationStringExerciseEntry stringExercise)
-                        userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
-                    else if(exercise.Value is LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise)
-                        userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
-                    else if(exercise.Value is LabConfigurationScriptExerciseEntry scriptExercise)
-                        userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileScriptExerciseEntry.CreateState(scriptExercise));
+                    switch(exercise.Value)
+                    {
+                        case LabConfigurationStringExerciseEntry stringExercise:
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileStringExerciseEntry.CreateState(stringExercise));
+                            break;
+                        case LabConfigurationMultipleChoiceExerciseEntry multipleChoiceExercise:
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileMultipleChoiceExerciseEntry.CreateState(multipleChoiceExercise));
+                            break;
+                        case LabConfigurationScriptExerciseEntry scriptExercise:
+                            userState.Exercises.TryAdd(exercise.Value.Id, UserStateFileScriptExerciseEntry.CreateState(scriptExercise));
+                            break;
+                    }
                 }
 
                 // Initialize Docker container account, if needed
+                // Don't allow cancellation here, else we might end up in an inconsistent state
                 if(_dockerSupportEnabled && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
-                    await _dockerService.InitUserAsync(userId, userState.UserName, userState.Password, cancellationToken);
+                    await _dockerService.InitUserAsync(userId, userState.UserName, userState.Password, CancellationToken.None);
 
                 // Store new user state
                 _userStates.TryAdd(userId, userState);
@@ -317,11 +329,11 @@ public class StateService : IDisposable, IStateService
 
             // New user/new group: Update group member lists
             // Remove user from existing group member lists
-            if(userState.GroupMembers.Any())
+            if(userState.GroupMembers.Count != 0)
             {
                 foreach(var groupMember in userState.GroupMembers)
                 {
-                    await groupMember.Lock.WaitAsync(cancellationToken);
+                    await groupMember.Lock.WaitAsync(CancellationToken.None); // Don't allow cancellation here, else we might end up in an inconsistent state
                     try
                     {
                         groupMember.GroupMembers.Remove(userState);
@@ -342,7 +354,7 @@ public class StateService : IDisposable, IStateService
             // Update lists of group members
             foreach(var groupMember in userState.GroupMembers)
             {
-                await groupMember.Lock.WaitAsync(cancellationToken);
+                await groupMember.Lock.WaitAsync(CancellationToken.None); // Don't allow cancellation here, else we might end up in an inconsistent state
                 try
                 {
                     groupMember.GroupMembers.Add(userState);
@@ -354,7 +366,7 @@ public class StateService : IDisposable, IStateService
             }
 
             // Save new user state
-            WriteUserStateFile(userId);
+            await WriteUserStateFileAsync(userId, CancellationToken.None); // Don't allow cancellation here, else we might end up in an inconsistent state
         }
         finally
         {
@@ -376,11 +388,10 @@ public class StateService : IDisposable, IStateService
         using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
 
         // Check input values
-        if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
-            throw new ArgumentException();
-
-        // Get state object
-        var userState = _userStates[userId];
+        if(!_userStates.TryGetValue(userId, out UserState userState))
+            throw new ArgumentException($"Invalid user ID #{userId}");
+        if(!_exercises.TryGetValue(exerciseId, out LabConfigurationExerciseEntry exercise))
+            throw new ArgumentException($"Invalid exercise ID #{exerciseId}");
 
         // Log input
         if(input is string)
@@ -395,7 +406,7 @@ public class StateService : IDisposable, IStateService
             {
                 if(first) first = false;
                 else formattedInput.Append(", ");
-                
+
                 formattedInput.Append(entry);
             }
 
@@ -407,7 +418,6 @@ public class StateService : IDisposable, IStateService
         try
         {
             // Get exercise data
-            var exercise = _exercises[exerciseId];
             var exerciseState = userState.Exercises[exerciseId];
 
             // Check correctness
@@ -417,23 +427,22 @@ public class StateService : IDisposable, IStateService
                 UserStateFileMultipleChoiceExerciseEntry multipleChoiceExerciseState => multipleChoiceExerciseState.ValidateInput(exercise, input),
                 _ => false
             };
-            if(exerciseState.Type == UserStateFileExerciseEntryType.Script)
+            if(exerciseState is UserStateFileScriptExerciseEntry)
             {
                 if(!_dockerSupportEnabled)
                     throw new NotSupportedException("Docker support is not enabled, so script exercises cannot be graded.");
 
                 // Run script
-                string stderr;
-                (correct, stderr) = await _dockerService.GradeAsync(userId, exerciseId, input as string, cancellationToken);
+                (correct, string stderr) = await _dockerService.GradeAsync(userId, exerciseId, input as string, cancellationToken);
 
-                userState.Log.AddMessage("Docker stderr", stderr);
+                userState.Log.AddMessage("Script stderr output", stderr);
             }
 
             // Update user, if state changed
             if(!exerciseState.Solved && correct)
             {
                 exerciseState.Solved = true;
-                WriteUserStateFile(userId);
+                await WriteUserStateFileAsync(userId, CancellationToken.None); // Don't allow cancellation here, else we might end up in an inconsistent state
             }
 
             userState.Log.AddMessage($"Grade result: {(correct ? "Correct" : "Not correct")}", null);
@@ -450,19 +459,21 @@ public class StateService : IDisposable, IStateService
     /// </summary>
     /// <param name="exerciseId">Exercise ID.</param>
     /// <param name="userId">User ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    public async Task MarkExerciseSolvedAsync(int exerciseId, int userId)
+    public async Task MarkExerciseSolvedAsync(int exerciseId, int userId, CancellationToken cancellationToken)
     {
         // Ensure synchronized access
-        using var configReadLock = await _configLock.ReaderLockAsync();
+        using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
 
         // Check input values
-        if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
-            throw new ArgumentException();
+        if(!_userStates.TryGetValue(userId, out UserState userState))
+            throw new ArgumentException($"Invalid user ID #{userId}");
+        if(!_exercises.ContainsKey(exerciseId))
+            throw new ArgumentException($"Invalid exercise ID #{exerciseId}");
 
         // Get state object
-        var userState = _userStates[userId];
-        await userState.Lock.WaitAsync();
+        await userState.Lock.WaitAsync(cancellationToken);
         try
         {
             // Get exercise data
@@ -472,7 +483,7 @@ public class StateService : IDisposable, IStateService
             if(!userExercise.Solved)
             {
                 userExercise.Solved = true;
-                WriteUserStateFile(userId);
+                await WriteUserStateFileAsync(userId, CancellationToken.None); // Don't allow cancellation here, else we might end up in an inconsistent state
             }
 
             userState.Log.AddMessage($"Exercise #{exerciseId} marked as \"solved\" by admin", null);
@@ -488,19 +499,21 @@ public class StateService : IDisposable, IStateService
     /// </summary>
     /// <param name="exerciseId">Exercise ID.</param>
     /// <param name="userId">User ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    public async Task ResetExerciseStatusAsync(int exerciseId, int userId)
+    public async Task ResetExerciseStatusAsync(int exerciseId, int userId, CancellationToken cancellationToken)
     {
         // Ensure synchronized access
-        using var configReadLock = await _configLock.ReaderLockAsync();
+        using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
 
         // Check input values
-        if(!_userStates.ContainsKey(userId) || !_exercises.ContainsKey(exerciseId))
-            throw new ArgumentException();
+        if(!_userStates.TryGetValue(userId, out UserState userState))
+            throw new ArgumentException($"Invalid user ID #{userId}");
+        if(!_exercises.ContainsKey(exerciseId))
+            throw new ArgumentException($"Invalid exercise ID #{exerciseId}");
 
         // Get state object
-        var userState = _userStates[userId];
-        await userState.Lock.WaitAsync();
+        await userState.Lock.WaitAsync(cancellationToken);
         try
         {
             // Get exercise data
@@ -510,7 +523,7 @@ public class StateService : IDisposable, IStateService
             if(userExercise.Solved)
             {
                 userExercise.Solved = false;
-                WriteUserStateFile(userId);
+                await WriteUserStateFileAsync(userId, CancellationToken.None); // Don't allow cancellation here, else we might end up in an inconsistent state
             }
 
             userState.Log.AddMessage($"Exercise #{exerciseId} state reset by admin", null);
@@ -525,19 +538,19 @@ public class StateService : IDisposable, IStateService
     /// Returns the user scoreboard.
     /// </summary>
     /// <param name="userId">User ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    public async Task<UserScoreboard> GetUserScoreboardAsync(int userId)
+    public async Task<UserScoreboard> GetUserScoreboardAsync(int userId, CancellationToken cancellationToken)
     {
         // Ensure synchronized access
-        using var configReadLock = await _configLock.ReaderLockAsync();
+        using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
 
         // Check input values
-        if(!_userStates.ContainsKey(userId))
-            throw new ArgumentException();
+        if(!_userStates.TryGetValue(userId, out var userState))
+            throw new ArgumentException($"Invalid user ID #{userId}", nameof(userId));
 
         // Get state object
-        var userState = _userStates[userId];
-        await userState.Lock.WaitAsync();
+        await userState.Lock.WaitAsync(cancellationToken);
         try
         {
             // Output object
@@ -582,18 +595,18 @@ public class StateService : IDisposable, IStateService
     /// <param name="userId">User ID.</param>
     /// <param name="message">Message.</param>
     /// <param name="data">Data accompanying the message. May be used for user-provided inputs or error messages.</param>
-    public async Task AddUserLogMessage(int userId, string message, string data)
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public async Task AddUserLogMessageAsync(int userId, string message, string data, CancellationToken cancellationToken)
     {
         // Ensure synchronized access
-        using var configReadLock = await _configLock.ReaderLockAsync();
+        using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
 
         // Check input values
-        if(!_userStates.ContainsKey(userId))
-            throw new ArgumentException();
+        if(!_userStates.TryGetValue(userId, out var userState))
+            throw new ArgumentException($"Invalid user ID #{userId}", nameof(userId));
 
         // Get state object
-        var userState = _userStates[userId];
-        await userState.Lock.WaitAsync();
+        await userState.Lock.WaitAsync(cancellationToken);
         try
         {
             userState.Log.AddMessage(message, data);
@@ -610,4 +623,11 @@ public class StateService : IDisposable, IStateService
             u.Value.Lock?.Dispose();
         _loginLock?.Dispose();
     }
+
+    /// <summary>
+    /// Extracts the user ID from a user state file name.
+    /// </summary>
+    /// <returns></returns>
+    [GeneratedRegex("u([0-9]+)\\.json$", RegexOptions.Compiled)]
+    private static partial Regex UserStateFileIdRegex();
 }

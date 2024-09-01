@@ -1,150 +1,134 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
+using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/slots")]
 [AnyUserPrivilege(UserPrivileges.ViewSlots)]
-public class AdminSlotsController : ControllerBase
+public class AdminSlotsController(IUserService userService, ISlotService slotService)
+    : ControllerBase<AdminSlotsController>(userService)
 {
-    private readonly IStringLocalizer<AdminSlotsController> _localizer;
-    private readonly ILogger<AdminSlotsController> _logger;
-    private readonly ISlotService _slotService;
-
-    public AdminSlotsController(IUserService userService, IStringLocalizer<AdminSlotsController> localizer, ILogger<AdminSlotsController> logger, ISlotService slotService)
-        : base("~/Views/AdminSlots.cshtml", userService)
-    {
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
-    }
-
-    private Task<IActionResult> RenderAsync(ViewType viewType, object model)
-    {
-        ViewData["ViewType"] = viewType;
-        return RenderViewAsync(MenuItems.AdminSlots, model);
-    }
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminSlots;
 
     [HttpGet]
     public async Task<IActionResult> RenderSlotListAsync()
     {
         // Pass slots
-        var slots = await _slotService.GetSlotsAsync().ToListAsync();
+        var slots = await slotService.GetSlotListAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, slots);
+        return await RenderViewAsync("~/Views/Admin/Slots/Index.cshtml", slots);
     }
 
-    private async Task<IActionResult> ShowEditSlotFormAsync(int? id, Slot slot = null)
+    private async Task<IActionResult> ShowEditSlotFormAsync(AdminSlotInputModel slotInput)
     {
-        // Retrieve by ID, if no object from a failed POST was passed
-        if(id != null)
-        {
-            slot = await _slotService.GetSlotAsync(id.Value, HttpContext.RequestAborted);
-            if(slot == null)
-            {
-                AddStatusMessage(_localizer["ShowEditSlotFormAsync:NotFound"], StatusMessageTypes.Error);
-                return await RenderSlotListAsync();
-            }
-        }
+        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
+        ViewData["Labs"] = await labService.GetLabsAsync(HttpContext.RequestAborted);
 
-        if(slot == null)
-        {
-            AddStatusMessage(_localizer["ShowEditSlotFormAsync:MissingParameter"], StatusMessageTypes.Error);
-            return await RenderSlotListAsync();
-        }
-
-        return await RenderAsync(ViewType.Edit, slot);
+        return await RenderViewAsync("~/Views/Admin/Slots/Edit.cshtml", slotInput);
     }
 
     [HttpGet("edit")]
     [AnyUserPrivilege(UserPrivileges.EditSlots)]
-    public Task<IActionResult> ShowEditSlotFormAsync(int id)
+    public async Task<IActionResult> ShowEditSlotFormAsync(int id, [FromServices] IMapper mapper)
     {
-        return ShowEditSlotFormAsync(id, null);
+        var slot = await slotService.FindSlotByIdAsync(id, HttpContext.RequestAborted);
+        if(slot == null)
+        {
+            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditSlotFormAsync:NotFound"]);
+            return await RenderSlotListAsync();
+        }
+
+        var slotInput = mapper.Map<AdminSlotInputModel>(slot);
+        return await ShowEditSlotFormAsync(slotInput);
     }
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditSlots)]
-    public async Task<IActionResult> EditSlotAsync(Slot slotData)
+    public async Task<IActionResult> EditSlotAsync(AdminSlotInputModel slotInput, [FromServices] IMapper mapper)
     {
         // Check input
-        if(!ModelState.IsValid)
+        if(!ModelState.IsValid || slotInput.Id == null)
         {
-            AddStatusMessage(_localizer["EditSlotAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowEditSlotFormAsync(null, slotData);
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditSlotAsync:InvalidInput"]);
+            return await ShowEditSlotFormAsync(slotInput);
         }
 
         try
         {
             // Retrieve edited slot from database and apply changes
-            var slot = await _slotService.GetSlotAsync(slotData.Id, HttpContext.RequestAborted);
-            slot.Name = slotData.Name;
-            slot.DefaultExecuteLabId = slotData.DefaultExecuteLabId;
-            slot.DefaultExecuteLabEnd = slotData.DefaultExecuteLabEnd;
-            await _slotService.UpdateSlotAsync(slot, HttpContext.RequestAborted);
+            var slot = await slotService.FindSlotByIdAsync(slotInput.Id.Value, HttpContext.RequestAborted);
+            if(slot == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["EditSlotAsync:NotFound"]);
+                return RedirectToAction("RenderSlotList");
+            }
 
-            AddStatusMessage(_localizer["EditSlotAsync:Success"], StatusMessageTypes.Success);
+            mapper.Map(slotInput, slot);
+
+            await slotService.UpdateSlotAsync(slot, HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["EditSlotAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderSlotList");
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Edit slot");
-            AddStatusMessage(_localizer["EditSlotAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowEditSlotFormAsync(null, slotData);
+            GetLogger().LogError(ex, "Edit slot");
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditSlotAsync:UnknownError"]);
+            return await ShowEditSlotFormAsync(slotInput);
         }
+    }
 
-        return await RenderSlotListAsync();
+    private async Task<IActionResult> ShowCreateSlotFormAsync(AdminSlotInputModel slotInput)
+    {
+        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
+        ViewData["Labs"] = await labService.GetLabsAsync(HttpContext.RequestAborted);
+
+        return await RenderViewAsync("~/Views/Admin/Slots/Create.cshtml", slotInput);
     }
 
     [HttpGet("create")]
     [AnyUserPrivilege(UserPrivileges.EditSlots)]
-    public async Task<IActionResult> ShowCreateSlotFormAsync(Slot slot = null)
-    {
-        return await RenderAsync(ViewType.Create, slot);
-    }
+    public Task<IActionResult> ShowCreateSlotFormAsync()
+        => ShowCreateSlotFormAsync(null);
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditSlots)]
-    public async Task<IActionResult> CreateSlotAsync(Slot slotData)
+    public async Task<IActionResult> CreateSlotAsync(AdminSlotInputModel slotInput, [FromServices] IMapper mapper)
     {
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["CreateSlotAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowCreateSlotFormAsync(slotData);
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateSlotAsync:InvalidInput"]);
+            return await ShowCreateSlotFormAsync(slotInput);
         }
 
         try
         {
             // Create slot
-            var slot = new Slot
-            {
-                Name = slotData.Name,
-                DefaultExecuteLabId = slotData.DefaultExecuteLabId,
-                DefaultExecuteLabEnd = slotData.DefaultExecuteLabEnd
-            };
-            await _slotService.CreateSlotAsync(slot, HttpContext.RequestAborted);
+            var slot = mapper.Map<Slot>(slotInput);
+            await slotService.CreateSlotAsync(slot, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["CreateSlotAsync:Success"], StatusMessageTypes.Success);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["CreateSlotAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderSlotList");
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Create slot");
-            AddStatusMessage(_localizer["CreateSlotAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowCreateSlotFormAsync(slotData);
+            GetLogger().LogError(ex, "Create slot");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateSlotAsync:UnknownError"]);
+            return await ShowCreateSlotFormAsync(slotInput);
         }
-
-        return await RenderSlotListAsync();
     }
 
     [HttpPost("delete")]
@@ -152,40 +136,39 @@ public class AdminSlotsController : ControllerBase
     [AnyUserPrivilege(UserPrivileges.EditSlots)]
     public async Task<IActionResult> DeleteSlotAsync(int id)
     {
-        // Input check
-        var slot = await _slotService.GetSlotAsync(id, HttpContext.RequestAborted);
-        if(slot == null)
-        {
-            AddStatusMessage(_localizer["DeleteSlotAsync:NotFound"], StatusMessageTypes.Error);
-            return await RenderSlotListAsync();
-        }
-
-        if(slot.Groups.Any())
-        {
-            AddStatusMessage(_localizer["DeleteSlotAsync:HasGroups"], StatusMessageTypes.Error);
-            return await RenderSlotListAsync();
-        }
-
         try
         {
-            // Delete slot
-            await _slotService.DeleteSlotAsync(id, HttpContext.RequestAborted);
+            // Input check
+            var slot = await slotService.FindSlotByIdAsync(id, HttpContext.RequestAborted);
+            if(slot == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteSlotAsync:NotFound"]);
+                return RedirectToAction("RenderSlotList");
+            }
 
-            AddStatusMessage(_localizer["DeleteSlotAsync:Success"], StatusMessageTypes.Success);
+            if(await slotService.GetSlotGroupCount(id, HttpContext.RequestAborted) != 0)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteSlotAsync:HasGroups"]);
+                return RedirectToAction("RenderSlotList");
+            }
+
+            // Delete slot
+            await slotService.DeleteSlotAsync(id, HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DeleteSlotAsync:Success"]) { AutoHide = true };
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Delete slot");
-            AddStatusMessage(_localizer["DeleteSlotAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Delete slot");
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteSlotAsync:UnknownError"]);
         }
 
-        return await RenderSlotListAsync();
+        return RedirectToAction("RenderSlotList");
     }
 
-    public enum ViewType
+    public static void RegisterMappings(Profile mappingProfile)
     {
-        List,
-        Edit,
-        Create
+        mappingProfile.CreateMap<Slot, AdminSlotInputModel>();
+        mappingProfile.CreateMap<AdminSlotInputModel, Slot>();
     }
 }

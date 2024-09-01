@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Api.Models;
@@ -9,49 +10,31 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Ctf4e.LabServer.Constants;
-using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.LabServer.Controllers;
 
 [Route("auth")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController(ICryptoService cryptoService, IStateService stateService)
+    : ControllerBase<AuthenticationController>
 {
-    private readonly ICryptoService _cryptoService;
-    private readonly IStateService _stateService;
-    private readonly IStringLocalizer<AuthenticationController> _localizer;
-
-    public AuthenticationController(ICryptoService cryptoService, IStateService stateService, IOptionsSnapshot<LabOptions> labOptions,
-                                    ILabConfigurationService labConfiguration, IStringLocalizer<AuthenticationController> localizer)
-        : base("~/Views/Authentication.cshtml", labOptions, labConfiguration)
-    {
-        _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
-        _stateService = stateService ?? throw new ArgumentNullException(nameof(stateService));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-    }
-
-    private IActionResult Render(ViewType viewType, object model = null)
-    {
-        ViewData["ViewType"] = viewType;
-        return RenderView(MenuItems.Authentication, model);
-    }
+    protected override MenuItems ActiveMenuItem => MenuItems.Authentication;
 
     [HttpGet]
-    public IActionResult Render()
+    public IActionResult ShowPage()
     {
         // Logged in?
         var currentUser = GetCurrentUser();
         if(currentUser == null)
         {
-            AddStatusMessage(_localizer["Render:AccessDenied"], StatusMessageTypes.Info);
-            return Render(ViewType.Blank);
+            AddStatusMessage(StatusMessageType.Info, Localizer["Render:AccessDenied"]);
+            return RenderView("~/Views/Authentication/Empty.cshtml");
         }
 
-        return Render(ViewType.Redirect);
+        return RedirectToAction("ShowDashboard", "Dashboard");
     }
 
 #if DEBUG
@@ -61,44 +44,53 @@ public class AuthenticationController : ControllerBase
         // Already logged in?
         var currentUser = GetCurrentUser();
         if(currentUser != null)
-            return Render(ViewType.Redirect);
+            return RedirectToAction("ShowDashboard", "Dashboard");
 
         // Make sure user account exists
         // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        await _stateService.ProcessLoginAsync(userId, groupId, cts.Token);
+        await stateService.ProcessLoginAsync(userId, groupId, cts.Token);
 
         // Sign in user
         await DoLoginAsync(userId, userName, groupId, groupName, admin);
 
         // Done
-        AddStatusMessage(_localizer["DevLoginAsync:Success"], StatusMessageTypes.Success);
-        return Render(ViewType.Redirect);
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DevLoginAsync:Success"]) { AutoHide = true };
+        return RedirectToAction("ShowDashboard", "Dashboard");
     }
 #endif
 
     [HttpGet("login")]
     public async Task<IActionResult> LoginAsync(string code)
     {
-        // Parse and check request
-        var loginData = UserLoginRequest.Deserialize(_cryptoService.Decrypt(code));
-            
-        // Already logged in?
-        var currentUser = GetCurrentUser();
-        if(currentUser != null && currentUser.UserId == loginData.UserId && GetAdminMode() == loginData.AdminMode)
-            return Render(ViewType.Redirect);
+        try
+        {
+            // Parse and check request
+            var loginData = UserLoginRequest.Deserialize(cryptoService.Decrypt(code));
 
-        // Make sure user account exists
-        // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        await _stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId, cts.Token);
+            // Already logged in?
+            var currentUser = GetCurrentUser();
+            if(currentUser != null && currentUser.UserId == loginData.UserId && GetAdminMode() == loginData.AdminMode)
+                return RedirectToAction("ShowDashboard", "Dashboard");
 
-        // Sign in user
-        await DoLoginAsync(loginData.UserId, loginData.UserDisplayName, loginData.GroupId, loginData.GroupName, loginData.AdminMode);
+            // Make sure user account exists
+            // Don't allow the user to cancel this, but also ensure that the application doesn't block too long
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            await stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId, cts.Token);
 
-        // Done
-        AddStatusMessage(_localizer["LoginAsync:Success"], StatusMessageTypes.Success);
-        return Render(ViewType.Redirect);
+            // Sign in user
+            await DoLoginAsync(loginData.UserId, loginData.UserDisplayName, loginData.GroupId, loginData.GroupName, loginData.AdminMode);
+
+            // Done
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["LoginAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("ShowDashboard", "Dashboard");
+        }
+        catch(CryptographicException ex)
+        {
+            GetLogger().LogWarning(ex, "Invalid login code");
+            AddStatusMessage(StatusMessageType.Error, Localizer["LoginAsync:InvalidCode"]);
+            return RenderView("~/Views/Authentication/Empty.cshtml");
+        }
     }
 
     private async Task DoLoginAsync(int userId, string userDisplayName, int? groupId, string groupName, bool adminMode)
@@ -106,14 +98,15 @@ public class AuthenticationController : ControllerBase
         // Prepare session data to identify user
         var claims = new List<Claim>
         {
-            new (AuthenticationStrings.ClaimUserId, userId.ToString()),
-            new (AuthenticationStrings.ClaimUserDisplayName, userDisplayName ?? "")
+            new(AuthenticationStrings.ClaimUserId, userId.ToString()),
+            new(AuthenticationStrings.ClaimUserDisplayName, userDisplayName ?? "")
         };
         if(groupId != null)
         {
             claims.Add(new Claim(AuthenticationStrings.ClaimGroupId, groupId.ToString()));
             claims.Add(new Claim(AuthenticationStrings.ClaimGroupName, groupName ?? ""));
         }
+
         if(adminMode)
             claims.Add(new Claim(AuthenticationStrings.ClaimAdminMode, true.ToString()));
 
@@ -131,7 +124,8 @@ public class AuthenticationController : ControllerBase
         HandleUserLogin(userId, userDisplayName, groupId, groupName, adminMode);
     }
 
-    [HttpGet("logout")]
+    [HttpPost("logout")]
+    [ValidateAntiForgeryToken]
     [Authorize]
     public async Task<IActionResult> LogoutAsync()
     {
@@ -142,13 +136,7 @@ public class AuthenticationController : ControllerBase
         HandleUserLogout();
 
         // Done
-        AddStatusMessage(_localizer["LogoutAsync:Success"], StatusMessageTypes.Success);
-        return Render(ViewType.Blank);
-    }
-
-    public enum ViewType
-    {
-        Blank,
-        Redirect
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["LogoutAsync:Success"]);
+        return RedirectToAction("ShowPage");
     }
 }

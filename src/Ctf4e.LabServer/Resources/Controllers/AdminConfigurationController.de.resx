@@ -26,10 +26,6 @@
         <value>Beim Lesen der Konfigurationsdatei ist ein Fehler aufgetreten. Weitere Details finden sich im Log.</value>
         <comment>RenderAsync:UnknownError</comment>
     </data>
-    <data name="UpdateConfigurationAsync:DuplicateExerciseId" xml:space="preserve">
-        <value>Doppelte Aufgabe-ID: {0}</value>
-        <comment>UpdateConfigurationAsync:DuplicateExerciseId</comment>
-    </data>
     <data name="UpdateConfigurationAsync:ErrorParsingNewConfig" xml:space="preserve">
         <value>Konnte neue Konfiguration nicht parsen. Ist das JSON gültig? Weitere Details finden sich im Log.</value>
         <comment>UpdateConfigurationAsync:ErrorParsingNewConfig</comment>
@@ -46,8 +42,12 @@
         <value>Beim Aktualisieren der Konfiguration ist ein Fehler aufgetreten. Möglicherweise ist das System jetzt in einem inkonsistenten Zustand. Es wird empfohlen, die aktuelle Konfiguration zu prüfen und einen Neustart durchzuführen. Weitere Details finden sich im Log.</value>
         <comment>UpdateConfigurationAsync:UnknownError</comment>
     </data>
-    <data name="UpdateConfigurationAsync:ValidationError" xml:space="preserve">
-        <value>Bei der Validierung wurde ein Fehler erkannt: {0}</value>
-        <comment>UpdateConfigurationAsync:ValidationError</comment>
+    <data name="UpdateConfigurationAsync:InvalidInput" xml:space="preserve">
+        <value>Ungültige Eingabe.</value>
+        <comment>UpdateConfigurationAsync:InvalidInput</comment>
+    </data>
+    <data name="UpdateConfigurationAsync:InvalidConfig" xml:space="preserve">
+        <value>Beim Validieren der neuen Konfiguration wurden Fehler entdeckt.</value>
+        <comment>UpdateConfigurationAsync:InvalidConfig</comment>
     </data>
 </root>

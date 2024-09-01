@@ -1,0 +1,114 @@
+@using Ctf4e.Server.Authorization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Views.Shared
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<AdminLabListEntry>
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+}
+
+<div class="container">
+
+    <div class="float-end">
+        @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabs))
+        {
+            <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowCreateLabForm">
+                <i class="bi bi-plus"></i>
+                @Localizer["CreateLab"]
+            </a>
+        }
+    </div>
+
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <table class="table table-sm table-bordered align-middle table-hover text-nowrap mt-2">
+        <thead>
+        <tr>
+            <th scope="col">@Localizer["Labs:ID"]</th>
+            <th scope="col">@Localizer["Labs:SortIndex"]</th>
+            <th scope="col">@Localizer["Labs:Name"]</th>
+            <th scope="col">@Localizer["Labs:MaximumPoints"]</th>
+            <th scope="col">@Localizer["Labs:MaximumFlagPoints"]</th>
+            <th scope="col">@Localizer["Labs:Visible"]</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col">@Localizer["Actions"]</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        @foreach(var l in Model)
+        {
+            <tr>
+                <td>@l.Id</td>
+                <td>@l.SortIndex</td>
+                <td>@l.Name</td>   
+                <td>@l.MaxPoints</td>
+                <td>@l.MaxFlagPoints</td>
+                <td>
+                    @if(l.Visible)
+                    {
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-x-circle-fill text-danger"></i>
+                    }
+                </td>
+                <td>
+                    <a asp-controller="AdminExercises" asp-action="RenderExerciseList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="@Localizer["Labs:Exercises:Text"]">
+                        <i class="bi bi-arrow-right"></i>
+                        @Localizer["Labs:Exercises"]
+                        <span class="badge bg-primary">
+                            @l.ExerciseCount
+                        </span>
+                    </a>
+                </td>
+                <td>
+                    <a asp-controller="AdminFlags" asp-action="RenderFlagList" asp-route-labId="@l.Id" class="btn btn-sm btn-outline-primary" title="@Localizer["Labs:Flags:Text"]">
+                        <i class="bi bi-arrow-right"></i>
+                        @Localizer["Labs:Flags"]
+                        <span class="badge bg-primary">
+                            @l.FlagCount
+                        </span>
+                    </a>
+                </td>
+                <td>
+                    @if(currentUser.Privileges.HasPrivileges(UserPrivileges.EditLabs))
+                    {
+                        <a role="button" class="btn btn-sm btn-primary" asp-controller="AdminLabs" asp-action="ShowEditLabForm" asp-route-id="@l.Id">
+                            <i class="bi bi-pencil"></i>
+                            @Localizer["Edit"]
+                        </a>
+                        @if(l.ExecutionCount == 0)
+                        {
+                            <a role="button" class="btn btn-sm btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#modal-delete-lab" data-lab-id="@l.Id">
+                                <i class="bi bi-trash"></i>
+                                @Localizer["Delete"]
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+</div>
+
+@{
+    var confirmDeletionDialogModel = new ConfirmDeletionDialogModel
+    {
+        ModalId = "modal-delete-lab",
+        PostUrl = Url.Action("DeleteLab", "AdminLabs") ?? throw new InvalidOperationException("Could not generate URL for route"),
+        DeletedObjectName = "lab",
+        PostParameters = new List<(string postName, string buttonDataName)> { ("id", "lab-id") }
+    };
+}
+<partial name="~/Views/Shared/ConfirmDeletionDialog.cshtml" model="confirmDeletionDialogModel" />

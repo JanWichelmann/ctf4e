@@ -1,0 +1,56 @@
+@using Ctf4e.Server.Views.Shared
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model Ctf4e.Server.Views.Shared.GenericConfirmModalModel
+@{
+    // TODO localize
+
+    string colorName = Model.Color switch
+    {
+        GenericConfirmModalModel.ColorScheme.Danger => "danger",
+        _ => throw new InvalidOperationException("Unknown color scheme")
+    };
+}
+
+<div class="modal" id="@Model.ModalId" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">@Model.Title</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @foreach(var message in Model.Messages)
+                {
+                    <p>@message</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-@colorName" data-bs-dismiss="modal" id="@Model.ModalId-submit">@Model.SubmitButtonText</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">@Localizer["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>                
+    window.addEventListener("load", () =>
+    {        
+        const modal = document.getElementById("@Model.ModalId");
+        const submitButton = document.getElementById("@Model.ModalId-submit");
+        const callback = @Model.CallbackFunctionName
+        
+        // The element triggering the modal.
+        let trigger = null;
+        
+        modal.addEventListener("show.bs.modal", e =>
+        {
+            trigger = e.relatedTarget;
+        });
+        
+        submitButton.addEventListener("click", () =>
+        {
+            callback(trigger);
+        }); 
+    });
+</script>

@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Ctf4e.Server.Authorization;
-using Ctf4e.Server.Constants;
 
 namespace Ctf4e.Server.Models;
 
@@ -9,16 +7,10 @@ public class User
 {
     public int Id { get; set; }
 
-    [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
-    [DisplayFormat(ConvertEmptyStringToNull = false)]
-    [StringLength(100)]
     public string DisplayName { get; set; }
 
     public int MoodleUserId { get; set; }
-
-    [Required(AllowEmptyStrings = false, ErrorMessage = ValidationStrings.FieldIsRequired)]
-    [DisplayFormat(ConvertEmptyStringToNull = false)]
-    [StringLength(100)]
+    
     public string MoodleName { get; set; }
         
     public UserPrivileges Privileges { get; set; }

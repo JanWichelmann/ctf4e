@@ -1,14 +1,12 @@
-version: "3.5"
-
 services:
   ctf4e-server:
     image: ctf4e/ctf4e-server:latest
     volumes:
       - type: bind
-        source: ${CONFIG_DIRECTORY}
-        target: /config
+        source: ./appsettings.Production.json
+        target: /app/appsettings.Production.json
+        read_only: true
     environment:
-      - CTF4E_CONFIG_FILE=/config/${CONFIG_FILE_NAME}
       # Enable these for HTTPS support
       #- ASPNETCORE_Kestrel__Certificates__Default__Path=/config/${CERT_FILE_NAME}
       #- ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
@@ -18,7 +16,7 @@ services:
       - ctf4e-database
   
   ctf4e-database:
-    image: library/mariadb:latest
+    image: library/mariadb:lts
     volumes:
       - type: volume
         source: ctf4e-state

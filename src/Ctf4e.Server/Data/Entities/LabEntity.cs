@@ -26,8 +26,10 @@ public class LabEntity
     public int MaxPoints { get; set; }
 
     public int MaxFlagPoints { get; set; }
-        
+
     public bool Visible { get; set; }
+
+    public int SortIndex { get; set; }
 
     public ICollection<LabExecutionEntity> Executions { get; set; }
 

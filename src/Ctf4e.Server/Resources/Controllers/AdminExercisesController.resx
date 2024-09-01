@@ -50,4 +50,16 @@
         <value>An error occured while updating the exercise. Check the log for more details.</value>
         <comment>EditExerciseAsync:UnknownError</comment>
     </data>
+    <data name="ShowEditExerciseFormAsync:NotFound" xml:space="preserve">
+        <value>This exercise does not exist.</value>
+        <comment>ShowEditExerciseFormAsync:NotFound</comment>
+    </data>
+    <data name="EditExerciseAsync:NotFound" xml:space="preserve">
+        <value>This exercise does not exist.</value>
+        <comment>EditExerciseAsync:NotFound</comment>
+    </data>
+    <data name="DeleteExerciseAsync:NotFound" xml:space="preserve">
+        <value>This exercise does not exist.</value>
+        <comment>DeleteExerciseAsync:NotFound</comment>
+    </data>
 </root>

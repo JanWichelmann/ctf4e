@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Exercises:Header" xml:space="preserve">
+        <value>Exercises</value>
+        <comment>Exercises:Header</comment>
+    </data>
+    <data name="Exercises:Number" xml:space="preserve">
+        <value>No.</value>
+        <comment>Exercises:Number</comment>
+    </data>
+    <data name="Exercises:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Exercises:Name</comment>
+    </data>
+    <data name="Exercises:Points" xml:space="preserve">
+        <value>Points</value>
+        <comment>Exercises:Points</comment>
+    </data>
+    <data name="Exercises:Passed" xml:space="preserve">
+        <value>Passed Submissions</value>
+        <comment>Exercises:Passed</comment>
+    </data>
+    <data name="Mandatory" xml:space="preserve">
+        <value>Mandatory</value>
+        <comment>Mandatory</comment>
+    </data>
+    <data name="Flags:Header" xml:space="preserve">
+        <value>Flags (all time slots)</value>
+        <comment>Flags:Header</comment>
+    </data>
+    <data name="Flags:Description" xml:space="preserve">
+        <value>Description</value>
+        <comment>Flags:Description</comment>
+    </data>
+    <data name="Flags:Submissions" xml:space="preserve">
+        <value>Submissions</value>
+        <comment>Flags:Submissions</comment>
+    </data>
+    <data name="Flags:Points" xml:space="preserve">
+        <value>Points</value>
+        <comment>Flags:Points</comment>
+    </data>
+    <data name="BugBounty" xml:space="preserve">
+        <value>Bug bounty</value>
+        <comment>BugBounty</comment>
+    </data>
+    <data name="Flags:BasePoints" xml:space="preserve">
+        <value>Flag base points</value>
+        <comment>Flags:BasePoints</comment>
+    </data>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Overview - Admin Scoreboard</value>
+        <comment>HtmlTitle</comment>
+    </data>
+</root>

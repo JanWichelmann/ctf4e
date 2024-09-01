@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using Ctf4e.Api.DependencyInjection;
 using Ctf4e.Api.Options;
 using Ctf4e.LabServer.Constants;
@@ -38,12 +39,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddMemoryCache();
 
     // Lab configuration
-    builder.Services.AddSingleton<ILabConfigurationService>(s =>
-    {
-        var labConfig = new LabConfigurationService(s.GetRequiredService<IOptionsMonitor<LabOptions>>());
-        labConfig.ReadConfigurationAsync().GetAwaiter().GetResult();
-        return labConfig;
-    });
+    builder.Services.AddSingleton<ILabConfigurationService, LabConfigurationService>();
 
     // Lab state service
     builder.Services.AddSingleton<IStateService, StateService>();
@@ -90,6 +86,13 @@ var app = builder.Build();
     // Build HTTP request pipeline
 
     var labOptions = app.Services.GetRequiredService<IOptions<LabOptions>>().Value;
+    
+    // Initialize singleton services
+    var labConfigurationService = app.Services.GetRequiredService<ILabConfigurationService>();
+    await labConfigurationService.ReadConfigurationAsync(CancellationToken.None);
+    
+    var stateService = app.Services.GetRequiredService<IStateService>();
+    await stateService.InitAsync(CancellationToken.None);
 
     // Verbose stack traces
     if(app.Environment.IsDevelopment())

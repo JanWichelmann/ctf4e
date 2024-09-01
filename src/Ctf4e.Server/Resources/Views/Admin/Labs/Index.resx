@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Manage labs</value>
+        <comment>HtmlTitle</comment>
+    </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Actions</value>
+        <comment>Actions</comment>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Cancel</value>
+        <comment>Cancel</comment>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Delete</value>
+        <comment>Delete</comment>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Edit</value>
+        <comment>Edit</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Manage labs</value>
+        <comment>Title</comment>
+    </data>
+    <data name="CreateLab" xml:space="preserve">
+        <value>Create lab</value>
+        <comment>CreateLab</comment>
+    </data>
+    <data name="Labs:ID" xml:space="preserve">
+        <value>ID</value>
+        <comment>Labs:ID</comment>
+    </data>
+    <data name="Labs:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Labs:Name</comment>
+    </data>
+    <data name="Labs:MaximumFlagPoints" xml:space="preserve">
+        <value>Max. flag points</value>
+        <comment>Labs:MaximumFlagPoints</comment>
+    </data>
+    <data name="Labs:Exercises" xml:space="preserve">
+        <value>Exercises</value>
+        <comment>Labs:Exercises</comment>
+    </data>
+    <data name="Labs:Flags" xml:space="preserve">
+        <value>Flags</value>
+        <comment>Labs:Flags</comment>
+    </data>
+    <data name="Labs:Exercises:Text" xml:space="preserve">
+        <value>Open exercise list</value>
+        <comment>Labs:Exercises:Text</comment>
+    </data>
+    <data name="Labs:Flags:Text" xml:space="preserve">
+        <value>Open flag list</value>
+        <comment>Labs:Flags:Text</comment>
+    </data>
+    <data name="Modal:DeleteLab:Title" xml:space="preserve">
+        <value>Delete lab</value>
+        <comment>Modal:DeleteLab:Title</comment>
+    </data>
+    <data name="Modal:DeleteLab:Body" xml:space="preserve">
+        <value>&lt;p&gt;Do you really want to delete the lab &amp;quot;&lt;span data-replace="lab-name"&gt;&lt;/span&gt;&amp;quot;?&lt;/p&gt;&lt;p&gt;Note that this will also delete all associated exercises and flags!&lt;/p&gt;</value>
+        <comment>Modal:DeleteLab:Body</comment>
+    </data>
+    <data name="Modal:DeleteLab:Submit" xml:space="preserve">
+        <value>Delete lab</value>
+        <comment>Modal:DeleteLab:Submit</comment>
+    </data>
+    <data name="Labs:MaximumPoints" xml:space="preserve">
+        <value>Max. points</value>
+        <comment>Labs:MaximumPoints</comment>
+    </data>
+    <data name="Labs:Visible" xml:space="preserve">
+        <value>Visible?</value>
+        <comment>Labs:Visible</comment>
+    </data>
+    <data name="Labs:SortIndex" xml:space="preserve">
+        <value>Sort index</value>
+        <comment>Labs:SortIndex</comment>
+    </data>
+</root>

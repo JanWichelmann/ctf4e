@@ -1,5 +1,5 @@
-﻿using Ctf4e.Api.Services;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
+using Ctf4e.Api.Services;
 
 namespace Ctf4e.Api
 {
@@ -14,13 +14,13 @@ namespace Ctf4e.Api
             return new CtfApiRequest
             {
                 LabId = labId,
-                Data = cryptoService.Encrypt(JsonConvert.SerializeObject(data))
+                Data = cryptoService.Encrypt(JsonSerializer.Serialize(data))
             };
         }
 
         public T Decode<T>(ICryptoService cryptoService) where T : class
         {
-            return JsonConvert.DeserializeObject<T>(cryptoService.Decrypt(Data));
+            return JsonSerializer.Deserialize<T>(cryptoService.Decrypt(Data));
         }
     }
 }

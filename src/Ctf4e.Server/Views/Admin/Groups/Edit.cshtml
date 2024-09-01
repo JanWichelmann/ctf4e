@@ -1,0 +1,26 @@
+@using Ctf4e.Server.Views
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AdminGroupInputModel
+@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<GenericStrings> GenericLocalizer
+@{
+     
+}
+
+<div class="container">
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <form asp-controller="AdminGroups" asp-action="EditGroup" method="post">
+    
+        <partial name="InputForm.cshtml" model="Model" />
+
+        <input type="hidden" asp-for="Id">
+
+        <button type="submit" class="btn btn-primary">@GenericLocalizer["Form:Edit:Submit"]</button>
+        <a asp-controller="AdminGroups" asp-action="RenderGroupList" role="button" class="btn btn-outline-secondary">@GenericLocalizer["Form:Edit:Cancel"]</a>
+    </form>
+</div>

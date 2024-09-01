@@ -1,6 +1,6 @@
 ﻿namespace Ctf4e.Utilities;
 
-public enum StatusMessageTypes
+public enum StatusMessageType
 {
     Info,
     Success,

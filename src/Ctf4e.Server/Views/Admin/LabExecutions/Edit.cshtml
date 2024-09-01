@@ -1,0 +1,31 @@
+@using Ctf4e.Server.Views
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<GenericStrings> GenericLocalizer
+@model AdminLabExecutionInputModel
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+}
+
+<div class="container">
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <form asp-controller="AdminLabExecutions" asp-action="EditLabExecution" method="post">
+
+        <partial name="InputForm.cshtml" model="Model" />
+
+        <button type="submit" class="btn btn-primary">@GenericLocalizer["Form:Edit:Submit"]</button>
+        <a asp-controller="AdminLabExecutions" asp-action="RenderLabExecutionList" class="btn btn-secondary">@GenericLocalizer["Form:Edit:Cancel"]</a>
+    </form>
+</div>
+
+@section ScriptsHead
+{
+    <link asp-href-include="~/lib/flatpickr/css/flatpickr.min.css" asp-append-version="true" rel="stylesheet" />
+    <script asp-src-include="~/lib/flatpickr/js/flatpickr.min.js" asp-append-version="true"></script>
+    <script asp-src-include="~/lib/flatpickr/js/l10n/de.js" asp-append-version="true"></script>
+}

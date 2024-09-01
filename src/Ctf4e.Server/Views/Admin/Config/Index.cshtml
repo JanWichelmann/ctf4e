@@ -1,0 +1,216 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Ctf4e.Server.ViewModels.AdminConfigurationData
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    int groupCount = (int)ViewData["GroupCount"];
+    
+    string buildVersion = (string)ViewData["BuildVersion"] ?? "Development build";
+}
+
+<div class="container">
+    <h1 class="mt-4">
+        @Localizer["Title"]
+    </h1>
+    <div class="header-rule"></div>
+
+    <form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
+        <div class="mb-3">
+            <label class="form-label" asp-for="PageTitle">@Localizer["Config:PageTitle"]</label>
+            <input asp-for="PageTitle" class="form-control">
+            <span asp-validation-for="PageTitle" class="text-danger"></span>
+            <small>
+                @Localizer["Config:PageTitle:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="NavbarTitle">@Localizer["Config:NavbarTitle"]</label>
+            <input asp-for="NavbarTitle" class="form-control">
+            <span asp-validation-for="NavbarTitle" class="text-danger"></span>
+            <small>
+                @Localizer["Config:NavbarTitle:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="FlagMinimumPointsDivisor">@Localizer["Config:FlagMinimumPointsDivisor"]</label>
+            <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
+            <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
+            <small>
+                @Localizer["Config:FlagMinimumPointsDivisor:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="FlagHalfPointsSubmissionCount">@Localizer["Config:FlagHalfPointsSubmissionCount"]</label>
+            <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
+            <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
+            <small>
+                @Localizer["Config:FlagHalfPointsSubmissionCount:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="ScoreboardEntryCount">@Localizer["Config:ScoreboardEntryCount"]</label>
+            <input asp-for="ScoreboardEntryCount" class="form-control">
+            <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
+            <small>
+                @Localizer["Config:ScoreboardEntryCount:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="ScoreboardCachedSeconds">@Localizer["Config:ScoreboardCachedSeconds"]</label>
+            <input asp-for="ScoreboardCachedSeconds" class="form-control">
+            <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
+            <small>
+                @Localizer["Config:ScoreboardCachedSeconds:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="GroupSelectionPageText">@Localizer["Config:GroupSelectionPageText"]</label>
+            <textarea asp-for="GroupSelectionPageText" class="form-control font-monospace" rows="5"></textarea>
+            <span asp-validation-for="GroupSelectionPageText" class="text-danger"></span>
+            <p class="small">
+                @Localizer["Config:GroupSelectionPageText:Description"]
+            </p>
+            <a class="btn btn-sm btn-outline-secondary" asp-controller="Authentication" asp-action="ShowGroupForm" target="_blank">
+                <i class="bi bi-arrow-return-right"></i>
+                @Localizer["Config:GroupSelectionPageText:ShowPage"]
+            </a>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="GroupSizeMin">@Localizer["Config:GroupSizeMin"]</label>
+            <input asp-for="GroupSizeMin" class="form-control">
+            <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
+            <small>
+                @Localizer["Config:GroupSizeMin:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="GroupSizeMax">@Localizer["Config:GroupSizeMax"]</label>
+            <input asp-for="GroupSizeMax" class="form-control">
+            <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
+            <small>
+                @Localizer["Config:GroupSizeMax:Description"]
+            </small>
+        </div>
+        <div class="mb-3">
+            <div class="form-check">
+                <input asp-for="PassAsGroup" class="form-check-input">
+                <label asp-for="PassAsGroup" class="form-check-label">@Localizer["Config:PassAsGroup"]</label>
+                <br>
+                <small>
+                    @Localizer["Config:PassAsGroup:Description"]
+                </small>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">@Localizer["SaveChanges"]</button>
+    </form>
+
+    <h2 class="header">
+        @Localizer["Visualization:Title"]
+    </h2>
+    <hr class="header-secondary">
+
+    <p>
+        @Localizer["Visualization:Description"]
+    </p>
+    <div class="mb-3">
+        <label class="form-label" for="input-flag-base-points">@Localizer["Visualization:BasePoints"]</label>
+        <input type="number" min="1" id="input-flag-base-points" class="form-control" value="100">
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="input-group-count">@Localizer["Visualization:GroupCount"]</label>
+        <input type="number" min="1" id="input-group-count" class="form-control" value="@(Math.Max(groupCount, 2))">
+    </div>
+    <canvas id="canvas-flag-points"></canvas>
+
+    <script>
+    let flagPointsChart;
+    
+    let inputFlagBasePoints = document.getElementById("input-flag-base-points");
+    let inputGroupCount = document.getElementById("input-group-count");
+    let inputFlagMinimumPointsDivisor = document.getElementById("input-flag-minimum-points-divisor");
+    let inputFlagHalfPointsSubmissionCount = document.getElementById("input-flag-half-points-submission-count");
+
+    function updateChart()
+    {
+        let flagBasePoints = Number(inputFlagBasePoints.value);
+        let groupCount = Number(inputGroupCount.value);
+        let minPointsDivisor = Number(inputFlagMinimumPointsDivisor.value);
+        let minPointsMultiplier = 1.0 / minPointsDivisor;
+        let halfPointsSubmissionCount = Number(inputFlagHalfPointsSubmissionCount.value);
+        
+        // Update labels
+        console.log('g', groupCount);
+        while (flagPointsChart.data.labels.length < groupCount)
+            flagPointsChart.data.labels.push(flagPointsChart.data.labels.length + 1);
+        while (flagPointsChart.data.labels.length > groupCount)
+            flagPointsChart.data.labels.pop();
+        
+        flagPointsChart.data.datasets[0].data.length = groupCount;
+
+        for (let i = 0; i < groupCount; i++) 
+        {
+            // For details see FlagPointService
+            let amb = flagBasePoints - minPointsMultiplier * flagBasePoints;
+            let points = (amb * Math.pow(2, (-i) / (halfPointsSubmissionCount - 1.0))) + (minPointsMultiplier * flagBasePoints);
+            flagPointsChart.data.datasets[0].data[i] = Math.round(points);
+        }
+
+        flagPointsChart.update();
+    }
+
+    window.onload = function() 
+    {
+        let chartConfig = {
+            type: 'line',
+            data: {
+                labels: [1, 2], // dummy
+                datasets: [
+                    {
+                        label: "@Localizer["Visualization:FlagPoints"]",
+                        data: new Array(2).fill(0), // dummy
+                        borderColor: "#003e80",
+                        fill: false,
+                        lineTension: 0
+                    }
+                ]
+            },
+            options: {
+                animation: {
+                    duration: 100   
+                }
+            }
+        };
+        
+        let ctx = document.getElementById("canvas-flag-points").getContext('2d');
+        flagPointsChart = new Chart(ctx, chartConfig);
+        updateChart();
+    }
+
+    inputFlagBasePoints.addEventListener("change", updateChart);
+    inputGroupCount.addEventListener("change", updateChart);
+    inputFlagMinimumPointsDivisor.addEventListener("change", updateChart);
+    inputFlagHalfPointsSubmissionCount.addEventListener("change", updateChart);
+    </script>
+
+    <h1 class="mt-4">
+        @Localizer["Status:Title"]
+    </h1>
+    <hr class="header-secondary">
+                                                                                                     
+    <p>@Localizer["Status:BuildVersion"]: @buildVersion</p>
+    <p>@Localizer["Status:CurrentCulture"]: @CultureInfo.CurrentCulture.ToString()</p>
+    <p>@Localizer["Status:Timezone"]: @TimeZoneInfo.Local.ToString()</p>
+    <p>@Localizer["Status:Now"]: @DateTime.Now.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+    <p>@Localizer["Status:NowUtc"]: @DateTime.UtcNow.ToString(DateTimeFormats.DateAndTimeSeconds)</p>
+</div>
+
+<!-- Necessary includes -->
+
+@section ScriptsHead
+{
+    <script asp-src-include="~/lib/chartjs/js/chart.umd.js" asp-append-version="true"></script>
+}

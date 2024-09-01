@@ -41,13 +41,6 @@ footer {
   }
 }
 
-// HACK: Fix line height in badges with icons
-.badge {
-  &.badge-icon {
-    line-height: 1.5;
-  }
-}
-
 
 /* Navigation */
 
@@ -58,29 +51,25 @@ footer {
 
 /* Headlines */
 
-h1.header {
-  margin-top: 2*$spacer;
+h1 {
   color: $primary;
 }
 
-h2.header {
-  margin-top: 2*$spacer;
+h2 {
   color: $primary;
 }
 
-h2.subheader {
-  margin-top: 1.0*$spacer;
-  color: $primary;
-}
-
-hr.header {
-  opacity: 1;
+div.header-rule {
+  width: 100%;
   height: 2px;
   background-color: $primary;
+  margin-top: 0.5*$spacer;
+  margin-bottom: 1.5*$spacer;
 }
 
 hr.header-secondary {
   height: 1px;
+  margin-top: 0.25*$spacer;
 }
 
 
@@ -106,6 +95,10 @@ hr.header-secondary {
 
 .cursor-link {
   cursor: pointer;
+}
+
+.cursor-help {
+  cursor: help;
 }
 
 

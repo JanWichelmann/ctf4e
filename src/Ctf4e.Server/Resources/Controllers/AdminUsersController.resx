@@ -38,4 +38,8 @@
         <value>An error occured while updating the user. Check the log for more details.</value>
         <comment>EditUserAsync:UnknownError</comment>
     </data>
+    <data name="EditUserAsync:NotFound" xml:space="preserve">
+        <value>This user does not exist.</value>
+        <comment>EditUserAsync:NotFound</comment>
+    </data>
 </root>

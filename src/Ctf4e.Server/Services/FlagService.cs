@@ -8,14 +8,16 @@ using AutoMapper.QueryableExtensions;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Ctf4e.Server.Models;
+using Ctf4e.Server.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ctf4e.Server.Services;
 
 public interface IFlagService
 {
-    IAsyncEnumerable<Flag> GetFlagsAsync(int labId);
-    Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken);
+    Task<List<Flag>> GetFlagsAsync(int labId, CancellationToken cancellationToken);
+    Task<List<AdminFlagListEntry>> GetFlagListAsync(int labId, CancellationToken cancellationToken);
+    Task<Flag> FindFlagByIdAsync(int id, CancellationToken cancellationToken);
     Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken);
     Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken);
     Task DeleteFlagAsync(int id, CancellationToken cancellationToken);
@@ -24,127 +26,55 @@ public interface IFlagService
     Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken);
 }
 
-public class FlagService : IFlagService
+public class FlagService(CtfDbContext dbContext, IMapper mapper, GenericCrudService<CtfDbContext> genericCrudService) : IFlagService
 {
-    private readonly CtfDbContext _dbContext;
-    private readonly IMapper _mapper;
-
-    public FlagService(CtfDbContext dbContext, IMapper mapper)
+    public Task<List<Flag>> GetFlagsAsync(int labId, CancellationToken cancellationToken)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
-
-    public IAsyncEnumerable<Flag> GetFlagsAsync(int labId)
-    {
-        return _dbContext.Flags.AsNoTracking()
+        return dbContext.Flags.AsNoTracking()
             .Where(f => f.LabId == labId)
             .OrderBy(f => f.Id)
-            .ProjectTo<Flag>(_mapper.ConfigurationProvider)
-            .AsAsyncEnumerable();
+            .ProjectTo<Flag>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
-
-    public Task<Flag> GetFlagAsync(int id, CancellationToken cancellationToken)
+    
+    public Task<List<AdminFlagListEntry>> GetFlagListAsync(int labId, CancellationToken cancellationToken)
     {
-        return _dbContext.Flags.AsNoTracking()
-            .Where(f => f.Id == id)
-            .ProjectTo<Flag>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
+        return dbContext.Flags.AsNoTracking()
+            .Where(f => f.LabId == labId)
+            .OrderBy(f => f.Id)
+            .ProjectTo<AdminFlagListEntry>(mapper.ConfigurationProvider)
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken)
-    {
-        // Create new Flag
-        var flagEntity = _dbContext.Flags.Add(new FlagEntity
-        {
-            Code = flag.Code,
-            Description = flag.Description,
-            BasePoints = flag.BasePoints,
-            IsBounty = flag.IsBounty,
-            LabId = flag.LabId,
-            Submissions = new List<FlagSubmissionEntity>()
-        }).Entity;
+    public Task<Flag> FindFlagByIdAsync(int id, CancellationToken cancellationToken)
+        => genericCrudService.FindAsync<Flag, FlagEntity>(f => f.Id == id, cancellationToken);
 
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<Flag>(flagEntity);
-    }
+    public Task<Flag> CreateFlagAsync(Flag flag, CancellationToken cancellationToken)
+        => genericCrudService.CreateAsync<Flag, FlagEntity>(flag, cancellationToken);
 
-    public async Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken)
-    {
-        // Try to retrieve existing entity
-        var flagEntity = await _dbContext.Flags.FindAsync(new object[] { flag.Id }, cancellationToken);
-        if(flagEntity == null)
-            throw new InvalidOperationException("Diese Flag existiert nicht");
+    public Task UpdateFlagAsync(Flag flag, CancellationToken cancellationToken)
+        => genericCrudService.UpdateAsync<Flag, FlagEntity>(flag, cancellationToken);
 
-        // Update entry
-        flagEntity.Code = flag.Code;
-        flagEntity.Description = flag.Description;
-        flagEntity.BasePoints = flag.BasePoints;
-        flagEntity.IsBounty = flag.IsBounty;
-        flagEntity.LabId = flag.LabId;
+    public Task DeleteFlagAsync(int id, CancellationToken cancellationToken)
+        => genericCrudService.DeleteAsync<FlagEntity>([id], cancellationToken);
 
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task DeleteFlagAsync(int id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Delete entry
-            _dbContext.Flags.Remove(new FlagEntity { Id = id });
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
-        {
-            // Most likely a non-existent entry, just forward the exception
-            throw;
-        }
-    }
-
-    public async Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken)
-    {
-        // Create new submission
-        var submissionEntity = _dbContext.FlagSubmissions.Add(new FlagSubmissionEntity
-        {
-            FlagId = submission.FlagId,
-            UserId = submission.UserId,
-            SubmissionTime = submission.SubmissionTime
-        }).Entity;
-
-        // Apply changes
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<FlagSubmission>(submissionEntity);
-    }
+    public Task<FlagSubmission> CreateFlagSubmissionAsync(FlagSubmission submission, CancellationToken cancellationToken)
+        => genericCrudService.CreateAsync<FlagSubmission, FlagSubmissionEntity>(submission, cancellationToken);
 
     public async Task DeleteFlagSubmissionAsync(int userId, int flagId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Delete entry
-            _dbContext.FlagSubmissions.Remove(new FlagSubmissionEntity { UserId = userId, FlagId = flagId });
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException)
-        {
-            // Most likely a non-existent entry, just forward the exception
-            throw;
-        }
-    }
+        => await genericCrudService.DeleteAsync<FlagSubmissionEntity>([flagId, userId], cancellationToken);
 
     public async Task<bool> SubmitFlagAsync(int userId, int labId, string flagCode, CancellationToken cancellationToken)
     {
         // Try to find matching flag
-        var flag = await _dbContext.Flags.AsNoTracking()
-            .FirstOrDefaultAsync(f => f.LabId == labId && f.Code == flagCode, cancellationToken);
+        var flag = await genericCrudService.FindAsync<FlagEntity>(f => f.LabId == labId && f.Code == flagCode, cancellationToken);
         if(flag == null)
             return false;
 
         try
         {
             // Create new submission
-            _dbContext.FlagSubmissions.Add(new FlagSubmissionEntity
+            dbContext.FlagSubmissions.Add(new FlagSubmissionEntity
             {
                 FlagId = flag.Id,
                 UserId = userId,
@@ -152,13 +82,18 @@ public class FlagService : IFlagService
             });
 
             // Apply changes
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
             return true;
         }
-        catch(Exception ex) when(ex is DbUpdateConcurrencyException || ex is InvalidOperationException || ex is DbUpdateException)
+        catch(DbUpdateException)
         {
             // Most likely the flag has been submitted already
             return false;
         }
+    }
+
+    public static void RegisterMappings(Profile mappingProfile)
+    {
+        mappingProfile.CreateMap<FlagEntity, AdminFlagListEntry>();
     }
 }

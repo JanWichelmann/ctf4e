@@ -1,153 +1,141 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
+using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/flags")]
 [AnyUserPrivilege(UserPrivileges.ViewLabs)]
-public class AdminFlagsController : ControllerBase
+public class AdminFlagsController(IUserService userService, IFlagService flagService)
+    : ControllerBase<AdminFlagsController>(userService)
 {
-    private readonly IStringLocalizer<AdminFlagsController> _localizer;
-    private readonly ILogger<AdminFlagsController> _logger;
-    private readonly IFlagService _flagService;
-    private readonly ILabService _labService;
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminFlags;
 
-    public AdminFlagsController(IUserService userService, IStringLocalizer<AdminFlagsController> localizer, ILogger<AdminFlagsController> logger, IFlagService flagService, ILabService labService)
-        : base("~/Views/AdminFlags.cshtml", userService)
+    private async Task<IActionResult> RenderAsync(string viewPath, int labId, object model)
     {
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _flagService = flagService ?? throw new ArgumentNullException(nameof(flagService));
-        _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-    }
+        var labService = HttpContext.RequestServices.GetRequiredService<ILabService>();
 
-    private async Task<IActionResult> RenderAsync(ViewType viewType, int labId, object model)
-    {
-        var lab = await _labService.GetLabAsync(labId, HttpContext.RequestAborted);
+        var lab = await labService.FindLabByIdAsync(labId, HttpContext.RequestAborted);
         if(lab == null)
             return RedirectToAction("RenderLabList", "AdminLabs");
         ViewData["Lab"] = lab;
 
-        ViewData["ViewType"] = viewType;
-        return await RenderViewAsync(MenuItems.AdminFlags, model);
+        return await RenderViewAsync(viewPath, model);
     }
 
     [HttpGet]
     public async Task<IActionResult> RenderFlagListAsync(int labId)
     {
-        var flags = await _flagService.GetFlagsAsync(labId).ToListAsync();
+        var flags = await flagService.GetFlagListAsync(labId, HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, labId, flags);
+        return await RenderAsync("~/Views/Admin/Flags/Index.cshtml", labId, flags);
     }
 
-    private async Task<IActionResult> ShowEditFlagFormAsync(int? id, Flag flag = null)
+    private async Task<IActionResult> ShowEditFlagFormAsync(AdminFlagInputModel flagInput)
     {
-        // Retrieve by ID, if no object from a failed POST was passed
-        if(id != null)
-        {
-            flag = await _flagService.GetFlagAsync(id.Value, HttpContext.RequestAborted);
-            if(flag == null)
-                return RedirectToAction("RenderLabList", "AdminLabs");
-        }
-
-        if(flag == null)
-            return RedirectToAction("RenderLabList", "AdminLabs");
-
-        return await RenderAsync(ViewType.Edit, flag.LabId, flag);
+        return await RenderAsync("~/Views/Admin/Flags/Edit.cshtml", flagInput.LabId, flagInput);
     }
 
     [HttpGet("edit")]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public Task<IActionResult> ShowEditFlagFormAsync(int id)
+    public async Task<IActionResult> ShowEditFlagFormAsync(int id, [FromServices] IMapper mapper)
     {
-        return ShowEditFlagFormAsync(id, null);
+        var flag = await flagService.FindFlagByIdAsync(id, HttpContext.RequestAborted);
+        if(flag == null)
+        {
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["ShowEditFlagFormAsync:NotFound"]);
+            return RedirectToAction("RenderLabList", "AdminLabs");
+        }
+
+        var flagInput = mapper.Map<AdminFlagInputModel>(flag);
+        return await ShowEditFlagFormAsync(flagInput);
     }
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> EditFlagAsync(Flag flagData)
+    public async Task<IActionResult> EditFlagAsync(AdminFlagInputModel flagInput, [FromServices] IMapper mapper)
     {
         // Check input
-        if(!ModelState.IsValid)
+        if(!ModelState.IsValid || flagInput.Id == null)
         {
-            AddStatusMessage(_localizer["EditFlagAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowEditFlagFormAsync(null, flagData);
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditFlagAsync:InvalidInput"]);
+            return await ShowEditFlagFormAsync(flagInput);
         }
 
         try
         {
             // Retrieve edited flag from database and apply changes
-            var flag = await _flagService.GetFlagAsync(flagData.Id, HttpContext.RequestAborted);
-            flag.Code = flagData.Code;
-            flag.Description = flagData.Description;
-            flag.BasePoints = flagData.BasePoints;
-            flag.IsBounty = flagData.IsBounty;
-            await _flagService.UpdateFlagAsync(flag, HttpContext.RequestAborted);
+            var flag = await flagService.FindFlagByIdAsync(flagInput.Id.Value, HttpContext.RequestAborted);
+            if(flag == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["EditFlagAsync:NotFound"]);
+                return RedirectToAction("RenderLabList", "AdminLabs");
+            }
 
-            AddStatusMessage(_localizer["EditFlagAsync:Success"], StatusMessageTypes.Success);
-            return await RenderFlagListAsync(flag.LabId);
+            mapper.Map(flagInput, flag);
+
+            await flagService.UpdateFlagAsync(flag, HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["EditFlagAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderFlagList", new { labId = flag.LabId });
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Edit flag");
-            AddStatusMessage(_localizer["EditFlagAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowEditFlagFormAsync(null, flagData);
+            GetLogger().LogError(ex, "Edit flag");
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditFlagAsync:UnknownError"]);
+            return await ShowEditFlagFormAsync(flagInput);
         }
+    }
+
+    private async Task<IActionResult> ShowCreateFlagFormAsync(AdminFlagInputModel flagInput)
+    {
+        return await RenderAsync("~/Views/Admin/Flags/Create.cshtml", flagInput.LabId, flagInput);
     }
 
     [HttpGet("create")]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> ShowCreateFlagFormAsync(int labId, Flag flag = null)
-    {
-        return await RenderAsync(ViewType.Create, labId, flag);
-    }
+    public Task<IActionResult> ShowCreateFlagFormAsync(int labId)
+        => ShowCreateFlagFormAsync(new AdminFlagInputModel { LabId = labId });
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
-    public async Task<IActionResult> CreateFlagAsync(Flag flagData, string returnToForm)
+    public async Task<IActionResult> CreateFlagAsync(AdminFlagInputModel flagInput, string returnToForm, [FromServices] IMapper mapper)
     {
         // Check input
         if(!ModelState.IsValid)
         {
-            AddStatusMessage(_localizer["CreateFlagAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateFlagAsync:InvalidInput"]);
+            return await ShowCreateFlagFormAsync(flagInput);
         }
 
         try
         {
             // Create flag
-            var flag = new Flag
-            {
-                Code = flagData.Code,
-                Description = flagData.Description,
-                BasePoints = flagData.BasePoints,
-                IsBounty = flagData.IsBounty,
-                LabId = flagData.LabId
-            };
-            await _flagService.CreateFlagAsync(flag, HttpContext.RequestAborted);
+            var flag = mapper.Map<Flag>(flagInput);
+            await flagService.CreateFlagAsync(flag, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["CreateFlagAsync:Success"], StatusMessageTypes.Success);
-                
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["CreateFlagAsync:Success"]) { AutoHide = true };
+
             if(!string.IsNullOrEmpty(returnToForm))
-                return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
-            return await RenderFlagListAsync(flagData.LabId);
+                return await ShowCreateFlagFormAsync(flagInput);
+            return RedirectToAction("RenderFlagList", new { labId = flag.LabId });
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Create flag");
-            AddStatusMessage(_localizer["CreateFlagAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowCreateFlagFormAsync(flagData.LabId, flagData);
+            GetLogger().LogError(ex, "Create flag");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateFlagAsync:UnknownError"]);
+            return await ShowCreateFlagFormAsync(flagInput);
         }
     }
 
@@ -156,31 +144,38 @@ public class AdminFlagsController : ControllerBase
     [AnyUserPrivilege(UserPrivileges.EditLabs)]
     public async Task<IActionResult> DeleteFlagAsync(int id)
     {
-        // Input check
-        var flag = await _flagService.GetFlagAsync(id, HttpContext.RequestAborted);
-        if(flag == null)
-            return RedirectToAction("RenderLabList", "AdminLabs");
-
+        int labId = -1;
         try
         {
-            // Delete flag
-            await _flagService.DeleteFlagAsync(id, HttpContext.RequestAborted);
+            // Input check
+            var flag = await flagService.FindFlagByIdAsync(id, HttpContext.RequestAborted);
+            if(flag == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteFlagAsync:NotFound"]);
+                return RedirectToAction("RenderLabList", "AdminLabs");
+            }
 
-            AddStatusMessage(_localizer["DeleteFlagAsync:Success"], StatusMessageTypes.Success);
+            labId = flag.LabId;
+
+            // Delete flag
+            await flagService.DeleteFlagAsync(id, HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DeleteFlagAsync:Success"]) { AutoHide = true };
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Delete flag");
-            AddStatusMessage(_localizer["DeleteFlagAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Delete flag");
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteFlagAsync:UnknownError"]);
         }
 
-        return await RenderFlagListAsync(flag.LabId);
+        if(labId == -1)
+            return RedirectToAction("RenderLabList", "AdminLabs");
+        return RedirectToAction("RenderFlagList", new { labId });
     }
 
-    public enum ViewType
+    public static void RegisterMappings(Profile mappingProfile)
     {
-        List,
-        Edit,
-        Create
+        mappingProfile.CreateMap<Flag, AdminFlagInputModel>();
+        mappingProfile.CreateMap<AdminFlagInputModel, Flag>();
     }
 }

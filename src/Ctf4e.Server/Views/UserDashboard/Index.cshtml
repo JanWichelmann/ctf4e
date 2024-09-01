@@ -1,0 +1,278 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Ctf4e.Server.Models
+@using Ctf4e.Server.Authorization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model UserDashboard
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var currentUser = (User)ViewData["CurrentUser"];
+}
+
+<div class="container">
+
+    <div class="row mt-4 align-items-center">
+        <div class="col">
+            <h1 class="mb-0 @(!Model.CurrentLab.Visible ? "fst-italic" : "")">
+                @if(!Model.CurrentLab.Visible)
+                {
+                    <i class="bi bi-lock-fill" title="@Localizer["LabHidden"]"></i>
+                }
+                @Localizer["Lab"]: @Model.CurrentLab.Name
+            </h1>
+        </div>
+        @if(Model.HasPassed)
+        {
+            <div class="col-auto">
+                <span class="badge bg-success" style="font-size: 1rem;">
+                    <i class="bi bi-check-circle"></i>
+                    @Localizer["Passed"]
+                </span>
+            </div>
+        }
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @Localizer["SwitchLab"]
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    @foreach(var lab in Model.Labs)
+                    {
+                        if(!lab.Visible && !currentUser.Privileges.HasAnyPrivilege(UserPrivileges.ViewAdminScoreboard | UserPrivileges.ViewLabs))
+                        {
+                            continue;
+                        }
+
+                        <li>
+                            <a class="dropdown-item @(!lab.Visible ? "fst-italic" : "") @(lab.LabId == Model.LabId ? "fw-bold" : "")" asp-controller="UserDashboard" asp-action="RenderLabPage" asp-route-labId="@lab.LabId">
+                                @lab.Name
+                                @if(lab.Active)
+                                {
+                                    <span class="badge bg-secondary ms-1">@Localizer["LabExecutionStatus:Start:Title"]</span>
+                                }
+                                @if(!lab.Visible)
+                                {
+                                    <i class="bi bi-lock-fill ms-1" title="@Localizer["LabHidden"]"></i>
+                                }
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="header-rule"></div>
+
+    @switch(Model.LabExecutionStatus)
+    {
+        case LabExecutionStatus.Undefined:
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Undefined:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:Undefined:Text"]</p>
+            break;
+        case LabExecutionStatus.BeforeStart:
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:BeforeStart:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:BeforeStart:Text", Model.LabExecution.Start]</p>
+            break;
+        case LabExecutionStatus.Start:
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:Start:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:Start:Text", Model.LabExecution.End]</p>
+            break;
+        case LabExecutionStatus.End:
+            <span class="badge bg-secondary">@Localizer["LabExecutionStatus:End:Title"]</span>
+            <p>@Localizer["LabExecutionStatus:End:Text"]</p>
+            break;
+    }
+
+    @if(Model.LabExecutionStatus != LabExecutionStatus.Undefined && Model.LabExecutionStatus != LabExecutionStatus.BeforeStart)
+    {
+        <a class="btn btn-primary" asp-controller="UserDashboard" asp-action="CallLabServer" asp-route-labId="@Model.LabId" target="_blank">
+            <i class="bi bi-arrow-return-right"></i>
+            <i class="bi bi-hdd-network"></i>
+            @Localizer["LabServer"]
+        </a>
+    }
+
+    <h2 class="header">
+        @Localizer["Exercises"]
+    </h2>
+    <hr class="header-secondary">
+
+    @foreach(var exercise in Model.Exercises)
+    {
+        <div class="card mb-2">
+            <div class="card-header cursor-link collapsed" id="exercise@(exercise.Exercise.Id)-card-heading" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card">
+                <div class="row">
+                    <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#exercise@(exercise.Exercise.Id)-card"></div>
+                    <div class="col">
+                        @exercise.Exercise.Name
+                        @if(exercise.Exercise.IsMandatory)
+                        {
+                            <span class="badge bg-info">@Localizer["Mandatory"]</span>
+                        }
+                    </div>
+                    <div class="col col-auto ms-auto">
+                        <span class="badge bg-light text-dark border border-1 me-1">@Localizer["Exercises:SubmissionStatistic", exercise.ValidTries, exercise.Tries]</span>
+                        @if(exercise.GroupMemberHasPassed)
+                        {
+                            <span class="badge bg-primary me-1">@exercise.Points @Localizer["Points"]</span>
+                        }
+                        @if(exercise.Passed)
+                        {
+                            <i class="bi bi-check-circle-fill text-success" title="@Localizer["Solved"]"></i>
+                        }
+                        else if(exercise.Tries > 0)
+                        {
+                            <i class="bi bi-x-circle-fill text-danger" title="@Localizer["NotSolved"]"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-circle text-secondary" title="@Localizer["NotTried"]"></i>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="exercise@(exercise.Exercise.Id)-card" class="collapse">
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col">@Localizer["ExerciseSubmissions:Timestamp"]</th>
+                            <th scope="col">@Localizer["ExerciseSubmissions:GroupMember"]</th>
+                            <th scope="col" class="text-center">@Localizer["ExerciseSubmissions:Correct"]</th>
+                            <th scope="col" class="text-end">@Localizer["ExerciseSubmissions:Points"]</th>
+                        </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                        @{
+                            bool sawPassedSolution = false;
+                        }
+                        @foreach(var submission in exercise.Submissions)
+                        {
+                            <tr class="@((sawPassedSolution && Model.PassAsGroupEnabled) ? "row-muted" : "")">
+                                <td>
+                                    @submission.SubmissionTime.ToString("G")
+                                    @if(submission.SubmissionTime < (Model.LabExecution?.Start ?? DateTime.MinValue) || submission.SubmissionTime >= (Model.LabExecution?.End ?? DateTime.MinValue))
+                                    {
+                                        <span class="badge bg-warning" title="@Localizer["ExerciseSubmissions:Invalid"]">@Localizer["Invalid"]</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Model.GroupMembers[submission.UserId]
+                                </td>
+                                <td class="text-center">
+                                    @if(submission.ExercisePassed)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle-fill text-danger"></i>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if(!sawPassedSolution)
+                                    {
+                                        if(submission.ExercisePassed)
+                                        {
+                                            <span class="text-success fw-bold">
+                                                +@exercise.Exercise.BasePoints
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger fw-bold">
+                                                &minus;@(submission.Weight * exercise.Exercise.PenaltyPoints)
+                                            </span>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+
+                            if(submission.ExercisePassed)
+                            {
+                                sawPassedSolution = true;
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        <h2 class="header">
+            @Localizer["Flags"]
+        </h2>
+        <hr class="header-secondary">
+    </div>
+
+    <form asp-controller="UserDashboard" asp-action="SubmitFlag" asp-route-labId="@Model.LabId" class="row mb-3">
+        <div class="col-12 col-sm">
+            <input type="text" class="form-control font-monospace" name="code" placeholder="CTF{en7er-f14g-c0de-here}">
+        </div>
+
+        <div class="col mt-2 mt-sm-0">
+            <button type="submit" class="btn btn-primary">
+                <span class="bi bi-flag-fill"></span>
+                @Localizer["Flags:SubmitFlag"]
+            </button>
+        </div>
+    </form>
+    <div class="card mb-2">
+        <div class="card-header cursor-link collapsed" id="flag-list-card-heading" style="cursor: pointer" data-bs-toggle="collapse" data-bs-target="#flag-list-card">
+            <div class="row">
+                <div class="col col-auto collapsible-card-heading collapsed pe-0" data-bs-toggle="collapse" data-bs-target="#flag-list-card"></div>
+                <div class="col">
+                    @Localizer["Flags:FoundFlags"]
+                </div>
+                <div class="col col-auto ms-auto">
+                    <span class="badge bg-light text-dark">
+                        @Localizer["Flags:SubmissionStatistic", Model.ValidFoundFlagsCount, Model.FoundFlagsCount]
+                    </span>
+                    @if(Model.HasFoundAllFlags)
+                    {
+                        <span class="badge bg-success text-light py-2">
+                            <i class="bi bi-check-circle"></i>
+                            @Localizer["Flags:AllFound"]
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="flag-list-card" class="collapse">
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">@Localizer["FlagSubmissions:Timestamp"]</th>
+                        <th scope="col">@Localizer["FlagSubmissions:Code"]</th>
+                        <th scope="col">@Localizer["FlagSubmissions:GroupMember"]</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                    @foreach(var flagSubmission in Model.Flags)
+                    {
+                        <tr>
+                            <td>
+                                @flagSubmission.SubmissionTime.ToString("G")
+                                @if(!flagSubmission.Valid)
+                                {
+                                    <span class="badge bg-warning" title="@Localizer["FlagSubmissions:Invalid"]">@Localizer["Invalid"]</span>
+                                }
+                            </td>
+                            <td>
+                                <code>@flagSubmission.FlagCode</code>
+                            </td>
+                            <td>
+                                @Model.GroupMembers[flagSubmission.UserId]
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

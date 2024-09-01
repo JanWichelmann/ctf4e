@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Data;
@@ -69,14 +69,20 @@ var builder = WebApplication.CreateBuilder(args);
     // Memory cache
     builder.Services.AddMemoryCache();
 
-    // Model/database builder.Services
+    // Model/database service
+    builder.Services.AddScoped<GenericCrudService<CtfDbContext>>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IGroupService, GroupService>();
     builder.Services.AddScoped<ISlotService, SlotService>();
     builder.Services.AddScoped<ILabService, LabService>();
     builder.Services.AddScoped<IExerciseService, ExerciseService>();
     builder.Services.AddScoped<IFlagService, FlagService>();
     builder.Services.AddScoped<ILabExecutionService, LabExecutionService>();
+    
+    // Scoreboard computations
+    builder.Services.AddSingleton<ScoreboardUtilities>();
     builder.Services.AddScoped<IScoreboardService, ScoreboardService>();
+    builder.Services.AddScoped<IAdminScoreboardService, AdminScoreboardService>();
 
     // Markdown parser
     builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
@@ -84,7 +90,7 @@ var builder = WebApplication.CreateBuilder(args);
     // Configuration service
     builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
 
-    // Export/sync builder.Services
+    // Export/sync services
     builder.Services.AddScoped<IMoodleService, MoodleService>();
     builder.Services.AddScoped<ICsvService, CsvService>();
     builder.Services.AddScoped<IDumpService, DumpService>();
@@ -196,6 +202,10 @@ var app = builder.Build();
     // Build HTTP request pipeline
 
     var mainOptions = app.Services.GetRequiredService<IOptions<MainOptions>>().Value;
+    
+    // Initialize singleton services
+    var scoreboardUtilities = app.Services.GetRequiredService<ScoreboardUtilities>();
+    await scoreboardUtilities.InitFlagPointParametersAsync(app.Services.GetRequiredService<IServiceScopeFactory>(), CancellationToken.None);
     
     // Verbose stack traces
     if(app.Environment.IsDevelopment())

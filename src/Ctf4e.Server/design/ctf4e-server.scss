@@ -2,6 +2,9 @@
 
 $blue: #003e80 !default;
 
+$color-deleted: #ffeef0;
+$color-new: #e6ffed;
+
 
 /* Override heading sizes */
 
@@ -41,13 +44,6 @@ footer {
   }
 }
 
-// HACK: Fix line height in badges with icons
-.badge {
-  &.badge-icon {
-    line-height: 1.5;
-  }
-}
-
 
 /* Navigation */
 
@@ -58,8 +54,11 @@ footer {
 
 /* Headlines */
 
-h1.header {
-  margin-top: 2*$spacer;
+h1 {
+  color: $primary;
+}
+
+h2 {
   color: $primary;
 }
 
@@ -68,19 +67,17 @@ h2.header {
   color: $primary;
 }
 
-h2.subheader {
-  margin-top: 1.0*$spacer;
-  color: $primary;
-}
-
-hr.header {
-  opacity: 1;
+div.header-rule {
+  width: 100%;
   height: 2px;
   background-color: $primary;
+  margin-top: 0.5*$spacer;
+  margin-bottom: 1.5*$spacer;
 }
 
 hr.header-secondary {
   height: 1px;
+  margin-top: 0.25*$spacer;
 }
 
 
@@ -108,6 +105,67 @@ hr.header-secondary {
 
 .cursor-help {
   cursor: help;
+}
+
+
+/* Special row backgrounds */
+
+tr.row-muted {
+  td, th {
+    opacity: 0.5;
+  }
+}
+
+tr.row-muted:hover {
+  td, th {
+    opacity: 1;
+  }
+}
+
+tr.row-highlighted {
+  td, th {
+    background-color: $gray-100;
+  }
+}
+
+tr.row-deleted {
+  td, th {
+    background: $color-deleted;
+  }
+}
+
+tr.row-added {
+  td, th {
+    background: $color-new;
+  }
+}
+
+
+/* Vertical align for entire table */
+
+table.table-align-middle th {
+  vertical-align: middle;
+}
+
+table.table-align-middle td {
+  vertical-align: middle;
+}
+
+
+/* Sticky table headers */
+
+tr.row-sticky th {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Make sure other table elements are drawn below this */
+  background: $gray-100;
+  background-clip: padding-box; /* Do not override border */
+}
+
+@include color-mode(dark) {
+  tr.row-sticky th {
+    background: $gray-800;
+  }
 }
 
 

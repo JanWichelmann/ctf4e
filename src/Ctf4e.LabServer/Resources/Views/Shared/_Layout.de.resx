@@ -46,4 +46,8 @@
         <value>Sprache wechseln</value>
         <comment>ChangeLanguage</comment>
     </data>
+    <data name="ToggleNavbar" xml:space="preserve">
+        <value>Navigation umschalten</value>
+        <comment>ToggleNavbar</comment>
+    </data>
 </root>

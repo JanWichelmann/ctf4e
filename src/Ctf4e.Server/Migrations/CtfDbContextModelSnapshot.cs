@@ -17,7 +17,7 @@ namespace Ctf4e.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -218,6 +218,9 @@ namespace Ctf4e.Server.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
+
+                    b.Property<int>("SortIndex")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Visible")
                         .HasColumnType("tinyint(1)");

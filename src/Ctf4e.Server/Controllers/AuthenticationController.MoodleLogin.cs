@@ -21,7 +21,7 @@ public partial class AuthenticationController
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser != null)
-            return await ShowRedirectAsync(null);
+            return await RedirectAsync(null);
 
         // Parse and check request
         MoodleAuthenticationMessageData authData;
@@ -32,13 +32,13 @@ public partial class AuthenticationController
                 Request,
                 moodleLtiOptions.Value.OAuthConsumerKey,
                 moodleLtiOptions.Value.OAuthSharedSecret,
-                _serviceProvider.GetRequiredService<ILogger<MoodleAuthenticationTools>>()
+                HttpContext.RequestServices.GetRequiredService<ILogger<MoodleAuthenticationTools>>()
             );
         }
         catch(SecurityException)
         {
-            AddStatusMessage(_localizer["LoginMoodleAsync:InvalidLogin"], StatusMessageTypes.Error);
-            return await RenderAsync(ViewType.Login);
+            AddStatusMessage(StatusMessageType.Error, Localizer["LoginMoodleAsync:InvalidLogin"]);
+            return await ShowLoginFormAsync(null);
         }
 
         // Does the user exist already?
@@ -54,10 +54,10 @@ public partial class AuthenticationController
                 PasswordHash = "",
                 GroupFindingCode = RandomStringGenerator.GetRandomString(10),
                 IsTutor = firstUser,
-                Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default      
+                Privileges = firstUser ? UserPrivileges.All : UserPrivileges.Default
             };
             user = await _userService.CreateUserAsync(newUser, HttpContext.RequestAborted);
-            AddStatusMessage(_localizer["LoginMoodleAsync:AccountCreationSuccess"], StatusMessageTypes.Success);
+            GetLogger().LogInformation("Created new user {UserId} (Moodle: {MoodleName})", user.Id, user.MoodleName);
         }
 
         // Sign in user
@@ -67,7 +67,7 @@ public partial class AuthenticationController
         loginRateLimiter.ResetRateLimit(user.Id);
 
         // Done
-        AddStatusMessage(_localizer["LoginMoodleAsync:Success"], StatusMessageTypes.Success);
-        return await ShowRedirectAsync(null);
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["LoginMoodleAsync:Success"]) { AutoHide = true };
+        return await RedirectAsync(null);
     }
 }

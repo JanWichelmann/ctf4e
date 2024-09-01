@@ -1,290 +1,269 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
+using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Models;
 using Ctf4e.Server.Services;
-using Ctf4e.Server.ViewModels;
 using Ctf4e.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace Ctf4e.Server.Controllers;
 
 [Route("admin/executions")]
 [AnyUserPrivilege(UserPrivileges.ViewLabExecutions)]
-public class AdminLabExecutionsController : ControllerBase
+public class AdminLabExecutionsController(IUserService userService, ILabExecutionService labExecutionService, ILabService labService, IGroupService groupService, ISlotService slotService)
+    : ControllerBase<AdminLabExecutionsController>(userService)
 {
-    private readonly IUserService _userService;
-    private readonly IStringLocalizer<AdminLabExecutionsController> _localizer;
-    private readonly ILogger<AdminLabExecutionsController> _logger;
-    private readonly ILabExecutionService _labExecutionService;
-    private readonly ISlotService _slotService;
-    private readonly ILabService _labService;
-
-    public AdminLabExecutionsController(IUserService userService, IStringLocalizer<AdminLabExecutionsController> localizer, ILogger<AdminLabExecutionsController> logger, ILabExecutionService labExecutionService, ISlotService slotService, ILabService labService)
-        : base("~/Views/AdminLabExecutions.cshtml", userService)
-    {
-        _userService = userService ?? throw new ArgumentNullException(nameof(userService));
-        _localizer = localizer ?? throw new ArgumentNullException(nameof(localizer));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _labExecutionService = labExecutionService ?? throw new ArgumentNullException(nameof(labExecutionService));
-        _slotService = slotService ?? throw new ArgumentNullException(nameof(slotService));
-        _labService = labService ?? throw new ArgumentNullException(nameof(labService));
-    }
-
-    private Task<IActionResult> RenderAsync(ViewType viewType, object model)
-    {
-        ViewData["ViewType"] = viewType;
-        return RenderViewAsync(MenuItems.AdminLabExecutions, model);
-    }
+    protected override MenuItems ActiveMenuItem => MenuItems.AdminLabExecutions;
 
     [HttpGet]
     public async Task<IActionResult> RenderLabExecutionListAsync()
     {
         // Pass data
-        var labExecutions = await _labExecutionService.GetLabExecutionsAsync().ToListAsync();
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        var labExecutions = await labExecutionService.GetLabExecutionListAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.List, labExecutions);
+        ViewData["Labs"] = await labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await slotService.GetSlotsAsync(HttpContext.RequestAborted);
+        ViewData["Groups"] = await groupService.GetGroupsAsync(HttpContext.RequestAborted);
+
+        return await RenderViewAsync("~/Views/Admin/LabExecutions/Index.cshtml", labExecutions);
     }
 
-    private async Task<IActionResult> ShowEditLabExecutionFormAsync(int? groupId, int? labId, AdminLabExecution labExecutionData = null)
+    private async Task<IActionResult> ShowEditLabExecutionFormAsync(AdminLabExecutionInputModel labExecutionInput)
     {
-        // Retrieve by ID, if no object from a failed POST was passed
-        if(groupId != null && labId != null)
-        {
-            labExecutionData = new AdminLabExecution
-            {
-                LabExecution = await _labExecutionService.GetLabExecutionAsync(groupId.Value, labId.Value, HttpContext.RequestAborted)
-            };
-            if(labExecutionData.LabExecution == null)
-            {
-                AddStatusMessage(_localizer["ShowEditLabExecutionFormAsync:NotFound"], StatusMessageTypes.Error);
-                return await RenderLabExecutionListAsync();
-            }
-        }
+        ViewData["Labs"] = await labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Groups"] = await groupService.GetGroupsAsync(HttpContext.RequestAborted);
 
-        if(labExecutionData?.LabExecution == null)
-        {
-            AddStatusMessage(_localizer["ShowEditLabExecutionFormAsync:MissingParameter"], StatusMessageTypes.Error);
-            return await RenderLabExecutionListAsync();
-        }
+        ViewData["EditMode"] = true;
 
-        return await RenderAsync(ViewType.Edit, labExecutionData);
+        return await RenderViewAsync("~/Views/Admin/LabExecutions/Edit.cshtml", labExecutionInput);
     }
 
     [HttpGet("edit")]
     [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public Task<IActionResult> ShowEditLabExecutionFormAsync(int groupId, int labId)
+    public async Task<IActionResult> ShowEditLabExecutionFormAsync(int groupId, int labId, [FromServices] IMapper mapper)
     {
-        // Always show warning
-        AddStatusMessage(_localizer["ShowEditLabExecutionFormAsync:Warning"], StatusMessageTypes.Warning);
+        var labExecution = await labExecutionService.FindLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
+        if(labExecution == null)
+        {
+            AddStatusMessage(StatusMessageType.Error, Localizer["ShowEditLabExecutionFormAsync:NotFound"]);
+            return await RenderLabExecutionListAsync();
+        }
 
-        return ShowEditLabExecutionFormAsync(groupId, labId, null);
+        var labExecutionInput = mapper.Map<AdminLabExecutionInputModel>(labExecution);
+
+        // Always show warning
+        AddStatusMessage(StatusMessageType.Warning, Localizer["ShowEditLabExecutionFormAsync:Warning"]);
+        return await ShowEditLabExecutionFormAsync(labExecutionInput);
     }
 
     [HttpPost("edit")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> EditLabExecutionAsync(AdminLabExecution labExecutionData)
+    public async Task<IActionResult> EditLabExecutionAsync(AdminLabExecutionInputModel labExecutionInput, [FromServices] IMapper mapper)
     {
         // Check input
-        if(!ModelState.IsValid || !(labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
+        if(!ModelState.IsValid || !(labExecutionInput.Start < labExecutionInput.End))
         {
-            AddStatusMessage(_localizer["EditLabExecutionAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowEditLabExecutionFormAsync(null, null, labExecutionData);
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditLabExecutionAsync:InvalidInput"]);
+            return await ShowEditLabExecutionFormAsync(labExecutionInput);
         }
 
         try
         {
             // Retrieve edited labExecution from database and apply changes
-            var labExecution = await _labExecutionService.GetLabExecutionAsync(labExecutionData.LabExecution.GroupId, labExecutionData.LabExecution.LabId, HttpContext.RequestAborted);
-            labExecution.Start = labExecutionData.LabExecution.Start;
-            labExecution.End = labExecutionData.LabExecution.End;
-            await _labExecutionService.UpdateLabExecutionAsync(labExecution, HttpContext.RequestAborted);
+            var labExecution = await labExecutionService.FindLabExecutionAsync(labExecutionInput.GroupId, labExecutionInput.LabId, HttpContext.RequestAborted);
+            if(labExecution == null)
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["EditLabExecutionAsync:NotFound"]);
+                return RedirectToAction("RenderLabExecutionList");
+            }
 
-            AddStatusMessage(_localizer["EditLabExecutionAsync:Success"], StatusMessageTypes.Success);
+            mapper.Map(labExecutionInput, labExecution);
+
+            await labExecutionService.UpdateLabExecutionAsync(labExecution, HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["EditLabExecutionAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderLabExecutionList");
         }
         catch(InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Edit lab execution");
-            AddStatusMessage(_localizer["EditLabExecutionAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowEditLabExecutionFormAsync(null, null, labExecutionData);
+            GetLogger().LogError(ex, "Edit lab execution");
+            AddStatusMessage(StatusMessageType.Error, Localizer["EditLabExecutionAsync:UnknownError"]);
+            return await ShowEditLabExecutionFormAsync(labExecutionInput);
         }
-
-        return await RenderLabExecutionListAsync();
     }
 
-    [HttpGet("create/slot")]
-    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> ShowCreateLabExecutionForSlotFormAsync(AdminLabExecution labExecutionData = null)
+    private async Task<IActionResult> ShowCreateLabExecutionFormAsync(AdminLabExecutionInputModel labExecutionInput)
     {
-        // Pass lists
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
-        ViewData["Slots"] = await _slotService.GetSlotsAsync().ToListAsync();
+        ViewData["Labs"] = await labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Groups"] = await groupService.GetGroupsAsync(HttpContext.RequestAborted);
 
-        return await RenderAsync(ViewType.CreateForSlot, labExecutionData);
+        return await RenderViewAsync("~/Views/Admin/LabExecutions/Create.cshtml", labExecutionInput);
     }
+    
+    [HttpGet("create")]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
+    public Task<IActionResult> ShowCreateLabExecutionFormAsync()
+        => ShowCreateLabExecutionFormAsync(null);
 
-    [HttpPost("create/slot")]
+    [HttpPost("create")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> CreateLabExecutionForSlotAsync(AdminLabExecution labExecutionData)
+    public async Task<IActionResult> CreateLabExecutionAsync(AdminLabExecutionInputModel labExecutionInput, [FromServices] IMapper mapper)
     {
         // Check input
         if(!ModelState.IsValid
-           || !await _labService.LabExistsAsync(labExecutionData.LabExecution.LabId, HttpContext.RequestAborted)
-           || !await _slotService.SlotExistsAsync(labExecutionData.SlotId, HttpContext.RequestAborted)
-           || !(labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
+           || !await labService.LabExistsAsync(labExecutionInput.LabId, HttpContext.RequestAborted)
+           || !await groupService.GroupExistsAsync(labExecutionInput.GroupId, HttpContext.RequestAborted)
+           || !(labExecutionInput.Start < labExecutionInput.End))
         {
-            AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowCreateLabExecutionForSlotFormAsync(labExecutionData);
-        }
-
-        try
-        {
-            // Start lab for each of the groups
-            foreach(var group in await _userService.GetGroupsInSlotAsync(labExecutionData.SlotId).ToListAsync())
-            {
-                try
-                {
-                    var labExecution = new LabExecution
-                    {
-                        GroupId = group.Id,
-                        LabId = labExecutionData.LabExecution.LabId,
-                        Start = labExecutionData.LabExecution.Start,
-                        End = labExecutionData.LabExecution.End
-                    };
-                    await _labExecutionService.CreateLabExecutionAsync(labExecution, labExecutionData.OverrideExisting, HttpContext.RequestAborted);
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(ex, "Create lab execution for group in slot");
-                    AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:ErrorGroup", group.Id, group.DisplayName], StatusMessageTypes.Warning);
-                }
-            }
-
-            AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:Success"], StatusMessageTypes.Success);
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex, "Create lab execution for slot");
-            AddStatusMessage(_localizer["CreateLabExecutionForSlotAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowCreateLabExecutionForSlotFormAsync(labExecutionData);
-        }
-
-        return await RenderLabExecutionListAsync();
-    }
-
-    [HttpGet("create/group")]
-    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> ShowCreateLabExecutionForGroupFormAsync(AdminLabExecution labExecutionData = null)
-    {
-        // Pass lists
-        ViewData["Labs"] = await _labService.GetLabsAsync().ToListAsync();
-        ViewData["Groups"] = await _userService.GetGroupsAsync().ToListAsync();
-
-        return await RenderAsync(ViewType.CreateForGroup, labExecutionData);
-    }
-
-    [HttpPost("create/group")]
-    [ValidateAntiForgeryToken]
-    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> CreateLabExecutionForGroupAsync(AdminLabExecution labExecutionData)
-    {
-        // Check input
-        if(!ModelState.IsValid
-           || !await _labService.LabExistsAsync(labExecutionData.LabExecution.LabId, HttpContext.RequestAborted)
-           || !await _userService.GroupExistsAsync(labExecutionData.LabExecution.GroupId, HttpContext.RequestAborted)
-           || !(labExecutionData.LabExecution.Start < labExecutionData.LabExecution.End))
-        {
-            AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:InvalidInput"], StatusMessageTypes.Error);
-            return await ShowCreateLabExecutionForGroupFormAsync(labExecutionData);
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateLabExecutionAsync:InvalidInput"]);
+            return await ShowCreateLabExecutionFormAsync(labExecutionInput);
         }
 
         // Start lab for group
         try
         {
-            var labExecution = new LabExecution
-            {
-                GroupId = labExecutionData.LabExecution.GroupId,
-                LabId = labExecutionData.LabExecution.LabId,
-                Start = labExecutionData.LabExecution.Start,
-                End = labExecutionData.LabExecution.End
-            };
-            await _labExecutionService.CreateLabExecutionAsync(labExecution, labExecutionData.OverrideExisting, HttpContext.RequestAborted);
+            var labExecution = mapper.Map<LabExecution>(labExecutionInput);
+            await labExecutionService.CreateLabExecutionAsync(labExecution, false, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:Success"], StatusMessageTypes.Success);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["CreateLabExecutionAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderLabExecutionList");
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Create lab execution for group");
-            AddStatusMessage(_localizer["CreateLabExecutionForGroupAsync:UnknownError"], StatusMessageTypes.Error);
-            return await ShowCreateLabExecutionForGroupFormAsync(labExecutionData);
+            GetLogger().LogError(ex, "Create lab execution for group");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateLabExecutionAsync:UnknownError"]);
+            return await ShowCreateLabExecutionFormAsync(labExecutionInput);
         }
-
-        return await RenderLabExecutionListAsync();
     }
+    
+    private async Task<IActionResult> ShowCreateMultipleLabExecutionsFormAsync(AdminLabExecutionMultipleInputModel labExecutionInput)
+    {
+        ViewData["Labs"] = await labService.GetLabsAsync(HttpContext.RequestAborted);
+        ViewData["Slots"] = await slotService.GetSlotsAsync(HttpContext.RequestAborted);
 
-    [HttpPost("delete/group")]
+        return await RenderViewAsync("~/Views/Admin/LabExecutions/CreateMultiple.cshtml", labExecutionInput);
+    }
+    
+    [HttpGet("create-multiple")]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
+    public Task<IActionResult> ShowCreateMultipleLabExecutionsFormAsync()
+        => ShowCreateMultipleLabExecutionsFormAsync(null);
+    
+    [HttpPost("create-multiple")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> DeleteLabExecutionForGroupAsync(int groupId, int labId)
+    public async Task<IActionResult> CreateMultipleLabExecutionsAsync(AdminLabExecutionMultipleInputModel labExecutionInput, [FromServices] IMapper mapper)
     {
-        // Input check
-        var labExecution = await _labExecutionService.GetLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
-        if(labExecution == null)
+        // Check input
+        if(!ModelState.IsValid
+           || !await labService.LabExistsAsync(labExecutionInput.LabId, HttpContext.RequestAborted)
+           || !await slotService.SlotExistsAsync(labExecutionInput.SlotId, HttpContext.RequestAborted)
+           || !(labExecutionInput.Start < labExecutionInput.End))
         {
-            AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:NotFound"], StatusMessageTypes.Error);
-            return await RenderLabExecutionListAsync();
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateMultipleLabExecutionsAsync:InvalidInput"]);
+            return await ShowCreateMultipleLabExecutionsFormAsync(labExecutionInput);
         }
 
+        bool anyIssue = false;
         try
         {
-            // Delete execution
-            await _labExecutionService.DeleteLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
+            // Start lab for each of the groups
+            foreach(var group in await groupService.GetGroupsInSlotAsync(labExecutionInput.SlotId, HttpContext.RequestAborted))
+            {
+                try
+                {
+                    var labExecution = mapper.Map<LabExecution>(labExecutionInput);
+                    labExecution.GroupId = group.Id;
+                    await labExecutionService.CreateLabExecutionAsync(labExecution, labExecutionInput.OverrideExisting, HttpContext.RequestAborted);
+                }
+                catch(Exception ex)
+                {
+                    GetLogger().LogError(ex, "Create lab execution for group in slot");
+                    AddStatusMessage(StatusMessageType.Warning, Localizer["CreateMultipleLabExecutionsAsync:ErrorGroup", group.Id, group.DisplayName]);
+                    anyIssue = true;
+                }
+            }
 
-            AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:Success"], StatusMessageTypes.Success);
+            if(anyIssue)
+            {
+                AddStatusMessage(StatusMessageType.Success, Localizer["CreateMultipleLabExecutionsAsync:Success"]);
+                return await RenderLabExecutionListAsync();
+            }
+            else
+            {
+                PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["CreateMultipleLabExecutionsAsync:Success"]) { AutoHide = true };
+                return RedirectToAction("RenderLabExecutionList");
+            }
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Delete lab execution for group");
-            AddStatusMessage(_localizer["DeleteLabExecutionForGroupAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Create lab execution for slot");
+            AddStatusMessage(StatusMessageType.Error, Localizer["CreateMultipleLabExecutionsAsync:UnknownError"]);
+            return await ShowCreateMultipleLabExecutionsFormAsync(labExecutionInput);
         }
-
-        return await RenderLabExecutionListAsync();
     }
 
-    [HttpPost("delete/slot")]
+    [HttpPost("delete")]
     [ValidateAntiForgeryToken]
     [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
-    public async Task<IActionResult> DeleteLabExecutionForSlotAsync(int slotId, int labId)
+    public async Task<IActionResult> DeleteLabExecutionAsync(int groupId, int labId)
+    {
+        try
+        {
+            // Input check
+            var labExecution = await labExecutionService.FindLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
+            if(labExecution == null)
+            {
+                AddStatusMessage(StatusMessageType.Error, Localizer["DeleteLabExecutionAsync:NotFound"]);
+                return RedirectToAction("RenderLabExecutionList");
+            }
+            
+            // Delete execution
+            await labExecutionService.DeleteLabExecutionAsync(groupId, labId, HttpContext.RequestAborted);
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DeleteLabExecutionAsync:Success"]) { AutoHide = true };
+        }
+        catch(Exception ex)
+        {
+            GetLogger().LogError(ex, "Delete lab execution for group");
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteLabExecutionAsync:UnknownError"]);
+        }
+
+        return RedirectToAction("RenderLabExecutionList");
+    }
+
+    [HttpPost("delete-multiple")]
+    [ValidateAntiForgeryToken]
+    [AnyUserPrivilege(UserPrivileges.EditLabExecutions)]
+    public async Task<IActionResult> DeleteMultipleLabExecutionsAsync(int slotId, int labId)
     {
         try
         {
             // Delete all executions for the given slot
-            await _labExecutionService.DeleteLabExecutionsForSlotAsync(slotId, labId, HttpContext.RequestAborted);
+            await labExecutionService.DeleteLabExecutionsForSlotAsync(slotId, labId, HttpContext.RequestAborted);
 
-            AddStatusMessage(_localizer["DeleteLabExecutionForSlotAsync:Success"], StatusMessageTypes.Success);
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["DeleteMultipleLabExecutionsAsync:Success"]) { AutoHide = true };
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Delete lab execution for slot");
-            AddStatusMessage(_localizer["DeleteLabExecutionForSlotAsync:UnknownError"], StatusMessageTypes.Error);
+            GetLogger().LogError(ex, "Delete lab execution for slot");
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["DeleteMultipleLabExecutionsAsync:UnknownError"]);
         }
 
-        return await RenderLabExecutionListAsync();
+        return RedirectToAction("RenderLabExecutionList");
     }
 
-    public enum ViewType
+    public static void RegisterMappings(Profile profile)
     {
-        List,
-        Edit,
-        CreateForSlot,
-        CreateForGroup
+        profile.CreateMap<LabExecution, AdminLabExecutionInputModel>();
+        profile.CreateMap<AdminLabExecutionInputModel, LabExecution>();
+        
+        profile.CreateMap<AdminLabExecutionMultipleInputModel, LabExecution>();
     }
 }

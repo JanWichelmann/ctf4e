@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Docker.DotNet" Version="3.125.15" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.3" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
   </ItemGroup>
 
@@ -22,79 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Ctf4e.Api\Ctf4e.Api.csproj" />
     <ProjectReference Include="..\Ctf4e.Utilities\Ctf4e.Utilities.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Update="Resources\Views\Shared\_Layout.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>_Layout.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\Shared\_Layout.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>_Layout.de.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\Authentication.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Authentication.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\Authentication.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Authentication.de.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\AdminConfiguration.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AdminConfiguration.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\AdminConfiguration.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AdminConfiguration.de.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\Group.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Group.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Views\Group.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Group.de.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Controllers\AdminConfigurationController.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AdminConfigurationController.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Controllers\AdminConfigurationController.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AdminConfigurationController.de.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Controllers\AuthenticationController.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AuthenticationController.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Controllers\AuthenticationController.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AuthenticationController.de.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Controllers\GroupController.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>GroupController.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Controllers\GroupController.de.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>GroupController.de.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   
   <ItemGroup>
@@ -124,65 +51,6 @@
   
   <ItemGroup>
     <Compile Include="$(IntermediateOutputPath)BuildVersionInfo.cs" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\Views\Shared\_Layout.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>_Layout.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Shared\_Layout.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>_Layout.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Authentication.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Authentication.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Authentication.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Authentication.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\AdminConfiguration.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfiguration.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\AdminConfiguration.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfiguration.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Group.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Group.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Views\Group.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Group.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfigurationController.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AdminConfigurationController.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AdminConfigurationController.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AuthenticationController.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\AuthenticationController.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AuthenticationController.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\GroupController.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>GroupController.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Controllers\GroupController.de.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>GroupController.de.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

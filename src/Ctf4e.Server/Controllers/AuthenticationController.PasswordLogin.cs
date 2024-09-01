@@ -18,7 +18,7 @@ public partial class AuthenticationController
         // Already logged in?
         var currentUser = await GetCurrentUserAsync();
         if(currentUser != null)
-            return await ShowRedirectAsync(referer);
+            return await RedirectAsync(referer);
 
         // Find user
         bool success = false;
@@ -28,10 +28,9 @@ public partial class AuthenticationController
             // Check rate limit
             if(loginRateLimiter.CheckRateLimitHit(user.Id))
             {
-                AddStatusMessage(_localizer["PasswordLoginAsync:RateLimited"], StatusMessageTypes.Error);
+                AddStatusMessage(StatusMessageType.Error, Localizer["PasswordLoginAsync:RateLimited"]);
                 ViewData["LoginFormUsername"] = username;
-                ViewData["Referer"] = referer;
-                return await RenderAsync(ViewType.Login);
+                return await ShowLoginFormAsync(referer);
             }
 
             // Check password
@@ -51,10 +50,9 @@ public partial class AuthenticationController
         // Return to login form, if the login attempt failed
         if(!success)
         {
-            AddStatusMessage(_localizer["PasswordLoginAsync:WrongPassword"], StatusMessageTypes.Error);
+            AddStatusMessage(StatusMessageType.Error, Localizer["PasswordLoginAsync:WrongPassword"]);
             ViewData["LoginFormUsername"] = username;
-            ViewData["Referer"] = referer;
-            return await RenderAsync(ViewType.Login);
+            return await ShowLoginFormAsync(referer);
         }
 
         // Sign in user
@@ -64,7 +62,7 @@ public partial class AuthenticationController
         loginRateLimiter.ResetRateLimit(user.Id);
 
         // Done
-        AddStatusMessage(_localizer["PasswordLoginAsync:Success"], StatusMessageTypes.Success);
-        return await ShowRedirectAsync(referer);
+        PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["PasswordLoginAsync:Success"]) { AutoHide = true };
+        return await RedirectAsync(referer);
     }
 }

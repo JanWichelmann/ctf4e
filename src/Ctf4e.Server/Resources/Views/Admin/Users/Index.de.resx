@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="HtmlTitle" xml:space="preserve">
+        <value>Benutzer verwalten</value>
+        <comment>HtmlTitle</comment>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Benutzer verwalten</value>
+        <comment>Title</comment>
+    </data>
+    <data name="Users:Id" xml:space="preserve">
+        <value>ID</value>
+        <comment>Users:Id</comment>
+    </data>
+    <data name="Users:Name" xml:space="preserve">
+        <value>Name</value>
+        <comment>Users:Name</comment>
+    </data>
+    <data name="Users:GroupCode" xml:space="preserve">
+        <value>Gruppencode</value>
+        <comment>Users:GroupCode</comment>
+    </data>
+    <data name="Users:GroupId" xml:space="preserve">
+        <value>Gruppe</value>
+        <comment>Users:GroupId</comment>
+    </data>
+    <data name="Users:IsTutor" xml:space="preserve">
+        <value>Tutor</value>
+        <comment>Users:Status</comment>
+    </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Aktionen</value>
+        <comment>Actions</comment>
+    </data>
+    <data name="Users:EditGroup:Text" xml:space="preserve">
+        <value>Gruppe bearbeiten</value>
+        <comment>Users:EditGroup:Text</comment>
+    </data>
+    <data name="Users:IsTutor:Text" xml:space="preserve">
+        <value>Ist Tutor und wird daher nicht im Scoreboard angezeigt</value>
+        <comment>Users:IsTutor:Text</comment>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Bearbeiten</value>
+        <comment>Edit</comment>
+    </data>
+    <data name="Login" xml:space="preserve">
+        <value>Login</value>
+        <comment>Login</comment>
+    </data>
+    <data name="Users:MoodleAccount" xml:space="preserve">
+        <value>Moodle-Account</value>
+        <comment>Users:MoodleAccount</comment>
+    </data>
+    <data name="Users:Privileges:Admin" xml:space="preserve">
+        <value>Adminrechte</value>
+    </data>
+    <data name="Users:Privileges:EditUsers" xml:space="preserve">
+        <value>Benutzer bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:ViewUsers" xml:space="preserve">
+        <value>Benutzer einsehen</value>
+    </data>
+    <data name="Users:Privileges:EditAdminScoreboard" xml:space="preserve">
+        <value>Admin-Scoreboard bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:ViewAdminScoreboard" xml:space="preserve">
+        <value>Admin-Scoreboard einsehen</value>
+    </data>
+    <data name="Users:Privileges:EditConfiguration" xml:space="preserve">
+        <value>Konfiguration bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:EditGroups" xml:space="preserve">
+        <value>Gruppen bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:EditLabExecutions" xml:space="preserve">
+        <value>Aktive Praktika bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:EditLabs" xml:space="preserve">
+        <value>Praktika/Aufgaben/Flags bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:ViewLabs" xml:space="preserve">
+        <value>Praktika/Aufgaben/Flags einsehen</value>
+    </data>
+    <data name="Users:Privileges:EditSlots" xml:space="preserve">
+        <value>Terminslots bearbeiten</value>
+    </data>
+    <data name="Users:Privileges:ViewSlots" xml:space="preserve">
+        <value>Terminslots einsehen</value>
+    </data>
+    <data name="Users:Privileges:ViewLabExecutions" xml:space="preserve">
+        <value>Aktive Praktika einsehen</value>
+    </data>
+    <data name="Users:Privileges:ViewGroups" xml:space="preserve">
+        <value>Gruppen einsehen</value>
+    </data>
+    <data name="Users:Privileges:LoginAsLabServerAdmin" xml:space="preserve">
+        <value>Admin-Zugriff auf Praktikumsserver (via Admin-Scoreboard)</value>
+    </data>
+    <data name="Users:Privileges:TransferResults" xml:space="preserve">
+        <value>Ergebnisse synchronisieren/importieren/exportieren</value>
+    </data>
+    <data name="Users:Privileges" xml:space="preserve">
+        <value>Zugriffsrechte</value>
+    </data>
+</root>
