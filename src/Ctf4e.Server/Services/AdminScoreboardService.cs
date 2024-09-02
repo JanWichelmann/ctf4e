@@ -35,7 +35,7 @@ public class AdminScoreboardService(
             SlotId = slotId
         };
 
-        bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await configurationService.PassAsGroup.GetAsync(cancellationToken);
 
         var groupIdLookup = await dbContext.Users.AsNoTracking()
             .Where(u => u.GroupId != null && u.Group.SlotId == slotId)
@@ -97,7 +97,7 @@ public class AdminScoreboardService(
         // Consistent time
         var now = DateTime.Now;
 
-        bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await configurationService.PassAsGroup.GetAsync(cancellationToken);
 
         var labExecutions = await dbContext.LabExecutions.AsNoTracking()
             .Where(l => l.LabId == labId && l.Group.SlotId == slotId)
@@ -286,7 +286,7 @@ public class AdminScoreboardService(
         // Consistent time
         var now = DateTime.Now;
 
-        bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await configurationService.PassAsGroup.GetAsync(cancellationToken);
 
         // Retrieve group and all relevant users
         // For simplicity, we use the same code paths for group and user dashboards, and filter the submission lists later in the view.

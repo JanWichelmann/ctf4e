@@ -20,7 +20,7 @@
     </h1>
     <div class="header-rule"></div>
 
-    @Html.Raw(MarkdownService.GetRenderedHtml(await ConfigurationService.GetGroupSelectionPageTextAsync(Context.RequestAborted)))
+    @Html.Raw(MarkdownService.GetRenderedHtml(await ConfigurationService.GroupSelectionPageText.GetAsync(Context.RequestAborted)))
 
     <p>
         @Localizer["YourCode", currentUser.GroupFindingCode]

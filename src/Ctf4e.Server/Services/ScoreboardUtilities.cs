@@ -35,8 +35,8 @@ public class ScoreboardUtilities
         var configurationService = scope.ServiceProvider.GetRequiredService<IConfigurationService>();
 
         // Retrieve constants
-        _minPointsMultiplier = 1.0 / await configurationService.GetFlagMinimumPointsDivisorAsync(cancellationToken);
-        _halfPointsCount = await configurationService.GetFlagHalfPointsSubmissionCountAsync(cancellationToken);
+        _minPointsMultiplier = 1.0 / await configurationService.FlagMinimumPointsDivisor.GetAsync(cancellationToken);
+        _halfPointsCount = await configurationService.FlagHalfPointsSubmissionCount.GetAsync(cancellationToken);
     }
 
     /// <summary>

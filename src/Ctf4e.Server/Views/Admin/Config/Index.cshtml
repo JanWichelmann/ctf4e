@@ -7,7 +7,7 @@
     ViewData["Title"] = Localizer["HtmlTitle"];
 
     int groupCount = (int)ViewData["GroupCount"];
-    
+
     string buildVersion = (string)ViewData["BuildVersion"] ?? "Development build";
 }
 
@@ -18,59 +18,115 @@
     <div class="header-rule"></div>
 
     <form asp-controller="AdminConfiguration" asp-action="UpdateConfig" method="post">
-        <div class="mb-3">
-            <label class="form-label" asp-for="PageTitle">@Localizer["Config:PageTitle"]</label>
-            <input asp-for="PageTitle" class="form-control">
-            <span asp-validation-for="PageTitle" class="text-danger"></span>
-            <small>
-                @Localizer["Config:PageTitle:Description"]
-            </small>
+        <h2 class="mt-5">@Localizer["Title:General"]</h2>
+        <hr class="header-secondary">
+
+        <div class="row mb-3">
+            <div class="col-md mb-3 mb-md-0">
+                <label class="form-label" asp-for="PageTitle">@Localizer["Config:PageTitle"]</label>
+                <input asp-for="PageTitle" class="form-control">
+                <span asp-validation-for="PageTitle" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:PageTitle:Description"]
+                </p>
+            </div>
+            <div class="col-md">
+                <label class="form-label" asp-for="NavbarTitle">@Localizer["Config:NavbarTitle"]</label>
+                <input asp-for="NavbarTitle" class="form-control">
+                <span asp-validation-for="NavbarTitle" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:NavbarTitle:Description"]
+                </p>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="NavbarTitle">@Localizer["Config:NavbarTitle"]</label>
-            <input asp-for="NavbarTitle" class="form-control">
-            <span asp-validation-for="NavbarTitle" class="text-danger"></span>
-            <small>
-                @Localizer["Config:NavbarTitle:Description"]
-            </small>
+
+        <h2 class="mt-4">@Localizer["Title:Grading"]</h2>
+        <hr class="header-secondary">
+
+        <div class="row mb-3">
+            <div class="col-md mb-3 mb-md-0">
+                <div class="form-check form-switch">
+                    <input asp-for="PassAsGroup" class="form-check-input">
+                    <label asp-for="PassAsGroup" class="form-check-label">@Localizer["Config:PassAsGroup"]</label>
+                    <p class="form-text">
+                        @Localizer["Config:PassAsGroup:Description"]
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="FlagMinimumPointsDivisor">@Localizer["Config:FlagMinimumPointsDivisor"]</label>
-            <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
-            <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
-            <small>
-                @Localizer["Config:FlagMinimumPointsDivisor:Description"]
-            </small>
+
+        <h2 class="mt-4">@Localizer["Title:FlagPoints"]</h2>
+        <hr class="header-secondary">
+
+        <div class="row mb-3">
+            <div class="col-md mb-3 mb-md-0">
+                <label class="form-label" asp-for="FlagMinimumPointsDivisor">@Localizer["Config:FlagMinimumPointsDivisor"]</label>
+                <input asp-for="FlagMinimumPointsDivisor" id="input-flag-minimum-points-divisor" class="form-control">
+                <span asp-validation-for="FlagMinimumPointsDivisor" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:FlagMinimumPointsDivisor:Description"]
+                </p>
+            </div>
+            <div class="col-md">
+                <label class="form-label" asp-for="FlagHalfPointsSubmissionCount">@Localizer["Config:FlagHalfPointsSubmissionCount"]</label>
+                <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
+                <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:FlagHalfPointsSubmissionCount:Description"]
+                </p>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="FlagHalfPointsSubmissionCount">@Localizer["Config:FlagHalfPointsSubmissionCount"]</label>
-            <input asp-for="FlagHalfPointsSubmissionCount" id="input-flag-half-points-submission-count" class="form-control">
-            <span asp-validation-for="FlagHalfPointsSubmissionCount" class="text-danger"></span>
-            <small>
-                @Localizer["Config:FlagHalfPointsSubmissionCount:Description"]
-            </small>
+
+        <h2 class="mt-4">@Localizer["Title:Scoreboard"]</h2>
+        <hr class="header-secondary">
+
+        <div class="row mb-3">
+            <div class="col-md mb-3 mb-md-0">
+                <label class="form-label" asp-for="ScoreboardEntryCount">@Localizer["Config:ScoreboardEntryCount"]</label>
+                <input asp-for="ScoreboardEntryCount" class="form-control">
+                <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:ScoreboardEntryCount:Description"]
+                </p>
+            </div>
+            <div class="col-md">
+                <label class="form-label" asp-for="ScoreboardCachedSeconds">@Localizer["Config:ScoreboardCachedSeconds"]</label>
+                <input asp-for="ScoreboardCachedSeconds" class="form-control">
+                <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:ScoreboardCachedSeconds:Description"]
+                </p>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="ScoreboardEntryCount">@Localizer["Config:ScoreboardEntryCount"]</label>
-            <input asp-for="ScoreboardEntryCount" class="form-control">
-            <span asp-validation-for="ScoreboardEntryCount" class="text-danger"></span>
-            <small>
-                @Localizer["Config:ScoreboardEntryCount:Description"]
-            </small>
+
+        <h2 class="mt-4">@Localizer["Title:GroupCreation"]</h2>
+        <hr class="header-secondary">
+
+        <div class="row mb-3">
+            <div class="col-md mb-3 mb-md-0">
+
+                <label class="form-label" asp-for="GroupSizeMin">@Localizer["Config:GroupSizeMin"]</label>
+                <input asp-for="GroupSizeMin" class="form-control">
+                <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:GroupSizeMin:Description"]
+                </p>
+            </div>
+            <div class="col-md">
+                <label class="form-label" asp-for="GroupSizeMax">@Localizer["Config:GroupSizeMax"]</label>
+                <input asp-for="GroupSizeMax" class="form-control">
+                <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
+                <p class="form-text">
+                    @Localizer["Config:GroupSizeMax:Description"]
+                </p>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="ScoreboardCachedSeconds">@Localizer["Config:ScoreboardCachedSeconds"]</label>
-            <input asp-for="ScoreboardCachedSeconds" class="form-control">
-            <span asp-validation-for="ScoreboardCachedSeconds" class="text-danger"></span>
-            <small>
-                @Localizer["Config:ScoreboardCachedSeconds:Description"]
-            </small>
-        </div>
+
         <div class="mb-3">
             <label class="form-label" asp-for="GroupSelectionPageText">@Localizer["Config:GroupSelectionPageText"]</label>
             <textarea asp-for="GroupSelectionPageText" class="form-control font-monospace" rows="5"></textarea>
             <span asp-validation-for="GroupSelectionPageText" class="text-danger"></span>
-            <p class="small">
+            <p class="form-text">
                 @Localizer["Config:GroupSelectionPageText:Description"]
             </p>
             <a class="btn btn-sm btn-outline-secondary" asp-controller="Authentication" asp-action="ShowGroupForm" target="_blank">
@@ -78,37 +134,13 @@
                 @Localizer["Config:GroupSelectionPageText:ShowPage"]
             </a>
         </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="GroupSizeMin">@Localizer["Config:GroupSizeMin"]</label>
-            <input asp-for="GroupSizeMin" class="form-control">
-            <span asp-validation-for="GroupSizeMin" class="text-danger"></span>
-            <small>
-                @Localizer["Config:GroupSizeMin:Description"]
-            </small>
-        </div>
-        <div class="mb-3">
-            <label class="form-label" asp-for="GroupSizeMax">@Localizer["Config:GroupSizeMax"]</label>
-            <input asp-for="GroupSizeMax" class="form-control">
-            <span asp-validation-for="GroupSizeMax" class="text-danger"></span>
-            <small>
-                @Localizer["Config:GroupSizeMax:Description"]
-            </small>
-        </div>
-        <div class="mb-3">
-            <div class="form-check">
-                <input asp-for="PassAsGroup" class="form-check-input">
-                <label asp-for="PassAsGroup" class="form-check-label">@Localizer["Config:PassAsGroup"]</label>
-                <br>
-                <small>
-                    @Localizer["Config:PassAsGroup:Description"]
-                </small>
-            </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">@Localizer["SaveChanges"]</button>
+        <button type="submit" class="btn btn-primary mt-5">@Localizer["SaveChanges"]</button>
     </form>
 
-    <h2 class="header">
+    <div class="header-rule"></div>
+
+    <h2 class="mt-5">
         @Localizer["Visualization:Title"]
     </h2>
     <hr class="header-secondary">
@@ -196,11 +228,11 @@
     inputFlagHalfPointsSubmissionCount.addEventListener("change", updateChart);
     </script>
 
-    <h1 class="mt-4">
+    <h2 class="mt-5">
         @Localizer["Status:Title"]
-    </h1>
+    </h2>
     <hr class="header-secondary">
-                                                                                                     
+
     <p>@Localizer["Status:BuildVersion"]: @buildVersion</p>
     <p>@Localizer["Status:CurrentCulture"]: @CultureInfo.CurrentCulture.ToString()</p>
     <p>@Localizer["Status:Timezone"]: @TimeZoneInfo.Local.ToString()</p>

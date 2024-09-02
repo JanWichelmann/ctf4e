@@ -55,8 +55,8 @@ public partial class AuthenticationController
         try
         {
             // Filter group codes
-            var groupSizeMin = await configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted);
-            var groupSizeMax = await configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted);
+            var groupSizeMin = await configurationService.GroupSizeMin.GetAsync(HttpContext.RequestAborted);
+            var groupSizeMax = await configurationService.GroupSizeMax.GetAsync(HttpContext.RequestAborted);
             var codes = groupSelection.OtherUserCodes
                 .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(c => !string.IsNullOrWhiteSpace(c))

@@ -45,7 +45,7 @@ public class MoodleService : IMoodleService
         // Get current gradebook columns
         var oldCols = (await _moodleGradebook.GetColumnsAsync()).ToDictionary(c => c.Tag);
 
-        bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await _configurationService.PassAsGroup.GetAsync(cancellationToken);
 
         // Query existing labs
         var labs = await _dbContext.Labs.AsNoTracking()

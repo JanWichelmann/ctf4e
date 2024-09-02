@@ -79,7 +79,7 @@
                         @if(allowEdit)
                         {
                             <th scope="col">
-                                <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Id">
+                                <button class="btn btn-sm btn-outline-primary" role="button" data-bs-toggle="modal" data-bs-target="#modal-add-exercise-submission" data-exercise-id="@exercise.Id" data-user-id="@Model.UserId">
                                     <i class="bi bi-plus"></i>
                                     @Localizer["Create"]
                                 </button>

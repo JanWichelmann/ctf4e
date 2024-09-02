@@ -93,8 +93,8 @@ public abstract class ControllerBase<TController>(IUserService userService) : Ut
         // Page title
         // Request service manually, to avoid injecting too many services in constructors of derived classes
         var configService = HttpContext.RequestServices.GetRequiredService<IConfigurationService>();
-        ViewData["PageTitle"] = await configService.GetPageTitleAsync(HttpContext.RequestAborted);
-        ViewData["NavbarTitle"] = await configService.GetNavbarTitleAsync(HttpContext.RequestAborted);
+        ViewData["PageTitle"] = await configService.PageTitle.GetAsync(HttpContext.RequestAborted);
+        ViewData["NavbarTitle"] = await configService.NavbarTitle.GetAsync(HttpContext.RequestAborted);
 
         // Render view
         return RenderViewInternal(viewPath, model);

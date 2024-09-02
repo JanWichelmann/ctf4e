@@ -358,15 +358,15 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
             {
                 AllLabs = true,
                 SlotId = slotId,
-                MaximumEntryCount = await configurationService.GetScoreboardEntryCountAsync(cancellationToken),
+                MaximumEntryCount = await configurationService.ScoreboardEntryCount.GetAsync(cancellationToken),
                 Entries = scoreboardEntries,
                 Flags = flags,
-                ValidUntil = now.AddSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
+                ValidUntil = now.AddSeconds(await configurationService.ScoreboardCachedSeconds.GetAsync(cancellationToken))
             };
         }
 
         // Update cache
-        var cacheDuration = TimeSpan.FromSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
+        var cacheDuration = TimeSpan.FromSeconds(await configurationService.ScoreboardCachedSeconds.GetAsync(cancellationToken));
         if(cacheDuration > TimeSpan.Zero)
             cache.Set(fullScoreboardCacheKey, scoreboard, cacheDuration);
 
@@ -686,15 +686,15 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
                 LabId = labId,
                 SlotId = slotId,
                 AllLabs = false,
-                MaximumEntryCount = await configurationService.GetScoreboardEntryCountAsync(cancellationToken),
+                MaximumEntryCount = await configurationService.ScoreboardEntryCount.GetAsync(cancellationToken),
                 Entries = scoreboardEntries,
                 Flags = flags,
-                ValidUntil = now.AddSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken))
+                ValidUntil = now.AddSeconds(await configurationService.ScoreboardCachedSeconds.GetAsync(cancellationToken))
             };
         }
 
         // Update cache
-        var cacheDuration = TimeSpan.FromSeconds(await configurationService.GetScoreboardCachedSecondsAsync(cancellationToken));
+        var cacheDuration = TimeSpan.FromSeconds(await configurationService.ScoreboardCachedSeconds.GetAsync(cancellationToken));
         if(cacheDuration > TimeSpan.Zero)
             cache.Set(scoreboardCacheKey, scoreboard, cacheDuration);
 
@@ -706,7 +706,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
         // Consistent time
         var now = DateTime.Now;
 
-        bool passAsGroup = await configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await configurationService.PassAsGroup.GetAsync(cancellationToken);
 
         var currentLab = await dbContext.Labs.AsNoTracking()
             .FirstOrDefaultAsync(l => l.Id == labId, cancellationToken);
@@ -798,7 +798,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
             Exercises = new List<UserScoreboardExerciseEntry>(),
             GroupMembers = groupMembers,
             Flags = foundFlags,
-            PassAsGroupEnabled = await configurationService.GetPassAsGroupAsync(cancellationToken)
+            PassAsGroupEnabled = await configurationService.PassAsGroup.GetAsync(cancellationToken)
         };
 
         // Check exercise submissions

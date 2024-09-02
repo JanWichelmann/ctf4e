@@ -158,4 +158,24 @@
         <value>Edit configuration</value>
         <comment>HtmlTitle</comment>
     </data>
+    <data name="Title:General" xml:space="preserve">
+        <value>General</value>
+        <comment>Title:General</comment>
+    </data>
+    <data name="Title:FlagPoints" xml:space="preserve">
+        <value>Flag point parameters</value>
+        <comment>Title:FlagPoints</comment>
+    </data>
+    <data name="Title:Scoreboard" xml:space="preserve">
+        <value>Scoreboard</value>
+        <comment>Title:Scoreboard</comment>
+    </data>
+    <data name="Title:Grading" xml:space="preserve">
+        <value>Grading</value>
+        <comment>Title:Grading</comment>
+    </data>
+    <data name="Title:GroupCreation" xml:space="preserve">
+        <value>Group creation</value>
+        <comment>Title:GroupCreation</comment>
+    </data>
 </root>

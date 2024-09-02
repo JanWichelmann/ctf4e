@@ -10,140 +10,62 @@ namespace Ctf4e.Server.Services;
 
 public interface IConfigurationService
 {
-    Task<int> GetFlagMinimumPointsDivisorAsync(CancellationToken cancellationToken);
-    Task SetFlagMinimumPointsDivisorAsync(int value, CancellationToken cancellationToken);
-    Task<int> GetFlagHalfPointsSubmissionCountAsync(CancellationToken cancellationToken);
-    Task SetFlagHalfPointsSubmissionCountAsync(int value, CancellationToken cancellationToken);
-    Task<int> GetScoreboardEntryCountAsync(CancellationToken cancellationToken);
-    Task SetScoreboardEntryCountAsync(int value, CancellationToken cancellationToken);
-    Task<int> GetScoreboardCachedSecondsAsync(CancellationToken cancellationToken);
-    Task<bool> GetPassAsGroupAsync(CancellationToken cancellationToken);
-    Task SetPassAsGroupAsync(bool value, CancellationToken cancellationToken);
-    Task SetScoreboardCachedSecondsAsync(int value, CancellationToken cancellationToken);
-    Task<string> GetNavbarTitleAsync(CancellationToken cancellationToken);
-    Task SetNavbarTitleAsync(string value, CancellationToken cancellationToken);
-    Task<string> GetPageTitleAsync(CancellationToken cancellationToken);
-    Task SetPageTitleAsync(string value, CancellationToken cancellationToken);
-    Task SetGroupSizeMinAsync(int value, CancellationToken cancellationToken);
-    Task<int> GetGroupSizeMinAsync(CancellationToken cancellationToken);
-    Task SetGroupSizeMaxAsync(int value, CancellationToken cancellationToken);
-    Task<int> GetGroupSizeMaxAsync(CancellationToken cancellationToken);
-    Task<string> GetGroupSelectionPageTextAsync(CancellationToken cancellationToken);
-    Task SetGroupSelectionPageTextAsync(string value, CancellationToken cancellationToken);
+    ConfigurationEntry<int> FlagMinimumPointsDivisor { get; }
+    ConfigurationEntry<int> FlagHalfPointsSubmissionCount { get; }
+    ConfigurationEntry<int> ScoreboardEntryCount { get; }
+    ConfigurationEntry<int> ScoreboardCachedSeconds { get; }
+    ConfigurationEntry<bool> PassAsGroup { get; }
+    ConfigurationEntry<string> NavbarTitle { get; }
+    ConfigurationEntry<string> PageTitle { get; }
+    ConfigurationEntry<int> GroupSizeMin { get; }
+    ConfigurationEntry<int> GroupSizeMax { get; }
+    ConfigurationEntry<string> GroupSelectionPageText { get; }
 }
 
-public class ConfigurationService : IConfigurationService
+public class ConfigurationService(CtfDbContext dbContext, IMemoryCache cache) : IConfigurationService
 {
-    private readonly CtfDbContext _dbContext;
-    private readonly IMemoryCache _cache;
+    public ConfigurationEntry<int> FlagMinimumPointsDivisor { get; } = new(dbContext, cache,"FlagMinimumPointsDivisor", s => s == null ? 1 : int.Parse(s));
+    public ConfigurationEntry<int> FlagHalfPointsSubmissionCount { get; } = new(dbContext, cache, "FlagHalfPointsSubmissionCount", s => s == null ? 1 : int.Parse(s));
+    public ConfigurationEntry<int> ScoreboardEntryCount { get; } = new(dbContext, cache, "ScoreboardEntryCount", s => s == null ? 3 : int.Parse(s));
+    public ConfigurationEntry<int> ScoreboardCachedSeconds { get; } = new(dbContext, cache, "ScoreboardCachedSeconds", s => s == null ? 10 : int.Parse(s));
+    public ConfigurationEntry<bool> PassAsGroup { get; } = new(dbContext, cache, "PassAsGroup", s => s != null && bool.Parse(s));
+    public ConfigurationEntry<string> NavbarTitle { get; } = new(dbContext, cache, "NavbarTitle", s => s ?? "CTF4E");
+    public ConfigurationEntry<string> PageTitle { get; } = new(dbContext, cache, "PageTitle", s => s ?? "CTF4E");
+    public ConfigurationEntry<int> GroupSizeMin { get; } = new(dbContext, cache, "GroupSizeMin", s => s == null ? 1 : int.Parse(s));
+    public ConfigurationEntry<int> GroupSizeMax { get; } = new(dbContext, cache, "GroupSizeMax", s => s == null ? 2 : int.Parse(s));
+    public ConfigurationEntry<string> GroupSelectionPageText { get; } = new(dbContext, cache, "GroupSelectionPageText", s => s ?? string.Empty);
+}
 
-    private const string _configKeyFlagMinimumPointsDivisor = "FlagMinimumPointsDivisor";
-    private const string _configKeyFlagHalfPointsSubmissionCount = "FlagHalfPointsSubmissionCount";
-    private const string _configKeyScoreboardEntryCount = "ScoreboardEntryCount";
-    private const string _configKeyScoreboardCachedSeconds = "ScoreboardCachedSeconds";
-    private const string _configKeyPassAsGroup = "PassAsGroup";
-    private const string _configKeyNavbarTitle = "NavbarTitle";
-    private const string _configKeyPageTitle = "PageTitle";
-    private const string _configKeyGroupSizeMin = "GroupSizeMin";
-    private const string _configKeyGroupSizeMax = "GroupSizeMax";
-    private const string _configKeyGroupSelectionPageText = "GroupSelectionPageText";
-
-    public ConfigurationService(CtfDbContext dbContext, IMemoryCache cache)
+public class ConfigurationEntry<TValue>(CtfDbContext dbContext, IMemoryCache cache, string key, Func<string, TValue> valueConverter)
+{
+    public async Task<TValue> GetAsync(CancellationToken cancellationToken)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-    }
-
-    public Task<int> GetFlagMinimumPointsDivisorAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyFlagMinimumPointsDivisor, s => s == null ? 1 : int.Parse(s), cancellationToken);
-
-    public Task SetFlagMinimumPointsDivisorAsync(int value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyFlagMinimumPointsDivisor, value, cancellationToken);
-
-    public Task<int> GetFlagHalfPointsSubmissionCountAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyFlagHalfPointsSubmissionCount, s => s == null ? 1 : int.Parse(s), cancellationToken);
-
-    public Task SetFlagHalfPointsSubmissionCountAsync(int value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyFlagHalfPointsSubmissionCount, value, cancellationToken);
-
-    public Task<int> GetScoreboardEntryCountAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyScoreboardEntryCount, s => s == null ? 3 : int.Parse(s), cancellationToken);
-
-    public Task SetScoreboardEntryCountAsync(int value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyScoreboardEntryCount, value, cancellationToken);
-
-    public Task<int> GetScoreboardCachedSecondsAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyScoreboardCachedSeconds, s => s == null ? 10 : int.Parse(s), cancellationToken);
-
-    public Task<bool> GetPassAsGroupAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyPassAsGroup, s => s != null && bool.Parse(s), cancellationToken);
-
-    public Task SetPassAsGroupAsync(bool value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyPassAsGroup, value, cancellationToken);
-
-    public Task SetScoreboardCachedSecondsAsync(int value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyScoreboardCachedSeconds, value, cancellationToken);
-
-    public Task<string> GetNavbarTitleAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyNavbarTitle, s => s ?? "CTF4E", cancellationToken);
-
-    public Task SetNavbarTitleAsync(string value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyNavbarTitle, value, cancellationToken);
-
-    public Task<string> GetPageTitleAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyPageTitle, s => s ?? "CTF4E", cancellationToken);
-
-    public Task SetPageTitleAsync(string value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyPageTitle, value, cancellationToken);
-
-    public Task SetGroupSizeMinAsync(int value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyGroupSizeMin, value, cancellationToken);
-
-    public Task<int> GetGroupSizeMinAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyGroupSizeMin, s => s == null ? 1 : int.Parse(s), cancellationToken);
-
-    public Task SetGroupSizeMaxAsync(int value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyGroupSizeMax, value, cancellationToken);
-
-    public Task<int> GetGroupSizeMaxAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyGroupSizeMax, s => s == null ? 2 : int.Parse(s), cancellationToken);
-        
-    public Task<string> GetGroupSelectionPageTextAsync(CancellationToken cancellationToken)
-        => GetConfigItemAsync(_configKeyGroupSelectionPageText, s => s ?? string.Empty, cancellationToken);
-
-    public Task SetGroupSelectionPageTextAsync(string value, CancellationToken cancellationToken)
-        => AddOrUpdateConfigItem(_configKeyGroupSelectionPageText, value, cancellationToken);
-
-    private async Task<TValue> GetConfigItemAsync<TValue>(string key, Func<string, TValue> valueConverter, CancellationToken cancellationToken)
-    {
-        // Try to retrieve from config cache
-        string cacheKey = "config-" + key;
-        if(!_cache.TryGetValue(cacheKey, out string value))
+        if(!cache.TryGetValue(key, out string valueStr))
         {
             // Retrieve from database
-            var config = await _dbContext.ConfigurationItems.AsNoTracking()
+            var config = await dbContext.ConfigurationItems.AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Key == key, cancellationToken);
-            value = config?.Value;
+            valueStr = config?.Value;
 
-            // Update cache
-            _cache.Set(cacheKey, value);
+            cache.Set(key, valueStr);
         }
 
-        return valueConverter(value);
+        return valueConverter(valueStr);
     }
 
-    private async Task AddOrUpdateConfigItem<TValue>(string key, TValue value, CancellationToken cancellationToken)
+    public async Task SetAsync(TValue value, CancellationToken cancellationToken)
     {
+        string valueStr = value.ToString();
+
         // Write updated config to database
-        string cacheKey = "config-" + key;
-        var config = await _dbContext.ConfigurationItems.FindAsync(new object[] { key }, cancellationToken);
+        var config = await dbContext.ConfigurationItems.FindAsync([key], cancellationToken);
         if(config == null)
-            await _dbContext.ConfigurationItems.AddAsync(new ConfigurationItemEntity { Key = key, Value = value.ToString() }, cancellationToken);
+            await dbContext.ConfigurationItems.AddAsync(new ConfigurationItemEntity { Key = key, Value = valueStr }, cancellationToken);
         else
-            config.Value = value.ToString();
-        await _dbContext.SaveChangesAsync(cancellationToken);
+            config.Value = valueStr;
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         // Update cache
-        _cache.Set(cacheKey, value.ToString());
+        cache.Set(key, valueStr);
     }
 }

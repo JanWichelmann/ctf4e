@@ -25,16 +25,16 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
     {
         var config = configurationData ?? new AdminConfigurationData
         {
-            FlagHalfPointsSubmissionCount = await configurationService.GetFlagHalfPointsSubmissionCountAsync(HttpContext.RequestAborted),
-            FlagMinimumPointsDivisor = await configurationService.GetFlagMinimumPointsDivisorAsync(HttpContext.RequestAborted),
-            ScoreboardEntryCount = await configurationService.GetScoreboardEntryCountAsync(HttpContext.RequestAborted),
-            ScoreboardCachedSeconds = await configurationService.GetScoreboardCachedSecondsAsync(HttpContext.RequestAborted),
-            PassAsGroup = await configurationService.GetPassAsGroupAsync(HttpContext.RequestAborted),
-            PageTitle = await configurationService.GetPageTitleAsync(HttpContext.RequestAborted),
-            NavbarTitle = await configurationService.GetNavbarTitleAsync(HttpContext.RequestAborted),
-            GroupSizeMin = await configurationService.GetGroupSizeMinAsync(HttpContext.RequestAborted),
-            GroupSizeMax = await configurationService.GetGroupSizeMaxAsync(HttpContext.RequestAborted),
-            GroupSelectionPageText = await configurationService.GetGroupSelectionPageTextAsync(HttpContext.RequestAborted)
+            FlagHalfPointsSubmissionCount = await configurationService.FlagHalfPointsSubmissionCount.GetAsync(HttpContext.RequestAborted),
+            FlagMinimumPointsDivisor = await configurationService.FlagMinimumPointsDivisor.GetAsync(HttpContext.RequestAborted),
+            ScoreboardEntryCount = await configurationService.ScoreboardEntryCount.GetAsync(HttpContext.RequestAborted),
+            ScoreboardCachedSeconds = await configurationService.ScoreboardCachedSeconds.GetAsync(HttpContext.RequestAborted),
+            PassAsGroup = await configurationService.PassAsGroup.GetAsync(HttpContext.RequestAborted),
+            PageTitle = await configurationService.PageTitle.GetAsync(HttpContext.RequestAborted),
+            NavbarTitle = await configurationService.NavbarTitle.GetAsync(HttpContext.RequestAborted),
+            GroupSizeMin = await configurationService.GroupSizeMin.GetAsync(HttpContext.RequestAborted),
+            GroupSizeMax = await configurationService.GroupSizeMax.GetAsync(HttpContext.RequestAborted),
+            GroupSelectionPageText = await configurationService.GroupSelectionPageText.GetAsync(HttpContext.RequestAborted)
         };
 
         var groupService = HttpContext.RequestServices.GetRequiredService<IGroupService>();
@@ -44,8 +44,6 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
         string buildVersion = Assembly.GetExecutingAssembly()
             .GetCustomAttributes<AssemblyBuildVersionAttribute>()
             .FirstOrDefault()?.Version;
-        if(string.IsNullOrWhiteSpace(buildVersion))
-            buildVersion = "DEV";
         ViewData["BuildVersion"] = buildVersion;
 
         return await RenderViewAsync("~/Views/Admin/Config/Index.cshtml", config);
@@ -72,33 +70,33 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
         {
             if(configurationData.FlagHalfPointsSubmissionCount <= 1)
                 configurationData.FlagHalfPointsSubmissionCount = 2;
-            await configurationService.SetFlagHalfPointsSubmissionCountAsync(configurationData.FlagHalfPointsSubmissionCount, HttpContext.RequestAborted);
+            await configurationService.FlagHalfPointsSubmissionCount.SetAsync(configurationData.FlagHalfPointsSubmissionCount, HttpContext.RequestAborted);
 
             if(configurationData.FlagMinimumPointsDivisor <= 1)
                 configurationData.FlagMinimumPointsDivisor = 2;
-            await configurationService.SetFlagMinimumPointsDivisorAsync(configurationData.FlagMinimumPointsDivisor, HttpContext.RequestAborted);
+            await configurationService.FlagMinimumPointsDivisor.SetAsync(configurationData.FlagMinimumPointsDivisor, HttpContext.RequestAborted);
 
             if(configurationData.ScoreboardEntryCount < 3)
                 configurationData.ScoreboardEntryCount = 3;
-            await configurationService.SetScoreboardEntryCountAsync(configurationData.ScoreboardEntryCount, HttpContext.RequestAborted);
+            await configurationService.ScoreboardEntryCount.SetAsync(configurationData.ScoreboardEntryCount, HttpContext.RequestAborted);
 
             if(configurationData.ScoreboardCachedSeconds < 0)
                 configurationData.ScoreboardCachedSeconds = 0;
-            await configurationService.SetScoreboardCachedSecondsAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
+            await configurationService.ScoreboardCachedSeconds.SetAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
 
-            await configurationService.SetPassAsGroupAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
+            await configurationService.PassAsGroup.SetAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
 
-            await configurationService.SetPageTitleAsync(configurationData.PageTitle, HttpContext.RequestAborted);
-            await configurationService.SetNavbarTitleAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
+            await configurationService.PageTitle.SetAsync(configurationData.PageTitle, HttpContext.RequestAborted);
+            await configurationService.NavbarTitle.SetAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);
 
             if(configurationData.GroupSizeMin <= 0)
                 configurationData.GroupSizeMin = 1;
             if(configurationData.GroupSizeMin > configurationData.GroupSizeMax)
-                configurationData.GroupSizeMax = configurationData.GroupSizeMin + 1;
-            await configurationService.SetGroupSizeMinAsync(configurationData.GroupSizeMin, HttpContext.RequestAborted);
-            await configurationService.SetGroupSizeMaxAsync(configurationData.GroupSizeMax, HttpContext.RequestAborted);
+                configurationData.GroupSizeMax = configurationData.GroupSizeMin;
+            await configurationService.GroupSizeMin.SetAsync(configurationData.GroupSizeMin, HttpContext.RequestAborted);
+            await configurationService.GroupSizeMax.SetAsync(configurationData.GroupSizeMax, HttpContext.RequestAborted);
 
-            await configurationService.SetGroupSelectionPageTextAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
+            await configurationService.GroupSelectionPageText.SetAsync(configurationData.GroupSelectionPageText, HttpContext.RequestAborted);
 
             PostStatusMessage = new(StatusMessageType.Success, Localizer["UpdateConfigAsync:Success"]) { AutoHide = true };
             return RedirectToAction("Render");

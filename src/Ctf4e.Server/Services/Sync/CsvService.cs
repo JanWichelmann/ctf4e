@@ -39,7 +39,7 @@ public class CsvService : ICsvService
     /// <returns></returns>
     public async Task<string> GetLabStatesAsync(CancellationToken cancellationToken)
     {
-        bool passAsGroup = await _configurationService.GetPassAsGroupAsync(cancellationToken);
+        bool passAsGroup = await _configurationService.PassAsGroup.GetAsync(cancellationToken);
 
         // Query existing labs
         var labs = await _dbContext.Labs.AsNoTracking()

@@ -222,8 +222,10 @@ window.addEventListener("load", () =>
     {
         const trigger = e.relatedTarget;
         const exerciseId = trigger.dataset.exerciseId;
+        const userId = trigger.dataset.userId ?? "";
         
         inputExercise.value = exerciseId;
+        inputUser.value = userId;
     });
     
     submitButton.addEventListener("click", () =>
