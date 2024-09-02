@@ -18,6 +18,15 @@ public class AdminConfigurationData
 
     [Required]
     public bool PassAsGroup { get; set; }
+    
+    [Required]
+    public bool ShowGroupMemberSubmissions { get; set; }
+    
+    [Required]
+    public bool EnableScoreboard { get; set; }
+    
+    [Required]
+    public bool EnableFlags { get; set; }
 
     [Required(AllowEmptyStrings = false)]
     [StringLength(50)]

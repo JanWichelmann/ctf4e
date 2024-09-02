@@ -707,6 +707,7 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
         var now = DateTime.Now;
 
         bool passAsGroup = await configurationService.PassAsGroup.GetAsync(cancellationToken);
+        bool showGroupMemberSubmissions = passAsGroup || await configurationService.ShowGroupMemberSubmissions.GetAsync(cancellationToken);
 
         var currentLab = await dbContext.Labs.AsNoTracking()
             .FirstOrDefaultAsync(l => l.Id == labId, cancellationToken);
@@ -795,10 +796,11 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
             FoundFlagsCount = foundFlagsGrouped.Count,
             ValidFoundFlagsCount = foundFlagsGrouped.Count(ff => ff.Any(ffs => ffs.Valid)),
             HasFoundAllFlags = foundFlagsGrouped.Count == flags.Count(f => !f.Value.IsBounty),
-            Exercises = new List<UserScoreboardExerciseEntry>(),
+            Exercises = [],
             GroupMembers = groupMembers,
             Flags = foundFlags,
-            PassAsGroupEnabled = await configurationService.PassAsGroup.GetAsync(cancellationToken)
+            PassAsGroupEnabled = await configurationService.PassAsGroup.GetAsync(cancellationToken),
+            FlagsEnabled = await configurationService.EnableFlags.GetAsync(cancellationToken),
         };
 
         // Check exercise submissions
@@ -812,22 +814,44 @@ public class ScoreboardService(CtfDbContext dbContext, IMapper mapper, IConfigur
 
             if(exerciseSubmissions.TryGetValue(exercise.Id, out var submissions))
             {
-                var (groupMemberHasPassed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, labExecution);
+                bool passed;
+                bool groupMemberHasPassed;
+                int points;
+                int validTries;
+                var submissionsFiltered = submissions;
+                if(showGroupMemberSubmissions)
+                {
+                    // Calculate exercise status over all submissions
+                    (groupMemberHasPassed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissions, labExecution);
 
-                // If passing as group is disabled, do another check whether this user has a valid passing submission
-                bool passed = groupMemberHasPassed;
-                if(!passAsGroup)
-                    passed = submissions.Any(s => s.ExercisePassed && s.UserId == userId && labExecution.Start <= s.SubmissionTime && s.SubmissionTime < labExecution.End);
+                    // If passing as group is disabled, do another check whether this user has a valid passing submission
+                    passed = groupMemberHasPassed;
+                    if(!passAsGroup)
+                    {
+                        passed = submissions.Any(s => s.ExercisePassed
+                                                      && s.UserId == userId
+                                                      && labExecution != null
+                                                      && labExecution.Start <= s.SubmissionTime
+                                                      && s.SubmissionTime < labExecution.End);
+                    }
+                }
+                else
+                {
+                    // Submissions of other group members are hidden (which also means that passing as group is disabled), so we only care about the submissions of this user
+                    submissionsFiltered = submissions.Where(s => s.UserId == userId).ToList();
+                    (passed, points, validTries) = ScoreboardUtilities.CalculateExercisePoints(exercise, submissionsFiltered, labExecution);
+                    groupMemberHasPassed = true;
+                }
 
                 scoreboard.Exercises.Add(new UserScoreboardExerciseEntry
                 {
                     Exercise = exercise,
-                    Tries = submissions.Count,
+                    Tries = submissionsFiltered.Count,
                     ValidTries = validTries,
                     Passed = passed,
                     GroupMemberHasPassed = groupMemberHasPassed,
                     Points = points,
-                    Submissions = submissions
+                    Submissions = submissionsFiltered
                 });
 
                 if(passed)

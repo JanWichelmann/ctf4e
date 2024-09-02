@@ -74,8 +74,15 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SubmitFlagAsync(int labId,
                                                      string code,
-                                                     [FromServices] IFlagService flagService)
+                                                     [FromServices] IFlagService flagService,
+                                                     [FromServices] IConfigurationService configurationService)
     {
+        if(!await configurationService.EnableFlags.GetAsync(HttpContext.RequestAborted))
+        {
+            PostStatusMessage = new(StatusMessageType.Error, Localizer["SubmitFlagAsync:FlagsDisabled"]);
+            return RedirectToAction("RenderLabPage", new { labId });
+        }
+        
         // Retrieve group ID
         var currentUser = await GetCurrentUserAsync();
         if(currentUser?.GroupId == null)

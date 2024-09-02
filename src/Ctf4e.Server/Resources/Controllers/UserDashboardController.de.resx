@@ -58,4 +58,8 @@
         <value>Dieses Praktikum existiert nicht.</value>
         <comment>RenderAsync:LabNotFound</comment>
     </data>
+    <data name="SubmitFlagAsync:FlagsDisabled" xml:space="preserve">
+        <value>Flags sind deaktiviert.</value>
+        <comment>SubmitFlagAsync:FlagsDisabled</comment>
+    </data>
 </root>

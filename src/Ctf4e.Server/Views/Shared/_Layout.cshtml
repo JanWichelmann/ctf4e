@@ -53,11 +53,15 @@
                 <ul class="navbar-nav flex-grow-1">
                     @if(currentUser != null)
                     {
-                        <li class="nav-item">
-                            <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "active" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">
-                                @Localizer["MenuItems:Scoreboard"]
-                            </a>
-                        </li>
+                        if((bool)ViewData["ShowScoreboard"])
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(activeMenuItem == MenuItems.Scoreboard ? "active" : "")" asp-controller="Scoreboard" asp-action="RenderScoreboard">
+                                    @Localizer["MenuItems:Scoreboard"]
+                                </a>
+                            </li>
+                        }
+
                         if(currentUser.Group != null)
                         {
                             <li class="nav-item">

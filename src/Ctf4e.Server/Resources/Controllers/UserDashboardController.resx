@@ -58,4 +58,8 @@
         <value>This lab does not exist.</value>
         <comment>RenderAsync:LabNotFound</comment>
     </data>
+    <data name="SubmitFlagAsync:FlagsDisabled" xml:space="preserve">
+        <value>Flags are disabled.</value>
+        <comment>SubmitFlagAsync:FlagsDisabled</comment>
+    </data>
 </root>

@@ -15,6 +15,9 @@ public interface IConfigurationService
     ConfigurationEntry<int> ScoreboardEntryCount { get; }
     ConfigurationEntry<int> ScoreboardCachedSeconds { get; }
     ConfigurationEntry<bool> PassAsGroup { get; }
+    ConfigurationEntry<bool> ShowGroupMemberSubmissions { get; }
+    ConfigurationEntry<bool> EnableScoreboard { get; }
+    ConfigurationEntry<bool> EnableFlags { get; }
     ConfigurationEntry<string> NavbarTitle { get; }
     ConfigurationEntry<string> PageTitle { get; }
     ConfigurationEntry<int> GroupSizeMin { get; }
@@ -24,11 +27,14 @@ public interface IConfigurationService
 
 public class ConfigurationService(CtfDbContext dbContext, IMemoryCache cache) : IConfigurationService
 {
-    public ConfigurationEntry<int> FlagMinimumPointsDivisor { get; } = new(dbContext, cache,"FlagMinimumPointsDivisor", s => s == null ? 1 : int.Parse(s));
+    public ConfigurationEntry<int> FlagMinimumPointsDivisor { get; } = new(dbContext, cache, "FlagMinimumPointsDivisor", s => s == null ? 1 : int.Parse(s));
     public ConfigurationEntry<int> FlagHalfPointsSubmissionCount { get; } = new(dbContext, cache, "FlagHalfPointsSubmissionCount", s => s == null ? 1 : int.Parse(s));
     public ConfigurationEntry<int> ScoreboardEntryCount { get; } = new(dbContext, cache, "ScoreboardEntryCount", s => s == null ? 3 : int.Parse(s));
     public ConfigurationEntry<int> ScoreboardCachedSeconds { get; } = new(dbContext, cache, "ScoreboardCachedSeconds", s => s == null ? 10 : int.Parse(s));
     public ConfigurationEntry<bool> PassAsGroup { get; } = new(dbContext, cache, "PassAsGroup", s => s != null && bool.Parse(s));
+    public ConfigurationEntry<bool> ShowGroupMemberSubmissions { get; } = new(dbContext, cache, "ShowGroupMemberSubmissions", s => s == null || bool.Parse(s));
+    public ConfigurationEntry<bool> EnableScoreboard { get; } = new(dbContext, cache, "EnableScoreboard", s => s == null || bool.Parse(s));
+    public ConfigurationEntry<bool> EnableFlags { get; } = new(dbContext, cache, "EnableFlags", s => s == null || bool.Parse(s));
     public ConfigurationEntry<string> NavbarTitle { get; } = new(dbContext, cache, "NavbarTitle", s => s ?? "CTF4E");
     public ConfigurationEntry<string> PageTitle { get; } = new(dbContext, cache, "PageTitle", s => s ?? "CTF4E");
     public ConfigurationEntry<int> GroupSizeMin { get; } = new(dbContext, cache, "GroupSizeMin", s => s == null ? 1 : int.Parse(s));

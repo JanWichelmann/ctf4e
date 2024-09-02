@@ -53,6 +53,35 @@
                     </p>
                 </div>
             </div>
+            <div class="col-md">
+                <div class="form-check form-switch">
+                    <input asp-for="ShowGroupMemberSubmissions" class="form-check-input">
+                    <label asp-for="ShowGroupMemberSubmissions" class="form-check-label">@Localizer["Config:ShowGroupMemberSubmissions"]</label>
+                    <p class="form-text">
+                        @Localizer["Config:ShowGroupMemberSubmissions:Description"]
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md mb-3 mb-md-0">
+                <div class="form-check form-switch">
+                    <input asp-for="EnableScoreboard" class="form-check-input">
+                    <label asp-for="EnableScoreboard" class="form-check-label">@Localizer["Config:EnableScoreboard"]</label>
+                    <p class="form-text">
+                        @Localizer["Config:EnableScoreboard:Description"]
+                    </p>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="form-check form-switch">
+                    <input asp-for="EnableFlags" class="form-check-input">
+                    <label asp-for="EnableFlags" class="form-check-label">@Localizer["Config:EnableFlags"]</label>
+                    <p class="form-text">
+                        @Localizer["Config:EnableFlags:Description"]
+                    </p>
+                </div>
+            </div>
         </div>
 
         <h2 class="mt-4">@Localizer["Title:FlagPoints"]</h2>

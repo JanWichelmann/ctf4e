@@ -30,6 +30,9 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
             ScoreboardEntryCount = await configurationService.ScoreboardEntryCount.GetAsync(HttpContext.RequestAborted),
             ScoreboardCachedSeconds = await configurationService.ScoreboardCachedSeconds.GetAsync(HttpContext.RequestAborted),
             PassAsGroup = await configurationService.PassAsGroup.GetAsync(HttpContext.RequestAborted),
+            ShowGroupMemberSubmissions = await configurationService.ShowGroupMemberSubmissions.GetAsync(HttpContext.RequestAborted),
+            EnableScoreboard = await configurationService.EnableScoreboard.GetAsync(HttpContext.RequestAborted),
+            EnableFlags = await configurationService.EnableFlags.GetAsync(HttpContext.RequestAborted),
             PageTitle = await configurationService.PageTitle.GetAsync(HttpContext.RequestAborted),
             NavbarTitle = await configurationService.NavbarTitle.GetAsync(HttpContext.RequestAborted),
             GroupSizeMin = await configurationService.GroupSizeMin.GetAsync(HttpContext.RequestAborted),
@@ -83,8 +86,11 @@ public class AdminConfigurationController(IUserService userService, IConfigurati
             if(configurationData.ScoreboardCachedSeconds < 0)
                 configurationData.ScoreboardCachedSeconds = 0;
             await configurationService.ScoreboardCachedSeconds.SetAsync(configurationData.ScoreboardCachedSeconds, HttpContext.RequestAborted);
-
+            
             await configurationService.PassAsGroup.SetAsync(configurationData.PassAsGroup, HttpContext.RequestAborted);
+            await configurationService.ShowGroupMemberSubmissions.SetAsync(configurationData.ShowGroupMemberSubmissions, HttpContext.RequestAborted);
+            await configurationService.EnableScoreboard.SetAsync(configurationData.EnableScoreboard, HttpContext.RequestAborted);
+            await configurationService.EnableFlags.SetAsync(configurationData.EnableFlags, HttpContext.RequestAborted);
 
             await configurationService.PageTitle.SetAsync(configurationData.PageTitle, HttpContext.RequestAborted);
             await configurationService.NavbarTitle.SetAsync(configurationData.NavbarTitle, HttpContext.RequestAborted);

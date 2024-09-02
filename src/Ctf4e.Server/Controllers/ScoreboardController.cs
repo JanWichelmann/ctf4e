@@ -39,6 +39,10 @@ public class ScoreboardController(IUserService userService, IScoreboardService s
     [HttpGet("")]
     public async Task<IActionResult> RenderScoreboardAsync(int? labId, int? slotId, int reload = 0)
     {
+        var configurationService = HttpContext.RequestServices.GetRequiredService<IConfigurationService>();
+        if(!await configurationService.EnableScoreboard.GetAsync(HttpContext.RequestAborted))
+            return NotFound(); 
+        
         var currentUser = await GetCurrentUserAsync();
         
         // Extract and pass view flags

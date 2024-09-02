@@ -50,12 +50,6 @@
 
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between" id="navbar-content">
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link" href="@(System.IO.Path.Combine(LabOptions.Value.CtfServerBaseUrl, "scoreboard"))" target="_blank">
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            @Localizer["MenuItems:Scoreboard"]
-                        </a>
-                    </li>
                     @if(currentUser != null)
                     {
                         <li class="nav-item">

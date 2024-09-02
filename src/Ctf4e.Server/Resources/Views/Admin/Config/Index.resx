@@ -99,7 +99,7 @@
         <comment>Config:GroupSizeMax:Description</comment>
     </data>
     <data name="Config:PassAsGroup:Description" xml:space="preserve">
-        <value>If this is active, all submissions are evaluated at group level. Thus, it does not matter which group member has submitted an exercise. This setting does not influence the scoreboard.</value>
+        <value>Controls whether submissions are evaluated at group level. In this case, it does not matter which group member has submitted an exercise. This setting does not influence the scoreboard.</value>
         <comment>Config:PassAsGroup:Description</comment>
     </data>
     <data name="SaveChanges" xml:space="preserve">
@@ -177,5 +177,29 @@
     <data name="Title:GroupCreation" xml:space="preserve">
         <value>Group creation</value>
         <comment>Title:GroupCreation</comment>
+    </data>
+    <data name="Config:ShowGroupMemberSubmissions" xml:space="preserve">
+        <value>Show submissions of group members</value>
+        <comment>Config:ShowGroupMemberSubmissions</comment>
+    </data>
+    <data name="Config:ShowGroupMemberSubmissions:Description" xml:space="preserve">
+        <value>Controls whether participants can see the submissions of other group members in their dashboard. If "Pass as group" is enabled, this setting is implicitly enabled as well.</value>
+        <comment>Config:ShowGroupMemberSubmissions:Description</comment>
+    </data>
+    <data name="Config:EnableScoreboard" xml:space="preserve">
+        <value>Enable scoreboard</value>
+        <comment>Config:EnableScoreboard</comment>
+    </data>
+    <data name="Config:EnableScoreboard:Description" xml:space="preserve">
+        <value>Controls whether the CTF scoreboard is visible.</value>
+        <comment>Config:EnableScoreboard:Description</comment>
+    </data>
+    <data name="Config:EnableFlags" xml:space="preserve">
+        <value>Enable flags</value>
+        <comment>Config:EnableFlags</comment>
+    </data>
+    <data name="Config:EnableFlags:Description" xml:space="preserve">
+        <value>Controls whether the participants can submit flags. This only hides flags for participants, admins can still manage flags and submit them manually.</value>
+        <comment>Config:EnableFlags:Description</comment>
     </data>
 </root>

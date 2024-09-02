@@ -17,6 +17,7 @@ public class UserDashboard
     public LabExecution LabExecution { get; set; }
     
     public bool PassAsGroupEnabled { get; set; }
+    public bool FlagsEnabled { get; set; }
 
     public bool HasPassed { get; set; }
 

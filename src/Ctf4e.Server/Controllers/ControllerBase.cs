@@ -95,6 +95,8 @@ public abstract class ControllerBase<TController>(IUserService userService) : Ut
         var configService = HttpContext.RequestServices.GetRequiredService<IConfigurationService>();
         ViewData["PageTitle"] = await configService.PageTitle.GetAsync(HttpContext.RequestAborted);
         ViewData["NavbarTitle"] = await configService.NavbarTitle.GetAsync(HttpContext.RequestAborted);
+        
+        ViewData["ShowScoreboard"] = await configService.EnableScoreboard.GetAsync(HttpContext.RequestAborted);
 
         // Render view
         return RenderViewInternal(viewPath, model);

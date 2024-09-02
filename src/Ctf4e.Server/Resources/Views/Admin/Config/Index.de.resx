@@ -99,7 +99,7 @@
         <comment>Config:GroupSizeMax:Description</comment>
     </data>
     <data name="Config:PassAsGroup:Description" xml:space="preserve">
-        <value>Wenn diese Einstellung aktiv ist, werden alle Einreichungen auf Gruppenebene gewertet. Somit ist es unerheblich, welcher Teilnehmer eine Aufgabe eingereicht hat. Diese Einstellung hat keinen Einfluss auf die Wertung im Scoreboard.</value>
+        <value>Legt fest, ob alle Einreichungen auf Gruppenebene gewertet werden. In diesem Fall ist es unerheblich, welcher Teilnehmer eine Aufgabe eingereicht hat. Diese Einstellung hat keinen Einfluss auf die Wertung im Scoreboard.</value>
         <comment>Config:PassAsGroup:Description</comment>
     </data>
     <data name="SaveChanges" xml:space="preserve">
@@ -176,5 +176,29 @@
     <data name="Title:GroupCreation" xml:space="preserve">
         <value>Gruppenerstellung</value>
         <comment>Title:GroupCreation</comment>
+    </data>
+    <data name="Config:ShowGroupMemberSubmissions" xml:space="preserve">
+        <value>Einreichungen von Gruppenmitgliedern anzeigen</value>
+        <comment>Config:ShowGroupMemberSubmissions</comment>
+    </data>
+    <data name="Config:ShowGroupMemberSubmissions:Description" xml:space="preserve">
+        <value>Legt fest, ob Teilnehmer die Einreichungen von anderen Gruppenmitgliedern in ihrer Übersicht sehen können. Wenn "Als Gruppe bestehen" aktiviert ist, ist diese Einstellung implizit mit aktiviert.</value>
+        <comment>Config:ShowGroupMemberSubmissions:Description</comment>
+    </data>
+    <data name="Config:EnableScoreboard" xml:space="preserve">
+        <value>Scoreboard aktivieren</value>
+        <comment>Config:EnableScoreboard</comment>
+    </data>
+    <data name="Config:EnableScoreboard:Description" xml:space="preserve">
+        <value>Steuert die Sichtbarkeit des CTF-Scoreboards.</value>
+        <comment>Config:EnableScoreboard:Description</comment>
+    </data>
+    <data name="Config:EnableFlags" xml:space="preserve">
+        <value>Flags aktivieren</value>
+        <comment>Config:EnableFlags</comment>
+    </data>
+    <data name="Config:EnableFlags:Description" xml:space="preserve">
+        <value>Steuert ob Teilnehmer Flags einreichen können. Diese Funktion versteckt Flags lediglich; Administratoren können nach wie vor Flags verwalten und auch manuell einreichen.</value>
+        <comment>Config:EnableFlags:Description</comment>
     </data>
 </root>
