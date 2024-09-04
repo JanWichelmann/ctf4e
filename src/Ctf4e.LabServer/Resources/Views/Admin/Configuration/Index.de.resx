@@ -34,4 +34,8 @@
         <value>Änderungen speichern</value>
         <comment>Form:Submit</comment>
     </data>
+    <data name="SwitchFile" xml:space="preserve">
+        <value>Andere Datei auswählen</value>
+        <comment>SwitchFile</comment>
+    </data>
 </root>

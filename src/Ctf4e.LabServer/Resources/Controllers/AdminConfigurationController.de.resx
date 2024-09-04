@@ -50,4 +50,12 @@
         <value>Beim Validieren der neuen Konfiguration wurden Fehler entdeckt.</value>
         <comment>UpdateConfigurationAsync:InvalidConfig</comment>
     </data>
+    <data name="UpdateConfigurationAsync:ConfigFileNotFound" xml:space="preserve">
+        <value>Die zu aktualisierende Konfigurationsdatei existiert nicht.</value>
+        <comment>UpdateConfigurationAsync:ConfigFileNotFound</comment>
+    </data>
+    <data name="ShowFormAsync:ConfigFileNotFound" xml:space="preserve">
+        <value>Die zu aktualisierende Konfigurationsdatei existiert nicht.</value>
+        <comment>ShowFormAsync:ConfigFileNotFound</comment>
+    </data>
 </root>

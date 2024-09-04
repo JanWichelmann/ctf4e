@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
@@ -28,17 +30,23 @@ public class AdminConfigurationController(IOptions<LabOptions> labOptions, ILabC
     }
 
     [HttpGet]
-    public async Task<IActionResult> ShowFormAsync()
+    public async Task<IActionResult> ShowFormAsync(string configurationFile)
     {
         try
         {
+            configurationFile ??= labOptions.Value.LabConfigurationFile;
+            if(configurationFile == null || !labConfiguration.IsConfigurationFile(configurationFile))
+            {
+                AddStatusMessage(StatusMessageType.Error, Localizer["ShowFormAsync:ConfigFileNotFound"]);
+                return RenderView("~/Views/Admin/Configuration/Empty.cshtml");
+            }
+
             // Open configuration file
-            var configFile = new FileInfo(labOptions.Value.LabConfigurationFile);
+            var configFile = new FileInfo(configurationFile);
             await using var configFileStream = configFile.Open(FileMode.Open);
 
             // Check whether configuration file is writable by this application
             bool writable = !configFile.IsReadOnly && configFileStream.CanWrite;
-            ViewData["Writable"] = writable;
             if(!writable)
                 AddStatusMessage(StatusMessageType.Warning, Localizer["RenderAsync:ConfigNonWritable"]);
 
@@ -46,7 +54,9 @@ public class AdminConfigurationController(IOptions<LabOptions> labOptions, ILabC
             using var configFileReader = new StreamReader(configFileStream);
             var configurationInput = new AdminConfigurationInputModel
             {
-                Configuration = await configFileReader.ReadToEndAsync()
+                FileToChange = configurationFile,
+                Configuration = await configFileReader.ReadToEndAsync(),
+                Writable = writable
             };
 
             return ShowForm(configurationInput);
@@ -69,15 +79,33 @@ public class AdminConfigurationController(IOptions<LabOptions> labOptions, ILabC
             return ShowForm(configurationInput);
         }
 
-        // Parse configuration and do some sanity checks
-        LabConfiguration newConfiguration;
+        // Parse and check configuration
+        LabConfiguration parsedNewConfiguration;
+        List<string> issues = [];
         try
         {
-            if(!labConfiguration.DeserializeAndCheckConfiguration(configurationInput.Configuration, out var issues, out newConfiguration))
+            if(!labConfiguration.IsConfigurationFile(configurationInput.FileToChange))
+            {
+                AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:ConfigFileNotFound"]);
+                return ShowForm(configurationInput);
+            }
+
+            // Deserialize; this will implicitly check whether this configuration part is syntactically correct
+            parsedNewConfiguration = JsonSerializer.Deserialize<LabConfiguration>(configurationInput.Configuration);
+
+            // Check whether the full configuration stays valid with the update
+            await labConfiguration.DeserializeAndCheckConfigurationAsync(
+                configurationInput.FileToChange,
+                configurationInput.Configuration,
+                issues,
+                HttpContext.RequestAborted
+            );
+
+            if(issues.Count > 0)
             {
                 AddStatusMessage(StatusMessageType.Error, Localizer["UpdateConfigurationAsync:InvalidConfig"]);
                 AddStatusMessage(StatusMessageType.Error, string.Join("\n", issues));
-                
+
                 return ShowForm(configurationInput);
             }
         }
@@ -91,12 +119,13 @@ public class AdminConfigurationController(IOptions<LabOptions> labOptions, ILabC
         // Write configuration and reload state
         try
         {
-            await labConfiguration.WriteConfigurationAsync(newConfiguration, CancellationToken.None);
-            
+            GetLogger().LogInformation("Updating configuration file {File}", configurationInput.FileToChange);
+            await labConfiguration.WriteConfigurationAsync(configurationInput.FileToChange, parsedNewConfiguration, CancellationToken.None);
+
             await stateService.ReloadAsync(CancellationToken.None);
 
             PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["UpdateConfigurationAsync:Success"]);
-            return RedirectToAction("ShowForm");
+            return RedirectToAction("ShowForm", new { configurationFile = configurationInput.FileToChange });
         }
         catch(Exception ex)
         {

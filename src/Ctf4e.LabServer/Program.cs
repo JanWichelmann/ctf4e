@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -25,8 +26,12 @@ var builder = WebApplication.CreateBuilder(args);
 
     // Configuration
     var configurationSection = builder.Configuration.GetSection("Ctf4e");
-    builder.Services.AddOptions<LabOptions>().Bind(configurationSection.GetSection(nameof(LabOptions)));
+    var labOptionsSection = configurationSection.GetSection(nameof(LabOptions));
+    builder.Services.AddOptions<LabOptions>().Bind(labOptionsSection);
     builder.Services.AddOptions<CtfApiOptions>().Bind(configurationSection.GetSection(nameof(CtfApiOptions)));
+
+    var labOptions = labOptionsSection.Get<LabOptions>();
+    var labConfigurationsList = configurationSection.GetSection("LabConfigurationFiles").Get<List<string>>();
 
     // CTF API builder.Services
     builder.Services.AddCtfApiCryptoService();
@@ -39,7 +44,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddMemoryCache();
 
     // Lab configuration
-    builder.Services.AddSingleton<ILabConfigurationService, LabConfigurationService>();
+    builder.Services.AddSingleton<ILabConfigurationService>(_ => new LabConfigurationService(labOptions.LabConfigurationFile, labConfigurationsList));
 
     // Lab state service
     builder.Services.AddSingleton<IStateService, StateService>();

@@ -50,4 +50,12 @@
         <value>The were errors when validating the new configuration.</value>
         <comment>UpdateConfigurationAsync:InvalidConfig</comment>
     </data>
+    <data name="UpdateConfigurationAsync:ConfigFileNotFound" xml:space="preserve">
+        <value>The given configuration file does not exist.</value>
+        <comment>UpdateConfigurationAsync:ConfigFileNotFound</comment>
+    </data>
+    <data name="ShowFormAsync:ConfigFileNotFound" xml:space="preserve">
+        <value>The given configuration file does not exist.</value>
+        <comment>ShowFormAsync:ConfigFileNotFound</comment>
+    </data>
 </root>

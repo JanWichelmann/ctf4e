@@ -65,54 +65,6 @@
       "Title": "Flag1",
       "DescriptionFormat": "Please enter another secret of \u003Cstrong\u003E{0}\u003C/strong\u003E.",
       "Link": "http://localhost:5000/"
-    },
-    {
-      "$type": "MultipleChoice",
-      "RequireAll": false,
-      "Options": [
-        {
-          "Correct": true,
-          "Value": "Correct!"
-        },
-        {
-          "Correct": false,
-          "Value": "Wrong!"
-        },
-        {
-          "Correct": true,
-          "Value": "Correct."
-        }
-      ],
-      "Id": 40,
-      "CtfExerciseNumber": null,
-      "FlagCode": "CTF{test-flag2}",
-      "Title": "Flag2",
-      "DescriptionFormat": "Please choose any correct option.",
-      "Link": null
-    },
-    {
-      "$type": "MultipleChoice",
-      "RequireAll": true,
-      "Options": [
-        {
-          "Correct": true,
-          "Value": "Correct!"
-        },
-        {
-          "Correct": false,
-          "Value": "Wrong!"
-        },
-        {
-          "Correct": true,
-          "Value": "Correct."
-        }
-      ],
-      "Id": 50,
-      "CtfExerciseNumber": null,
-      "FlagCode": "CTF{test-flag3}",
-      "Title": "Flag3",
-      "DescriptionFormat": "Please choose all correct options.",
-      "Link": null
     }
   ]
 }

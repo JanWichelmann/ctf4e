@@ -34,4 +34,8 @@
         <value>Save changes</value>
         <comment>Form:Submit</comment>
     </data>
+    <data name="SwitchFile" xml:space="preserve">
+        <value>Select different file</value>
+        <comment>SwitchFile</comment>
+    </data>
 </root>
