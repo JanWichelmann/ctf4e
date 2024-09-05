@@ -41,7 +41,7 @@ public class ScoreboardController(IUserService userService, IScoreboardService s
     {
         var configurationService = HttpContext.RequestServices.GetRequiredService<IConfigurationService>();
         if(!await configurationService.EnableScoreboard.GetAsync(HttpContext.RequestAborted))
-            return NotFound(); 
+            return RedirectToActionPermanent("RenderLabPage", "UserDashboard");
         
         var currentUser = await GetCurrentUserAsync();
         
