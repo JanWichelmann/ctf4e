@@ -203,10 +203,6 @@ var app = builder.Build();
 
     var mainOptions = app.Services.GetRequiredService<IOptions<MainOptions>>().Value;
     
-    // Initialize singleton services
-    var scoreboardUtilities = app.Services.GetRequiredService<ScoreboardUtilities>();
-    await scoreboardUtilities.InitFlagPointParametersAsync(app.Services.GetRequiredService<IServiceScopeFactory>(), CancellationToken.None);
-    
     // Verbose stack traces
     if(app.Environment.IsDevelopment())
         app.UseDeveloperExceptionPage(new DeveloperExceptionPageOptions{SourceCodeLineCount = 3});
@@ -274,11 +270,19 @@ var app = builder.Build();
     app.MapControllers();
 }
 
-// Ensure database is initialized and up-to-date
+// Ensure all services are initialized and ready
 using(var scope = app.Services.CreateScope())
 {
+    // Run migrations
+    // Usually this should not be done by the webserver, but manually before deploying the new version.
+    // However, since this app is not yet compatible to a load balancing environment, we leave this for now.
     var dbContext = scope.ServiceProvider.GetRequiredService<CtfDbContext>();
-    await dbContext.Database.MigrateAsync();
+    if((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+        await dbContext.Database.MigrateAsync();
+    
+    // Initialize singleton services
+    var scoreboardUtilities = app.Services.GetRequiredService<ScoreboardUtilities>();
+    await scoreboardUtilities.InitFlagPointParametersAsync(app.Services.GetRequiredService<IServiceScopeFactory>(), CancellationToken.None);
 }
 
 await app.RunAsync();
