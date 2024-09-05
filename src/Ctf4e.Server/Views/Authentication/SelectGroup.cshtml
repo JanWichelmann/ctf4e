@@ -50,16 +50,23 @@
             </small>
             <span asp-validation-for="DisplayName" class="text-danger"></span>
         </div>
-        <div class="mb-3">
-            <div class="form-check">
-                <input asp-for="ShowInScoreboard" class="form-check-input">
-                <label asp-for="ShowInScoreboard" class="form-check-label">@Localizer["Form:ShowInScoreboard"]</label>
-                <br>
-                <small class="form-text text-muted">
-                    @Localizer["Form:ShowInScoreboard:Description"]
-                </small>
+        @if(await ConfigurationService.EnableScoreboard.GetAsync(Context.RequestAborted))
+        {
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="ShowInScoreboard" class="form-check-input">
+                    <label asp-for="ShowInScoreboard" class="form-check-label">@Localizer["Form:ShowInScoreboard"]</label>
+                    <br>
+                    <small class="form-text text-muted">
+                        @Localizer["Form:ShowInScoreboard:Description"]
+                    </small>
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="ShowInScoreboard" value="false">
+        }
         <p>
             @Localizer["Form:FinalText"]
 
