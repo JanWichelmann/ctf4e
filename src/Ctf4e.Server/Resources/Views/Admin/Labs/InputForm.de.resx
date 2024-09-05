@@ -70,4 +70,8 @@
         <value>Legt fest, in welcher Reihenfolge die Praktika angezeigt werden. Kleinere Zahlen kommen zuerst.</value>
         <comment>Form:SortIndex:Description</comment>
     </data>
+    <data name="Form:GenerateApiCode" xml:space="preserve">
+        <value>Einen zufälligen API-Code erzeugen</value>
+        <comment>Form:GenerateApiCode</comment>
+    </data>
 </root>

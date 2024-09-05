@@ -68,4 +68,8 @@
     <data name="Form:SortIndex:Description" xml:space="preserve">
         <value>Determines the order in which labs are displayed. Lower numbers come first.</value>
     </data>
+    <data name="Form:GenerateApiCode" xml:space="preserve">
+        <value>Generate a random API code</value>
+        <comment>Form:GenerateApiCode</comment>
+    </data>
 </root>

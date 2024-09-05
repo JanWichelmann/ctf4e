@@ -24,9 +24,14 @@
     <span asp-validation-for="ServerBaseUrl" class="text-danger"></span>
 </div>
 <div class="mb-3">
-    <label class="form-label" asp-for="ApiCode">@Localizer["Form:ApiCode"]</label>
-    <input asp-for="ApiCode" class="form-control" value="@RandomStringGenerator.GetRandomString(32)">
-    <span asp-validation-for="ApiCode" class="text-danger"></span>
+    <label class="form-label" asp-for="ApiCode">@Localizer["Form:ApiCode"]</label> 
+    <div class="input-group">
+        <input asp-for="ApiCode" class="form-control" id="input-api-code">
+        <button class="btn btn-secondary" type="button" id="generate-api-code" title="@Localizer["Form:GenerateApiCode"]">
+            <i class="bi bi-shuffle"></i>
+        </button>
+    </div>
+    <span asp-validation-for="ApiCode" class="text-danger"></span> 
 </div>
 <div class="mb-3">
     <label class="form-label" asp-for="MaxPoints">@Localizer["Form:MaxPoints"]</label>
@@ -53,4 +58,19 @@
             @Localizer["Form:Visible:Description"]
         </small>
     </div>
-</div>
+</div>                     
+
+<script>
+    window.addEventListener("load", () => {
+        const generateApiCodeButton = document.getElementById("generate-api-code");
+        const apiCodeInput = document.getElementById("input-api-code");
+                                                                       
+        generateApiCodeButton.addEventListener("click", () =>
+        {
+            let apiCode = new Uint8Array(16);
+            window.crypto.getRandomValues(apiCode);
+            
+            apiCodeInput.value = Array.from(apiCode, byte => byte.toString(16).padStart(2, "0")).join("");
+        });                                                               
+    });
+</script>
