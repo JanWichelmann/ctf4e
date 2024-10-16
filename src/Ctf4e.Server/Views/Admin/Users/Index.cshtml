@@ -178,10 +178,10 @@
     <form class="mb-3" enctype="multipart/form-data" method="post" asp-controller="AdminUsers" asp-action="ImportLabCredentials">
         <div class="row">
             <div class="col-auto">
-                <input class="form-control" type="file" id="credentialsFile" name="credentialsFile">
+                <input class="form-control" type="file" id="credentialsFile" name="credentialsFile" disabled="@(!currentUser.Privileges.HasAnyPrivilege(UserPrivileges.EditUsers))">
             </div>
             <div class="col">
-                <button type="submit" class="btn btn-outline-danger">
+                <button type="submit" class="btn btn-outline-danger" disabled="@(!currentUser.Privileges.HasAnyPrivilege(UserPrivileges.EditUsers))">
                     <i class="bi bi-upload"></i>
                     @Localizer["ImportLabCredentials"]
                 </button>

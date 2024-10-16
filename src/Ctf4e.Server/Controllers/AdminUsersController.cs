@@ -196,6 +196,7 @@ public class AdminUsersController(IUserService userService)
     }
 
     [HttpPost("credentials/import")]
+    [AnyUserPrivilege(UserPrivileges.EditUsers)]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ImportLabCredentialsAsync(IFormFile credentialsFile)
     {
