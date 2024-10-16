@@ -50,7 +50,7 @@
         <comment>Form:DisplayName</comment>
     </data>
     <data name="Form:DisplayName:Description" xml:space="preserve">
-        <value>Dieses Feld hat volle Unicode-Unterstützung, Ihrer Kreativität sind abgesehen von der Längenbeschränkung also keine Grenzen gesetzt. Der Gruppenname kann anschließend nicht mehr geändert werden.</value>
+        <value>Dieses Feld hat volle Unicode-Unterstützung, Ihrer Kreativität sind abgesehen von der Längenbeschränkung also keine Grenzen gesetzt. Der Gruppenname kann anschließend nicht mehr geändert werden. Wenn Sie keinen Namen angeben, wird ein automatisch erzeugter Name verwendet.</value>
         <comment>Form:DisplayName:Description</comment>
     </data>
     <data name="Form:ShowInScoreboard" xml:space="preserve">

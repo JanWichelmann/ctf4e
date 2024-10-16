@@ -57,8 +57,8 @@ public partial class AuthenticationController
             // Filter group codes
             var groupSizeMin = await configurationService.GroupSizeMin.GetAsync(HttpContext.RequestAborted);
             var groupSizeMax = await configurationService.GroupSizeMax.GetAsync(HttpContext.RequestAborted);
-            var codes = groupSelection.OtherUserCodes
-                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            var codes = (groupSelection.OtherUserCodes ?? "")
+                .Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries)
                 .Where(c => !string.IsNullOrWhiteSpace(c))
                 .Append(currentUser.GroupFindingCode)
                 .Select(c => c.Trim())
@@ -80,7 +80,7 @@ public partial class AuthenticationController
             // The service method will do further error checking (i.e., validity of codes, whether users are already in a group, ...)
             var group = new Group
             {
-                DisplayName = groupSelection.DisplayName,
+                DisplayName = groupSelection.DisplayName ?? $"group{Random.Shared.Next(10000, 100000)}",
                 SlotId = groupSelection.SlotId,
                 ShowInScoreboard = groupSelection.ShowInScoreboard
             };
@@ -128,11 +128,11 @@ public partial class AuthenticationController
         {
             GetLogger().LogError(ex, "Start default lab on group creation");
             PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["HandleGroupSelectionAsync:DefaultLabStartError"]);
-            return await RedirectAsync(null);
+            return RedirectToAction("RenderLabPage", "UserDashboard");
         }
 
         // Success
         PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["HandleGroupSelectionAsync:Success"]);
-        return await RedirectAsync(null);
+        return RedirectToAction("RenderLabPage", "UserDashboard");
     }
 }
