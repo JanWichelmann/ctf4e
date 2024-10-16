@@ -113,6 +113,7 @@ public class AdminUsersController(IUserService userService)
             user.LabUserName = userInput.LabUserName;
             user.LabPassword = userInput.LabPassword;
             user.GroupId = userInput.GroupId;
+            user.Group = null; // Prevent EF from using the ID from the navigation property
 
             if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
             {
