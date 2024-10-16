@@ -39,7 +39,7 @@ public class AuthenticationController(ICryptoService cryptoService, IStateServic
 
 #if DEBUG
     [HttpGet("login/dev/")]
-    public async Task<IActionResult> DevLoginAsync(int userId, string userName, int? groupId, string groupName, bool admin)
+    public async Task<IActionResult> DevLoginAsync(int userId, string userName, int? groupId, string groupName, string labUserName, string labPassword, bool admin)
     {
         // Already logged in?
         var currentUser = GetCurrentUser();
@@ -49,7 +49,7 @@ public class AuthenticationController(ICryptoService cryptoService, IStateServic
         // Make sure user account exists
         // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        await stateService.ProcessLoginAsync(userId, groupId, cts.Token);
+        await stateService.ProcessLoginAsync(userId, groupId, labUserName, labPassword, cts.Token);
 
         // Sign in user
         await DoLoginAsync(userId, userName, groupId, groupName, admin);
@@ -76,7 +76,7 @@ public class AuthenticationController(ICryptoService cryptoService, IStateServic
             // Make sure user account exists
             // Don't allow the user to cancel this, but also ensure that the application doesn't block too long
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            await stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId, cts.Token);
+            await stateService.ProcessLoginAsync(loginData.UserId, loginData.GroupId, loginData.LabUserName, loginData.LabPassword, cts.Token);
 
             // Sign in user
             await DoLoginAsync(loginData.UserId, loginData.UserDisplayName, loginData.GroupId, loginData.GroupName, loginData.AdminMode);

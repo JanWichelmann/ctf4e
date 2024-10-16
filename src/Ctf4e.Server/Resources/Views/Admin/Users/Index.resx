@@ -121,4 +121,22 @@
     <data name="Users:Privileges" xml:space="preserve">
         <value>Permissions</value>
     </data>
+    <data name="Users:LabCredentials" xml:space="preserve">
+        <value>Lab credentials</value>
+    </data>
+    <data name="Users:LabPasswordPresent" xml:space="preserve">
+        <value>Lab container password set</value>
+    </data>
+    <data name="ExportLabCredentials" xml:space="preserve">
+        <value>Export lab credentials</value>
+    </data>
+    <data name="ImportLabCredentials" xml:space="preserve">
+        <value>Import lab credentials</value>
+    </data>
+    <data name="ManageLabCredentials" xml:space="preserve">
+        <value>Lab credentials</value>
+    </data>
+    <data name="ManageLabCredentials:Text" xml:space="preserve">
+        <value>Here you can import and export lab credentials. Both actions use a CSV-based file format: &lt;code&gt;User ID \t Lab username \t Lab password&lt;/code&gt;</value>
+    </data>
 </root>

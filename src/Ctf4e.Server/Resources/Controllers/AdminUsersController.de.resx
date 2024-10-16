@@ -41,4 +41,22 @@
     <data name="EditUserAsync:NotFound" xml:space="preserve">
         <value>Dieser Benutzer existiert nicht.</value>
     </data>
+    <data name="ExportLabCredentialsAsync:UnknownError" xml:space="preserve">
+        <value>Beim Exportieren der Zugangsdaten ist ein Fehler aufgetreten</value>
+    </data>
+    <data name="ImportLabCredentialsAsync:UnknownError" xml:space="preserve">
+        <value>Beim Importieren der Zugangsdaten ist ein Fehler aufgetreten</value>
+    </data>
+    <data name="ImportLabCredentialsAsync:InvalidFormat" xml:space="preserve">
+        <value>Ungültiges Zeilenformat. Jede Zeile muss aus User ID / Praktikumsbenutzer / Praktikumspasswort bestehen, durch Tabs separiert.</value>
+    </data>
+    <data name="ImportLabCredentialsAsync:InvalidUserId" xml:space="preserve">
+        <value>Der Benutzer #{0} existiert nicht.</value>
+    </data>
+    <data name="ImportLabCredentialsAsync:NoFile" xml:space="preserve">
+        <value>Bitte lade eine CSV-Datei mit Praktikumszugangsdaten hoch.</value>
+    </data>
+    <data name="ImportLabCredentialsAsync:Success" xml:space="preserve">
+        <value>Die Zugangsdaten wurden erfolgreich importiert.</value>
+    </data>
 </root>

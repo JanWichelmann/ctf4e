@@ -1,10 +1,14 @@
 using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
 using Ctf4e.Server.Constants;
 using Ctf4e.Server.InputModels;
 using Ctf4e.Server.Services;
 using Ctf4e.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -55,6 +59,8 @@ public class AdminUsersController(IUserService userService)
             DisplayName = user.DisplayName,
             IsTutor = user.IsTutor,
             GroupFindingCode = user.GroupFindingCode,
+            LabUserName = user.LabUserName,
+            LabPassword = user.LabPassword,
             GroupId = user.GroupId,
             PrivilegeAdmin = user.Privileges.HasPrivileges(UserPrivileges.Admin),
             PrivilegeViewUsers = user.Privileges.HasPrivileges(UserPrivileges.ViewUsers),
@@ -104,6 +110,8 @@ public class AdminUsersController(IUserService userService)
             user.DisplayName = userInput.DisplayName;
             user.IsTutor = userInput.IsTutor;
             user.GroupFindingCode = userInput.GroupFindingCode;
+            user.LabUserName = userInput.LabUserName;
+            user.LabPassword = userInput.LabPassword;
             user.GroupId = userInput.GroupId;
 
             if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
@@ -164,4 +172,91 @@ public class AdminUsersController(IUserService userService)
             return await ShowEditUserFormAsync(userInput);
         }
     }
+    
+    [HttpGet("credentials/export")]
+    public async Task<IActionResult> ExportLabCredentialsAsync()
+    {
+        try
+        {
+            var users = await _userService.GetUsersAsync(HttpContext.RequestAborted);
+            StringBuilder data = new();
+            data.AppendLine("ID\tUsername\tPassword");
+            foreach(var u in users)
+                data.AppendLine($"{u.Id}\t{u.LabUserName}\t{u.LabPassword}");
+            
+            return File(Encoding.UTF8.GetBytes(data.ToString()), "text/csv", "user-credentials.csv");
+        }
+        catch(InvalidOperationException ex)
+        {
+            GetLogger().LogError(ex, "Export lab credentials");
+            PostStatusMessage = new StatusMessage(StatusMessageType.Error, Localizer["ExportLabCredentialsAsync:UnknownError"]);
+            return RedirectToAction("RenderUserList");
+        }
+    }
+
+    [HttpPost("credentials/import")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportLabCredentialsAsync(IFormFile credentialsFile)
+    {
+        if(credentialsFile == null)
+        {
+            AddStatusMessage(StatusMessageType.Error, Localizer["ImportLabCredentialsAsync:NoFile"]);
+            return await RenderUserListAsync();
+        }
+        
+        // Parse file contents as CSV
+        // We always export with tabs and enforce this here as well
+        try
+        {
+            var users = await _userService.GetUsersAsync(HttpContext.RequestAborted);
+            var userLookup = users.ToDictionary(u => u.Id);
+            
+            using var fileReader = new StreamReader(credentialsFile.OpenReadStream());
+            
+            string line;
+            bool error = false;
+            bool firstLine = true;
+            while((line = await fileReader.ReadLineAsync()) != null)
+            {
+                var parts = line.Split('\t');
+                if(parts.Length != 3)
+                {
+                    AddStatusMessage(StatusMessageType.Error, Localizer["ImportLabCredentialsAsync:InvalidFormat"]);
+                    return await RenderUserListAsync();
+                }
+
+                if(!int.TryParse(parts[0], out int userId) || !userLookup.TryGetValue(userId, out var user))
+                {
+                    // Skip optional header line
+                    if(firstLine)
+                    {
+                        firstLine = false;
+                        continue;
+                    }
+
+                    AddStatusMessage(StatusMessageType.Error, Localizer["ImportLabCredentialsAsync:InvalidUserId", parts[0]]);
+                    error = true;
+                    continue;
+                }
+
+                user.LabUserName = string.IsNullOrWhiteSpace(parts[1]) ? null : parts[1];
+                user.LabPassword = string.IsNullOrWhiteSpace(parts[2]) ? null : parts[2];
+                await _userService.UpdateUserAsync(user, HttpContext.RequestAborted);
+                
+                firstLine = false;
+            }
+            
+            if(error)
+                return await RenderUserListAsync();
+
+            PostStatusMessage = new StatusMessage(StatusMessageType.Success, Localizer["ImportLabCredentialsAsync:Success"]) { AutoHide = true };
+            return RedirectToAction("RenderUserList");
+        }
+        catch(Exception ex)
+        {
+            GetLogger().LogError(ex, "Import lab credentials");
+            AddStatusMessage(StatusMessageType.Error, Localizer["ImportLabCredentialsAsync:UnknownError"]);
+            return await RenderUserListAsync();
+        }
+    }    
 }

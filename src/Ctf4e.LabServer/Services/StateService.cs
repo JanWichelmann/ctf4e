@@ -32,7 +32,7 @@ public interface IStateService
     /// Checks whether the given user state object exists. If it does exist, the old user state is updated, else a new one is generated.
     /// </summary>
     /// <returns></returns>
-    Task ProcessLoginAsync(int userId, int? groupId, CancellationToken cancellationToken);
+    Task ProcessLoginAsync(int userId, int? groupId, string labUserName, string labPassword, CancellationToken cancellationToken);
 
     /// <summary>
     /// Checks whether the given input is correct and updates the user status.
@@ -262,7 +262,7 @@ public partial class StateService : IDisposable, IStateService
     /// Checks whether the given user state object exists. If it does exist, the old user state is updated, else a new one is generated.
     /// </summary>
     /// <returns></returns>
-    public async Task ProcessLoginAsync(int userId, int? groupId, CancellationToken cancellationToken)
+    public async Task ProcessLoginAsync(int userId, int? groupId, string labUserName, string labPassword, CancellationToken cancellationToken)
     {
         // Ensure synchronized access
         using var configReadLock = await _configLock.ReaderLockAsync(cancellationToken);
@@ -296,8 +296,8 @@ public partial class StateService : IDisposable, IStateService
                     GroupId = groupId,
                     GroupMembers = [], // Will be filled later
                     Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(),
-                    UserName = _dockerSupportEnabled ? $"user{userId}" : null,
-                    Password = _dockerSupportEnabled ? RandomStringGenerator.GetRandomString(10) : null,
+                    UserName = labUserName ?? (_dockerSupportEnabled ? $"user{userId}" : null),
+                    Password = labPassword ?? (_dockerSupportEnabled ? RandomStringGenerator.GetRandomString(10) : null),
                     Log = new UserStateLogContainer(Math.Max(1, _options.Value.UserStateLogSize))
                 };
 

@@ -149,6 +149,8 @@ public class UserDashboardController(IUserService userService, IScoreboardServic
             UserDisplayName = currentUser.DisplayName,
             GroupId = currentUser.GroupId,
             GroupName = currentUser.Group?.DisplayName,
+            LabUserName = currentUser.LabUserName,
+            LabPassword = currentUser.LabPassword,
             AdminMode = false
         };
         string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());

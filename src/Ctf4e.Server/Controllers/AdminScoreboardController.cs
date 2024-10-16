@@ -152,6 +152,8 @@ public partial class AdminScoreboardController(
             UserDisplayName = user.DisplayName,
             GroupId = group?.Id,
             GroupName = group?.DisplayName,
+            LabUserName = user.LabUserName,
+            LabPassword = user.LabPassword,
             AdminMode = true
         };
         string authString = new CryptoService(lab.ApiCode).Encrypt(authData.Serialize());

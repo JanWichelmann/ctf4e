@@ -122,4 +122,10 @@
         <value>Admin permissions for lab servers (via admin scoreboard)</value>
         <comment>Privilege:LoginAsLabServerAdmin</comment>
     </data>
+    <data name="Form:LabPassword" xml:space="preserve">
+        <value>Generic lab container password (optional)</value>
+    </data>
+    <data name="Form:LabUserName" xml:space="preserve">
+        <value>Generic lab container user (optional)</value>
+    </data>
 </root>

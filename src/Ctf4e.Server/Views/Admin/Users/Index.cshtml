@@ -19,8 +19,7 @@
         <tr>
             <th scope="col">@Localizer["Users:Id"]</th>
             <th scope="col">@Localizer["Users:Name"]</th>
-            <th scope="col">@Localizer["Users:MoodleAccount"]</th>
-            <th scope="col">@Localizer["Users:GroupCode"]</th>
+            <th scope="col">@Localizer["Users:LabCredentials"]</th>
             <th scope="col">@Localizer["Users:GroupId"]</th>
             <th scope="col" class="text-center" title="@Localizer["Users:IsTutor:Text"]">@Localizer["Users:IsTutor"]</th>
             @if(currentUser.Privileges.HasPrivileges(UserPrivileges.Admin))
@@ -36,8 +35,13 @@
             <tr>
                 <td>@u.Id</td>
                 <td>@u.DisplayName</td>
-                <td>@u.MoodleName (#@u.MoodleUserId)</td>
-                <td>@u.GroupFindingCode</td>
+                <td>
+                    @(u.LabUserName ?? "")
+                    @if(u.LabPassword != null)
+                    {
+                        <i class="bi bi-key-fill text-secondary" title="@Localizer["Users:LabPasswordPresent"]"></i>
+                    }
+                </td>
                 <td>
                     @if(u.GroupId != null)
                     {
@@ -64,76 +68,76 @@
                     <td>
                         @if(u.Privileges.HasPrivileges(UserPrivileges.Admin))
                         {
-                            <i class="bi bi-person-badge-fill text-primary" title="@Localizer["Users:Privileges:Admin"]"></i>
+                            <i class="bi m-0 cursor-help bi-person-badge-fill text-primary" title="@Localizer["Users:Privileges:Admin"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditUsers))
                         {
-                            <i class="bi bi-person-fill text-danger" title="@Localizer["Users:Privileges:EditUsers"]"></i>
+                            <i class="bi m-0 cursor-help bi-person-fill text-danger" title="@Localizer["Users:Privileges:EditUsers"]"></i>
                         }
                         else if(u.Privileges.HasPrivileges(UserPrivileges.ViewUsers))
                         {
-                            <i class="bi bi-person text-secondary" title="@Localizer["Users:Privileges:ViewUsers"]"></i>
+                            <i class="bi m-0 cursor-help bi-person text-secondary" title="@Localizer["Users:Privileges:ViewUsers"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditGroups))
                         {
-                            <i class="bi bi-people-fill text-danger" title="@Localizer["Users:Privileges:EditGroups"]"></i>
+                            <i class="bi m-0 cursor-help bi-people-fill text-danger" title="@Localizer["Users:Privileges:EditGroups"]"></i>
                         }
                         else if(u.Privileges.HasPrivileges(UserPrivileges.ViewGroups))
                         {
-                            <i class="bi bi-people text-secondary" title="@Localizer["Users:Privileges:ViewGroups"]"></i>
+                            <i class="bi m-0 cursor-help bi-people text-secondary" title="@Localizer["Users:Privileges:ViewGroups"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditLabs))
                         {
-                            <i class="bi bi-book-fill text-danger" title="@Localizer["Users:Privileges:EditLabs"]"></i>
+                            <i class="bi m-0 cursor-help bi-book-fill text-danger" title="@Localizer["Users:Privileges:EditLabs"]"></i>
                         }
                         else if(u.Privileges.HasPrivileges(UserPrivileges.ViewLabs))
                         {
-                            <i class="bi bi-book text-secondary" title="@Localizer["Users:Privileges:ViewLabs"]"></i>
+                            <i class="bi m-0 cursor-help bi-book text-secondary" title="@Localizer["Users:Privileges:ViewLabs"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditSlots))
                         {
-                            <i class="bi bi-calendar-day-fill text-danger" title="@Localizer["Users:Privileges:EditSlots"]"></i>
+                            <i class="bi m-0 cursor-help bi-calendar-day-fill text-danger" title="@Localizer["Users:Privileges:EditSlots"]"></i>
                         }
                         else if(u.Privileges.HasPrivileges(UserPrivileges.ViewSlots))
                         {
-                            <i class="bi bi-calendar-day text-secondary" title="@Localizer["Users:Privileges:ViewSlots"]"></i>
+                            <i class="bi m-0 cursor-help bi-calendar-day text-secondary" title="@Localizer["Users:Privileges:ViewSlots"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditLabExecutions))
                         {
-                            <i class="bi bi-calendar-range-fill text-danger" title="@Localizer["Users:Privileges:EditLabExecutions"]"></i>
+                            <i class="bi m-0 cursor-help bi-calendar-range-fill text-danger" title="@Localizer["Users:Privileges:EditLabExecutions"]"></i>
                         }
                         else if(u.Privileges.HasPrivileges(UserPrivileges.ViewLabExecutions))
                         {
-                            <i class="bi bi-calendar-range text-secondary" title="@Localizer["Users:Privileges:ViewLabExecutions"]"></i>
+                            <i class="bi m-0 cursor-help bi-calendar-range text-secondary" title="@Localizer["Users:Privileges:ViewLabExecutions"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditAdminScoreboard))
                         {
-                            <i class="bi bi-bookmark-star-fill text-danger" title="@Localizer["Users:Privileges:EditAdminScoreboard"]"></i>
+                            <i class="bi m-0 cursor-help bi-bookmark-star-fill text-danger" title="@Localizer["Users:Privileges:EditAdminScoreboard"]"></i>
                         }
                         else if(u.Privileges.HasPrivileges(UserPrivileges.ViewAdminScoreboard))
                         {
-                            <i class="bi bi-bookmark-star text-secondary" title="@Localizer["Users:Privileges:ViewAdminScoreboard"]"></i>
+                            <i class="bi m-0 cursor-help bi-bookmark-star text-secondary" title="@Localizer["Users:Privileges:ViewAdminScoreboard"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.EditConfiguration))
                         {
-                            <i class="bi bi-gear-fill text-danger" title="@Localizer["Users:Privileges:EditConfiguration"]"></i>
+                            <i class="bi m-0 cursor-help bi-gear-fill text-danger" title="@Localizer["Users:Privileges:EditConfiguration"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.TransferResults))
                         {
-                            <i class="bi bi-arrow-repeat text-danger" title="@Localizer["Users:Privileges:TransferResults"]"></i>
+                            <i class="bi m-0 cursor-help bi-arrow-repeat text-danger" title="@Localizer["Users:Privileges:TransferResults"]"></i>
                         }
 
                         @if(u.Privileges.HasPrivileges(UserPrivileges.LoginAsLabServerAdmin))
                         {
-                            <i class="bi bi-hdd-network-fill text-danger" title="@Localizer["Users:Privileges:LoginAsLabServerAdmin"]"></i>
+                            <i class="bi m-0 cursor-help bi-hdd-network-fill text-danger" title="@Localizer["Users:Privileges:LoginAsLabServerAdmin"]"></i>
                         }
                     </td>
                 }
@@ -162,6 +166,33 @@
         }
         </tbody>
     </table>
+                     
+    <h2 class="mb-3 mt-4">
+        @Localizer["ManageLabCredentials"]      
+    </h2>                       
+    
+    <p>
+        @Localizer["ManageLabCredentials:Text"]
+    </p>
+    
+    <form class="mb-3" enctype="multipart/form-data" method="post" asp-controller="AdminUsers" asp-action="ImportLabCredentials">
+        <div class="row">
+            <div class="col-auto">
+                <input class="form-control" type="file" id="credentialsFile" name="credentialsFile">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-upload"></i>
+                    @Localizer["ImportLabCredentials"]
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <a class="btn btn-primary" asp-controller="AdminUsers" asp-action="ExportLabCredentials">
+        <i class="bi bi-download"></i>
+        @Localizer["ExportLabCredentials"]
+    </a>
 </div>
 
 <script>

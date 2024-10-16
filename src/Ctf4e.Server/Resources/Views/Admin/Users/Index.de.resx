@@ -121,4 +121,28 @@
     <data name="Users:Privileges" xml:space="preserve">
         <value>Zugriffsrechte</value>
     </data>
+    <data name="Users:LabCredentials" xml:space="preserve">
+        <value>Zugangsdaten</value>
+        <comment>Users:LabCredentials</comment>
+    </data>
+    <data name="Users:LabPasswordPresent" xml:space="preserve">
+        <value>Passwort für Praktikumscontainer gesetzt</value>
+        <comment>Users:LabPasswordPresent</comment>
+    </data>
+    <data name="ExportLabCredentials" xml:space="preserve">
+        <value>Praktikumszugangsdaten exportieren</value>
+        <comment>ExportLabCredentials</comment>
+    </data>
+    <data name="ImportLabCredentials" xml:space="preserve">
+        <value>Praktikumszugangsdaten importieren</value>
+        <comment>ImportLabCredentials</comment>
+    </data>
+    <data name="ManageLabCredentials" xml:space="preserve">
+        <value>Praktikumszugangsdaten</value>
+        <comment>ManageLabCredentials</comment>
+    </data>
+    <data name="ManageLabCredentials:Text" xml:space="preserve">
+        <value>Hier können Praktikumszugangsdaten importiert und exportiert werden. Beide Aktionen verwenden ein CSV-basiertes Dateiformat: &lt;code&gt;User ID \t Benutzername \t Passwort&lt;/code&gt;</value>
+        <comment>ManageLabCredentials:Text</comment>
+    </data>
 </root>

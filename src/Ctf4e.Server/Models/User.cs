@@ -20,6 +20,10 @@ public class User
     public bool IsTutor { get; set; }
 
     public string GroupFindingCode { get; set; }
+    
+    public string LabUserName { get; set; }
+    
+    public string LabPassword { get; set; }
 
     public ICollection<FlagSubmission> FlagSubmissions { get; set; }
 

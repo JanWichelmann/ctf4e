@@ -33,6 +33,12 @@ public class UserEntity
     [Required]
     [StringLength(100)]
     public string GroupFindingCode { get; set; }
+    
+    [StringLength(20)]
+    public string LabUserName { get; set; }
+    
+    [StringLength(20)]
+    public string LabPassword { get; set; }
 
     public ICollection<FlagSubmissionEntity> FlagSubmissions { get; set; }
 

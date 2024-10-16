@@ -21,6 +21,10 @@ namespace Ctf4e.Api.Models
         public string GroupName { get; set; }
 
         public bool AdminMode { get; set; }
+        
+        public string LabUserName { get; set; }
+        
+        public string LabPassword { get; set; }
 
         public string Serialize()
         {

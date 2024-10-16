@@ -42,4 +42,28 @@
         <value>This user does not exist.</value>
         <comment>EditUserAsync:NotFound</comment>
     </data>
+    <data name="ExportLabCredentialsAsync:UnknownError" xml:space="preserve">
+        <value>An error occured while exporting the lab credentials.</value>
+        <comment>ExportLabCredentialsAsync:UnknownError</comment>
+    </data>
+    <data name="ImportLabCredentialsAsync:NoFile" xml:space="preserve">
+        <value>Please upload a CSV file with the lab credentials to import.</value>
+        <comment>ImportLabCredentialsAsync:NoFile</comment>
+    </data>
+    <data name="ImportLabCredentialsAsync:InvalidFormat" xml:space="preserve">
+        <value>Invalid line format. Note that each line must be user ID / lab user name / lab password separated by tabs.</value>
+        <comment>ImportLabCredentialsAsync:InvalidFormat</comment>
+    </data>
+    <data name="ImportLabCredentialsAsync:InvalidUserId" xml:space="preserve">
+        <value>The user #{0} does not exist.</value>
+        <comment>ImportLabCredentialsAsync:InvalidUserId</comment>
+    </data>
+    <data name="ImportLabCredentialsAsync:Success" xml:space="preserve">
+        <value>The lab credentials were imported successfully.</value>
+        <comment>ImportLabCredentialsAsync:Success</comment>
+    </data>
+    <data name="ImportLabCredentialsAsync:UnknownError" xml:space="preserve">
+        <value>An error occured while importing lab credentials.</value>
+        <comment>ImportLabCredentialsAsync:UnknownError</comment>
+    </data>
 </root>

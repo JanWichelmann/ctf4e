@@ -109,4 +109,12 @@
     <data name="Privilege:ViewSlots" xml:space="preserve">
         <value>Terminslots einsehen</value>
     </data>
+    <data name="Form:LabUserName" xml:space="preserve">
+        <value>Generischer Benutzername für Praktikumscontainer (optional)</value>
+        <comment>Form:LabUserName</comment>
+    </data>
+    <data name="Form:LabPassword" xml:space="preserve">
+        <value>Generisches Passwort für Praktikumscontainer (optional)</value>
+        <comment>Form:LabPassword</comment>
+    </data>
 </root>

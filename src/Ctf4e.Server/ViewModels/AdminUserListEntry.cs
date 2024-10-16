@@ -17,6 +17,10 @@ public class AdminUserListEntry
     public bool IsTutor { get; set; }
 
     public string GroupFindingCode { get; set; }
+    
+    public string LabUserName { get; set; }
+    
+    public string LabPassword { get; set; }
 
     public int? GroupId { get; set; }
     public string GroupName { get; set; }

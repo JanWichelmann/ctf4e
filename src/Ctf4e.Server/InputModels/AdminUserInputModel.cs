@@ -19,6 +19,12 @@ public class AdminUserInputModel
     [DisplayFormat(ConvertEmptyStringToNull = false)]
     [StringLength(100)]
     public string GroupFindingCode { get; set; }
+    
+    [StringLength(20)]
+    public string LabUserName { get; set; }
+    
+    [StringLength(20)]
+    public string LabPassword { get; set; }
 
     public int? GroupId { get; set; }
     
