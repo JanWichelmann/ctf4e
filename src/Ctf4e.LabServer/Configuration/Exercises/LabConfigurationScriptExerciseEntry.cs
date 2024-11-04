@@ -14,4 +14,14 @@ public class LabConfigurationScriptExerciseEntry : LabConfigurationExerciseEntry
     /// Controls whether the exercise allows multiline string inputs.
     /// </summary>
     public bool Multiline { get; set; }
+    
+    /// <summary>
+    /// Overrides the container name specified in the lab options, to execute the grading script on.
+    /// </summary>
+    public string ContainerName { get; set; }
+    
+    /// <summary>
+    /// Overrides the grading script path specified in the lab options.
+    /// </summary>
+    public string GradeScriptPath { get; set; }
 }

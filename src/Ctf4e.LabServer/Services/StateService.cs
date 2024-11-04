@@ -113,7 +113,7 @@ public partial class StateService : IDisposable, IStateService
         _labConfiguration = labConfiguration ?? throw new ArgumentNullException(nameof(labConfiguration));
         _dockerService = dockerService ?? throw new ArgumentNullException(nameof(dockerService));
 
-        _dockerSupportEnabled = !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName);
+        _dockerSupportEnabled = _options.Value.EnableDocker;
     }
 
     public Task InitAsync(CancellationToken cancellationToken)
@@ -320,7 +320,9 @@ public partial class StateService : IDisposable, IStateService
 
                 // Initialize Docker container account, if needed
                 // Don't allow cancellation here, else we might end up in an inconsistent state
-                if(_dockerSupportEnabled && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
+                if(_dockerSupportEnabled
+                   && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName)
+                   && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
                     await _dockerService.InitUserAsync(userId, userState.UserName, userState.Password, CancellationToken.None);
 
                 // Store new user state
@@ -433,7 +435,10 @@ public partial class StateService : IDisposable, IStateService
                     throw new NotSupportedException("Docker support is not enabled, so script exercises cannot be graded.");
 
                 // Run script
-                (correct, string stderr) = await _dockerService.GradeAsync(userId, exerciseId, input as string, cancellationToken);
+                var scriptExercise = exercise as LabConfigurationScriptExerciseEntry;
+                string containerName = scriptExercise.ContainerName ?? _options.Value.DockerContainerName;
+                string gradingScriptPath = scriptExercise.GradeScriptPath ?? _options.Value.DockerContainerGradeScriptPath;
+                (correct, string stderr) = await _dockerService.GradeAsync(containerName, gradingScriptPath, userId, exerciseId, input as string, cancellationToken);
 
                 userState.Log.AddMessage("Script stderr output", stderr);
             }

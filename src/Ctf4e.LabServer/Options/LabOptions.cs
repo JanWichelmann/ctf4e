@@ -18,6 +18,8 @@ public class LabOptions
         
     public string LabConfigurationFile { get; set; }
         
+    public bool EnableDocker { get; set; }
+    
     public string DockerContainerName { get; set; }
         
     public string DockerContainerInitUserScriptPath { get; set; }

@@ -13,7 +13,7 @@ namespace Ctf4e.LabServer.Services;
 public interface IDockerService
 {
     Task InitUserAsync(int userId, string userName, string password, CancellationToken cancellationToken);
-    Task<(bool passed, string stderr)> GradeAsync(int userId, int exerciseId, string input, CancellationToken cancellationToken);
+    Task<(bool passed, string stderr)> GradeAsync(string containerName, string gradingScriptPath, int userId, int exerciseId, string input, CancellationToken cancellationToken);
 }
 
 public class DockerService : IDockerService, IDisposable
@@ -30,7 +30,7 @@ public class DockerService : IDockerService, IDisposable
         _options = options;
 
         // Only initialize this if container support is enabled
-        if(!string.IsNullOrWhiteSpace(_options.Value.DockerContainerName))
+        if(_options.Value.EnableDocker)
         {
             _dockerClient = new DockerClientConfiguration(new Uri("unix:///docker/docker.sock")).CreateClient();
         }
@@ -66,17 +66,17 @@ public class DockerService : IDockerService, IDisposable
         await execStream.ReadOutputToEndAsync(cancellationToken);
     }
 
-    public async Task<(bool passed, string stderr)> GradeAsync(int userId, int exerciseId, string input, CancellationToken cancellationToken)
+    public async Task<(bool passed, string stderr)> GradeAsync(string containerName, string gradingScriptPath, int userId, int exerciseId, string input, CancellationToken cancellationToken)
     {
         if(_dockerClient == null)
             throw new InvalidOperationException("Docker support is not initialized.");
             
-        if(string.IsNullOrWhiteSpace(_options.Value.DockerContainerGradeScriptPath))
+        if(string.IsNullOrWhiteSpace(gradingScriptPath))
             throw new NotSupportedException("Grading script is not specified.");
             
         // Prepare command
         bool stringInputPresent = input != null;
-        var execCreateResponse = await _dockerClient.Exec.ExecCreateContainerAsync(_options.Value.DockerContainerName, new ContainerExecCreateParameters
+        var execCreateResponse = await _dockerClient.Exec.ExecCreateContainerAsync(containerName, new ContainerExecCreateParameters
         {
             AttachStdin = stringInputPresent,
             AttachStderr = true,
@@ -84,7 +84,7 @@ public class DockerService : IDockerService, IDisposable
             Tty = false,
             Cmd = new List<string>
             {
-                _options.Value.DockerContainerGradeScriptPath,
+                gradingScriptPath,
                 userId.ToString(),
                 exerciseId.ToString()
             },
