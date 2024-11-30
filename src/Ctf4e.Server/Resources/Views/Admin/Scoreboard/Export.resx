@@ -23,7 +23,7 @@
         <comment>HtmlTitle</comment>
     </data>
     <data name="DownloadCsv" xml:space="preserve">
-        <value>Download results as CSV</value>
+        <value>Download summary as CSV</value>
         <comment>DownloadCsv</comment>
     </data>
     <data name="UploadMoodle" xml:space="preserve">
@@ -53,5 +53,9 @@
     <data name="Title:Push" xml:space="preserve">
         <value>Transfer results</value>
         <comment>Title:Push</comment>
+    </data>
+    <data name="DownloadCsvLabstate" xml:space="preserve">
+        <value>Download lab results as CSV</value>
+        <comment>DownloadCsvLabstate</comment>
     </data>
 </root>

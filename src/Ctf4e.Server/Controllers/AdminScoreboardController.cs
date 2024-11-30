@@ -185,16 +185,34 @@ public partial class AdminScoreboardController(
         return RedirectToAction("ShowStatisticsDashboard");
     }
 
-    [HttpGet("sync/csv")]
+    [HttpGet("sync/csv/summary")]
     [AnyUserPrivilege(UserPrivileges.TransferResults)]
-    public async Task<IActionResult> DownloadAsCsvAsync([FromServices] ICsvService csvService)
+    public async Task<IActionResult> DownloadCsvSummaryAsync([FromServices] ICsvService csvService)
     {
         try
         {
-            string csv = await csvService.GetLabStatesAsync(HttpContext.RequestAborted);
-            return File(Encoding.UTF8.GetBytes(csv), "text/csv", "labstates.csv");
+            string csv = await csvService.GetSummaryAsync(HttpContext.RequestAborted);
+            return File(Encoding.UTF8.GetBytes(csv), "text/csv", "summary.csv");
         }
-        catch(InvalidOperationException ex)
+        catch(Exception ex)
+        {
+            GetLogger().LogError(ex, "Download as CSV");
+            AddStatusMessage(StatusMessageType.Error, Localizer["DownloadAsCsvAsync:UnknownError"]);
+        }
+
+        return await ShowStatisticsDashboardAsync(null, null);
+    }
+
+    [HttpGet("sync/csv/labstate")]
+    [AnyUserPrivilege(UserPrivileges.TransferResults)]
+    public async Task<IActionResult> DownloadCsvLabstateAsync(int labId, [FromServices] ICsvService csvService)
+    {
+        try
+        {
+            string csv = await csvService.GetLabStateAsync(labId, HttpContext.RequestAborted);
+            return File(Encoding.UTF8.GetBytes(csv), "text/csv", $"lab{labId}.csv");
+        }
+        catch(Exception ex)
         {
             GetLogger().LogError(ex, "Download as CSV");
             AddStatusMessage(StatusMessageType.Error, Localizer["DownloadAsCsvAsync:UnknownError"]);

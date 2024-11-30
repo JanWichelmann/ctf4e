@@ -1,8 +1,13 @@
+@using Ctf4e.Server.Services
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IViewLocalizer Localizer
-@{                 
+@inject ILabService LabService
+@{
     ViewData["Title"] = Localizer["HtmlTitle"];
+
+    var labs = await LabService.GetLabListAsync(Context.RequestAborted);
+    var labList = labs.Select(lab => new SelectListItem(lab.Name, lab.Id.ToString())).ToList();
 }
 
 <div class="container">
@@ -16,18 +21,31 @@
         };
     }
     <partial name="Nav.cshtml" model="navViewModel" />
-                                
-    <h2 class="mt-4">@Localizer["Title:Download"]</h2> 
+
+    <h2 class="mt-4">@Localizer["Title:Download"]</h2>
     <hr class="header-secondary">
-    
-    <a class="btn btn-primary mb-2" asp-controller="AdminScoreboard" asp-action="DownloadAsCsv">
+
+    <a class="btn btn-primary mb-3" asp-controller="AdminScoreboard" asp-action="DownloadCsvSummary">
         <i class="bi bi-download"></i>
         @Localizer["DownloadCsv"]
     </a>
-                             
+
+    <form asp-controller="AdminScoreboard" asp-action="DownloadCsvLabstate" method="get" class="row">
+        <div class="col-auto">
+            <select class="form-select mb-2" name="labId" asp-items="labList"></select>
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-download"></i>
+                @Localizer["DownloadCsvLabstate"]
+            </button>
+        </div>
+    </form>
+
     <h2 class="mt-4">@Localizer["Title:Push"]</h2>
-    <hr class="header-secondary"> 
-    
+    <hr class="header-secondary">
+
     <button class="btn btn-warning mb-2" href="#" data-bs-toggle="modal" data-bs-target="#modal-sync-moodle">
         <i class="bi bi-cloud-upload"></i>
         @Localizer["UploadMoodle"]
