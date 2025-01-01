@@ -24,10 +24,14 @@ public class DockerService : IDockerService, IDisposable
     private readonly IOptions<LabOptions> _options;
         
     private readonly DockerClient _dockerClient;
+    private readonly SemaphoreSlim _gradingLock;
 
     public DockerService(IOptions<LabOptions> options)
     {
         _options = options;
+
+        int concurrencyCount = _options.Value.DockerContainerGradingConcurrencyCount ?? 100;
+        _gradingLock = new SemaphoreSlim(concurrencyCount, concurrencyCount);
 
         // Only initialize this if container support is enabled
         if(_options.Value.EnableDocker)
@@ -73,40 +77,49 @@ public class DockerService : IDockerService, IDisposable
             
         if(string.IsNullOrWhiteSpace(gradingScriptPath))
             throw new NotSupportedException("Grading script is not specified.");
-            
-        // Prepare command
-        bool stringInputPresent = input != null;
-        var execCreateResponse = await _dockerClient.Exec.ExecCreateContainerAsync(containerName, new ContainerExecCreateParameters
+        
+        // Wait for turn
+        await _gradingLock.WaitAsync(cancellationToken);
+        try
         {
-            AttachStdin = stringInputPresent,
-            AttachStderr = true,
-            AttachStdout = true,
-            Tty = false,
-            Cmd = new List<string>
+            // Prepare command
+            bool stringInputPresent = input != null;
+            var execCreateResponse = await _dockerClient.Exec.ExecCreateContainerAsync(containerName, new ContainerExecCreateParameters
             {
-                gradingScriptPath,
-                userId.ToString(),
-                exerciseId.ToString()
-            },
-            Detach = false
-        }, cancellationToken);
+                AttachStdin = stringInputPresent,
+                AttachStderr = true,
+                AttachStdout = true,
+                Tty = false,
+                Cmd = new List<string>
+                {
+                    gradingScriptPath,
+                    userId.ToString(),
+                    exerciseId.ToString()
+                },
+                Detach = false
+            }, cancellationToken);
 
-        // Run command
-        var execStream = await _dockerClient.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, cancellationToken);
-            
-        // Transmit input, if present
-        if(stringInputPresent)
-        {
-            var inputBytes = Encoding.UTF8.GetBytes(input);
-            await execStream.WriteAsync(inputBytes, 0, inputBytes.Length, cancellationToken);
-            execStream.CloseWrite();
+            // Run command
+            var execStream = await _dockerClient.Exec.StartAndAttachContainerExecAsync(execCreateResponse.ID, false, cancellationToken);
+
+            // Transmit input, if present
+            if(stringInputPresent)
+            {
+                var inputBytes = Encoding.UTF8.GetBytes(input);
+                await execStream.WriteAsync(inputBytes, 0, inputBytes.Length, cancellationToken);
+                execStream.CloseWrite();
+            }
+
+            // Wait for completion
+            var (stdout, stderr) = await execStream.ReadOutputToEndAsync(cancellationToken);
+
+            // Passed?
+            return (stdout.Trim() == "1", stderr);
         }
-
-        // Wait for completion
-        var (stdout, stderr) = await execStream.ReadOutputToEndAsync(cancellationToken);
-
-        // Passed?
-        return (stdout.Trim() == "1", stderr);
+        finally
+        {
+            _gradingLock.Release();
+        }
     }
 
     public void Dispose()

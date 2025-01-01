@@ -8,16 +8,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ctf4e.LabServer.Constants;
 using Ctf4e.LabServer.InputModels;
+using Ctf4e.LabServer.Options;
 using Ctf4e.LabServer.Services;
 using Ctf4e.Utilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Ctf4e.LabServer.Controllers;
 
 [Route("")]
 [Route("group")]
 [Authorize]
-public class DashboardController(IStateService stateService, ICtfApiClient ctfApiClient, ILabConfigurationService labConfiguration)
+public class DashboardController(IStateService stateService, ICtfApiClient ctfApiClient, ILabConfigurationService labConfiguration, IOptions<LabOptions> options)
     : ControllerBase<DashboardController>
 {
     protected override MenuItems ActiveMenuItem => MenuItems.Group;
@@ -67,7 +69,9 @@ public class DashboardController(IStateService stateService, ICtfApiClient ctfAp
     private async Task<bool> CheckInputAsync(int exerciseId, object input)
     {
         // Don't allow the user to cancel this too early, but also ensure that the application doesn't block too long
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        // TODO we may want to implement a JS-based grading button that indicates that the grading process is running and does not leave the site in a loading state forever
+        int timeout = options.Value.DockerContainerGradingTimeout ?? 30;
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(timeout));
 
         // Get current user
         int userId = GetCurrentUser().UserId;

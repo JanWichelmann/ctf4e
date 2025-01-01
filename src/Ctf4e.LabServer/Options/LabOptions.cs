@@ -26,6 +26,10 @@ public class LabOptions
         
     public string DockerContainerGradeScriptPath { get; set; }
     
+    public int? DockerContainerGradingConcurrencyCount { get; set; }
+    
+    public int? DockerContainerGradingTimeout { get; set; }
+    
     public bool PassAsGroup { get; set; }
 
     public string PageTitle { get; set; }
