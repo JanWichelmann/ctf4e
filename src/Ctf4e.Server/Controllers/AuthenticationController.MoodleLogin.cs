@@ -1,3 +1,4 @@
+using System;
 using System.Security;
 using System.Threading.Tasks;
 using Ctf4e.Server.Authorization;
@@ -35,9 +36,12 @@ public partial class AuthenticationController
                 HttpContext.RequestServices.GetRequiredService<ILogger<MoodleAuthenticationTools>>()
             );
         }
-        catch(SecurityException)
+        catch(SecurityException ex)
         {
             AddStatusMessage(StatusMessageType.Error, Localizer["LoginMoodleAsync:InvalidLogin"]);
+            GetLogger().LogWarning(ex, "Invalid Moodle login attempt");
+            GetLogger().LogDebug("Current time: {CurrentTime}", DateTime.Now);
+            GetLogger().LogDebug("Request scheme: {RequestScheme}", Request.Scheme);
             return await ShowLoginFormAsync(null);
         }
 

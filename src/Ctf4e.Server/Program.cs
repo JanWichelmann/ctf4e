@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using MoodleLti.Options;
@@ -211,11 +212,34 @@ var app = builder.Build();
     // Must be the very first middleware
     if(mainOptions.ProxySupport)
     {
+        var proxyNetworkIp = IPAddress.Parse(mainOptions.ProxyNetworkAddress);
+        var proxyNetwork = new IPNetwork(proxyNetworkIp, mainOptions.ProxyNetworkPrefix);
+        
+        // Help debugging proxy issues
+        app.Use((context, next) =>
+        {
+            var remoteIp = context.Connection.RemoteIpAddress!;
+            if(!proxyNetworkIp.IsIPv4MappedToIPv6 && remoteIp.IsIPv4MappedToIPv6)
+                remoteIp = remoteIp.MapToIPv4();
+            if(!proxyNetwork.Contains(remoteIp))
+            { 
+                var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+                context.Response.StatusCode = StatusCodes.Status502BadGateway;
+                context.Response.WriteAsync("Bad gateway. Check log for more details.");
+                logger.LogError("Request from {RemoteIp} was blocked by proxy settings (proxy network: {ProxyNetworkIp}/{ProxyNetworkPrefix}).", remoteIp, proxyNetwork.Prefix, proxyNetwork.PrefixLength);    
+                return Task.CompletedTask;
+            }
+            
+            return next();
+        });
+        
+        // Forwarding
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             RequireHeaderSymmetry = true,
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto,
-            KnownNetworks = { new IPNetwork(IPAddress.Parse(mainOptions.ProxyNetworkAddress), mainOptions.ProxyNetworkPrefix) }
+            KnownNetworks = { proxyNetwork },
+            ForwardLimit = 1
         });
         app.Use((context, next) =>
         {
