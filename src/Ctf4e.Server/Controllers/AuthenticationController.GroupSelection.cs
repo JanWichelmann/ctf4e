@@ -76,11 +76,16 @@ public partial class AuthenticationController
                 return await ShowGroupFormAsync(groupSelection);
             }
 
+            // Enforce group name
+            string groupName = groupSelection.DisplayName?.Trim();
+            if(string.IsNullOrWhiteSpace(groupName))
+                groupName = $"group{Random.Shared.Next(10000, 100000)}";
+            
             // Create group
             // The service method will do further error checking (i.e., validity of codes, whether users are already in a group, ...)
             var group = new Group
             {
-                DisplayName = groupSelection.DisplayName ?? $"group{Random.Shared.Next(10000, 100000)}",
+                DisplayName = groupName,
                 SlotId = groupSelection.SlotId,
                 ShowInScoreboard = groupSelection.ShowInScoreboard
             };
