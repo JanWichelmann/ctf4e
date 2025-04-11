@@ -167,11 +167,11 @@ public class ScoreboardUtilities
                      SELECT 1
                      FROM `LabExecutions` le
                      WHERE le.`GroupId` = g.`Id`
-                       AND le.`LabId` = @labId
+                       AND le.`LabId` = {labId}
                        AND le.`Start` <= s.`SubmissionTime`
                        AND s.`SubmissionTime` < le.`End`
                    )
-                 WHERE f.`LabId` = {labId}
+                 WHERE f.`LabId` = {labId}150
                  GROUP BY f.`Id`
                  """)
             .ToListAsync(cancellationToken);
