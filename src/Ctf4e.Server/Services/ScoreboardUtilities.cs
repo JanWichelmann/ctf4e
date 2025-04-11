@@ -171,7 +171,7 @@ public class ScoreboardUtilities
                        AND le.`Start` <= s.`SubmissionTime`
                        AND s.`SubmissionTime` < le.`End`
                    )
-                 WHERE f.`LabId` = {labId}150
+                 WHERE f.`LabId` = {labId}
                  GROUP BY f.`Id`
                  """)
             .ToListAsync(cancellationToken);
