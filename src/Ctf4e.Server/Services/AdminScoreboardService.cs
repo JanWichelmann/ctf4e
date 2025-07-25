@@ -126,7 +126,7 @@ public class AdminScoreboardService(
                          && es.Exercise.LabId == labId
                          && es.User.GroupId != null
                          && es.User.Group.SlotId == slotId
-                         && es.User.Group.LabExecutions.Any(le => le.Start <= es.SubmissionTime && es.SubmissionTime < le.End))
+                         && es.User.Group.LabExecutions.Any(le => le.LabId == labId && le.Start <= es.SubmissionTime && es.SubmissionTime < le.End))
             .OrderBy(es => es.SubmissionTime)
             .ProjectTo<ExerciseSubmission>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
