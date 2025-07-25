@@ -133,7 +133,7 @@
                                 @submission.Weight
                             </td>
                             <td>
-                                @if(!sawPassedSolution)
+                                @if(!sawPassedSolution && submission.Valid)
                                 {
                                     if(submission.Solved)
                                     {
