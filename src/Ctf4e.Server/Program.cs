@@ -41,11 +41,13 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddDataProtection()
         .PersistKeysToDbContext<CtfDbContext>();
 
-    // Moodle connection
+    // LTI/Moodle connection
     builder.Services.AddHttpClient();
     builder.Services.AddMoodleLtiApi();
     builder.Services.AddMoodleGradebook();
     builder.Services.AddOptions<MoodleLtiOptions>().Bind(configurationSection.GetSection(nameof(MoodleLtiOptions)));
+    builder.Services.AddScoped<ILtiLoginService, LtiLoginService>();
+    builder.Services.AddOptions<LtiAdvantageOptions>().Bind(configurationSection.GetSection("Lti"));
 
     // Database
     var dbOptions = configurationSection.GetSection(nameof(CtfDbOptions)).Get<CtfDbOptions>() ?? throw new Exception("Could not find database configuration.");

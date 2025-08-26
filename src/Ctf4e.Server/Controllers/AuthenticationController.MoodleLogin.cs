@@ -46,7 +46,7 @@ public partial class AuthenticationController
         }
 
         // Does the user exist already?
-        var user = await _userService.FindUserByMoodleUserIdAsync(authData.UserId, HttpContext.RequestAborted);
+        var user = await _userService.FindUserByLtiUserIdAsync(authData.UserId, HttpContext.RequestAborted);
         if(user == null)
         {
             bool firstUser = !await _userService.AnyUsers(HttpContext.RequestAborted);

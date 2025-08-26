@@ -5,6 +5,7 @@ using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Ctf4e.Server.Services;
 
@@ -23,6 +24,7 @@ public interface IConfigurationService
     ConfigurationEntry<int> GroupSizeMin { get; }
     ConfigurationEntry<int> GroupSizeMax { get; }
     ConfigurationEntry<string> GroupSelectionPageText { get; }
+    ConfigurationEntry<string> LtiAdvantageJsonWebKey { get; }
 }
 
 public class ConfigurationService(CtfDbContext dbContext, IMemoryCache cache) : IConfigurationService
@@ -40,9 +42,10 @@ public class ConfigurationService(CtfDbContext dbContext, IMemoryCache cache) : 
     public ConfigurationEntry<int> GroupSizeMin { get; } = new(dbContext, cache, "GroupSizeMin", s => s == null ? 1 : int.Parse(s));
     public ConfigurationEntry<int> GroupSizeMax { get; } = new(dbContext, cache, "GroupSizeMax", s => s == null ? 2 : int.Parse(s));
     public ConfigurationEntry<string> GroupSelectionPageText { get; } = new(dbContext, cache, "GroupSelectionPageText", s => s ?? string.Empty);
+    public ConfigurationEntry<string> LtiAdvantageJsonWebKey { get; } = new(dbContext, cache, "LtiAdvantageJsonWebKey", s => s ?? string.Empty); // (De-)Serialization is done elsewhere
 }
 
-public class ConfigurationEntry<TValue>(CtfDbContext dbContext, IMemoryCache cache, string key, Func<string, TValue> valueConverter)
+public class ConfigurationEntry<TValue>(CtfDbContext dbContext, IMemoryCache cache, string key, Func<string, TValue> deserializer)
 {
     public async Task<TValue> GetAsync(CancellationToken cancellationToken)
     {
@@ -56,7 +59,7 @@ public class ConfigurationEntry<TValue>(CtfDbContext dbContext, IMemoryCache cac
             cache.Set(key, valueStr);
         }
 
-        return valueConverter(valueStr);
+        return deserializer(valueStr);
     }
 
     public async Task SetAsync(TValue value, CancellationToken cancellationToken)

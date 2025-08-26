@@ -35,6 +35,8 @@
     
     <PackageReference Include="MoodleLti.DependencyInjection" Version="0.2.3" />
     
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+    
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
@@ -69,6 +71,9 @@
     </Compile>
     <Compile Update="Controllers\AdminScoreboardController.Edit.cs">
       <DependentUpon>AdminScoreboardController.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Controllers\AuthenticationController.LtiAdvantage.cs">
+      <DependentUpon>AuthenticationController.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

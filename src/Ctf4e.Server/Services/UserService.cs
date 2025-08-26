@@ -22,7 +22,7 @@ public interface IUserService
     Task<List<AdminUserListEntry>> GetUserListAsync(CancellationToken cancellationToken);
     Task<List<User>> GetGroupMembersAsync(int groupId, CancellationToken cancellationToken);
     Task<bool> AnyUsers(CancellationToken cancellationToken);
-    Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken);
+    Task<User> FindUserByLtiUserIdAsync(int moodleUserId, CancellationToken cancellationToken);
     Task<User> FindUserByIdAsync(int id, CancellationToken cancellationToken);
     Task<User> FindUserByMoodleNameAsync(string moodleName, CancellationToken cancellationToken);
     Task<bool> UserExistsAsync(int id, CancellationToken cancellationToken);
@@ -77,7 +77,7 @@ public class UserService(CtfDbContext dbContext, IMapper mapper, GenericCrudServ
         return user;
     }
 
-    public Task<User> FindUserByMoodleUserIdAsync(int moodleUserId, CancellationToken cancellationToken)
+    public Task<User> FindUserByLtiUserIdAsync(int moodleUserId, CancellationToken cancellationToken)
         => genericCrudService.FindAsync<User, UserEntity>(u => u.MoodleUserId == moodleUserId, cancellationToken);
 
     public Task<User> FindUserByMoodleNameAsync(string moodleName, CancellationToken cancellationToken)
