@@ -9,6 +9,7 @@ using Ctf4e.Server.Data;
 using Ctf4e.Server.Options;
 using Ctf4e.Server.Services;
 using Ctf4e.Server.Services.Sync;
+using LtiAdvantageTools;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +48,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddMoodleGradebook();
     builder.Services.AddOptions<MoodleLtiOptions>().Bind(configurationSection.GetSection(nameof(MoodleLtiOptions)));
     builder.Services.AddScoped<ILtiLoginService, LtiLoginService>();
+    builder.Services.AddScoped<ILtiConfigurationStore, LtiConfigurationStore>();
     builder.Services.AddOptions<LtiAdvantageOptions>().Bind(configurationSection.GetSection("Lti"));
 
     // Database

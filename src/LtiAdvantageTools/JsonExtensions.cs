@@ -1,11 +1,11 @@
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace Ctf4e.Server.Extensions;
+namespace LtiAdvantageTools;
 
-public static class JsonExtensions
+internal static class JsonExtensions
 {
-    public static bool TryGetJsonProperty(this Claim claim, string propertyName, out string value)
+    public static bool TryGetJsonProperty(this Claim claim, string propertyName, out string? value)
     {
         if(claim.Properties.TryGetValue(propertyName, out value))
             return true;
@@ -23,20 +23,6 @@ public static class JsonExtensions
         }
         catch
         {
-            return false;
-        }
-    }
-
-    public static bool TryAsJsonElement(this string str, out JsonElement element)
-    {
-        try
-        {
-            element = JsonDocument.Parse(str).RootElement;
-            return true;
-        }
-        catch
-        {
-            element = default;
             return false;
         }
     }

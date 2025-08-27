@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.Server.Data;
 using Ctf4e.Server.Data.Entities;
+using LtiAdvantageTools;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
@@ -77,4 +78,13 @@ public class ConfigurationEntry<TValue>(CtfDbContext dbContext, IMemoryCache cac
         // Update cache
         cache.Set(key, valueStr);
     }
+}
+
+public class LtiConfigurationStore(IConfigurationService configurationService) : ILtiConfigurationStore
+{
+    public Task<string> GetSerializedPublicJsonWebKeyAsync(CancellationToken cancellationToken) 
+        => configurationService.LtiAdvantageJsonWebKey.GetAsync(cancellationToken);
+
+    public Task SetSerializedPublicJsonWebKeyAsync(string key, CancellationToken cancellationToken) 
+        => configurationService.LtiAdvantageJsonWebKey.SetAsync(key, cancellationToken);
 }
