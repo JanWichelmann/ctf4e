@@ -7,9 +7,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Ctf4e.LabServer.Configuration;
-using Ctf4e.LabServer.Configuration.Exercises;
-using Ctf4e.LabServer.Options;
-using Microsoft.Extensions.Options;
 
 namespace Ctf4e.LabServer.Services;
 

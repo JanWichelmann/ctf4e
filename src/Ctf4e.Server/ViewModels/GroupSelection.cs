@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Ctf4e.Server.Constants;
 
 namespace Ctf4e.Server.ViewModels;
 

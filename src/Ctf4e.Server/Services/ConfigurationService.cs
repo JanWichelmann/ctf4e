@@ -6,7 +6,6 @@ using Ctf4e.Server.Data.Entities;
 using LtiAdvantageTools;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Ctf4e.Server.Services;
 
