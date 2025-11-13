@@ -4,6 +4,13 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>2.1.1</Version>
+        <Title>LtiAdvantageTools</Title>
+        <Authors>Jan Wichelmann</Authors>
+        <Description>Minimal C# implementation for login with LTI 1.3 (LTI Advantage).</Description>
+        <PackageProjectUrl>https://github.com/janwichelmann/ctf4e</PackageProjectUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/JanWichelmann/ctf4e/refs/heads/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/janwichelmann/ctf4e</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
