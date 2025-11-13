@@ -152,6 +152,7 @@ public partial class StateService : IDisposable, IStateService
                 Lock = new SemaphoreSlim(1, 1),
                 GroupId = userStateFile.GroupId,
                 GroupMembers = [],
+                DockerUserId = userStateFile.DockerUserId,
                 UserName = userStateFile.UserName,
                 Password = userStateFile.Password,
                 Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(userStateFile.Exercises.ToDictionary(e => e.ExerciseId)),
@@ -251,6 +252,7 @@ public partial class StateService : IDisposable, IStateService
         var userStateFile = new UserStateFile
         {
             GroupId = userState.GroupId,
+            DockerUserId = userState.DockerUserId,
             UserName = userState.UserName,
             Password = userState.Password,
             Exercises = userState.Exercises.Values.ToList()
@@ -289,6 +291,11 @@ public partial class StateService : IDisposable, IStateService
             }
             else
             {
+                // If the CTF system sends a lab user name and that matches 'userXX', use 'XX' as docker user ID
+                int dockerUserId = userId;
+                if(labUserName != null && labUserName.StartsWith("user") && int.TryParse(labUserName[4..], out int duid))
+                    dockerUserId = duid;
+
                 // Create new account
                 userState = new UserState
                 {
@@ -296,7 +303,8 @@ public partial class StateService : IDisposable, IStateService
                     GroupId = groupId,
                     GroupMembers = [], // Will be filled later
                     Exercises = new ConcurrentDictionary<int, UserStateFileExerciseEntry>(),
-                    UserName = labUserName ?? (_dockerSupportEnabled ? $"user{userId}" : null),
+                    DockerUserId = dockerUserId,
+                    UserName = labUserName ?? (_dockerSupportEnabled ? $"user{dockerUserId}" : null),
                     Password = labPassword ?? (_dockerSupportEnabled ? RandomStringGenerator.GetRandomString(10) : null),
                     Log = new UserStateLogContainer(Math.Max(1, _options.Value.UserStateLogSize))
                 };
@@ -323,7 +331,7 @@ public partial class StateService : IDisposable, IStateService
                 if(_dockerSupportEnabled
                    && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerName)
                    && !string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
-                    await _dockerService.InitUserAsync(userId, userState.UserName, userState.Password, CancellationToken.None);
+                    await _dockerService.InitUserAsync(userState.DockerUserId, userState.UserName, userState.Password, CancellationToken.None);
 
                 // Store new user state
                 _userStates.TryAdd(userId, userState);
@@ -438,7 +446,7 @@ public partial class StateService : IDisposable, IStateService
                 var scriptExercise = exercise as LabConfigurationScriptExerciseEntry;
                 string containerName = scriptExercise.ContainerName ?? _options.Value.DockerContainerName;
                 string gradingScriptPath = scriptExercise.GradeScriptPath ?? _options.Value.DockerContainerGradeScriptPath;
-                (correct, string stderr) = await _dockerService.GradeAsync(containerName, gradingScriptPath, userId, exerciseId, input as string, cancellationToken);
+                (correct, string stderr) = await _dockerService.GradeAsync(containerName, gradingScriptPath, userState.DockerUserId, exerciseId, input as string, cancellationToken);
 
                 userState.Log.AddMessage("Script stderr output", stderr);
             }

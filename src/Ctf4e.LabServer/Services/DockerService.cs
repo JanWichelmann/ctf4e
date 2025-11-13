@@ -12,8 +12,8 @@ namespace Ctf4e.LabServer.Services;
 
 public interface IDockerService
 {
-    Task InitUserAsync(int userId, string userName, string password, CancellationToken cancellationToken);
-    Task<(bool passed, string stderr)> GradeAsync(string containerName, string gradingScriptPath, int userId, int exerciseId, string input, CancellationToken cancellationToken);
+    Task InitUserAsync(int dockerUserId, string userName, string password, CancellationToken cancellationToken);
+    Task<(bool passed, string stderr)> GradeAsync(string containerName, string gradingScriptPath, int dockerUserId, int exerciseId, string input, CancellationToken cancellationToken);
 }
 
 public class DockerService : IDockerService, IDisposable
@@ -40,14 +40,14 @@ public class DockerService : IDockerService, IDisposable
         }
     }
 
-    public async Task InitUserAsync(int userId, string userName, string password, CancellationToken cancellationToken)
+    public async Task InitUserAsync(int dockerUserId, string userName, string password, CancellationToken cancellationToken)
     {
         if(_dockerClient == null)
             throw new InvalidOperationException("Docker support is not initialized.");
 
         if(string.IsNullOrWhiteSpace(_options.Value.DockerContainerInitUserScriptPath))
             throw new NotSupportedException("User initialization script is not specified.");
-            
+        
         // Prepare command
         var execCreateResponse = await _dockerClient.Exec.ExecCreateContainerAsync(_options.Value.DockerContainerName, new ContainerExecCreateParameters
         {
@@ -58,7 +58,7 @@ public class DockerService : IDockerService, IDisposable
             Cmd = new List<string>
             {
                 _options.Value.DockerContainerInitUserScriptPath,
-                userId.ToString(),
+                dockerUserId.ToString(),
                 userName,
                 password
             },
@@ -70,7 +70,7 @@ public class DockerService : IDockerService, IDisposable
         await execStream.ReadOutputToEndAsync(cancellationToken);
     }
 
-    public async Task<(bool passed, string stderr)> GradeAsync(string containerName, string gradingScriptPath, int userId, int exerciseId, string input, CancellationToken cancellationToken)
+    public async Task<(bool passed, string stderr)> GradeAsync(string containerName, string gradingScriptPath, int dockerUserId, int exerciseId, string input, CancellationToken cancellationToken)
     {
         if(_dockerClient == null)
             throw new InvalidOperationException("Docker support is not initialized.");
@@ -93,7 +93,7 @@ public class DockerService : IDockerService, IDisposable
                 Cmd = new List<string>
                 {
                     gradingScriptPath,
-                    userId.ToString(),
+                    dockerUserId.ToString(),
                     exerciseId.ToString()
                 },
                 Detach = false

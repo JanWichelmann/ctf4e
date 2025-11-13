@@ -14,6 +14,12 @@ public class UserState
     public int? GroupId { get; set; }
         
     public List<UserState> GroupMembers { get; set; }
+    
+    /// <summary>
+    /// User ID to use when communicating with container.
+    /// Usually matches the CTF user ID, but may be overridden when the CTF system specifies a custom user name of form 'userXX'.
+    /// </summary>
+    public int DockerUserId { get; set; }
         
     public string UserName { get; set; }
         
