@@ -25,7 +25,7 @@ public interface ILabExecutionService
     Task<LabExecution> FindLabExecutionByUserAndLabAsync(int userId, int labId, CancellationToken cancellationToken);
     Task<LabExecution> FindMostRecentLabExecutionByGroupAsync(int groupId, CancellationToken cancellationToken);
     Task<LabExecution> FindMostRecentLabExecutionAsync(CancellationToken cancellationToken);
-    Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken);
+    Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool overrideExisting, CancellationToken cancellationToken);
     Task UpdateLabExecutionAsync(LabExecution labExecution, CancellationToken cancellationToken);
     Task DeleteLabExecutionAsync(int groupId, int labId, CancellationToken cancellationToken);
     Task DeleteLabExecutionsForSlotAsync(int slotId, int labId, CancellationToken cancellationToken);
@@ -99,12 +99,15 @@ public class LabExecutionService(CtfDbContext dbContext, IMapper mapper, Generic
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool updateExisting, CancellationToken cancellationToken)
+    public async Task<LabExecution> CreateLabExecutionAsync(LabExecution labExecution, bool overrideExisting, CancellationToken cancellationToken)
     {
         // Update existing one?
-        LabExecutionEntity labExecutionEntity;
-        if(updateExisting && (labExecutionEntity = await dbContext.LabExecutions.FindAsync([labExecution.GroupId, labExecution.LabId], cancellationToken)) != null)
-            mapper.Map(labExecution, labExecutionEntity);
+        var labExecutionEntity = await dbContext.LabExecutions.FindAsync([labExecution.GroupId, labExecution.LabId], cancellationToken);
+        if(labExecutionEntity != null)
+        {
+            if(overrideExisting)
+                mapper.Map(labExecution, labExecutionEntity);
+        }
         else
             labExecutionEntity = dbContext.LabExecutions.Add(mapper.Map<LabExecutionEntity>(labExecution)).Entity;
 
